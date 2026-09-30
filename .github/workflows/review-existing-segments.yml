@@ -1,0 +1,87 @@
+name: F07 remote segment review assets
+run-name: F07 review assets for run ${{ inputs.source_run_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Completed render Actions run containing selected SEG artifacts
+        required: true
+      artifact_prefix:
+        description: Exact run tag prefix before -SEG (for example F07-r4-a1)
+        required: true
+      segments_json:
+        description: JSON list with i, t0 and len for selected segments
+        required: true
+      source_release:
+        description: Optional still-live release tag holding hash-bound source.tar.gz for audio snippets
+        required: false
+        default: ""
+      package_sha256:
+        description: Required with source_release; SHA256 for source.tar.gz
+        required: false
+        default: ""
+permissions:
+  actions: read
+  contents: read
+jobs:
+  review-assets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      ARTIFACT_PREFIX: ${{ inputs.artifact_prefix }}
+      SEGMENTS_JSON: ${{ inputs.segments_json }}
+      SOURCE_RELEASE: ${{ inputs.source_release }}
+      PACKAGE_SHA256: ${{ inputs.package_sha256 }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install FFmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Download only the selected run's segment artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          pattern: ${{ inputs.artifact_prefix }}-SEG*
+          path: segments
+          merge-multiple: true
+      - name: Write the requested manifest
+        run: python3 -c 'import json,os,pathlib; pathlib.Path("review-segments.json").write_text(os.environ["SEGMENTS_JSON"]+chr(10))'
+      - name: Fetch only the source mix when its sealed package is available
+        if: ${{ inputs.source_release != '' }}
+        run: |
+          set -euo pipefail
+          test -n "$PACKAGE_SHA256"
+          gh release download "$SOURCE_RELEASE" -R "$GITHUB_REPOSITORY" -p source.tar.gz
+          test "$(sha256sum source.tar.gz | cut -d ' ' -f1)" = "$PACKAGE_SHA256"
+          python3 - source.tar.gz review-source/audio/mix.flac <<'PYCODE'
+          import pathlib, shutil, sys, tarfile
+          archive, output = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+          with tarfile.open(archive, "r:gz") as tf:
+              member = tf.getmember("audio/mix.flac")
+              if not member.isfile() or member.size <= 0 or member.size > 2_000_000_000:
+                  raise SystemExit("sealed mix entry is invalid or oversized")
+              output.parent.mkdir(parents=True, exist_ok=True)
+              with output.open("wb") as target:
+                  shutil.copyfileobj(tf.extractfile(member), target)
+          PYCODE
+      - name: Extract hosted stills, contact sheet and short audio samples
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet Pillow
+          MIX_ARGS=()
+          if [ -f review-source/audio/mix.flac ]; then MIX_ARGS+=(--mix review-source/audio/mix.flac); fi
+          .venv/bin/python .github/scripts/extract_review_assets.py \
+            --segments-json review-segments.json --segments-dir segments --out review-assets \
+            --source-run-id "$SOURCE_RUN_ID" "${MIX_ARGS[@]}"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: F07-REVIEW-ASSETS-${{ inputs.source_run_id }}
+          path: review-assets
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
