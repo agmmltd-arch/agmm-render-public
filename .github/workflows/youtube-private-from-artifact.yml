@@ -1,0 +1,96 @@
+name: F07 reviewed master private YouTube upload
+run-name: F07 private YouTube upload from run ${{ inputs.source_run_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Successful F07 full render run id
+        required: true
+      master_artifact:
+        description: Exact 4K master artifact name
+        required: true
+      metadata_b64:
+        description: Base64 exact private YouTube metadata JSON
+        required: true
+      metadata_sha256:
+        description: SHA256 of decoded metadata JSON
+        required: true
+      approval_b64:
+        description: Base64 independent release PASS JSON bound to the master
+        required: true
+      approval_sha256:
+        description: SHA256 of decoded release PASS JSON
+        required: true
+permissions:
+  actions: read
+  contents: read
+jobs:
+  private-upload:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      MASTER_ARTIFACT: ${{ inputs.master_artifact }}
+      METADATA_B64: ${{ inputs.metadata_b64 }}
+      METADATA_SHA256: ${{ inputs.metadata_sha256 }}
+      APPROVAL_B64: ${{ inputs.approval_b64 }}
+      APPROVAL_SHA256: ${{ inputs.approval_sha256 }}
+      YOUTUBE_CLIENT_ID: ${{ secrets.AGMM_YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.AGMM_YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.AGMM_YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Download only the exact reviewed 4K artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          name: ${{ inputs.master_artifact }}
+          path: master
+      - name: Decode and verify release inputs
+        run: |
+          set -euo pipefail
+          printf '%s' "$METADATA_B64" | base64 -d > metadata.json
+          printf '%s' "$APPROVAL_B64" | base64 -d > approval.json
+          test "$(sha256sum metadata.json | cut -d ' ' -f1)" = "$METADATA_SHA256"
+          test "$(sha256sum approval.json | cut -d ' ' -f1)" = "$APPROVAL_SHA256"
+          test -f master/F07-MASTER-4K.mp4
+          test -f master/REMOTE-INTEGRITY.json
+          python3 - <<'PYCODE'
+          import hashlib, json, pathlib
+          video = pathlib.Path("master/F07-MASTER-4K.mp4")
+          h = hashlib.sha256()
+          with video.open("rb") as f:
+              for block in iter(lambda: f.read(8 * 1024 * 1024), b""):
+                  h.update(block)
+          actual = h.hexdigest()
+          integrity = json.loads(pathlib.Path("master/REMOTE-INTEGRITY.json").read_text())
+          approval = json.loads(pathlib.Path("approval.json").read_text())
+          recorded = integrity.get("master_4k_sha256") or integrity.get("master_sha256")
+          if recorded != actual:
+              raise SystemExit(f"REMOTE-INTEGRITY does not cover master: {recorded!r} != {actual}")
+          if approval.get("master_sha256") != actual:
+              raise SystemExit("release approval does not cover the downloaded master")
+          pathlib.Path("master.sha256").write_text(actual + "\n")
+          PYCODE
+      - name: Upload reviewed master as PRIVATE
+        run: |
+          set -euo pipefail
+          test -n "$YOUTUBE_CLIENT_ID"
+          test -n "$YOUTUBE_CLIENT_SECRET"
+          test -n "$YOUTUBE_REFRESH_TOKEN"
+          python3 .github/scripts/youtube_resumable_upload.py \
+            --video master/F07-MASTER-4K.mp4 \
+            --metadata metadata.json --approval approval.json \
+            --expected-sha256 "$(cat master.sha256)" \
+            --source-run-id "$SOURCE_RUN_ID" --out receipt/YOUTUBE-PRIVATE-UPLOAD.json
+      - name: Retain the no-secret upload receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: F07-YOUTUBE-PRIVATE-${{ inputs.source_run_id }}
+          path: receipt/YOUTUBE-PRIVATE-UPLOAD.json
+          retention-days: 3
+          if-no-files-found: error
