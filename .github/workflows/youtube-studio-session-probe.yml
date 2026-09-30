@@ -1,0 +1,44 @@
+name: YouTube Studio cloud session probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      YOUTUBE_STORAGE_STATE: ${{ secrets.AGMM_YOUTUBE_STORAGE_STATE }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install browser driver
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet playwright pillow
+          google-chrome --version
+      - name: Materialize the temporary session without logging it
+        run: |
+          set -euo pipefail
+          test -n "$YOUTUBE_STORAGE_STATE"
+          printf '%s' "$YOUTUBE_STORAGE_STATE" > storage-state.json
+          chmod 600 storage-state.json
+      - name: Prove the AGMM Studio session
+        run: |
+          set -euo pipefail
+          .venv/bin/python .github/scripts/youtube_studio_cloud_upload.py \
+            --mode probe --storage-state storage-state.json \
+            --out receipt/YOUTUBE-STUDIO-SESSION.json --evidence evidence
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: YOUTUBE-STUDIO-SESSION-PROBE
+          path: |
+            receipt/YOUTUBE-STUDIO-SESSION.json
+            evidence/00-session-probe.png
+          retention-days: 1
+          if-no-files-found: warn
+      - name: Remove session material
+        if: always()
+        run: python3 -c 'from pathlib import Path; p=Path("storage-state.json"); p.unlink() if p.exists() else None'
