@@ -1,0 +1,283 @@
+name: AGMM exact short package render
+run-name: AGMM short ${{ inputs.tag }}
+
+# Public-repository Ubuntu runners keep every media operation off the operator's Mac.
+# The workflow is mechanical only: it cannot approve, publish, arm or dispatch a short.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release tag containing exact source.tar.gz, parts.json and mix.wav assets
+        required: true
+      source_sha256:
+        description: Exact SHA256 of source.tar.gz
+        required: true
+      parts_sha256:
+        description: Exact SHA256 of parts.json
+        required: true
+      mix_sha256:
+        description: Exact SHA256 of mix.wav
+        required: true
+      tag:
+        description: Safe label used only for concurrency and artifact names
+        required: true
+      render_4k:
+        description: Also render and assemble the native 2160x3840 short master
+        type: boolean
+        required: false
+        default: false
+      workers:
+        description: HyperFrames Chrome workers per hosted render
+        type: choice
+        options: ['1', '2', '3']
+        required: false
+        default: '2'
+  workflow_call:
+    inputs:
+      release:
+        description: Release tag containing exact source.tar.gz, parts.json and mix.wav assets
+        type: string
+        required: true
+      source_sha256:
+        description: Exact SHA256 of source.tar.gz
+        type: string
+        required: true
+      parts_sha256:
+        description: Exact SHA256 of parts.json
+        type: string
+        required: true
+      mix_sha256:
+        description: Exact SHA256 of mix.wav
+        type: string
+        required: true
+      tag:
+        description: Safe label used only for concurrency and artifact names
+        type: string
+        required: true
+      render_4k:
+        description: Also render and assemble the native 2160x3840 short master
+        type: boolean
+        required: false
+        default: false
+      workers:
+        description: HyperFrames Chrome workers per hosted render
+        type: string
+        required: false
+        default: '2'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agmm-short-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      matrix: ${{ steps.contract.outputs.matrix }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE: ${{ inputs.release }}
+      SOURCE_SHA256: ${{ inputs.source_sha256 }}
+      PARTS_SHA256: ${{ inputs.parts_sha256 }}
+      MIX_SHA256: ${{ inputs.mix_sha256 }}
+      TAG: ${{ inputs.tag }}
+      RENDER_4K: ${{ inputs.render_4k }}
+      WORKERS: ${{ inputs.workers }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate workflow labels before using them
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          [[ "$WORKERS" =~ ^[123]$ ]]
+      - name: Install hosted media dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet Pillow
+      - name: Download the three exact release assets
+        run: |
+          set -euo pipefail
+          mkdir exact-input
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p source.tar.gz -D exact-input
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p parts.json -D exact-input
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p mix.wav -D exact-input
+          test "$(find exact-input -maxdepth 1 -type f | wc -l | tr -d ' ')" = 3
+      - name: Verify hashes, archive, part contract and source mix
+        id: contract
+        run: |
+          set -euo pipefail
+          FOUR_K=(); [[ "$RENDER_4K" = "true" ]] && FOUR_K+=(--render-4k)
+          .venv/bin/python .github/scripts/render_short_package.py prepare \
+            --source exact-input/source.tar.gz --parts exact-input/parts.json --mix exact-input/mix.wav \
+            --source-sha256 "$SOURCE_SHA256" --parts-sha256 "$PARTS_SHA256" --mix-sha256 "$MIX_SHA256" \
+            --output preflight "${FOUR_K[@]}"
+          cp preflight/INPUT-RECEIPT.json preflight/MATRIX.json preflight/NORMALISED-PARTS.json exact-input/
+          printf 'matrix=%s\n' "$(jq -c . preflight/MATRIX.json)" >> "$GITHUB_OUTPUT"
+      - name: Upload the hash-bound hosted input bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-EXACT-INPUT
+          path: exact-input/
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+
+  render:
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJSON(needs.preflight.outputs.matrix) }}
+    env:
+      OUT: ${{ matrix.out }}
+      LOOK: ${{ matrix.look }}
+      FILE: ${{ matrix.file }}
+      DURATION: ${{ matrix.dur }}
+      RESOLUTION: ${{ matrix.resolution }}
+      SUFFIX: ${{ matrix.suffix }}
+      SOURCE_SHA256: ${{ inputs.source_sha256 }}
+      PARTS_SHA256: ${{ inputs.parts_sha256 }}
+      MIX_SHA256: ${{ inputs.mix_sha256 }}
+      WORKERS: ${{ inputs.workers }}
+      HYPERFRAMES_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+      - name: Install FFmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ inputs.tag }}-EXACT-INPUT
+          path: exact-input
+      - name: Re-verify and safely extract the exact package
+        run: |
+          set -euo pipefail
+          test "$(sha256sum exact-input/source.tar.gz | cut -d ' ' -f1)" = "$SOURCE_SHA256"
+          test "$(sha256sum exact-input/parts.json | cut -d ' ' -f1)" = "$PARTS_SHA256"
+          test "$(sha256sum exact-input/mix.wav | cut -d ' ' -f1)" = "$MIX_SHA256"
+          python3 - <<'PYCODE'
+          import pathlib, sys
+          sys.path.insert(0, ".github/scripts")
+          import render_short_package as short
+          short.safe_extract(pathlib.Path("exact-input/source.tar.gz"), pathlib.Path("project"))
+          PYCODE
+          cd "project/$LOOK"
+          sha256sum -c SHA256SUMS.txt >/dev/null
+          python3 static_check.py
+      - name: Render exact part with the pinned short-kit version
+        working-directory: project/${{ matrix.look }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/render-output"
+          RESOLUTION_FLAG=()
+          [[ "$RESOLUTION" = "4k" ]] && RESOLUTION_FLAG+=(--resolution portrait-4k)
+          npx --yes hyperframes@0.8.71 render -c "$FILE" --fps 30 --workers "$WORKERS" \
+            --quality high "${RESOLUTION_FLAG[@]}" \
+            --player-ready-timeout 180000 --protocol-timeout 600000 \
+            --output "$GITHUB_WORKSPACE/render-output/$OUT$SUFFIX.raw.mp4" \
+            > "$GITHUB_WORKSPACE/render-output/$OUT$SUFFIX.render.log" 2>&1 || {
+              tail -60 "$GITHUB_WORKSPACE/render-output/$OUT$SUFFIX.render.log"
+              exit 1
+            }
+      - name: Apply exact produce.py delivery cap
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/render_short_package.py cap-part \
+            --input "render-output/$OUT$SUFFIX.raw.mp4" --output "render-output/$OUT$SUFFIX.mp4" \
+            --resolution "$RESOLUTION" --receipt "render-output/$OUT$SUFFIX.cap.json"
+          python3 .github/scripts/render_short_package.py verify-part \
+            --video "render-output/$OUT$SUFFIX.mp4" --resolution "$RESOLUTION" \
+            --duration "$DURATION" --output "render-output/$OUT$SUFFIX.verify.json"
+          rm "render-output/$OUT$SUFFIX.raw.mp4"
+      - name: Upload exact part and hosted evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-${{ matrix.out }}${{ matrix.suffix }}
+          path: |
+            render-output/${{ matrix.out }}${{ matrix.suffix }}.mp4
+            render-output/${{ matrix.out }}${{ matrix.suffix }}.render.log
+            render-output/${{ matrix.out }}${{ matrix.suffix }}.cap.json
+            render-output/${{ matrix.out }}${{ matrix.suffix }}.verify.json
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: warn
+
+  assemble:
+    needs: [preflight, render]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PARTS_SHA256: ${{ inputs.parts_sha256 }}
+      MIX_SHA256: ${{ inputs.mix_sha256 }}
+      RENDER_4K: ${{ inputs.render_4k }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install hosted assembly and review dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet Pillow
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ inputs.tag }}-EXACT-INPUT
+          path: exact-input
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: ${{ inputs.tag }}-*
+          path: hosted-renders
+          merge-multiple: true
+      - name: Assemble and fully verify 1080 and optional 4K masters
+        run: |
+          set -euo pipefail
+          FOUR_K=(); [[ "$RENDER_4K" = "true" ]] && FOUR_K+=(--render-4k)
+          .venv/bin/python .github/scripts/render_short_package.py assemble \
+            --parts exact-input/parts.json --mix exact-input/mix.wav \
+            --parts-sha256 "$PARTS_SHA256" --mix-sha256 "$MIX_SHA256" \
+            --renders hosted-renders --output remote-final "${FOUR_K[@]}"
+      - name: Upload remote masters and bound technical evidence
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-FINAL-MASTERS
+          path: |
+            remote-final/FINAL.mp4
+            remote-final/FINAL-4K.mp4
+            remote-final/TECHNICAL-EVIDENCE.json
+            remote-final/SHA256SUMS.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload compact remote review stills and evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-REVIEW-COMPACT
+          path: |
+            remote-final/review/
+            remote-final/TECHNICAL-EVIDENCE.json
+            remote-final/SHA256SUMS.txt
+          retention-days: 3
+          compression-level: 6
+          if-no-files-found: warn

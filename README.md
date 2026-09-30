@@ -17,3 +17,22 @@ Workflows:
   established -0.5 dB mix adjustment, fully decodes the 4K and 1080 outputs, runs the full-duration static/audio audit
   and native Vision OCR, and emits SHA256-bound provenance and gate receipts. Editorial review and release approval
   remain outstanding.
+- agmm-short-package.yml: reusable exact-release short render. It hash-verifies fixed `source.tar.gz`, `parts.json`
+  and `mix.wav` release assets; renders all declared parts at 1080 and optional native portrait 4K; assembles and fully
+  decodes/probes/frame-counts the masters; checks 48 kHz stereo loudness/true peak; and emits compact seam and quarter
+  stills. It is technical evidence only, with no approval, arming, scheduling or publication step.
+
+The short workflow uses public `ubuntu-24.04` runners for every media operation. Master artifacts expire after one
+day and compact evidence after three days. The caller only needs the three exact hashes and does not need to download,
+render or decode video on its own computer.
+
+Example invocation after uploading the reviewed, sealed assets to one release:
+
+```sh
+gh workflow run agmm-short-package.yml -R agmmltd-arch/agmm-render-public --ref main \
+  -f release=SHORT-RELEASE-TAG \
+  -f source_sha256=SOURCE_TAR_SHA256 \
+  -f parts_sha256=PARTS_JSON_SHA256 \
+  -f mix_sha256=MIX_WAV_SHA256 \
+  -f tag=SHORT-ID-ROUND -f render_4k=true -f workers=2
+```
