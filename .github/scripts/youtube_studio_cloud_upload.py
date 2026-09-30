@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 import time
 import urllib.parse
 import urllib.request
@@ -43,6 +44,15 @@ def save_json(path: Path, value: dict) -> None:
 
 def norm(value: str) -> str:
     return re.sub(r"\s+", " ", value or "").strip()
+
+
+def chrome_user_agent() -> str:
+    completed = subprocess.run(["google-chrome", "--version"], capture_output=True, text=True, timeout=10, check=False)
+    match = re.search(r"\b(\d+)\.\d+\.\d+\.\d+\b", completed.stdout)
+    if completed.returncode or not match:
+        raise RuntimeError(f"cannot resolve runner Chrome version: {completed.stdout.strip()!r}")
+    return ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            f"(KHTML, like Gecko) Chrome/{match.group(1)}.0.0.0 Safari/537.36")
 
 
 def signed_in(page) -> tuple[bool, str]:
@@ -442,7 +452,8 @@ def main() -> int:
     args.evidence.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True, channel="chrome", args=["--disable-blink-features=AutomationControlled"])
-        ctx = browser.new_context(storage_state=str(args.storage_state), viewport={"width": 1440, "height": 940}, locale="en-GB", timezone_id="Europe/London")
+        ctx = browser.new_context(storage_state=str(args.storage_state), viewport={"width": 1440, "height": 940},
+                                  locale="en-GB", timezone_id="Europe/London", user_agent=chrome_user_agent())
         page = ctx.new_page()
         try:
             page.goto(LONGFORM_TAB, wait_until="domcontentloaded", timeout=60_000)
