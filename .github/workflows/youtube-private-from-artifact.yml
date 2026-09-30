@@ -69,7 +69,10 @@ jobs:
           actual = h.hexdigest()
           integrity = json.loads(pathlib.Path("master/REMOTE-INTEGRITY.json").read_text())
           approval = json.loads(pathlib.Path("approval.json").read_text())
-          recorded = integrity.get("master_4k_sha256") or integrity.get("master_sha256")
+          recorded = (integrity.get("master_4k_sha256") or integrity.get("master_sha256")
+                      or (integrity.get("outputs") or {}).get("master_sha256"))
+          if not recorded:
+              raise SystemExit("REMOTE-INTEGRITY contains no master SHA256")
           if recorded != actual:
               raise SystemExit(f"REMOTE-INTEGRITY does not cover master: {recorded!r} != {actual}")
           if approval.get("master_sha256") != actual:
