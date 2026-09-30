@@ -49,6 +49,10 @@ on:
         description: Optional code-only QA overlay release asset filename
         required: false
         default: ""
+      overlay_release:
+        description: Optional release tag holding the QA overlay; defaults to the source release
+        required: false
+        default: ""
       overlay_sha256:
         description: SHA256 of the optional QA overlay archive
         required: false
@@ -106,7 +110,7 @@ jobs:
       - name: Fetch and safely unpack the hash-bound code-only QA overlay
         if: ${{ inputs.remote_only }}
         env:
-          RELEASE: ${{ inputs.release }}
+          RELEASE: ${{ inputs.overlay_release || inputs.release }}
           OVERLAY_ASSET: ${{ inputs.overlay_release_asset }}
           OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
         run: |
@@ -198,6 +202,7 @@ jobs:
       PACKAGE_SHA256: ${{ inputs.package_sha256 }}
       OVERLAY_ASSET: ${{ inputs.overlay_release_asset }}
       OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
+      OVERLAY_RELEASE: ${{ inputs.overlay_release || inputs.release }}
     steps:
       - name: Install FFmpeg
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
@@ -211,7 +216,7 @@ jobs:
           set -euo pipefail
           gh release download "$RELEASE" -R "${{ github.repository }}" -p source.tar.gz
           test "$(sha256sum source.tar.gz | cut -d ' ' -f1)" = "$PACKAGE_SHA256"
-          gh release download "$RELEASE" -R "${{ github.repository }}" -p "$OVERLAY_ASSET"
+          gh release download "$OVERLAY_RELEASE" -R "${{ github.repository }}" -p "$OVERLAY_ASSET"
           test "$(sha256sum "$OVERLAY_ASSET" | cut -d ' ' -f1)" = "$OVERLAY_SHA256"
           mkdir -p package qa_overlay
           tar -xzf source.tar.gz -C package
