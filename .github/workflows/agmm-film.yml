@@ -1,0 +1,105 @@
+name: AGMM film segments render
+
+# Root, 30 Sep 2026: long-form films render here, on free public-repo Actions minutes, up to 20 segments in parallel.
+# Byte-for-byte the same per-segment commands as films/tools/render_codespace_film.py (hyperframes@0.8.71, same caps),
+# driven by films/tools/render_actions_film.py, which uploads the sealed package as a release asset, dispatches this
+# workflow, downloads the SEG artifacts and verifies every one (dimensions, exact frame count, flicker) locally.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release tag holding source.tar.gz
+        required: true
+      package_sha256:
+        description: sha256 of source.tar.gz
+        required: true
+      comp:
+        description: Composition folder inside the package
+        required: true
+        default: film
+      segvar:
+        description: The window.<X>_SEG variable name
+        required: true
+      segs:
+        description: 'JSON list of {"i":"01","t0":0,"len":8.6}'
+        required: true
+      res:
+        description: "'' for 1920x1080 or 'landscape-4k'"
+        required: false
+        default: ""
+      workers:
+        description: hyperframes Chrome workers per runner
+        required: false
+        default: "2"
+      tag:
+        description: Run label for artifact names
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        seg: ${{ fromJSON(inputs.segs) }}
+    env:
+      I: ${{ matrix.seg.i }}
+      T0: ${{ matrix.seg.t0 }}
+      LN: ${{ matrix.seg.len }}
+      COMP: ${{ inputs.comp }}
+      SEGVAR: ${{ inputs.segvar }}
+      RES: ${{ inputs.res }}
+      WORKERS: ${{ inputs.workers }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 20
+      - name: System packages (same list as the codespace SETUP)
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg libnss3 libatk-bridge2.0-0 libgbm1 libxkbcommon0 \
+            libasound2t64 libxcomposite1 libxdamage1 libxrandr2 libpango-1.0-0 libcairo2 fonts-liberation >/dev/null
+          ffmpeg -version | head -1
+          npx --yes hyperframes@0.8.71 --version
+      - name: Fetch and verify the sealed package
+        run: |
+          gh release download "${{ inputs.release }}" -R "${{ github.repository }}" -p source.tar.gz
+          test "$(sha256sum source.tar.gz | cut -d ' ' -f1)" = "${{ inputs.package_sha256 }}"
+          mkdir -p project out
+          tar -xzf source.tar.gz -C project
+          cd project && sha256sum -c SHA256SUMS.txt >/dev/null && python3 static_check.py
+          grep -q "window.${SEGVAR} = null;" "$COMP/index.html"
+      - name: Render segment
+        run: |
+          cd project
+          cp -R "$COMP" "seg$I"
+          sed -i "s|window.${SEGVAR} = null;|window.${SEGVAR} = { t0: ${T0}, len: ${LN} };|" "seg$I/index.html"
+          sed -i -E "s|data-duration=\"[0-9.]+\"|data-duration=\"${LN}\"|" "seg$I/index.html"
+          RESFLAG=""; [ -n "$RES" ] && RESFLAG="--resolution $RES"
+          cd "seg$I"
+          HYPERFRAMES_NO_TELEMETRY=1 npx --yes hyperframes@0.8.71 render --fps 30 --workers "$WORKERS" --quality high $RESFLAG \
+            --player-ready-timeout 180000 --protocol-timeout 600000 --output "$GITHUB_WORKSPACE/out/SEG$I.raw.mp4" \
+            > "$GITHUB_WORKSPACE/out/SEG$I.render.log" 2>&1 || { tail -40 "$GITHUB_WORKSPACE/out/SEG$I.render.log"; exit 1; }
+          if [ -n "$RES" ]; then
+            CAP="-map 0:v:0 -an -c:v libx264 -profile:v high -preset slow -crf 17 -maxrate 60M -bufsize 120M -level:v 5.1 -pix_fmt yuv420p -r 30 -g 60 -video_track_timescale 15360 -movflags +faststart"
+          else
+            CAP="-map 0:v:0 -an -c:v libx264 -profile:v high -preset slow -crf 16 -maxrate 25M -bufsize 50M -level:v 4.2 -pix_fmt yuv420p -r 30 -g 60 -video_track_timescale 15360 -movflags +faststart"
+          fi
+          ffmpeg -hide_banner -loglevel error -y -i "$GITHUB_WORKSPACE/out/SEG$I.raw.mp4" $CAP "$GITHUB_WORKSPACE/out/SEG$I.mp4"
+          rm -f "$GITHUB_WORKSPACE/out/SEG$I.raw.mp4"
+          ffprobe -v error -select_streams v:0 -show_entries stream=width,height,nb_frames -of csv=p=0 "$GITHUB_WORKSPACE/out/SEG$I.mp4"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ${{ inputs.tag }}-SEG${{ matrix.seg.i }}
+          path: |
+            out/SEG${{ matrix.seg.i }}.mp4
+            out/SEG${{ matrix.seg.i }}.render.log
+          retention-days: 1
+          if-no-files-found: warn
