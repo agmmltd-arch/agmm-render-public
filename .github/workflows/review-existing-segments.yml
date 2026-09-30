@@ -77,13 +77,20 @@ jobs:
           python3 - source.tar.gz review-source/audio/mix.flac <<'PYCODE'
           import pathlib, shutil, sys, tarfile
           archive, output = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+          accepted = {"audio/mix.flac", "./audio/mix.flac"}
           with tarfile.open(archive, "r:gz") as tf:
-              member = tf.getmember("audio/mix.flac")
+              matches = [member for member in tf.getmembers() if member.name in accepted]
+              if len(matches) != 1:
+                  raise SystemExit(f"sealed package must contain exactly one accepted mix entry; found {len(matches)}")
+              member = matches[0]
               if not member.isfile() or member.size <= 0 or member.size > 2_000_000_000:
                   raise SystemExit("sealed mix entry is invalid or oversized")
+              source = tf.extractfile(member)
+              if source is None:
+                  raise SystemExit("sealed mix entry is unreadable")
               output.parent.mkdir(parents=True, exist_ok=True)
               with output.open("wb") as target:
-                  shutil.copyfileobj(tf.extractfile(member), target)
+                  shutil.copyfileobj(source, target)
           PYCODE
       - name: Extract hosted stills, contact sheet and short audio samples
         run: |

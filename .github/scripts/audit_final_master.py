@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Audit an existing hosted F07 review master without retaining the video.
+"""Audit an existing hosted review master without retaining the video.
 
 Mirrors the production long-form static-hold detector exactly: 10 fps,
 320-pixel greyscale frames, <0.4% frame delta is static, >2.5 seconds fails.
 The workflow uploads only the JSON report and small evidence stills.
 """
 import argparse
+import hashlib
 import json
 import re
 import statistics
@@ -21,6 +22,14 @@ WIDTH = 320
 HEIGHT = 180
 DIFF_THRESHOLD_PCT = 0.4
 MAX_STATIC_SECONDS = 2.5
+
+
+def sha256(path):
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
 
 
 def run(cmd, *, check=True):
@@ -149,6 +158,7 @@ def main():
                and loud["true_peak_dbtp"] is not None and loud["true_peak_dbtp"] <= -1.0)
     report = {
         "kind": "hosted_existing_master_audit", "source_run_id": a.source_run_id,
+        "video_sha256": sha256(a.video),
         "video_retained_in_artifact": False, "probe": info, "duration_seconds": duration,
         "expected_duration_seconds": a.expected_duration, "profile_pass": profile_ok,
         "duration_pass": duration_ok, "full_decode_pass": True,

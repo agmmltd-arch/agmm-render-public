@@ -1,0 +1,263 @@
+name: Patch exact reviewed segments into hosted master
+run-name: Patched hosted master ${{ inputs.output_tag }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      film_id:
+        description: Film identifier used by existing master filenames, for example F07
+        required: true
+        default: F07
+      base_run_id:
+        description: Exact completed base segment run id (success or segment-complete failure)
+        required: true
+      base_tag:
+        description: Exact base artifact prefix before -SEGnn
+        required: true
+      segments_json:
+        description: 'Exact complete JSON list of {"i":"01","t0":0,"len":8.6}'
+        required: true
+      patches_json:
+        description: 'JSON list of exact replacements: {"i":"01","run_id":123,"tag":"run-tag"}'
+        required: true
+      output_tag:
+        description: Artifact prefix for the patched outputs
+        required: true
+      expected_duration:
+        description: Exact final duration in seconds
+        required: true
+      source_release:
+        description: Exact published release holding the sealed source package
+        required: true
+      source_asset:
+        description: Exact sealed source archive asset
+        required: true
+        default: source.tar.gz
+      source_sha256:
+        description: SHA256 of the exact sealed source archive asset
+        required: true
+      overlay_release:
+        description: Still-live release holding the exact native Vision OCR overlay
+        required: true
+      overlay_asset:
+        description: Exact code-only OCR overlay asset
+        required: true
+      overlay_sha256:
+        description: SHA256 of the exact OCR overlay asset
+        required: true
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      GH_TOKEN: ${{ github.token }}
+      FILM_ID: ${{ inputs.film_id }}
+      BASE_RUN_ID: ${{ inputs.base_run_id }}
+      BASE_TAG: ${{ inputs.base_tag }}
+      SEGMENTS_JSON: ${{ inputs.segments_json }}
+      PATCHES_JSON: ${{ inputs.patches_json }}
+      OUTPUT_TAG: ${{ inputs.output_tag }}
+      EXPECTED_DURATION: ${{ inputs.expected_duration }}
+      SOURCE_RELEASE: ${{ inputs.source_release }}
+      SOURCE_ASSET: ${{ inputs.source_asset }}
+      SOURCE_SHA256: ${{ inputs.source_sha256 }}
+      OVERLAY_RELEASE: ${{ inputs.overlay_release }}
+      OVERLAY_ASSET: ${{ inputs.overlay_asset }}
+      OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install FFmpeg and full-duration audit dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet numpy pillow
+      - name: Validate and freeze the complete patch request
+        run: |
+          set -euo pipefail
+          .venv/bin/python .github/scripts/patch_master_segments.py --prepare-request \
+            --repository "$GITHUB_REPOSITORY" \
+            --film-id "$FILM_ID" --base-run-id "$BASE_RUN_ID" --base-tag "$BASE_TAG" \
+            --segments-json "$SEGMENTS_JSON" --patches-json "$PATCHES_JSON" \
+            --output-tag "$OUTPUT_TAG" --duration "$EXPECTED_DURATION" \
+            --source-release "$SOURCE_RELEASE" --source-asset "$SOURCE_ASSET" \
+            --source-sha256 "$SOURCE_SHA256" \
+            --overlay-release "$OVERLAY_RELEASE" --overlay-asset "$OVERLAY_ASSET" \
+            --overlay-sha256 "$OVERLAY_SHA256" --request-out PATCH-REQUEST.json
+      - name: Download exact artifacts from exact completed runs
+        run: |
+          set -euo pipefail
+          .venv/bin/python .github/scripts/download_patch_inputs.py \
+            --request PATCH-REQUEST.json --repository "$GITHUB_REPOSITORY" \
+            --base-segments-dir base-segments --patch-segments-dir patch-segments \
+            --source-audio-dir source-audio --provenance-out DOWNLOAD-PROVENANCE.json
+      - name: Assemble selected segments with sealed source audio and fully decode both masters
+        run: |
+          set -euo pipefail
+          .venv/bin/python .github/scripts/patch_master_segments.py \
+            --request PATCH-REQUEST.json --download-provenance DOWNLOAD-PROVENANCE.json \
+            --base-segments-dir base-segments --patch-segments-dir patch-segments \
+            --source-audio "source-audio/${FILM_ID}-SOURCE-MIX.flac" --out patched
+      - name: Run the existing full-duration profile, decode, static and audio audit
+        run: |
+          set -euo pipefail
+          .venv/bin/python .github/scripts/audit_final_master.py \
+            --video "patched/${FILM_ID}-MASTER-1080-from-4K.mp4" --out final-audit \
+            --expected-duration "$EXPECTED_DURATION" --source-run-id "$GITHUB_RUN_ID"
+      - name: Bind the passed hosted gates to exact output hashes
+        run: |
+          set -euo pipefail
+          .venv/bin/python .github/scripts/bind_patch_gate_receipts.py patch \
+            --request PATCH-REQUEST.json --download-provenance DOWNLOAD-PROVENANCE.json \
+            --integrity patched/REMOTE-INTEGRITY.json \
+            --patch-provenance patched/PATCH-PROVENANCE.json \
+            --master "patched/${FILM_ID}-MASTER-4K.mp4" \
+            --review "patched/${FILM_ID}-MASTER-1080-from-4K.mp4" \
+            --audit final-audit/FINAL-MASTER-AUDIT.json \
+            --workflow-run-id "$GITHUB_RUN_ID" --workflow-commit "$GITHUB_SHA" \
+            --out patched/HOSTED-PATCH-GATE-RECEIPT.json
+          cp PATCH-REQUEST.json DOWNLOAD-PROVENANCE.json patched/
+      - name: Upload adjusted sealed-audio proof
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.output_tag }}-AUDIO-GAIN-PROOF
+          path: |
+            patched/${{ inputs.film_id }}-MIX-GAIN-ADJUSTED.flac
+            patched/AUDIO-GAIN-RECEIPT.json
+            patched/PATCH-PROVENANCE.json
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload passed patched 4K master and provenance
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.output_tag }}-MASTER-4K
+          path: |
+            patched/${{ inputs.film_id }}-MASTER-4K.mp4
+            patched/REMOTE-INTEGRITY.json
+            patched/PATCH-PROVENANCE.json
+            patched/AUDIO-GAIN-RECEIPT.json
+            patched/HOSTED-PATCH-GATE-RECEIPT.json
+            patched/SHA256SUMS.txt
+            patched/PATCH-REQUEST.json
+            patched/DOWNLOAD-PROVENANCE.json
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload passed patched review master and provenance
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.output_tag }}-REVIEW-1080
+          path: |
+            patched/${{ inputs.film_id }}-MASTER-1080-from-4K.mp4
+            patched/${{ inputs.film_id }}-MASTER-1080-from-4K.mp4.derived.json
+            patched/REMOTE-INTEGRITY.json
+            patched/PATCH-PROVENANCE.json
+            patched/AUDIO-GAIN-RECEIPT.json
+            patched/HOSTED-PATCH-GATE-RECEIPT.json
+            patched/SHA256SUMS.txt
+            patched/PATCH-REQUEST.json
+            patched/DOWNLOAD-PROVENANCE.json
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload compact full-duration audit evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ${{ inputs.output_tag }}-FINAL-AUDIT
+          path: |
+            final-audit
+            PATCH-REQUEST.json
+            DOWNLOAD-PROVENANCE.json
+            patched/HOSTED-PATCH-GATE-RECEIPT.json
+          retention-days: 3
+          if-no-files-found: warn
+
+  macos-ocr:
+    needs: patch
+    runs-on: macos-15-intel
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      FILM_ID: ${{ inputs.film_id }}
+      OVERLAY_RELEASE: ${{ inputs.overlay_release }}
+      OVERLAY_ASSET: ${{ inputs.overlay_asset }}
+      OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ inputs.output_tag }}-REVIEW-1080
+          path: review
+      - name: Fetch and verify the exact native Vision OCR code overlay
+        run: |
+          set -euo pipefail
+          gh release download "$OVERLAY_RELEASE" -R "$GITHUB_REPOSITORY" -p "$OVERLAY_ASSET"
+          test "$(shasum -a 256 "$OVERLAY_ASSET" | cut -d ' ' -f1)" = "$OVERLAY_SHA256"
+          mkdir qa_overlay
+          python3 - "$OVERLAY_ASSET" qa_overlay <<'PYCODE'
+          import pathlib, shutil, sys, tarfile
+          archive, out = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]).resolve()
+          allowed = {".github/scripts/assemble_verify.py", ".github/scripts/run_existing_ocr_check.py",
+                     "qa/gate.py", "kit/tools/frame_check.py", "kit/tools/ocr_vision.swift",
+                     "kit/platforms/platforms.py", "kit/platforms/frames.json", "film/film.js",
+                     "film/film.css", "film/sets_studio.js", "film-overlay.sha256"}
+          total = 0
+          with tarfile.open(archive, "r:gz") as tf:
+              members = tf.getmembers()
+              if len(members) != len(allowed) or {member.name for member in members} != allowed:
+                  raise SystemExit("overlay allowlist mismatch")
+              for member in members:
+                  if not member.isfile() or member.size > 2_000_000:
+                      raise SystemExit("overlay member invalid")
+                  total += member.size
+                  if total > 8_000_000:
+                      raise SystemExit("overlay expanded size exceeds 8 MB")
+                  destination = (out / member.name).resolve()
+                  if out not in destination.parents:
+                      raise SystemExit("overlay path traversal")
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  source = tf.extractfile(member)
+                  if source is None:
+                      raise SystemExit("overlay member unreadable")
+                  with destination.open("wb") as target:
+                      shutil.copyfileobj(source, target)
+          PYCODE
+      - name: Run the existing Check 2 with native Vision OCR
+        run: |
+          set -euo pipefail
+          brew install ffmpeg
+          swiftc -O -framework Foundation -framework Vision -framework AppKit \
+            -o qa_overlay/kit/tools/ocr_vision qa_overlay/kit/tools/ocr_vision.swift
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet numpy pillow
+          .venv/bin/python qa_overlay/.github/scripts/run_existing_ocr_check.py \
+            --video "review/${FILM_ID}-MASTER-1080-from-4K.mp4" --v2-root qa_overlay \
+            --out ocr-results --platform youtube
+      - name: Bind native Vision OCR to the passed review master
+        run: |
+          set -euo pipefail
+          .venv/bin/python .github/scripts/bind_patch_gate_receipts.py ocr \
+            --patch-gate-receipt review/HOSTED-PATCH-GATE-RECEIPT.json \
+            --review "review/${FILM_ID}-MASTER-1080-from-4K.mp4" \
+            --ocr-check ocr-results/OCR-CHECK-2.json --overlay-sha256 "$OVERLAY_SHA256" \
+            --workflow-run-id "$GITHUB_RUN_ID" --out ocr-results/HOSTED-OCR-RECEIPT.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ${{ inputs.output_tag }}-MACOS-VISION-OCR
+          path: |
+            ocr-results/OCR-CHECK-2.json
+            ocr-results/HOSTED-OCR-RECEIPT.json
+          retention-days: 3
+          if-no-files-found: warn
