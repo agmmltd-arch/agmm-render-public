@@ -40,16 +40,28 @@ jobs:
           persist-credentials: false
       - name: Install FFmpeg
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
-      - name: Download only the selected run's segment artifacts
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          run-id: ${{ inputs.source_run_id }}
-          github-token: ${{ github.token }}
-          pattern: ${{ inputs.artifact_prefix }}-SEG*
-          path: segments
-          merge-multiple: true
       - name: Write the requested manifest
         run: python3 -c 'import json,os,pathlib; pathlib.Path("review-segments.json").write_text(os.environ["SEGMENTS_JSON"]+chr(10))'
+      - name: Download exactly the requested segment artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p segments
+          mapfile -t IDS < <(python3 - <<'PYCODE'
+          import json
+          rows = json.load(open("review-segments.json"))
+          if not rows or len(rows) > 12:
+              raise SystemExit("review request must contain 1..12 segments")
+          for row in rows:
+              sid = str(row.get("i", ""))
+              if len(sid) != 2 or not sid.isdigit():
+                  raise SystemExit(f"invalid segment id: {sid!r}")
+              print(sid)
+          PYCODE
+          )
+          for sid in "${IDS[@]}"; do
+            gh run download "$SOURCE_RUN_ID" -R "$GITHUB_REPOSITORY" \
+              -n "${ARTIFACT_PREFIX}-SEG${sid}" -D segments
+          done
       - name: Fetch only the source mix when its sealed package is available
         if: ${{ inputs.source_release != '' }}
         run: |
