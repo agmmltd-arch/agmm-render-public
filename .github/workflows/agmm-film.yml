@@ -53,6 +53,11 @@ on:
         description: SHA256 of the optional QA overlay archive
         required: false
         default: ""
+      apply_source_overlay:
+        description: Apply film source files carried by the QA overlay; disable when the sealed package already contains the reviewed source
+        type: boolean
+        required: false
+        default: true
 
 permissions:
   contents: read
@@ -138,7 +143,7 @@ jobs:
                       shutil.copyfileobj(src, f)
           PYCODE
       - name: Apply the hash-bound reviewed film source overlay
-        if: ${{ inputs.remote_only }}
+        if: ${{ inputs.remote_only && inputs.apply_source_overlay }}
         run: |
           (cd qa_overlay && sha256sum -c film-overlay.sha256)
           cp qa_overlay/film/film.js "project/$COMP/film.js"
