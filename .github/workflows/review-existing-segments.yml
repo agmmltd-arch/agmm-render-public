@@ -78,10 +78,27 @@ jobs:
           .venv/bin/python .github/scripts/extract_review_assets.py \
             --segments-json review-segments.json --segments-dir segments --out review-assets \
             --source-run-id "$SOURCE_RUN_ID" "${MIX_ARGS[@]}"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - name: Upload compact review pack only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: F07-REVIEW-ASSETS-${{ inputs.source_run_id }}
-          path: review-assets
+          name: F07-REVIEW-COMPACT-${{ inputs.source_run_id }}
+          path: |
+            review-assets/CONTACT-SHEET.jpg
+            review-assets/REVIEW-ASSET-MANIFEST.json
+            review-assets/*-quarter-1280x720.jpg
+            review-assets/*-middle-1280x720.jpg
+            review-assets/*-threequarter-1280x720.jpg
           retention-days: 1
-          compression-level: 0
+          compression-level: 6
+          if-no-files-found: error
+      - name: Retain native edge stills remotely for targeted zoom review
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: F07-REVIEW-NATIVE-${{ inputs.source_run_id }}
+          path: |
+            review-assets/*-start-native-4k.jpg
+            review-assets/*-end-native-4k.jpg
+            review-assets/*-audio-5s.m4a
+          retention-days: 1
+          compression-level: 6
           if-no-files-found: error
