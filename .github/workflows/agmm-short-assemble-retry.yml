@@ -1,0 +1,155 @@
+name: AGMM exact short assembly retry
+
+run-name: AGMM short assembly retry ${{ inputs.tag }} from ${{ inputs.source_run_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Completed failed agmm-short-package source run containing all exact input and part artifacts
+        type: string
+        required: true
+      source_head_sha:
+        description: Exact 40-character commit SHA used by the source render run
+        type: string
+        required: true
+      release:
+        description: Exact published release containing source.tar.gz, parts.json and mix.wav
+        type: string
+        required: true
+      tag:
+        description: Exact artifact tag used by the source render run
+        type: string
+        required: true
+      source_sha256:
+        description: Exact SHA-256 of source.tar.gz
+        type: string
+        required: true
+      parts_sha256:
+        description: Exact SHA-256 of parts.json
+        type: string
+        required: true
+      mix_sha256:
+        description: Exact SHA-256 of mix.wav
+        type: string
+        required: true
+      render_4k:
+        description: Source run rendered the native 2160x3840 parts too
+        type: boolean
+        required: true
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: agmm-short-assembly-retry-${{ inputs.source_run_id }}-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  assemble:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      SOURCE_HEAD_SHA: ${{ inputs.source_head_sha }}
+      RELEASE: ${{ inputs.release }}
+      TAG: ${{ inputs.tag }}
+      SOURCE_SHA256: ${{ inputs.source_sha256 }}
+      PARTS_SHA256: ${{ inputs.parts_sha256 }}
+      MIX_SHA256: ${{ inputs.mix_sha256 }}
+      RENDER_4K: ${{ inputs.render_4k }}
+    steps:
+      - name: Validate retry labels and current-main invocation
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" = "refs/heads/main" ]]
+          [[ "$SOURCE_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$SOURCE_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$SOURCE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$PARTS_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$MIX_SHA256" =~ ^[0-9a-f]{64}$ ]]
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Install hosted assembly and review dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet Pillow
+      - name: Fetch exact source run, job, artifact and release metadata
+        run: |
+          set -euo pipefail
+          mkdir source-metadata
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" > source-metadata/run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/jobs?filter=latest&per_page=100" \
+            > source-metadata/jobs.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/artifacts?per_page=100" \
+            > source-metadata/artifacts.json
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE" > source-metadata/release.json
+      - name: Download the exact retained input artifact from the source run
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ inputs.tag }}-EXACT-INPUT
+          path: exact-input
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_run_id }}
+      - name: Verify exact input, release, source run and artifact identities
+        run: |
+          set -euo pipefail
+          FOUR_K=(); [[ "$RENDER_4K" = "true" ]] && FOUR_K+=(--render-4k)
+          .venv/bin/python .github/scripts/render_short_package.py verify-retry-source \
+            --run-json source-metadata/run.json --jobs-json source-metadata/jobs.json \
+            --artifacts-json source-metadata/artifacts.json --release-json source-metadata/release.json \
+            --exact-input exact-input --repository "$GITHUB_REPOSITORY" \
+            --source-run-id "$SOURCE_RUN_ID" --source-head-sha "$SOURCE_HEAD_SHA" \
+            --release "$RELEASE" --tag "$TAG" \
+            --source-sha256 "$SOURCE_SHA256" --parts-sha256 "$PARTS_SHA256" \
+            --mix-sha256 "$MIX_SHA256" --output SOURCE-RUN-RECEIPT.json "${FOUR_K[@]}"
+      - name: Download the exact retained part artifacts from the source run
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: ${{ inputs.tag }}-*
+          path: hosted-renders
+          merge-multiple: true
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_run_id }}
+      - name: Assemble and fully verify 1080 and optional 4K masters
+        run: |
+          set -euo pipefail
+          FOUR_K=(); [[ "$RENDER_4K" = "true" ]] && FOUR_K+=(--render-4k)
+          .venv/bin/python .github/scripts/render_short_package.py assemble \
+            --parts exact-input/parts.json --mix exact-input/mix.wav \
+            --parts-sha256 "$PARTS_SHA256" --mix-sha256 "$MIX_SHA256" \
+            --renders hosted-renders --source-receipt SOURCE-RUN-RECEIPT.json \
+            --output remote-final "${FOUR_K[@]}"
+      - name: Upload remote masters and bound technical evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-FINAL-MASTERS
+          path: |
+            remote-final/FINAL.mp4
+            remote-final/FINAL-4K.mp4
+            remote-final/TECHNICAL-EVIDENCE.json
+            remote-final/SOURCE-RUN-RECEIPT.json
+            remote-final/SHA256SUMS.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload compact remote review stills and evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-REVIEW-COMPACT
+          path: |
+            remote-final/review/
+            remote-final/TECHNICAL-EVIDENCE.json
+            remote-final/SOURCE-RUN-RECEIPT.json
+            remote-final/SHA256SUMS.txt
+          retention-days: 3
+          compression-level: 6
+          if-no-files-found: error

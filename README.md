@@ -21,6 +21,11 @@ Workflows:
   and `mix.wav` release assets; renders all declared parts at 1080 and optional native portrait 4K; assembles and fully
   decodes/probes/frame-counts the masters; checks 48 kHz stereo loudness/true peak; and emits compact seam and quarter
   stills. It is technical evidence only, with no approval, arming, scheduling or publication step.
+- agmm-short-assemble-retry.yml: assembly-only recovery from a completed failed `agmm-short-package.yml` run whose
+  preflight and every render job succeeded. It checks out current `main`, binds the declared release and three hashes to
+  the retained exact-input receipt, verifies the source run/head/workflow/jobs and the complete unexpired artifact set,
+  then downloads those artifacts by exact source run ID. It reuses no local media and leaves editorial status
+  `NOT_REVIEWED` and publication status `NOT_REQUESTED`.
 
 The short workflow uses public `ubuntu-24.04` runners for every media operation. Master artifacts expire after one
 day and compact evidence after three days. The caller only needs the three exact hashes and does not need to download,
@@ -35,4 +40,14 @@ gh workflow run agmm-short-package.yml -R agmmltd-arch/agmm-render-public --ref 
   -f parts_sha256=PARTS_JSON_SHA256 \
   -f mix_sha256=MIX_WAV_SHA256 \
   -f tag=SHORT-ID-ROUND -f render_4k=true -f workers=2
+```
+
+If that run fails only during assembly after all part artifacts were retained, retry assembly without re-rendering:
+
+```sh
+gh workflow run agmm-short-assemble-retry.yml -R agmmltd-arch/agmm-render-public --ref main \
+  -f source_run_id=SOURCE_RUN_ID -f source_head_sha=SOURCE_RUN_HEAD_SHA \
+  -f release=SHORT-RELEASE-TAG -f tag=SHORT-ID-ROUND \
+  -f source_sha256=SOURCE_TAR_SHA256 -f parts_sha256=PARTS_JSON_SHA256 \
+  -f mix_sha256=MIX_WAV_SHA256 -f render_4k=true
 ```

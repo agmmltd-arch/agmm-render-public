@@ -26,6 +26,9 @@ MAX_ARCHIVE_BYTES = 4_000_000_000
 MAX_PARTS = 32
 HASH_RE = re.compile(r"^[0-9a-f]{64}$")
 OUT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+REPOSITORY_RE = re.compile(
+    r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}/[A-Za-z0-9][A-Za-z0-9._-]{0,99}$"
+)
 
 # These are the current kit delivery caps.  1080 is produce.py CAP_1080;
 # portrait 4K is the paired agmm-kit-render setting used by produce.py.
@@ -141,6 +144,14 @@ def safe_relative(value: object, label: str) -> str:
 def allowed_frame_counts(duration: float) -> set[int]:
     wanted = int(round(duration * FPS))
     return {wanted, int(math.ceil(duration * FPS - 1e-9)), wanted + 1}
+
+
+def master_frame_contract(duration: float, part_counts: list[int]) -> dict:
+    """Keep seam-inclusive part counts as evidence, but judge the full timeline itself."""
+    return {
+        "part_frame_sum": sum(part_counts),
+        "expected_master_frames": sorted(allowed_frame_counts(duration)),
+    }
 
 
 def validate_sha_file(project: Path, look: str) -> None:
@@ -342,6 +353,186 @@ def locate_unique(root: Path, basename: str) -> Path:
     return matches[0]
 
 
+def load_json(path: Path, label: str) -> object:
+    if not path.is_file():
+        raise ContractError(f"{label} is missing: {path}")
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        raise ContractError(f"{label} is not valid JSON: {error}") from error
+
+
+def verify_retry_source(*, run_data: object, jobs_data: object, artifacts_data: object,
+                        release_data: object, exact_input: Path, repository: str,
+                        source_run_id: int, source_head_sha: str, release_tag: str,
+                        tag: str, source_sha256: str, parts_sha256: str,
+                        mix_sha256: str, render_4k: bool) -> dict:
+    """Fail closed unless a completed source run owns one exact, complete render set."""
+    if not REPOSITORY_RE.fullmatch(repository):
+        raise ContractError("repository must be an owner/name slug")
+    if not OUT_RE.fullmatch(release_tag) or not OUT_RE.fullmatch(tag):
+        raise ContractError("release and tag must be safe workflow labels")
+    source_head_sha = source_head_sha.lower()
+    if not re.fullmatch(r"[0-9a-f]{40}", source_head_sha):
+        raise ContractError("source_head_sha must be exactly 40 lowercase hexadecimal characters")
+    source_sha256 = require_hash(source_sha256, "source_sha256")
+    parts_sha256 = require_hash(parts_sha256, "parts_sha256")
+    mix_sha256 = require_hash(mix_sha256, "mix_sha256")
+
+    if not isinstance(run_data, dict):
+        raise ContractError("source run metadata must be an object")
+    expected_run = {
+        "id": source_run_id,
+        "event": "workflow_dispatch",
+        "head_branch": "main",
+        "head_sha": source_head_sha,
+        "status": "completed",
+        "conclusion": "failure",
+        "path": ".github/workflows/agmm-short-package.yml",
+        "display_title": f"AGMM short {tag}",
+    }
+    for key, expected in expected_run.items():
+        if run_data.get(key) != expected:
+            raise ContractError(
+                f"source run {key} mismatch: expected {expected!r}, got {run_data.get(key)!r}"
+            )
+    for key in ("repository", "head_repository"):
+        value = run_data.get(key)
+        if not isinstance(value, dict) or value.get("full_name") != repository:
+            raise ContractError(f"source run {key} is not {repository}")
+
+    source_path = exact_input / "source.tar.gz"
+    parts_path = exact_input / "parts.json"
+    mix_path = exact_input / "mix.wav"
+    verify_hash(source_path, source_sha256, "source_sha256")
+    verify_hash(parts_path, parts_sha256, "parts_sha256")
+    verify_hash(mix_path, mix_sha256, "mix_sha256")
+    raw_parts = load_json(parts_path, "parts.json")
+    parsed = validate_parts(raw_parts)
+    if not isinstance(raw_parts, dict) or raw_parts.get("sha256") not in (None, source_sha256):
+        raise ContractError("parts.json package sha256 does not match exact source.tar.gz")
+    if raw_parts.get("bytes") not in (None, source_path.stat().st_size):
+        raise ContractError("parts.json package byte count does not match exact source.tar.gz")
+
+    input_receipt = load_json(exact_input / "INPUT-RECEIPT.json", "INPUT-RECEIPT.json")
+    if not isinstance(input_receipt, dict) or input_receipt.get("kind") != "agmm_short_exact_input_receipt":
+        raise ContractError("INPUT-RECEIPT.json has the wrong kind")
+    expected_receipt = {
+        "source_sha256": source_sha256,
+        "parts_sha256": parts_sha256,
+        "mix_sha256": mix_sha256,
+        "source_bytes": source_path.stat().st_size,
+        "parts_bytes": parts_path.stat().st_size,
+        "mix_bytes": mix_path.stat().st_size,
+        "duration": parsed["duration"],
+        "frames": parsed["frames"],
+        "part_count": len(parsed["parts"]),
+        "render_4k": render_4k,
+        "hyperframes_version": HYPERFRAMES_VERSION,
+    }
+    for key, expected in expected_receipt.items():
+        if input_receipt.get(key) != expected:
+            raise ContractError(
+                f"input receipt {key} mismatch: expected {expected!r}, got {input_receipt.get(key)!r}"
+            )
+    if load_json(exact_input / "NORMALISED-PARTS.json", "NORMALISED-PARTS.json") != parsed:
+        raise ContractError("NORMALISED-PARTS.json does not match exact parts.json")
+    if load_json(exact_input / "MATRIX.json", "MATRIX.json") != build_matrix(parsed["parts"], render_4k):
+        raise ContractError("MATRIX.json does not match exact parts and render_4k identity")
+
+    if not isinstance(jobs_data, dict) or not isinstance(jobs_data.get("jobs"), list):
+        raise ContractError("source jobs metadata must contain a jobs list")
+    jobs = jobs_data["jobs"]
+    preflight = [row for row in jobs if row.get("name") == "preflight"]
+    assemble = [row for row in jobs if row.get("name") == "assemble"]
+    renders = [row for row in jobs if isinstance(row.get("name"), str) and row["name"].startswith("render (")]
+    expected_render_count = len(parsed["parts"]) * (2 if render_4k else 1)
+    if len(preflight) != 1 or preflight[0].get("conclusion") != "success":
+        raise ContractError("source run must have exactly one successful preflight job")
+    if len(assemble) != 1 or assemble[0].get("conclusion") != "failure":
+        raise ContractError("source run must have exactly one failed assemble job")
+    if len(renders) != expected_render_count or any(row.get("conclusion") != "success" for row in renders):
+        raise ContractError(
+            f"source run must have exactly {expected_render_count} successful render jobs"
+        )
+    if len(jobs) != 2 + expected_render_count:
+        raise ContractError("source run contains an unexpected job")
+    for row in jobs:
+        if row.get("run_id") != source_run_id or row.get("head_sha") != source_head_sha:
+            raise ContractError(f"source job identity mismatch: {row.get('name')!r}")
+
+    if not isinstance(release_data, dict) or release_data.get("tag_name") != release_tag:
+        raise ContractError("release metadata tag does not match the declared release")
+    if release_data.get("draft") is not False or release_data.get("prerelease") is not False:
+        raise ContractError("source release must be published and non-prerelease")
+    release_assets = release_data.get("assets")
+    if not isinstance(release_assets, list):
+        raise ContractError("release metadata must contain an assets list")
+    expected_release = {
+        "source.tar.gz": (source_sha256, source_path.stat().st_size),
+        "parts.json": (parts_sha256, parts_path.stat().st_size),
+        "mix.wav": (mix_sha256, mix_path.stat().st_size),
+    }
+    if len(release_assets) != len(expected_release) \
+            or {row.get("name") for row in release_assets} != set(expected_release):
+        raise ContractError("source release must contain exactly source.tar.gz, parts.json and mix.wav")
+    for row in release_assets:
+        expected_hash, expected_size = expected_release[row["name"]]
+        if (row.get("state"), row.get("digest"), row.get("size")) != (
+                "uploaded", f"sha256:{expected_hash}", expected_size):
+            raise ContractError(f"source release asset identity mismatch: {row['name']}")
+
+    expected_artifacts = {f"{tag}-EXACT-INPUT"}
+    for part in parsed["parts"]:
+        expected_artifacts.add(f"{tag}-{part['out']}")
+        if render_4k:
+            expected_artifacts.add(f"{tag}-{part['out']}-4K")
+    if not isinstance(artifacts_data, dict) or not isinstance(artifacts_data.get("artifacts"), list):
+        raise ContractError("source artifacts metadata must contain an artifacts list")
+    artifacts = artifacts_data["artifacts"]
+    names = [row.get("name") for row in artifacts]
+    if len(names) != len(set(names)) or set(names) != expected_artifacts:
+        raise ContractError("source artifact names do not exactly match the expected input and part set")
+    if artifacts_data.get("total_count") != len(expected_artifacts):
+        raise ContractError("source artifact total_count does not match the expected set")
+    artifact_receipts = []
+    for row in artifacts:
+        workflow_run = row.get("workflow_run")
+        digest_value = row.get("digest")
+        if row.get("expired") is not False or not isinstance(workflow_run, dict):
+            raise ContractError(f"source artifact is expired or unbound: {row.get('name')!r}")
+        if workflow_run.get("id") != source_run_id or workflow_run.get("head_sha") != source_head_sha:
+            raise ContractError(f"source artifact run identity mismatch: {row.get('name')!r}")
+        if not isinstance(digest_value, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", digest_value):
+            raise ContractError(f"source artifact digest is missing or malformed: {row.get('name')!r}")
+        if not isinstance(row.get("id"), int) or row["id"] <= 0 \
+                or not isinstance(row.get("size_in_bytes"), int) or row["size_in_bytes"] <= 0:
+            raise ContractError(f"source artifact id or size is invalid: {row.get('name')!r}")
+        artifact_receipts.append({
+            "id": row.get("id"), "name": row["name"], "digest": digest_value,
+            "size_in_bytes": row.get("size_in_bytes"),
+        })
+
+    return {
+        "kind": "agmm_short_assembly_source_receipt",
+        "technical_status": "SOURCE_IDENTITY_PASS",
+        "editorial_status": "NOT_REVIEWED",
+        "publication_status": "NOT_REQUESTED",
+        "repository": repository,
+        "source_run": {
+            "id": source_run_id, "head_sha": source_head_sha,
+            "workflow": expected_run["path"], "tag": tag,
+            "status": "completed", "conclusion": "failure",
+        },
+        "release": {"tag": release_tag, "assets": sorted(expected_release)},
+        "binding": {
+            "source_sha256": source_sha256, "parts_sha256": parts_sha256,
+            "mix_sha256": mix_sha256, "render_4k": render_4k,
+        },
+        "artifacts": sorted(artifact_receipts, key=lambda row: row["name"]),
+    }
+
+
 def concat_list(paths: list[Path], destination: Path) -> None:
     for path in paths:
         if "'" in str(path):
@@ -441,6 +632,21 @@ def command_verify_part(args: argparse.Namespace) -> None:
     Path(args.output).write_text(json.dumps(evidence, indent=2) + "\n")
 
 
+def command_verify_retry_source(args: argparse.Namespace) -> None:
+    receipt = verify_retry_source(
+        run_data=load_json(Path(args.run_json), "source run metadata"),
+        jobs_data=load_json(Path(args.jobs_json), "source jobs metadata"),
+        artifacts_data=load_json(Path(args.artifacts_json), "source artifacts metadata"),
+        release_data=load_json(Path(args.release_json), "source release metadata"),
+        exact_input=Path(args.exact_input), repository=args.repository,
+        source_run_id=args.source_run_id, source_head_sha=args.source_head_sha,
+        release_tag=args.release, tag=args.tag, source_sha256=args.source_sha256,
+        parts_sha256=args.parts_sha256, mix_sha256=args.mix_sha256,
+        render_4k=args.render_4k,
+    )
+    Path(args.output).write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+
+
 def command_assemble(args: argparse.Namespace) -> None:
     parts_path, mix, renders, output = Path(args.parts), Path(args.mix), Path(args.renders), Path(args.output)
     verify_hash(parts_path, args.parts_sha256, "parts_sha256")
@@ -470,12 +676,13 @@ def command_assemble(args: argparse.Namespace) -> None:
              "-f", "concat", "-safe", "0", "-i", str(concat), "-i", str(mix),
              "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac",
              "-b:a", "320k", "-ar", "48000", "-shortest", "-movflags", "+faststart", str(master)])
-        expected = {sum(counts)}
+        frame_contract = master_frame_contract(parsed["duration"], counts)
         verified = verify_video(master, width=width, height=height, duration=parsed["duration"],
-                                expect_audio=True, expected_frames=expected)
+                                expect_audio=True,
+                                expected_frames=set(frame_contract["expected_master_frames"]))
         master_audio = audio_evidence(master, expected_duration=parsed["duration"], codec="aac")
         record = {"file": master.name, "sha256": sha256(master), "bytes": master.stat().st_size,
-                  "resolution": resolution, "frames": verified["frames"], "expected_frames": sum(counts),
+                  "resolution": resolution, "frames": verified["frames"], **frame_contract,
                   "full_decode": "PASS", "probe": verified["probe"], "audio": master_audio}
         masters.append(record)
         all_part_evidence[resolution] = part_rows
@@ -485,9 +692,34 @@ def command_assemble(args: argparse.Namespace) -> None:
                 "duration": parsed["duration"], "declared_frames": parsed["frames"],
                 "source_audio": source_audio, "parts": all_part_evidence, "masters": masters,
                 "review": review}
+    source_receipt_target = None
+    if args.source_receipt:
+        source_receipt_path = Path(args.source_receipt)
+        source_receipt = load_json(source_receipt_path, "assembly source receipt")
+        if not isinstance(source_receipt, dict) or source_receipt.get("kind") != "agmm_short_assembly_source_receipt":
+            raise ContractError("assembly source receipt has the wrong kind")
+        binding = source_receipt.get("binding")
+        if not isinstance(binding, dict) or binding.get("parts_sha256") != args.parts_sha256.lower() \
+                or binding.get("mix_sha256") != args.mix_sha256.lower() \
+                or binding.get("render_4k") is not args.render_4k:
+            raise ContractError("assembly source receipt does not match this assembly")
+        source_run = source_receipt.get("source_run")
+        if not isinstance(source_run, dict) or not isinstance(source_run.get("id"), int) \
+                or not OUT_RE.fullmatch(source_run.get("tag", "")):
+            raise ContractError("assembly source receipt has an invalid source run identity")
+        source_receipt_target = output / "SOURCE-RUN-RECEIPT.json"
+        shutil.copyfile(source_receipt_path, source_receipt_target)
+        evidence["assembly_source"] = {
+            "file": source_receipt_target.name,
+            "sha256": sha256(source_receipt_target),
+            "source_run_id": source_run["id"],
+            "tag": source_run["tag"],
+        }
     (output / "TECHNICAL-EVIDENCE.json").write_text(json.dumps(evidence, indent=2) + "\n")
     hash_targets = [output / row["file"] for row in masters]
     hash_targets += [output / "TECHNICAL-EVIDENCE.json", output / "review" / "CONTACT-SHEET.jpg"]
+    if source_receipt_target is not None:
+        hash_targets.append(source_receipt_target)
     (output / "SHA256SUMS.txt").write_text(
         "".join(f"{sha256(path)}  {path.relative_to(output)}\n" for path in hash_targets), encoding="utf-8"
     )
@@ -518,6 +750,23 @@ def parser() -> argparse.ArgumentParser:
     verify.add_argument("--duration", type=float, required=True)
     verify.add_argument("--output", required=True)
     verify.set_defaults(func=command_verify_part)
+    retry = commands.add_parser("verify-retry-source")
+    retry.add_argument("--run-json", required=True)
+    retry.add_argument("--jobs-json", required=True)
+    retry.add_argument("--artifacts-json", required=True)
+    retry.add_argument("--release-json", required=True)
+    retry.add_argument("--exact-input", required=True)
+    retry.add_argument("--repository", required=True)
+    retry.add_argument("--source-run-id", type=int, required=True)
+    retry.add_argument("--source-head-sha", required=True)
+    retry.add_argument("--release", required=True)
+    retry.add_argument("--tag", required=True)
+    retry.add_argument("--source-sha256", required=True)
+    retry.add_argument("--parts-sha256", required=True)
+    retry.add_argument("--mix-sha256", required=True)
+    retry.add_argument("--render-4k", action="store_true")
+    retry.add_argument("--output", required=True)
+    retry.set_defaults(func=command_verify_retry_source)
     assemble = commands.add_parser("assemble")
     assemble.add_argument("--parts", required=True)
     assemble.add_argument("--mix", required=True)
@@ -525,6 +774,7 @@ def parser() -> argparse.ArgumentParser:
     assemble.add_argument("--mix-sha256", required=True)
     assemble.add_argument("--renders", required=True)
     assemble.add_argument("--render-4k", action="store_true")
+    assemble.add_argument("--source-receipt")
     assemble.add_argument("--output", required=True)
     assemble.set_defaults(func=command_assemble)
     return root

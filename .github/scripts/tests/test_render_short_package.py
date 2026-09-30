@@ -115,6 +115,106 @@ class ShortPackageTests(unittest.TestCase):
         self.assertEqual(short.allowed_frame_counts(14.433333333333334), {433, 434})
         self.assertEqual(short.allowed_frame_counts(14.0), {420, 421})
 
+    def test_master_frame_contract_uses_full_timeline_not_seam_inclusive_part_sum(self):
+        contract = short.master_frame_contract(60.6, [456, 456, 456, 453])
+        self.assertEqual(contract["part_frame_sum"], 1821)
+        self.assertEqual(contract["expected_master_frames"], [1818, 1819])
+        self.assertNotIn(contract["part_frame_sum"], contract["expected_master_frames"])
+
+    def retry_source_fixture(self, root: Path):
+        exact_input = root / "exact-input"
+        exact_input.mkdir()
+        source = exact_input / "source.tar.gz"
+        parts = exact_input / "parts.json"
+        mix = exact_input / "mix.wav"
+        source.write_bytes(b"sealed source")
+        parts.write_text(json.dumps(self.valid_parts()))
+        mix.write_bytes(b"sealed mix")
+        hashes = {"source": short.sha256(source), "parts": short.sha256(parts), "mix": short.sha256(mix)}
+        parsed = short.validate_parts(self.valid_parts())
+        (exact_input / "NORMALISED-PARTS.json").write_text(json.dumps(parsed))
+        (exact_input / "MATRIX.json").write_text(json.dumps(short.build_matrix(parsed["parts"], True)))
+        receipt = {
+            "kind": "agmm_short_exact_input_receipt",
+            "source_sha256": hashes["source"], "parts_sha256": hashes["parts"],
+            "mix_sha256": hashes["mix"], "source_bytes": source.stat().st_size,
+            "parts_bytes": parts.stat().st_size, "mix_bytes": mix.stat().st_size,
+            "duration": parsed["duration"], "frames": parsed["frames"],
+            "part_count": 2, "render_4k": True,
+            "hyperframes_version": short.HYPERFRAMES_VERSION,
+        }
+        (exact_input / "INPUT-RECEIPT.json").write_text(json.dumps(receipt))
+        run_id = 123456789
+        head_sha = "b" * 40
+        repository = "agmmltd-arch/agmm-render-public"
+        tag = "S01-r1-4k"
+        run_data = {
+            "id": run_id, "event": "workflow_dispatch", "head_branch": "main",
+            "head_sha": head_sha, "status": "completed", "conclusion": "failure",
+            "path": ".github/workflows/agmm-short-package.yml",
+            "display_title": f"AGMM short {tag}",
+            "repository": {"full_name": repository}, "head_repository": {"full_name": repository},
+        }
+        names = ["preflight", "render (a)", "render (a-4k)", "render (b)", "render (b-4k)", "assemble"]
+        jobs_data = {"jobs": [
+            {"name": name, "conclusion": "failure" if name == "assemble" else "success",
+             "run_id": run_id, "head_sha": head_sha} for name in names
+        ]}
+        artifact_names = {
+            f"{tag}-EXACT-INPUT", f"{tag}-S01-A", f"{tag}-S01-A-4K",
+            f"{tag}-S01-B", f"{tag}-S01-B-4K",
+        }
+        artifacts_data = {"total_count": len(artifact_names), "artifacts": [
+            {"id": index, "name": name, "digest": "sha256:" + "a" * 64,
+             "size_in_bytes": 100 + index, "expired": False,
+             "workflow_run": {"id": run_id, "head_sha": head_sha}}
+            for index, name in enumerate(sorted(artifact_names), 1)
+        ]}
+        release_data = {
+            "tag_name": "S01-r1-source", "draft": False, "prerelease": False,
+            "assets": [
+                {"name": "source.tar.gz", "state": "uploaded", "digest": "sha256:" + hashes["source"],
+                 "size": source.stat().st_size},
+                {"name": "parts.json", "state": "uploaded", "digest": "sha256:" + hashes["parts"],
+                 "size": parts.stat().st_size},
+                {"name": "mix.wav", "state": "uploaded", "digest": "sha256:" + hashes["mix"],
+                 "size": mix.stat().st_size},
+            ],
+        }
+        kwargs = {
+            "run_data": run_data, "jobs_data": jobs_data, "artifacts_data": artifacts_data,
+            "release_data": release_data, "exact_input": exact_input, "repository": repository,
+            "source_run_id": run_id, "source_head_sha": head_sha, "release_tag": "S01-r1-source",
+            "tag": tag, "source_sha256": hashes["source"], "parts_sha256": hashes["parts"],
+            "mix_sha256": hashes["mix"], "render_4k": True,
+        }
+        return kwargs
+
+    def test_retry_source_verifier_binds_run_release_input_jobs_and_artifacts(self):
+        with tempfile.TemporaryDirectory() as folder:
+            kwargs = self.retry_source_fixture(Path(folder))
+            receipt = short.verify_retry_source(**kwargs)
+            self.assertEqual(receipt["technical_status"], "SOURCE_IDENTITY_PASS")
+            self.assertEqual(receipt["editorial_status"], "NOT_REVIEWED")
+            self.assertEqual(receipt["source_run"]["id"], 123456789)
+            self.assertEqual(len(receipt["artifacts"]), 5)
+
+    def test_retry_source_verifier_rejects_extra_or_foreign_artifact(self):
+        with tempfile.TemporaryDirectory() as folder:
+            kwargs = self.retry_source_fixture(Path(folder))
+            kwargs["artifacts_data"]["artifacts"][0]["workflow_run"]["id"] += 1
+            with self.assertRaisesRegex(short.ContractError, "artifact run identity mismatch"):
+                short.verify_retry_source(**kwargs)
+
+    def test_retry_workflow_is_assembly_only_and_uses_cross_run_artifact_identity(self):
+        workflow = (SCRIPTS.parent / "workflows/agmm-short-assemble-retry.yml").read_text()
+        self.assertIn("run-id: ${{ inputs.source_run_id }}", workflow)
+        self.assertIn("github-token: ${{ github.token }}", workflow)
+        self.assertIn("verify-retry-source", workflow)
+        self.assertIn("--source-receipt SOURCE-RUN-RECEIPT.json", workflow)
+        self.assertNotIn("hyperframes@", workflow)
+        self.assertNotIn(" render -c ", workflow)
+
     def test_ebur128_parser_uses_final_summary(self):
         text = """Summary:\n  I: -70.0 LUFS\n  LRA: 0.0 LU\n  Peak: -20.0 dBFS\n\nSummary:\n  I: -14.2 LUFS\n  LRA: 3.4 LU\n  Peak: -1.3 dBFS\n"""
         self.assertEqual(short.parse_ebur128(text), {
