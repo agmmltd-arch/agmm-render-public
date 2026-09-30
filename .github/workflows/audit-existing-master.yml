@@ -1,0 +1,61 @@
+name: F07 audit existing hosted master
+run-name: F07 master audit for run ${{ inputs.source_run_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Completed F07 render run containing the review master
+        required: true
+      artifact_prefix:
+        description: Exact run tag prefix before -REVIEW-1080
+        required: true
+      expected_duration:
+        description: Expected final film duration in seconds
+        required: true
+        default: "632.434"
+permissions:
+  actions: read
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install audit runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet numpy Pillow
+      - name: Download the completed run's derived review master only
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          pattern: ${{ inputs.artifact_prefix }}-REVIEW-1080
+          path: hosted-master
+          merge-multiple: true
+      - name: Run exact static-hold, decode, profile and audio audit
+        id: audit
+        continue-on-error: true
+        run: |
+          .venv/bin/python .github/scripts/audit_final_master.py \
+            --video hosted-master/F07-MASTER-1080-from-4K.mp4 \
+            --out audit-results --expected-duration '${{ inputs.expected_duration }}' \
+            --source-run-id '${{ inputs.source_run_id }}'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: F07-FINAL-MASTER-AUDIT-${{ inputs.source_run_id }}
+          path: audit-results
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Preserve the audit verdict
+        if: steps.audit.outcome != 'success'
+        run: exit 1
