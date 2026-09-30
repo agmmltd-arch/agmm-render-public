@@ -1,0 +1,204 @@
+name: F07 patch reviewed segments into hosted master
+run-name: F07 patched master ${{ inputs.output_tag }}
+on:
+  workflow_dispatch:
+    inputs:
+      base_run_id:
+        description: Successful full render run id
+        required: true
+      base_tag:
+        description: Full run artifact prefix
+        required: true
+      patch28_run_id:
+        description: Successful SEG28 replacement run id
+        required: true
+      patch28_tag:
+        description: SEG28 replacement artifact prefix
+        required: true
+      patch29_run_id:
+        description: Successful SEG29 replacement run id
+        required: true
+      patch29_tag:
+        description: SEG29 replacement artifact prefix
+        required: true
+      output_tag:
+        description: Patched master artifact prefix
+        required: true
+      expected_duration:
+        description: Exact F07 duration in seconds
+        required: true
+        default: "632.434"
+      overlay_release:
+        description: Temporary release holding the exact OCR code overlay
+        required: true
+      overlay_asset:
+        description: Exact OCR code overlay asset
+        required: true
+      overlay_sha256:
+        description: SHA256 of OCR code overlay
+        required: true
+permissions:
+  actions: read
+  contents: read
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PATCH_RUNS: '{"28":"${{ inputs.patch28_run_id }}","29":"${{ inputs.patch29_run_id }}"}'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install FFmpeg and audit dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet numpy pillow
+      - name: Download the full run segment evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          run-id: ${{ inputs.base_run_id }}
+          github-token: ${{ github.token }}
+          pattern: ${{ inputs.base_tag }}-SEG*
+          path: segments
+          merge-multiple: true
+      - name: Download the exact full-run master for its verified audio
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          run-id: ${{ inputs.base_run_id }}
+          github-token: ${{ github.token }}
+          name: ${{ inputs.base_tag }}-MASTER-4K
+          path: base-master
+      - name: Download reviewed SEG28 replacement
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          run-id: ${{ inputs.patch28_run_id }}
+          github-token: ${{ github.token }}
+          name: ${{ inputs.patch28_tag }}-SEG28
+          path: patch28
+      - name: Download reviewed SEG29 replacement
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          run-id: ${{ inputs.patch29_run_id }}
+          github-token: ${{ github.token }}
+          name: ${{ inputs.patch29_tag }}-SEG29
+          path: patch29
+      - name: Replace only the two reviewed segment artifacts
+        run: |
+          set -euo pipefail
+          cp patch28/SEG28.mp4 patch28/SEG28.verify.json segments/
+          cp patch29/SEG29.mp4 patch29/SEG29.verify.json segments/
+      - name: Assemble, fully decode and verify patched master
+        run: |
+          set -euo pipefail
+          .venv/bin/python .github/scripts/patch_master_segments.py \
+            --segments-dir segments --base-master base-master/F07-MASTER-4K.mp4 \
+            --out patched --duration '${{ inputs.expected_duration }}' \
+            --base-run-id '${{ inputs.base_run_id }}' --patch-runs-json "$PATCH_RUNS"
+      - name: Run exact full-duration release audit
+        run: |
+          set -euo pipefail
+          .venv/bin/python .github/scripts/audit_final_master.py \
+            --video patched/F07-MASTER-1080-from-4K.mp4 --out final-audit \
+            --expected-duration '${{ inputs.expected_duration }}' --source-run-id '${{ inputs.base_run_id }}+patch'
+      - name: Upload patched 4K master
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: ${{ inputs.output_tag }}-MASTER-4K
+          path: |
+            patched/F07-MASTER-4K.mp4
+            patched/REMOTE-INTEGRITY.json
+            patched/SHA256SUMS.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload patched review master
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ${{ inputs.output_tag }}-REVIEW-1080
+          path: |
+            patched/F07-MASTER-1080-from-4K.mp4
+            patched/F07-MASTER-1080-from-4K.mp4.derived.json
+            patched/REMOTE-INTEGRITY.json
+            patched/SHA256SUMS.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: warn
+      - name: Upload compact full-duration audit evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ${{ inputs.output_tag }}-FINAL-AUDIT
+          path: final-audit
+          retention-days: 3
+          if-no-files-found: warn
+
+  macos-ocr:
+    needs: patch
+    runs-on: macos-15-intel
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: ${{ inputs.output_tag }}-REVIEW-1080
+          path: review
+          merge-multiple: true
+      - name: Fetch and verify exact native Vision OCR code overlay
+        env:
+          RELEASE: ${{ inputs.overlay_release }}
+          OVERLAY_ASSET: ${{ inputs.overlay_asset }}
+          OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
+        run: |
+          set -euo pipefail
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p "$OVERLAY_ASSET"
+          test "$(shasum -a 256 "$OVERLAY_ASSET" | cut -d ' ' -f1)" = "$OVERLAY_SHA256"
+          mkdir qa_overlay
+          python3 - "$OVERLAY_ASSET" qa_overlay <<'PYCODE'
+          import pathlib, shutil, sys, tarfile
+          archive, out = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]).resolve()
+          allowed = {".github/scripts/assemble_verify.py", ".github/scripts/run_existing_ocr_check.py",
+                     "qa/gate.py", "kit/tools/frame_check.py", "kit/tools/ocr_vision.swift",
+                     "kit/platforms/platforms.py", "kit/platforms/frames.json", "film/film.js",
+                     "film/film.css", "film/sets_studio.js", "film-overlay.sha256"}
+          with tarfile.open(archive, "r:gz") as tf:
+              members = tf.getmembers()
+              if len(members) != len(allowed) or {m.name for m in members} != allowed:
+                  raise SystemExit("overlay allowlist mismatch")
+              for member in members:
+                  if not member.isfile() or member.size > 2_000_000:
+                      raise SystemExit("overlay member invalid")
+                  dest = (out / member.name).resolve()
+                  if out not in dest.parents:
+                      raise SystemExit("overlay path traversal")
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  with dest.open("wb") as target:
+                      shutil.copyfileobj(tf.extractfile(member), target)
+          PYCODE
+      - name: Run existing Check 2 with native Vision OCR
+        run: |
+          set -euo pipefail
+          brew install ffmpeg
+          swiftc -O -framework Foundation -framework Vision -framework AppKit \
+            -o qa_overlay/kit/tools/ocr_vision qa_overlay/kit/tools/ocr_vision.swift
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet numpy pillow
+          .venv/bin/python qa_overlay/.github/scripts/run_existing_ocr_check.py \
+            --video review/F07-MASTER-1080-from-4K.mp4 --v2-root qa_overlay \
+            --out ocr-results --platform youtube
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ${{ inputs.output_tag }}-MACOS-VISION-OCR
+          path: ocr-results/OCR-CHECK-2.json
+          retention-days: 3
+          if-no-files-found: warn
