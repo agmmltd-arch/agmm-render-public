@@ -1,0 +1,144 @@
+name: AGMM exact short hosted capture
+run-name: AGMM short capture ${{ inputs.tag }}
+
+# Snapshot-only technical evidence. This workflow cannot render, approve, arm or publish a short;
+# editorial status remains NOT_REVIEWED in every receipt.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release tag containing exact source.tar.gz, parts.json and capture-plan.json
+        required: true
+      source_sha256:
+        description: Exact SHA256 of source.tar.gz
+        required: true
+      parts_sha256:
+        description: Exact SHA256 of parts.json
+        required: true
+      capture_plan_sha256:
+        description: Exact SHA256 of capture-plan.json
+        required: true
+      media_identity_sha256:
+        description: Canonical SHA256 of media identities authenticated by the package manifests
+        required: true
+      tag:
+        description: Safe label used for concurrency and the compact artifact name
+        required: true
+  workflow_call:
+    inputs:
+      release:
+        type: string
+        required: true
+      source_sha256:
+        type: string
+        required: true
+      parts_sha256:
+        type: string
+        required: true
+      capture_plan_sha256:
+        type: string
+        required: true
+      media_identity_sha256:
+        type: string
+        required: true
+      tag:
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agmm-short-capture-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE: ${{ inputs.release }}
+      SOURCE_SHA256: ${{ inputs.source_sha256 }}
+      PARTS_SHA256: ${{ inputs.parts_sha256 }}
+      CAPTURE_PLAN_SHA256: ${{ inputs.capture_plan_sha256 }}
+      MEDIA_IDENTITY_SHA256: ${{ inputs.media_identity_sha256 }}
+      TAG: ${{ inputs.tag }}
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_RUN_ID: ${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+      - name: Validate labels before using them
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+      - name: Download only the exact capture inputs
+        run: |
+          set -euo pipefail
+          remote_assets="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE" \
+            --jq '[.assets[].name] | sort | join("\n")')"
+          test "$remote_assets" = $'capture-plan.json\nparts.json\nsource.tar.gz'
+          mkdir exact-input
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p source.tar.gz -D exact-input
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p parts.json -D exact-input
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p capture-plan.json -D exact-input
+          test "$(find exact-input -maxdepth 1 -type f | wc -l | tr -d ' ')" = 3
+      - name: Verify hashes, safely extract and build the exact capture manifest
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/capture_short_package.py prepare \
+            --source exact-input/source.tar.gz --parts exact-input/parts.json \
+            --plan exact-input/capture-plan.json --output prepared \
+            --source-sha256 "$SOURCE_SHA256" --parts-sha256 "$PARTS_SHA256" \
+            --capture-plan-sha256 "$CAPTURE_PLAN_SHA256" \
+            --media-identity-sha256 "$MEDIA_IDENTITY_SHA256"
+      - name: Capture named beats and all global-to-local part seams
+        run: |
+          set -euo pipefail
+          mkdir -p raw-snapshots captured
+          python3 - <<'PYCODE' > capture-groups.tsv
+          import json
+          data = json.load(open("prepared/CAPTURE-MANIFEST.json"))
+          for row in data["by_look"]:
+              print(row["look"], row["file"], row["times_csv"], sep="\t")
+          PYCODE
+          while IFS=$'\t' read -r look file times; do
+            test "$file" = "index.html"
+            (cd "prepared/project/$look" && python3 static_check.py) \
+              > "captured/$look.static-check.log" 2>&1
+            npx --yes hyperframes@0.8.71 snapshot "prepared/project/$look" \
+              --at "$times" --no-end --describe false --no-browser-gpu --timeout 180000 \
+              --output "$GITHUB_WORKSPACE/raw-snapshots/$look" \
+              > "captured/$look.snapshot.log" 2>&1
+            python3 .github/scripts/capture_short_package.py collect \
+              --manifest prepared/CAPTURE-MANIFEST.json --look "$look" \
+              --snapshots "raw-snapshots/$look" --output "captured/$look" \
+              --log "captured/$look.snapshot.log"
+            cp "captured/$look.static-check.log" "captured/$look/static-check.log"
+          done < capture-groups.tsv
+      - name: Bind one compact capture-only evidence pack
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/capture_short_package.py bundle \
+            --manifest prepared/CAPTURE-MANIFEST.json \
+            --media-identities prepared/MEDIA-IDENTITIES.json \
+            --captured captured --output capture-pack
+          cp prepared/INPUT-RECEIPT.json capture-pack/
+          test "$(find capture-pack -type f \( -name '*.mp4' -o -name '*.mov' -o -name '*.webm' \) | wc -l | tr -d ' ')" = 0
+      - name: Upload the compact stills and hash-bound receipts only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-CAPTURE-COMPACT
+          path: capture-pack/
+          retention-days: 1
+          compression-level: 6
+          if-no-files-found: error

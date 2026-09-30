@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "short_id": "S56",
+  "source_sha256": "c4544eb9b267625c0c01d7948e2d4d0cb8e5ff0c6cb5f1fd31bceffc48c47424",
+  "parts_sha256": "b28bb4571d50cdd4decfdf9431e809fb0fd610f32d2443573d34fac225c1a417",
+  "media_identity_sha256": "195cab94ef9b76cdc3c3fbb6e84e13d8c4fe610b32e8a1e4372eb30ad6ac98da",
+  "include_part_seams": true,
+  "captures": [
+    {
+      "name": "alphabet-in-m040",
+      "kind": "transition",
+      "global": 7.918,
+      "look": "s56-a",
+      "local": 7.918
+    },
+    {
+      "name": "alphabet-in-p020",
+      "kind": "transition",
+      "global": 7.978,
+      "look": "s56-a",
+      "local": 7.978
+    },
+    {
+      "name": "alphabet-in-p060",
+      "kind": "transition",
+      "global": 8.018,
+      "look": "s56-a",
+      "local": 8.018
+    },
+    {
+      "name": "alphabet-standard-midpoint",
+      "kind": "beat",
+      "global": 8.44,
+      "look": "s56-a",
+      "local": 8.44
+    },
+    {
+      "name": "alphabet-review-8p658",
+      "kind": "beat",
+      "global": 8.658,
+      "look": "s56-a",
+      "local": 8.658
+    },
+    {
+      "name": "race-in-m040",
+      "kind": "transition",
+      "global": 8.881,
+      "look": "s56-a",
+      "local": 8.881
+    },
+    {
+      "name": "race-in-p020",
+      "kind": "transition",
+      "global": 8.941,
+      "look": "s56-a",
+      "local": 8.941
+    },
+    {
+      "name": "race-in-p060",
+      "kind": "transition",
+      "global": 8.981,
+      "look": "s56-a",
+      "local": 8.981
+    }
+  ]
+}

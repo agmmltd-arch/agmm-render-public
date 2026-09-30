@@ -28,6 +28,12 @@ Workflows:
   the retained exact-input receipt, verifies the source run/head/workflow/jobs and the complete unexpired artifact set,
   then downloads those artifacts by exact source run ID. It reuses no local media and leaves editorial status
   `NOT_REVIEWED` and publication status `NOT_REQUESTED`.
+- agmm-short-capture.yml: capture-only hosted review evidence for a sealed short package. It verifies exact
+  `source.tar.gz`, `parts.json` and `capture-plan.json` release assets; safely extracts the archive; verifies every
+  per-look checksum; binds the canonical image/audio/video media identity digest; checks every named global/local
+  timestamp; automatically adds `-0.04/+0.02/+0.06s` frames around every part seam; and runs the exact
+  `hyperframes@0.8.71 snapshot --at ... --no-end` route. It uploads one compact artifact containing native portrait
+  PNGs and receipts. It does not render or decode a full video, and its editorial status is always `NOT_REVIEWED`.
 
 The short workflow uses public `ubuntu-24.04` runners for every media operation. Master artifacts expire after one
 day and compact evidence after three days. The caller only needs the three exact hashes and does not need to download,
@@ -53,3 +59,54 @@ gh workflow run agmm-short-assemble-retry.yml -R agmmltd-arch/agmm-render-public
   -f source_sha256=SOURCE_TAR_SHA256 -f parts_sha256=PARTS_JSON_SHA256 \
   -f mix_sha256=MIX_WAV_SHA256 -f render_4k=true
 ```
+
+## Exact hosted capture route
+
+The release named in `release` must contain exactly these capture inputs under these names:
+
+- `source.tar.gz`
+- `parts.json`
+- `capture-plan.json`
+
+`capture-plan.json` names the editorial beat and transition frames in global and part-local time. The helper refuses a
+wrong global/local mapping and adds every part seam itself. The media digest is derived from all image, audio and video
+rows authenticated by the sealed package's per-look `SHA256SUMS.txt` files, so changing any declared media file changes
+the required dispatch identity.
+
+The prepared S40 and S56 dispatch contracts are:
+
+| Short | Capture plan | source SHA256 | parts SHA256 | media identity SHA256 | capture-plan SHA256 | Frames |
+|---|---|---|---|---|---|---:|
+| S40 | `.github/capture-plans/S40.json` | `b37866945acd809f5d537b6634665f3c379581f9316442f64211482757a4cb5b` | `3337a58f83becdbdcf4c6118e2b9e6d61acddad06778a5e59fdd8c5df83689c0` | `036c26697d4fdff7553b44c0be27cbc4d0df74d270663a41d4bfb073919493e9` | `8fd94902df5f51f3b92430a1d47228de8d57c7185c6ab918327e73931a875b0e` | 15 |
+| S56 | `.github/capture-plans/S56.json` | `c4544eb9b267625c0c01d7948e2d4d0cb8e5ff0c6cb5f1fd31bceffc48c47424` | `b28bb4571d50cdd4decfdf9431e809fb0fd610f32d2443573d34fac225c1a417` | `195cab94ef9b76cdc3c3fbb6e84e13d8c4fe610b32e8a1e4372eb30ad6ac98da` | `d672ec0fb41910c67d5436c0aed5c54d34798282dff5653f072180cc71673b61` | 17 |
+
+S40 captures the repaired `pattern` transition at global `37.48/37.54/37.58s`, then the required review frames at
+`38.05/39.05/40.05s` (part C local `9.85/10.85/11.85s`). S56 captures both sides of the Alphabet beat, its standard
+midpoint at `8.44s`, and the required Alphabet review frame at global/local `8.658s`. Both plans add all A/B/C/D part
+seams automatically.
+
+After the workflow commit is on the selected ref and an exact three-asset release exists, dispatch S40 with:
+
+```sh
+gh workflow run agmm-short-capture.yml -R agmmltd-arch/agmm-render-public --ref main \
+  -f release=S40-r6-capture-source -f tag=S40-r6-capture \
+  -f source_sha256=b37866945acd809f5d537b6634665f3c379581f9316442f64211482757a4cb5b \
+  -f parts_sha256=3337a58f83becdbdcf4c6118e2b9e6d61acddad06778a5e59fdd8c5df83689c0 \
+  -f capture_plan_sha256=8fd94902df5f51f3b92430a1d47228de8d57c7185c6ab918327e73931a875b0e \
+  -f media_identity_sha256=036c26697d4fdff7553b44c0be27cbc4d0df74d270663a41d4bfb073919493e9
+```
+
+Dispatch S56 with:
+
+```sh
+gh workflow run agmm-short-capture.yml -R agmmltd-arch/agmm-render-public --ref main \
+  -f release=S56-brand-capture-source -f tag=S56-brand-capture \
+  -f source_sha256=c4544eb9b267625c0c01d7948e2d4d0cb8e5ff0c6cb5f1fd31bceffc48c47424 \
+  -f parts_sha256=b28bb4571d50cdd4decfdf9431e809fb0fd610f32d2443573d34fac225c1a417 \
+  -f capture_plan_sha256=d672ec0fb41910c67d5436c0aed5c54d34798282dff5653f072180cc71673b61 \
+  -f media_identity_sha256=195cab94ef9b76cdc3c3fbb6e84e13d8c4fe610b32e8a1e4372eb30ad6ac98da
+```
+
+Those release names are the intended exact inputs; this repository change does not create either release or dispatch a
+workflow. A successful capture pack is technical evidence only. A reviewer must still inspect the native PNGs and make
+the separate editorial decision.

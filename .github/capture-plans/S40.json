@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "short_id": "S40",
+  "source_sha256": "b37866945acd809f5d537b6634665f3c379581f9316442f64211482757a4cb5b",
+  "parts_sha256": "3337a58f83becdbdcf4c6118e2b9e6d61acddad06778a5e59fdd8c5df83689c0",
+  "media_identity_sha256": "036c26697d4fdff7553b44c0be27cbc4d0df74d270663a41d4bfb073919493e9",
+  "include_part_seams": true,
+  "captures": [
+    {
+      "name": "pattern-in-m040",
+      "kind": "transition",
+      "global": 37.48,
+      "look": "s40-c",
+      "local": 9.28
+    },
+    {
+      "name": "pattern-in-p020",
+      "kind": "transition",
+      "global": 37.54,
+      "look": "s40-c",
+      "local": 9.34
+    },
+    {
+      "name": "pattern-in-p060",
+      "kind": "transition",
+      "global": 37.58,
+      "look": "s40-c",
+      "local": 9.38
+    },
+    {
+      "name": "pattern-38p05",
+      "kind": "beat",
+      "global": 38.05,
+      "look": "s40-c",
+      "local": 9.85
+    },
+    {
+      "name": "pattern-39p05",
+      "kind": "beat",
+      "global": 39.05,
+      "look": "s40-c",
+      "local": 10.85
+    },
+    {
+      "name": "pattern-40p05",
+      "kind": "beat",
+      "global": 40.05,
+      "look": "s40-c",
+      "local": 11.85
+    }
+  ]
+}
