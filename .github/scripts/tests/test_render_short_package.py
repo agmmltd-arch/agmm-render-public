@@ -215,6 +215,14 @@ class ShortPackageTests(unittest.TestCase):
         self.assertNotIn("hyperframes@", workflow)
         self.assertNotIn(" render -c ", workflow)
 
+    def test_concat_diagnostic_is_remote_only_and_uploads_no_video(self):
+        workflow = (SCRIPTS.parent / "workflows/agmm-short-concat-diagnostic.yml").read_text()
+        self.assertIn("verify-retry-source", workflow)
+        self.assertIn("diagnose-concat", workflow)
+        self.assertIn("run-id: ${{ inputs.source_run_id }}", workflow)
+        self.assertNotIn("hyperframes@", workflow)
+        self.assertNotIn("*.mp4", workflow)
+
     def test_ebur128_parser_uses_final_summary(self):
         text = """Summary:\n  I: -70.0 LUFS\n  LRA: 0.0 LU\n  Peak: -20.0 dBFS\n\nSummary:\n  I: -14.2 LUFS\n  LRA: 3.4 LU\n  Peak: -1.3 dBFS\n"""
         self.assertEqual(short.parse_ebur128(text), {

@@ -261,6 +261,17 @@ def ffprobe(path: Path, *, count_frames: bool = False) -> dict:
     return json.loads(run(command).stdout)
 
 
+def ffprobe_packets(path: Path) -> dict:
+    command = [
+        "ffprobe", "-v", "error", "-count_packets",
+        "-show_entries",
+        "format=start_time,duration:stream=index,codec_type,width,height,time_base,start_pts,start_time,"
+        "duration_ts,duration,nb_frames,nb_read_packets,avg_frame_rate,r_frame_rate",
+        "-of", "json", str(path),
+    ]
+    return json.loads(run(command).stdout)
+
+
 def stream_of(probe: dict, kind: str) -> dict:
     rows = [stream for stream in probe.get("streams", []) if stream.get("codec_type") == kind]
     if len(rows) != 1:
@@ -647,6 +658,62 @@ def command_verify_retry_source(args: argparse.Namespace) -> None:
     Path(args.output).write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
 
 
+def command_diagnose_concat(args: argparse.Namespace) -> None:
+    parts_path, mix, renders, output = Path(args.parts), Path(args.mix), Path(args.renders), Path(args.output)
+    verify_hash(parts_path, args.parts_sha256, "parts_sha256")
+    verify_hash(mix, args.mix_sha256, "mix_sha256")
+    parsed = validate_parts(load_json(parts_path, "parts.json"))
+    width, height = ((1080, 1920) if args.resolution == "1080" else (2160, 3840))
+    suffix = "" if args.resolution == "1080" else "-4K"
+    paths, part_rows = [], []
+    for part in parsed["parts"]:
+        path = locate_unique(renders, part["out"] + suffix + ".mp4")
+        probe = ffprobe_packets(path)
+        video = stream_of(probe, "video")
+        if (int(video.get("width", 0)), int(video.get("height", 0))) != (width, height):
+            raise ContractError(f"diagnostic input {path.name} has the wrong dimensions")
+        paths.append(path)
+        part_rows.append({
+            "out": part["out"], "file": path.name, "sha256": sha256(path),
+            "bytes": path.stat().st_size, "declared_duration": part["dur"],
+            "probe": probe,
+        })
+    output.mkdir(parents=True, exist_ok=True)
+    concat = output / "parts.ffconcat"
+    concat_list(paths, concat)
+    variants = [
+        ("video_only", ["-map", "0:v:0", "-an", "-c:v", "copy"]),
+        ("audio_shortest", ["-i", str(mix), "-map", "0:v:0", "-map", "1:a:0",
+                            "-c:v", "copy", "-c:a", "aac", "-b:a", "320k", "-ar", "48000",
+                            "-shortest"]),
+        ("audio_unshortened", ["-i", str(mix), "-map", "0:v:0", "-map", "1:a:0",
+                               "-c:v", "copy", "-c:a", "aac", "-b:a", "320k", "-ar", "48000"]),
+    ]
+    variant_rows = []
+    for name, arguments in variants:
+        target = output / f"{name}.mp4"
+        run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-threads", "2",
+             "-f", "concat", "-safe", "0", "-i", str(concat), *arguments,
+             "-movflags", "+faststart", str(target)])
+        variant_rows.append({"name": name, "bytes": target.stat().st_size,
+                             "sha256": sha256(target), "probe": ffprobe_packets(target)})
+        target.unlink()
+    evidence = {
+        "kind": "agmm_short_concat_diagnostic",
+        "technical_status": "DIAGNOSTIC_ONLY",
+        "editorial_status": "NOT_REVIEWED",
+        "publication_status": "NOT_REQUESTED",
+        "resolution": args.resolution,
+        "declared_duration": parsed["duration"],
+        "declared_frames": parsed["frames"],
+        "expected_master_frames": sorted(allowed_frame_counts(parsed["duration"])),
+        "mix": {"sha256": sha256(mix), "probe": ffprobe_packets(mix)},
+        "parts": part_rows,
+        "variants": variant_rows,
+    }
+    (output / "CONCAT-DIAGNOSTIC.json").write_text(json.dumps(evidence, indent=2) + "\n")
+
+
 def command_assemble(args: argparse.Namespace) -> None:
     parts_path, mix, renders, output = Path(args.parts), Path(args.mix), Path(args.renders), Path(args.output)
     verify_hash(parts_path, args.parts_sha256, "parts_sha256")
@@ -767,6 +834,15 @@ def parser() -> argparse.ArgumentParser:
     retry.add_argument("--render-4k", action="store_true")
     retry.add_argument("--output", required=True)
     retry.set_defaults(func=command_verify_retry_source)
+    diagnose = commands.add_parser("diagnose-concat")
+    diagnose.add_argument("--parts", required=True)
+    diagnose.add_argument("--mix", required=True)
+    diagnose.add_argument("--parts-sha256", required=True)
+    diagnose.add_argument("--mix-sha256", required=True)
+    diagnose.add_argument("--renders", required=True)
+    diagnose.add_argument("--resolution", choices=("1080", "4k"), required=True)
+    diagnose.add_argument("--output", required=True)
+    diagnose.set_defaults(func=command_diagnose_concat)
     assemble = commands.add_parser("assemble")
     assemble.add_argument("--parts", required=True)
     assemble.add_argument("--mix", required=True)

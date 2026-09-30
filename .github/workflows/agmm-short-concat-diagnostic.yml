@@ -1,0 +1,110 @@
+name: AGMM exact short concat diagnostic
+
+run-name: AGMM short concat diagnostic ${{ inputs.tag }} from ${{ inputs.source_run_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        type: string
+        required: true
+      source_head_sha:
+        type: string
+        required: true
+      release:
+        type: string
+        required: true
+      tag:
+        type: string
+        required: true
+      source_sha256:
+        type: string
+        required: true
+      parts_sha256:
+        type: string
+        required: true
+      mix_sha256:
+        type: string
+        required: true
+      render_4k:
+        type: boolean
+        required: true
+      resolution:
+        type: choice
+        options: [1080, 4k]
+        required: true
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      SOURCE_HEAD_SHA: ${{ inputs.source_head_sha }}
+      RELEASE: ${{ inputs.release }}
+      TAG: ${{ inputs.tag }}
+      SOURCE_SHA256: ${{ inputs.source_sha256 }}
+      PARTS_SHA256: ${{ inputs.parts_sha256 }}
+      MIX_SHA256: ${{ inputs.mix_sha256 }}
+      RENDER_4K: ${{ inputs.render_4k }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Install hosted diagnostic dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Fetch exact source metadata
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" = "refs/heads/main" ]]
+          mkdir source-metadata
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" > source-metadata/run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/jobs?filter=latest&per_page=100" > source-metadata/jobs.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/artifacts?per_page=100" > source-metadata/artifacts.json
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE" > source-metadata/release.json
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ inputs.tag }}-EXACT-INPUT
+          path: exact-input
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_run_id }}
+      - name: Verify source identity before diagnosis
+        run: |
+          set -euo pipefail
+          FOUR_K=(); [[ "$RENDER_4K" = "true" ]] && FOUR_K+=(--render-4k)
+          python3 .github/scripts/render_short_package.py verify-retry-source \
+            --run-json source-metadata/run.json --jobs-json source-metadata/jobs.json \
+            --artifacts-json source-metadata/artifacts.json --release-json source-metadata/release.json \
+            --exact-input exact-input --repository "$GITHUB_REPOSITORY" \
+            --source-run-id "$SOURCE_RUN_ID" --source-head-sha "$SOURCE_HEAD_SHA" \
+            --release "$RELEASE" --tag "$TAG" --source-sha256 "$SOURCE_SHA256" \
+            --parts-sha256 "$PARTS_SHA256" --mix-sha256 "$MIX_SHA256" \
+            --output SOURCE-RUN-RECEIPT.json "${FOUR_K[@]}"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: ${{ inputs.tag }}-*
+          path: hosted-renders
+          merge-multiple: true
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_run_id }}
+      - name: Compare concat and mux packet timelines without rendering
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/render_short_package.py diagnose-concat \
+            --parts exact-input/parts.json --mix exact-input/mix.wav \
+            --parts-sha256 "$PARTS_SHA256" --mix-sha256 "$MIX_SHA256" \
+            --renders hosted-renders --resolution "${{ inputs.resolution }}" --output diagnostic
+          cp SOURCE-RUN-RECEIPT.json diagnostic/
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-${{ inputs.resolution }}-CONCAT-DIAGNOSTIC
+          path: diagnostic/
+          retention-days: 3
+          compression-level: 6
+          if-no-files-found: error
