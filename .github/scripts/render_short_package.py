@@ -691,6 +691,9 @@ def command_diagnose_concat(args: argparse.Namespace) -> None:
         ("audio_timeline_cap", ["-i", str(mix), "-map", "0:v:0", "-map", "1:a:0",
                                 "-c:v", "copy", "-c:a", "aac", "-b:a", "320k", "-ar", "48000",
                                 "-t", f"{parsed['duration']:.9f}"]),
+        ("audio_declared_frames", ["-i", str(mix), "-map", "0:v:0", "-map", "1:a:0",
+                                   "-c:v", "copy", "-c:a", "aac", "-b:a", "320k", "-ar", "48000",
+                                   "-frames:v", str(parsed["frames"])]),
     ]
     variant_rows = []
     for name, arguments in variants:
