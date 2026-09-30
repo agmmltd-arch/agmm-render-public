@@ -20,6 +20,10 @@ on:
         description: Required with source_release; SHA256 for source.tar.gz
         required: false
         default: ""
+      dense_sample_interval:
+        description: Optional seconds between extra interior review stills; 0 disables
+        required: false
+        default: "0"
 permissions:
   actions: read
   contents: read
@@ -34,6 +38,7 @@ jobs:
       SEGMENTS_JSON: ${{ inputs.segments_json }}
       SOURCE_RELEASE: ${{ inputs.source_release }}
       PACKAGE_SHA256: ${{ inputs.package_sha256 }}
+      DENSE_SAMPLE_INTERVAL: ${{ inputs.dense_sample_interval }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -89,17 +94,19 @@ jobs:
           if [ -f review-source/audio/mix.flac ]; then MIX_ARGS+=(--mix review-source/audio/mix.flac); fi
           .venv/bin/python .github/scripts/extract_review_assets.py \
             --segments-json review-segments.json --segments-dir segments --out review-assets \
-            --source-run-id "$SOURCE_RUN_ID" "${MIX_ARGS[@]}"
+            --source-run-id "$SOURCE_RUN_ID" --dense-sample-interval "$DENSE_SAMPLE_INTERVAL" "${MIX_ARGS[@]}"
       - name: Upload compact review pack only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: F07-REVIEW-COMPACT-${{ inputs.source_run_id }}
           path: |
             review-assets/CONTACT-SHEET.jpg
+            review-assets/DENSE-CONTACT-SHEET.jpg
             review-assets/REVIEW-ASSET-MANIFEST.json
             review-assets/*-quarter-1280x720.jpg
             review-assets/*-middle-1280x720.jpg
             review-assets/*-threequarter-1280x720.jpg
+            review-assets/*-dense-*-1280x720.jpg
           retention-days: 1
           compression-level: 6
           if-no-files-found: error
