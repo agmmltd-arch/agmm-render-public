@@ -21,6 +21,10 @@ on:
         required: true
       approval_sha256:
         required: true
+      schedule_at:
+        description: Optional ISO 8601 Europe/London publication time
+        required: false
+        default: ""
 permissions:
   actions: read
   contents: read
@@ -80,6 +84,7 @@ jobs:
             --video master/F07-MASTER-4K.mp4 --thumbnail '${{ inputs.thumbnail_asset }}' \
             --metadata metadata.json --approval approval.json \
             --expected-sha256 "$(cat master.sha256)" --source-run-id '${{ inputs.source_run_id }}' \
+            --schedule-at '${{ inputs.schedule_at }}' \
             --out receipt/YOUTUBE-PUBLIC.json --evidence evidence
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
