@@ -363,6 +363,16 @@ def video_stream(info: dict[str, Any]) -> dict[str, Any]:
     return next(stream for stream in info["streams"] if stream.get("codec_type") == "video")
 
 
+def source_audio_rate(streams: list[dict[str, Any]]) -> int:
+    """Validate the sealed lossless source before the controlled 48 kHz delivery encode."""
+    audio = [stream for stream in streams if stream.get("codec_type") == "audio"]
+    if (len(audio) != 1 or audio[0].get("codec_name") != "flac"
+            or int(audio[0].get("sample_rate", 0)) not in (44100, 48000)
+            or int(audio[0].get("channels", 0)) != 2):
+        raise ValueError(f"sealed source audio is not exactly one stereo FLAC at 44.1/48 kHz: {audio}")
+    return int(audio[0]["sample_rate"])
+
+
 def codec_key(stream: dict[str, Any]) -> tuple[Any, ...]:
     return (stream.get("codec_name"), stream.get("profile"), stream.get("width"),
             stream.get("height"), stream.get("pix_fmt"), stream.get("r_frame_rate"),
@@ -514,14 +524,11 @@ def assemble(*, request: dict[str, Any], base_segments_dir: Path, patch_segments
     adjusted_mix: Path | None = None
     adjusted_mix_metrics: dict[str, Any] | None = None
     adjusted_mix_sha256: str | None = None
+    source_sample_rate: int | None = None
     if generic:
         assert source_audio is not None
         source_probe = probe(source_audio, count=False)
-        source_streams = [stream for stream in source_probe.get("streams", [])
-                          if stream.get("codec_type") == "audio"]
-        if (len(source_streams) != 1 or source_streams[0].get("codec_name") != "flac"
-                or source_streams[0].get("sample_rate") != "48000"):
-            raise ValueError(f"sealed source audio is not exactly one FLAC/48k stream: {source_streams}")
+        source_sample_rate = source_audio_rate(source_probe.get("streams", []))
         adjusted_mix = out / f"{film_id}-MIX-GAIN-ADJUSTED.flac"
         run(["ffmpeg", "-hide_banner", "-v", "error", "-xerror", "-y", "-i", str(source_audio),
              "-map", "0:a:0", "-af", f"volume={MASTER_GAIN_DB}dB", "-sample_fmt", "s32",
@@ -578,6 +585,8 @@ def assemble(*, request: dict[str, Any], base_segments_dir: Path, patch_segments
             "source_asset": request["source_audio"]["asset"],
             "source_asset_sha256": request["source_audio"]["sha256"],
             "source_member": provenance["source_audio"]["member"] if provenance else None,
+            "source_sample_rate": source_sample_rate,
+            "delivery_sample_rate": 48000,
             "adjusted_mix": adjusted_mix.name if adjusted_mix else None,
             "adjusted_mix_sha256": adjusted_mix_sha256,
             "gain_db": MASTER_GAIN_DB,
@@ -733,7 +742,15 @@ def self_test() -> None:
         raise AssertionError("duplicate patch segment was accepted")
     assert audio_gate({"integrated_lufs": -14.8, "true_peak_dbtp": -1.3})["status"] == "PASS"
     assert audio_gate({"integrated_lufs": -14.8, "true_peak_dbtp": -0.9})["status"] == "FAIL"
-    print("self-test PASS: generic 7-patch request, uniqueness, 73-segment coverage and audio gate")
+    assert source_audio_rate([{"codec_type": "audio", "codec_name": "flac", "sample_rate": "44100", "channels": 2}]) == 44100
+    assert source_audio_rate([{"codec_type": "audio", "codec_name": "flac", "sample_rate": "48000", "channels": 2}]) == 48000
+    try:
+        source_audio_rate([{"codec_type": "audio", "codec_name": "aac", "sample_rate": "44100", "channels": 2}])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("lossy source audio was accepted")
+    print("self-test PASS: generic 7-patch request, coverage, source audio rates and delivery audio gate")
 
 
 def parse_args() -> argparse.Namespace:
