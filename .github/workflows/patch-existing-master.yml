@@ -103,7 +103,7 @@ jobs:
           set -euo pipefail
           .venv/bin/python .github/scripts/audit_final_master.py \
             --video patched/F07-MASTER-1080-from-4K.mp4 --out final-audit \
-            --expected-duration '${{ inputs.expected_duration }}' --source-run-id '${{ inputs.base_run_id }}+patch'
+            --expected-duration '${{ inputs.expected_duration }}' --source-run-id '${{ github.run_id }}'
       - name: Upload patched 4K master
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: success()
