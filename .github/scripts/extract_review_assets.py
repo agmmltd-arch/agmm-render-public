@@ -56,16 +56,17 @@ def main():
         expected_t0 = round((int(sid) - 1) * 8.6, 3)
         if abs(float(seg["t0"]) - expected_t0) > 0.002 or int(proof.get("frames", 0)) != round(duration * 30):
             raise ValueError(f"segment manifest timing differs from expected F07 grid: SEG{sid}")
-        points = {"start": min(0.04, duration / 4), "middle": duration / 2,
+        points = {"start": min(0.04, duration / 4), "quarter": duration / 4,
+                  "middle": duration / 2, "threequarter": duration * 3 / 4,
                   "end": max(0.0, duration - 0.04)}
         row = {"segment": sid, "global_t0": float(seg["t0"]), "duration": duration,
                "native_frame_paths": {}, "hosted_segment_receipt": proof,
                "video_probe": info, "audio_excerpt": None}
         for label, ts in points.items():
-            if label == "middle":
-                path = a.out / f"SEG{sid}-middle-640x360.jpg"
+            if label not in {"start", "end"}:
+                path = a.out / f"SEG{sid}-{label}-1280x720.jpg"
                 run(["ffmpeg", "-hide_banner", "-v", "error", "-ss", f"{ts:.3f}", "-i", str(video),
-                     "-frames:v", "1", "-vf", "scale=640:360:flags=lanczos", "-q:v", "3", "-y", str(path)])
+                     "-frames:v", "1", "-vf", "scale=1280:720:flags=lanczos", "-q:v", "3", "-y", str(path)])
                 thumbs.append(path)
             else:
                 path = a.out / f"SEG{sid}-{label}-native-4k.jpg"
@@ -87,10 +88,10 @@ def main():
     sheet = Image.new("RGB", (cols * 640, rows_n * 390), "#101820")
     draw = ImageDraw.Draw(sheet)
     for i, path in enumerate(thumbs):
-        im = Image.open(path).convert("RGB")
+        im = Image.open(path).convert("RGB").resize((640, 360))
         x, y = (i % cols) * 640, (i // cols) * 390
         sheet.paste(im, (x, y + 30))
-        draw.text((x + 12, y + 8), path.name.replace("-middle-640x360.jpg", ""), fill="white")
+        draw.text((x + 12, y + 8), path.name.replace("-1280x720.jpg", ""), fill="white")
     sheet.save(a.out / "CONTACT-SHEET.jpg", quality=90, optimize=True)
     manifest = {"kind": "remote_segment_review_assets", "source_run_id": a.source_run_id,
                 "segments": rows, "contact_sheet": "CONTACT-SHEET.jpg",
@@ -99,7 +100,8 @@ def main():
                              "Unavailable: prior segment artifacts contain no audio; source mix was not provided.",
                 "mp4_downloaded_to_mac": False, "editorial_gate": "NOT_RUN", "release_approval": "NOT_GRANTED"}
     (a.out / "REVIEW-ASSET-MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n")
-    print(json.dumps({"segments": len(rows), "native_stills": 2*len(rows), "contact": "CONTACT-SHEET.jpg",
+    print(json.dumps({"segments": len(rows), "native_stills": 2*len(rows),
+                      "interior_review_stills": 3*len(rows), "contact": "CONTACT-SHEET.jpg",
                       "audio_excerpts": sum(bool(r["audio_excerpt"]) for r in rows),
                       "manifest": "REVIEW-ASSET-MANIFEST.json"}))
 
