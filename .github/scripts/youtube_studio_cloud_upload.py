@@ -17,12 +17,15 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from PIL import Image, ImageChops, ImageStat
 from playwright.sync_api import sync_playwright
 
 CHANNEL_ID = "UChbp0G1KDjCnruAhxfmzEXg"
 LONGFORM_TAB = f"https://studio.youtube.com/channel/{CHANNEL_ID}/videos/upload"
+LONDON = ZoneInfo("Europe/London")
+STUDIO_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
 
 
 def sha256(path: Path) -> str:
@@ -158,11 +161,10 @@ def wait_upload_complete(page, timeout_s: int = 10800) -> None:
     deadline = time.time() + timeout_s
     while time.time() < deadline:
         text = (page.locator("body").inner_text(timeout=10_000) or "")[:20_000]
-        if not re.search(r"Uploading\s+\d+%|Processing\s+will begin shortly|Upload interrupted", text, re.I):
-            if re.search(r"Video published|Published|Checks complete|Close", text, re.I):
-                return
         if re.search(r"Upload interrupted|Processing abandoned", text, re.I):
             raise RuntimeError("Studio reports interrupted upload")
+        if not re.search(r"Uploading\s+\d+%", text, re.I):
+            return
         time.sleep(10)
     raise RuntimeError("Studio upload did not complete before timeout")
 
@@ -193,6 +195,96 @@ def studio_state(page, video_id: str, title: str) -> str:
           for (const row of rows) { const a=row.querySelector('a[href*="/video/"]'); if (a&&a.href.includes(vid)) return read(row); }
           for (const row of rows) if (title&&row.innerText.includes(title)) return read(row);
           return 'ROW_NOT_FOUND'; }""", [video_id,title])
+
+
+def schedule_label(when: datetime) -> str:
+    return f"{when.day} {STUDIO_MONTHS[when.month - 1]} {when.year}"
+
+
+def scheduler_state(page) -> dict:
+    return page.evaluate(
+        """() => { const s=document.querySelector('ytcp-visibility-scheduler');
+          const d=document.querySelector('#datepicker-trigger');
+          const t=document.querySelector('#time-of-day-container input');
+          const b=document.querySelector('ytcp-button#done-button');
+          return {visible:!!s&&s.offsetParent!==null,text:s?s.innerText:'',date:d?d.innerText.trim():'',
+            time:t?t.value:'',done_label:b?(b.innerText||'').trim():'',
+            premiere:(()=>{if(!s)return null;const c=s.querySelector('[role="checkbox"],ytcp-checkbox-lit,tp-yt-paper-checkbox');
+              return c?(c.getAttribute('aria-checked')==='true'||c.hasAttribute('checked')):null;})(),
+            browser_tz:Intl.DateTimeFormat().resolvedOptions().timeZone}; }""")
+
+
+def set_schedule(page, when: datetime) -> dict:
+    when = when.astimezone(LONDON)
+    want_date, want_time = schedule_label(when), when.strftime("%H:%M")
+    wall = page.evaluate("ms => {const d=new Date(ms);return [d.getFullYear(),d.getMonth()+1,d.getDate(),d.getHours(),d.getMinutes()]}", int(when.timestamp()*1000))
+    if list(wall) != [when.year, when.month, when.day, when.hour, when.minute]:
+        raise RuntimeError(f"browser timezone maps schedule to {wall}, not {want_date} {want_time}")
+    state = scheduler_state(page)
+    if not state["visible"]:
+        page.locator("#second-container-expand-button").first.click(timeout=8000)
+        time.sleep(2)
+    for _ in range(3):
+        state = scheduler_state(page)
+        if norm(state["date"]) == want_date:
+            break
+        page.locator("#datepicker-trigger").first.click(timeout=8000)
+        time.sleep(1)
+        box = page.locator("ytcp-date-picker input").first
+        box.fill(want_date); box.press("Enter"); time.sleep(2)
+    for _ in range(3):
+        state = scheduler_state(page)
+        if state["time"] == want_time:
+            break
+        box = page.locator("#time-of-day-container input").first
+        box.fill(want_time); box.press("Enter"); time.sleep(2)
+    state = scheduler_state(page)
+    problems = []
+    if norm(state["date"]) != want_date: problems.append(f"date={state['date']!r}")
+    if state["time"] != want_time: problems.append(f"time={state['time']!r}")
+    if state.get("premiere"): problems.append("premiere selected")
+    if state["done_label"] != "Schedule": problems.append(f"button={state['done_label']!r}")
+    if problems:
+        raise RuntimeError("schedule readback failed: " + "; ".join(problems))
+    return {**state, "scheduled_for": when.isoformat(), "scheduled_epoch": int(when.timestamp())}
+
+
+def studio_record(page, video_id: str, title: str) -> tuple[str, dict]:
+    bodies: list[dict] = []
+    def on_response(response):
+        if "list_creator_videos" in response.url:
+            try: bodies.append(response.json())
+            except Exception: pass
+    page.on("response", on_response)
+    try:
+        row = studio_state(page, video_id, title)
+        time.sleep(3)
+    finally:
+        page.remove_listener("response", on_response)
+    for body in bodies:
+        for video in body.get("videos", []) if isinstance(body, dict) else []:
+            if video.get("videoId") == video_id:
+                fields = ("videoId","title","privacy","status","timeCreatedSeconds","timePublishedSeconds","scheduledPublishingDetails","visibility")
+                return row, {k:video.get(k) for k in fields}
+    return row, {}
+
+
+def scheduled_evidence(row: str, record: dict, when: datetime) -> dict:
+    stamps: list[int] = []
+    def walk(value):
+        if isinstance(value, dict):
+            for item in value.values(): walk(item)
+        elif isinstance(value, list):
+            for item in value: walk(item)
+        elif isinstance(value, (int,str)) and str(value).isdigit() and 1_600_000_000 < int(value) < 4_000_000_000:
+            stamps.append(int(value))
+    details = record.get("scheduledPublishingDetails") or {}
+    walk(details)
+    target = int(when.timestamp())
+    private = str(record.get("privacy") or "").endswith("PRIVATE")
+    ok = (private and target in stamps) or (row == "SCHEDULED" and (target in stamps or not details))
+    return {"ok":ok,"row":row,"server_privacy":record.get("privacy"),"server_scheduled_details":details,
+            "server_scheduled_epoch_matches_slot":target in stamps,"slot_epoch":target}
 
 
 def oembed(video_id: str) -> dict:
@@ -266,10 +358,17 @@ def publish(args, ctx, page, evidence: Path) -> dict:
         raise RuntimeError("altered-content readback failed")
     page.screenshot(path=str(evidence / "02-details-sealed.png"))
     walk_visibility(page)
-    if not click_radio(page, "PUBLIC"):
-        raise RuntimeError("PUBLIC selection readback failed")
+    schedule_at = datetime.fromisoformat(args.schedule_at).astimezone(LONDON) if args.schedule_at else None
+    if schedule_at:
+        if (schedule_at - datetime.now(LONDON)).total_seconds() < 15 * 60:
+            raise RuntimeError("schedule is less than 15 minutes ahead")
+        release_state = set_schedule(page, schedule_at)
+    else:
+        if not click_radio(page, "PUBLIC"):
+            raise RuntimeError("PUBLIC selection readback failed")
+        release_state = {"visibility":"PUBLIC"}
     wait_publish_enabled(page)
-    page.screenshot(path=str(evidence / "03-public-ready.png"))
+    page.screenshot(path=str(evidence / ("03-schedule-ready.png" if schedule_at else "03-public-ready.png")))
     page.locator("ytcp-button#done-button").first.click(timeout=10_000, force=True)
     wait_upload_complete(page)
     time.sleep(15)
@@ -277,14 +376,31 @@ def publish(args, ctx, page, evidence: Path) -> dict:
     if not url:
         raise RuntimeError("Studio surfaced no video URL after Publish")
     video_id = urllib.parse.parse_qs(urllib.parse.urlparse(url).query).get("v", [""])[0]
+    if schedule_at:
+        row, record = studio_record(page, video_id, title)
+        proof = scheduled_evidence(row, record, schedule_at)
+        for _ in range(5):
+            if proof["ok"]: break
+            time.sleep(20)
+            row, record = studio_record(page, video_id, title)
+            proof = scheduled_evidence(row, record, schedule_at)
+        if not proof["ok"]:
+            raise RuntimeError(f"YouTube server did not prove the schedule: {proof}")
+        thumb_out = evidence / "studio-thumbnail.jpg"
+        distance = verify_thumbnail(ctx, page, video_id, args.thumbnail, thumb_out)
+        return {
+            "schema":"agmm-youtube-cloud-studio-scheduled-v1","overall":"SCHEDULED_VERIFIED",
+            "video_id":video_id,"post_url":url,"title":title,"master_sha256":actual,
+            "source_run_id":str(args.source_run_id),"thumbnail_sha256":sha256(args.thumbnail),
+            "scheduled_for":schedule_at.isoformat(),"scheduled_evidence":proof,"studio_record":record,
+            "studio_thumbnail_mean_abs_distance":round(distance,2),"wizard_schedule":release_state,
+            "verified_at":datetime.now(timezone.utc).isoformat(),
+        }
     state = studio_state(page, video_id, title)
     for _ in range(5):
-        if state == "PUBLIC":
-            break
-        time.sleep(20)
-        state = studio_state(page, video_id, title)
-    if state != "PUBLIC":
-        raise RuntimeError(f"Studio reports {state}, not PUBLIC")
+        if state == "PUBLIC": break
+        time.sleep(20); state = studio_state(page, video_id, title)
+    if state != "PUBLIC": raise RuntimeError(f"Studio reports {state}, not PUBLIC")
     payload = {}
     for _ in range(8):
         try:
@@ -321,6 +437,7 @@ def main() -> int:
     p.add_argument("--approval", type=Path)
     p.add_argument("--expected-sha256", default="")
     p.add_argument("--source-run-id", default="")
+    p.add_argument("--schedule-at", default="")
     args = p.parse_args()
     args.evidence.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as pw:
