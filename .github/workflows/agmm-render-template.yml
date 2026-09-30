@@ -1,0 +1,104 @@
+name: AGMM V2 design system render
+
+# One reusable workflow for every design-system render round (replaces the one-file-per-render pattern).
+# Inputs pin an immutable commit + tarball hash; each matrix target renders one composition file.
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Commit that holds the sealed package
+        required: true
+      package:
+        description: Path of source.tar.gz inside the repo at source_sha
+        required: true
+      package_sha256:
+        description: sha256 of the tarball
+        required: true
+      targets:
+        description: 'JSON list of {"look":"dossier","file":"index.html","out":"DOSSIER-DEMO"}'
+        required: true
+      tag:
+        description: Round tag used for artifact names
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agmm-v2-design-system-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(inputs.targets) }}
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      PACKAGE: ${{ inputs.package }}
+      PACKAGE_SHA256: ${{ inputs.package_sha256 }}
+      LOOK: ${{ matrix.target.look }}
+      FILE: ${{ matrix.target.file }}
+      OUT: ${{ matrix.target.out }}
+    steps:
+      - name: Checkout immutable source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ inputs.source_sha }}
+          path: source
+          persist-credentials: false
+          sparse-checkout: |
+            ${{ inputs.package }}
+          sparse-checkout-cone-mode: false
+      - name: Verify sealed source
+        run: |
+          test "$(git -C source rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(sha256sum "source/$PACKAGE" | cut -d ' ' -f1)" = "$PACKAGE_SHA256"
+          mkdir -p project remote-output
+          tar -xzf "source/$PACKAGE" -C project
+          cd "project/$LOOK"
+          sha256sum -c SHA256SUMS.txt > /dev/null
+          python3 static_check.py
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+      - name: Install FFmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Lint, check and render
+        working-directory: project/${{ matrix.target.look }}
+        env:
+          HYPERFRAMES_NO_TELEMETRY: '1'
+        run: |
+          set -o pipefail
+          npx --yes hyperframes@0.8.71 lint > "../../remote-output/$OUT.lint.txt" 2>&1 || true
+          cat "../../remote-output/$OUT.lint.txt"
+          if [ "$FILE" = "index.html" ]; then
+            set +e
+            npx --yes hyperframes@0.8.71 check --json --snapshots --samples 12 > "../../remote-output/$OUT.check.json" 2> "../../remote-output/$OUT.check.stderr.txt"
+            echo "check exit $?" | tee "../../remote-output/$OUT.check.exit.txt"
+            set -e
+            for d in snapshots .hyperframes/snapshots; do [ -d "$d" ] && cp -R "$d" "../../remote-output/$OUT.snapshots" || true; done
+          fi
+          npx --yes hyperframes@0.8.71 render -c "$FILE" --fps 30 --workers 2 --output "../../remote-output/$OUT.mp4" 2>&1 | tee "../../remote-output/$OUT.render.log"
+      - name: Probe and fully decode
+        run: |
+          ffprobe -v error -show_format -show_streams -of json "remote-output/$OUT.mp4" > "remote-output/$OUT.ffprobe.json"
+          ffmpeg -hide_banner -loglevel error -i "remote-output/$OUT.mp4" -map 0:v:0 -f framemd5 "remote-output/$OUT.framemd5"
+          echo "frames: $(grep -vc '^#' "remote-output/$OUT.framemd5")" | tee "remote-output/$OUT.frames.txt"
+          sha256sum "remote-output/$OUT.mp4" > "remote-output/$OUT.sha256"
+      - name: Upload render and evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-${{ matrix.target.out }}
+          path: remote-output/
+          if-no-files-found: warn
+          retention-days: 2
