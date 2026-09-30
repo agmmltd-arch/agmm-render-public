@@ -121,6 +121,13 @@ class ShortPackageTests(unittest.TestCase):
         self.assertEqual(contract["expected_master_frames"], [1818, 1819])
         self.assertNotIn(contract["part_frame_sum"], contract["expected_master_frames"])
 
+    def test_master_mux_caps_declared_picture_frames_without_shortest_packet_loss(self):
+        arguments = short.master_mux_arguments(1751)
+        self.assertEqual(arguments[arguments.index("-frames:v") + 1], "1751")
+        self.assertNotIn("-shortest", arguments)
+        with self.assertRaisesRegex(short.ContractError, "positive integer"):
+            short.master_mux_arguments(0)
+
     def retry_source_fixture(self, root: Path):
         exact_input = root / "exact-input"
         exact_input.mkdir()

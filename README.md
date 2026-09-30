@@ -20,7 +20,9 @@ Workflows:
 - agmm-short-package.yml: reusable exact-release short render. It hash-verifies fixed `source.tar.gz`, `parts.json`
   and `mix.wav` release assets; renders all declared parts at 1080 and optional native portrait 4K; assembles and fully
   decodes/probes/frame-counts the masters; checks 48 kHz stereo loudness/true peak; and emits compact seam and quarter
-  stills. It is technical evidence only, with no approval, arming, scheduling or publication step.
+  stills. Assembly caps picture to the declared full-timeline frame count before validating it against the duration's
+  allowed counts; it does not use FFmpeg `-shortest`, which can discard reordered H.264 packets before exact-length AAC.
+  It is technical evidence only, with no approval, arming, scheduling or publication step.
 - agmm-short-assemble-retry.yml: assembly-only recovery from a completed failed `agmm-short-package.yml` run whose
   preflight and every render job succeeded. It checks out current `main`, binds the declared release and three hashes to
   the retained exact-input receipt, verifies the source run/head/workflow/jobs and the complete unexpired artifact set,

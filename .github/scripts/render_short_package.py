@@ -154,6 +154,16 @@ def master_frame_contract(duration: float, part_counts: list[int]) -> dict:
     }
 
 
+def master_mux_arguments(declared_frames: int) -> list[str]:
+    if not isinstance(declared_frames, int) or declared_frames <= 0:
+        raise ContractError("declared master frame cap must be a positive integer")
+    return [
+        "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac",
+        "-b:a", "320k", "-ar", "48000", "-frames:v", str(declared_frames),
+        "-movflags", "+faststart",
+    ]
+
+
 def validate_sha_file(project: Path, look: str) -> None:
     look_root = (project / look).resolve()
     sha_file = look_root / "SHA256SUMS.txt"
@@ -747,8 +757,7 @@ def command_assemble(args: argparse.Namespace) -> None:
         master = output / master_name
         run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-threads", "2",
              "-f", "concat", "-safe", "0", "-i", str(concat), "-i", str(mix),
-             "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac",
-             "-b:a", "320k", "-ar", "48000", "-shortest", "-movflags", "+faststart", str(master)])
+             *master_mux_arguments(parsed["frames"]), str(master)])
         frame_contract = master_frame_contract(parsed["duration"], counts)
         verified = verify_video(master, width=width, height=height, duration=parsed["duration"],
                                 expect_audio=True,
@@ -756,6 +765,7 @@ def command_assemble(args: argparse.Namespace) -> None:
         master_audio = audio_evidence(master, expected_duration=parsed["duration"], codec="aac")
         record = {"file": master.name, "sha256": sha256(master), "bytes": master.stat().st_size,
                   "resolution": resolution, "frames": verified["frames"], **frame_contract,
+                  "declared_frame_cap": parsed["frames"],
                   "full_decode": "PASS", "probe": verified["probe"], "audio": master_audio}
         masters.append(record)
         all_part_evidence[resolution] = part_rows
