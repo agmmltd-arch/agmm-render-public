@@ -1,4 +1,5 @@
 name: AGMM film segments render
+run-name: AGMM film ${{ inputs.tag }}
 
 # Root, 30 Sep 2026: long-form films render here, on free public-repo Actions minutes, up to 20 segments in parallel.
 # Byte-for-byte the same per-segment commands as films/tools/render_codespace_film.py (hyperframes@0.8.71, same caps),
@@ -34,6 +35,24 @@ on:
       tag:
         description: Run label for artifact names
         required: true
+      remote_only:
+        description: Keep all media processing and verification on hosted runners; return artifact metadata only
+        type: boolean
+        required: false
+        default: false
+      assemble_full:
+        description: Assemble a complete 73-segment F07 4K run on the hosted runner
+        type: boolean
+        required: false
+        default: false
+      overlay_release_asset:
+        description: Optional code-only QA overlay release asset filename
+        required: false
+        default: ""
+      overlay_sha256:
+        description: SHA256 of the optional QA overlay archive
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -67,14 +86,65 @@ jobs:
             libasound2t64 libxcomposite1 libxdamage1 libxrandr2 libpango-1.0-0 libcairo2 fonts-liberation >/dev/null
           ffmpeg -version | head -1
           npx --yes hyperframes@0.8.71 --version
+      - name: Enforce remote-only 4K route
+        if: ${{ inputs.remote_only }}
+        run: test "$RES" = "landscape-4k" && test "$COMP" = "film"
       - name: Fetch and verify the sealed package
         run: |
+          set -euo pipefail
           gh release download "${{ inputs.release }}" -R "${{ github.repository }}" -p source.tar.gz
           test "$(sha256sum source.tar.gz | cut -d ' ' -f1)" = "${{ inputs.package_sha256 }}"
-          mkdir -p project out
+          mkdir -p project out qa_overlay
           tar -xzf source.tar.gz -C project
-          cd project && sha256sum -c SHA256SUMS.txt >/dev/null && python3 static_check.py
-          grep -q "window.${SEGVAR} = null;" "$COMP/index.html"
+          (cd project && sha256sum -c SHA256SUMS.txt >/dev/null && python3 static_check.py)
+          grep -q "window.${SEGVAR} = null;" "project/$COMP/index.html"
+      - name: Fetch and safely unpack the hash-bound code-only QA overlay
+        if: ${{ inputs.remote_only }}
+        env:
+          RELEASE: ${{ inputs.release }}
+          OVERLAY_ASSET: ${{ inputs.overlay_release_asset }}
+          OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
+        run: |
+          set -euo pipefail
+          test -n "$OVERLAY_ASSET" && test -n "$OVERLAY_SHA256"
+          gh release download "$RELEASE" -R "${{ github.repository }}" -p "$OVERLAY_ASSET"
+          test "$(sha256sum "$OVERLAY_ASSET" | cut -d ' ' -f1)" = "$OVERLAY_SHA256"
+          python3 - "$OVERLAY_ASSET" qa_overlay <<'PYCODE'
+          import pathlib, shutil, sys, tarfile
+          archive, out = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]).resolve()
+          allowed = {".github/scripts/assemble_verify.py", ".github/scripts/run_existing_ocr_check.py",
+                     "qa/gate.py", "kit/tools/frame_check.py", "kit/tools/ocr_vision.swift",
+                     "kit/platforms/platforms.py", "kit/platforms/frames.json", "film/film.js",
+                     "film/film.css", "film/sets_studio.js", "film-overlay.sha256"}
+          total = 0
+          with tarfile.open(archive, "r:gz") as tf:
+              members = tf.getmembers()
+              if len(members) != len(allowed) or {m.name for m in members} != allowed:
+                  raise SystemExit("QA overlay member list differs from the exact allowlist")
+              for m in members:
+                  if not m.isfile() or m.size > 2_000_000:
+                      raise SystemExit("QA overlay has a non-file or over-limit entry")
+                  total += m.size
+                  if total > 8_000_000:
+                      raise SystemExit("QA overlay exceeds the 8 MB expanded limit")
+                  dest = (out / m.name).resolve()
+                  if out not in dest.parents:
+                      raise SystemExit("QA overlay path escapes destination")
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  src = tf.extractfile(m)
+                  if src is None:
+                      raise SystemExit("QA overlay entry is unreadable")
+                  with dest.open("wb") as f:
+                      shutil.copyfileobj(src, f)
+          PYCODE
+      - name: Apply the hash-bound reviewed film source overlay
+        if: ${{ inputs.remote_only }}
+        run: |
+          (cd qa_overlay && sha256sum -c film-overlay.sha256)
+          cp qa_overlay/film/film.js "project/$COMP/film.js"
+          cp qa_overlay/film/film.css "project/$COMP/film.css"
+          cp qa_overlay/film/sets_studio.js "project/$COMP/sets_studio.js"
+          (cd project && python3 static_check.py)
       - name: Render segment
         run: |
           cd project
@@ -94,6 +164,12 @@ jobs:
           ffmpeg -hide_banner -loglevel error -y -i "$GITHUB_WORKSPACE/out/SEG$I.raw.mp4" $CAP "$GITHUB_WORKSPACE/out/SEG$I.mp4"
           rm -f "$GITHUB_WORKSPACE/out/SEG$I.raw.mp4"
           ffprobe -v error -select_streams v:0 -show_entries stream=width,height,nb_frames -of csv=p=0 "$GITHUB_WORKSPACE/out/SEG$I.mp4"
+      - name: Hosted full decode, probe and flicker verification
+        if: ${{ inputs.remote_only }}
+        run: |
+          FRAMES=$(python3 -c 'import os; print(round(float(os.environ["LN"]) * 30))')
+          python3 qa_overlay/.github/scripts/assemble_verify.py --check-segment \
+            "out/SEG${I}.mp4" --expected-frames "$FRAMES"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -101,5 +177,152 @@ jobs:
           path: |
             out/SEG${{ matrix.seg.i }}.mp4
             out/SEG${{ matrix.seg.i }}.render.log
+            out/SEG${{ matrix.seg.i }}.verify.json
+          retention-days: 1
+          if-no-files-found: warn
+
+  assemble:
+    if: ${{ inputs.remote_only && inputs.assemble_full && inputs.res == 'landscape-4k' && inputs.comp == 'film' }}
+    needs: render
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SEGS_JSON: ${{ inputs.segs }}
+      RELEASE: ${{ inputs.release }}
+      PACKAGE_SHA256: ${{ inputs.package_sha256 }}
+      OVERLAY_ASSET: ${{ inputs.overlay_release_asset }}
+      OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
+    steps:
+      - name: Install FFmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: ${{ inputs.tag }}-SEG*
+          path: segments
+          merge-multiple: true
+      - name: Fetch hash-bound source and QA overlay
+        run: |
+          set -euo pipefail
+          gh release download "$RELEASE" -R "${{ github.repository }}" -p source.tar.gz
+          test "$(sha256sum source.tar.gz | cut -d ' ' -f1)" = "$PACKAGE_SHA256"
+          gh release download "$RELEASE" -R "${{ github.repository }}" -p "$OVERLAY_ASSET"
+          test "$(sha256sum "$OVERLAY_ASSET" | cut -d ' ' -f1)" = "$OVERLAY_SHA256"
+          mkdir -p package qa_overlay
+          tar -xzf source.tar.gz -C package
+          python3 - "$OVERLAY_ASSET" qa_overlay <<'PYCODE'
+          import pathlib, shutil, sys, tarfile
+          archive, out = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]).resolve()
+          allowed = {".github/scripts/assemble_verify.py", ".github/scripts/run_existing_ocr_check.py",
+                     "qa/gate.py", "kit/tools/frame_check.py", "kit/tools/ocr_vision.swift",
+                     "kit/platforms/platforms.py", "kit/platforms/frames.json", "film/film.js",
+                     "film/film.css", "film/sets_studio.js", "film-overlay.sha256"}
+          with tarfile.open(archive, "r:gz") as tf:
+              ms=tf.getmembers()
+              if len(ms)!=len(allowed) or {m.name for m in ms}!=allowed: raise SystemExit("overlay allowlist mismatch")
+              for m in ms:
+                  if not m.isfile() or m.size>2_000_000: raise SystemExit("overlay entry invalid")
+                  d=(out/m.name).resolve()
+                  if out not in d.parents: raise SystemExit("overlay path traversal")
+                  d.parent.mkdir(parents=True,exist_ok=True)
+                  with d.open("wb") as f: shutil.copyfileobj(tf.extractfile(m),f)
+          PYCODE
+          (cd package && sha256sum -c SHA256SUMS.txt && python3 static_check.py)
+      - name: Apply the hash-bound reviewed film source overlay
+        run: |
+          (cd qa_overlay && sha256sum -c film-overlay.sha256)
+          cp qa_overlay/film/film.js package/film/film.js
+          cp qa_overlay/film/film.css package/film/film.css
+          cp qa_overlay/film/sets_studio.js package/film/sets_studio.js
+          (cd package && python3 static_check.py)
+      - name: Assemble and fully verify on hosted runner
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          DURATION=$(python3 - <<'PYCODE'
+          import re
+          from pathlib import Path
+          text = (Path("package") / "film" / "index.html").read_text()
+          match = re.search(r'data-duration="([0-9.]+)"', text)
+          if not match:
+              raise SystemExit("composition duration missing")
+          print(match.group(1))
+          PYCODE
+          )
+          python3 qa_overlay/.github/scripts/assemble_verify.py --segments-json "$SEGS_JSON" \
+            --duration "$DURATION" --segments-dir segments --package-dir package --output-dir remote-final
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-MASTER-4K
+          path: |
+            remote-final/F07-MASTER-4K.mp4
+            remote-final/REMOTE-INTEGRITY.json
+            remote-final/SHA256SUMS.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-REVIEW-1080
+          path: |
+            remote-final/F07-MASTER-1080-from-4K.mp4
+            remote-final/F07-MASTER-1080-from-4K.mp4.derived.json
+            remote-final/REMOTE-INTEGRITY.json
+            remote-final/SHA256SUMS.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+
+  macos-ocr:
+    if: ${{ inputs.remote_only && inputs.assemble_full }}
+    needs: assemble
+    runs-on: macos-15-intel
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: ${{ inputs.tag }}-REVIEW-1080
+          path: review
+          merge-multiple: true
+      - name: Fetch and safely extract OCR code overlay
+        env:
+          RELEASE: ${{ inputs.release }}
+          OVERLAY_ASSET: ${{ inputs.overlay_release_asset }}
+          OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
+        run: |
+          set -euo pipefail
+          gh release download "$RELEASE" -R "${{ github.repository }}" -p "$OVERLAY_ASSET"
+          test "$(shasum -a 256 "$OVERLAY_ASSET" | cut -d ' ' -f1)" = "$OVERLAY_SHA256"
+          mkdir qa_overlay
+          python3 - "$OVERLAY_ASSET" qa_overlay <<'PYCODE'
+          import pathlib, shutil, sys, tarfile
+          archive, out=pathlib.Path(sys.argv[1]),pathlib.Path(sys.argv[2]).resolve()
+          allowed={".github/scripts/assemble_verify.py",".github/scripts/run_existing_ocr_check.py","qa/gate.py","kit/tools/frame_check.py","kit/tools/ocr_vision.swift","kit/platforms/platforms.py","kit/platforms/frames.json","film/film.js","film/film.css","film/sets_studio.js","film-overlay.sha256"}
+          with tarfile.open(archive,"r:gz") as tf:
+            ms=tf.getmembers()
+            if len(ms)!=len(allowed) or {m.name for m in ms}!=allowed: raise SystemExit("overlay allowlist mismatch")
+            for m in ms:
+              if not m.isfile() or m.size>2_000_000: raise SystemExit("overlay entry invalid")
+              d=(out/m.name).resolve()
+              if out not in d.parents: raise SystemExit("overlay path traversal")
+              d.parent.mkdir(parents=True,exist_ok=True)
+              with d.open("wb") as f: shutil.copyfileobj(tf.extractfile(m),f)
+          PYCODE
+      - name: Build exact native Vision OCR and run existing Check 2 only
+        run: |
+          set -euo pipefail
+          brew install ffmpeg
+          swiftc -O -framework Foundation -framework Vision -framework AppKit -o qa_overlay/kit/tools/ocr_vision qa_overlay/kit/tools/ocr_vision.swift
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet numpy pillow
+          .venv/bin/python qa_overlay/.github/scripts/run_existing_ocr_check.py --video review/F07-MASTER-1080-from-4K.mp4 --v2-root qa_overlay --out ocr-results --platform youtube
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ${{ inputs.tag }}-MACOS-VISION-OCR
+          path: ocr-results/OCR-CHECK-2.json
           retention-days: 1
           if-no-files-found: warn
