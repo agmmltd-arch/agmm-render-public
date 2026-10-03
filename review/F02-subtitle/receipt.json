@@ -1,0 +1,12 @@
+{
+  "run_id": "37124090300",
+  "source_sha256": "0c91c32f918c9de4c8239f91c1471bd791fc75394a69431a4f362a8d8bf9ddad",
+  "repair_sha256": "a15a31f13b64f12cd653889854554043ef2ea67fd2e1be35c13b21595eab265b",
+  "times": [
+    88.5,
+    440,
+    616
+  ],
+  "scope": "targeted source snapshots; not rendered-film/audio approval",
+  "release_approval": "NOT_GRANTED"
+}
