@@ -50,6 +50,16 @@ jobs:
           TAG="evidence-F02-$GITHUB_RUN_ID"
           gh release create "$TAG" --title "F02 OCR candidate frames - not approval" --notes '32 selected candidate frames from the exact held proxy; not full-frame/audio review or release approval.'
           gh release upload "$TAG" review-evidence/F02-OCR-review-candidates.pdf review-evidence/candidate-receipt.json
+      - name: Publish native connector evidence
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted evidence'
+          git config user.email 'evidence@users.noreply.github.com'
+          git checkout --orphan "review-F02-master-$GITHUB_RUN_ID"
+          git rm -rf --cached . >/dev/null
+          git add review-evidence/candidate-*.jpg review-evidence/candidate-receipt.json
+          git commit -m 'Exact repaired F02 master OCR samples; NOT release approval'
+          git push origin "HEAD:refs/heads/review-F02-master-$GITHUB_RUN_ID"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: F02-CANDIDATE-TEXT-RECEIPT
