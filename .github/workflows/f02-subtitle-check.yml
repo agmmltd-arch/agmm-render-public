@@ -1,0 +1,70 @@
+name: F02 hosted subtitle repair check
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: f02-subtitle-repair-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - name: Verify sealed source and scoped repair
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == agmmltd-arch/agmm-render-public ]]
+          gh release download F02-r2c-landscape-4k-202609302152 -p source.tar.gz
+          echo '0c91c32f918c9de4c8239f91c1471bd791fc75394a69431a4f362a8d8bf9ddad  source.tar.gz' | sha256sum -c -
+          mkdir project
+          tar -xzf source.tar.gz -C project
+          (cd project && sha256sum -c SHA256SUMS.txt >/dev/null && python3 static_check.py)
+          echo 'ee3b1112296d73e05d03edd84577368a83f3cd804395a255b9af3d33277918b2  project/film/sets_b.js' | sha256sum -c -
+          echo 'a15a31f13b64f12cd653889854554043ef2ea67fd2e1be35c13b21595eab265b  repairs/F02/sets_b.js' | sha256sum -c -
+          cp repairs/F02/sets_b.js project/film/sets_b.js
+          npm install --no-save playwright@1.55.1
+          npx playwright install --with-deps chromium
+      - name: Capture actual repaired composition on hosted browser
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8765 --directory project >/tmp/server.log 2>&1 &
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const fs=require('node:fs');
+          (async()=>{
+            const browser=await chromium.launch({headless:true,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+            const page=await browser.newPage({viewport:{width:1920,height:1080},deviceScaleFactor:1});
+            const errors=[];page.on('pageerror',e=>errors.push(e.message));
+            await page.goto('http://127.0.0.1:8765/film/index.html');
+            await page.waitForFunction(()=>!!window.__f02Render,{},{timeout:120000});
+            await page.evaluate(()=>document.fonts.ready);
+            fs.mkdirSync('review/F02-subtitle',{recursive:true});
+            for(const t of [88.5,440,616]){
+              await page.evaluate(t=>{window.__F02TL.pause();window.__F02TL.time(t);window.__f02Set(t);window.__f02Set(t);},t);
+              await page.waitForTimeout(250);
+              await page.screenshot({path:`review/F02-subtitle/frame-${t}.jpg`,type:'jpeg',quality:95});
+            }
+            if(errors.length)throw new Error(errors.join('\n'));
+            fs.writeFileSync('review/F02-subtitle/receipt.json',JSON.stringify({run_id:process.env.GITHUB_RUN_ID,source_sha256:'0c91c32f918c9de4c8239f91c1471bd791fc75394a69431a4f362a8d8bf9ddad',repair_sha256:'a15a31f13b64f12cd653889854554043ef2ea67fd2e1be35c13b21595eab265b',times:[88.5,440,616],scope:'targeted source snapshots; not rendered-film/audio approval',release_approval:'NOT_GRANTED'},null,2));
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Publish native connector evidence
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted evidence'
+          git config user.email 'evidence@users.noreply.github.com'
+          git checkout --orphan "review-F02-subtitle-$GITHUB_RUN_ID"
+          git rm -rf --cached . >/dev/null
+          git add review/F02-subtitle
+          git commit -m 'F02 targeted subtitle evidence; NOT release approval'
+          git push origin "HEAD:refs/heads/review-F02-subtitle-$GITHUB_RUN_ID"
