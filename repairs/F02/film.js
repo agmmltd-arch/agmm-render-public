@@ -493,12 +493,12 @@
   question("Why bring the people back?", 27.4, 29.6);
   fig("150 million", "people use Klarna’s app", 31.38, 31.6, 33.25);
   (function () { // OpenAI customer story, using the published headline and reported figures
-    var d = el("div", "doc evidence-doc", LY, '<div class="pg"><div class="src">openai.com · February 2024</div><div class="kick">OPENAI · CUSTOMER STORY</div>' +
-      '<div class="hl"><span class="mark">Klarna</span>: an AI assistant doing the work of 700 full-time agents</div>' +
+    var d = el("div", "doc evidence-doc openai-story", LY, '<div class="pg"><div class="src">openai.com/index/klarna/</div><div class="kick"><img class="openai-logo" src="img/openai-official.png" alt="OpenAI">CUSTOMER STORY</div>' +
+      '<div class="hl"><span class="mark">Klarna’s AI assistant</span> does the work of 700 full-time agents</div>' +
       '<div class="evidence-row"><b>2.3m</b><span>conversations in month one</span><b>23</b><span>markets</span><b>35+</b><span>languages</span></div>' +
       '<div class="by">Reported result: resolution time fell from 11 minutes to under 2 minutes</div></div>');
     cut(d, 36.4, 40.5); var pg = d.querySelector(".pg");
-    full.fromTo(pg, { x: 260, y: 90, scale: 1.0, rotation: -1.5 }, { x: 150, y: -60, scale: 1.12, rotation: -0.6, duration: 4.1, ease: "sine.inOut", immediateRender: false }, 36.4);
+    full.fromTo(pg, { x: 160, y: 70, scale: 1.0, rotation: -0.4 }, { x: 140, y: 45, scale: 1.025, rotation: -0.2, duration: 4.1, ease: "sine.inOut", immediateRender: false }, 36.4);
     full.fromTo(d.querySelector(".mark"), { backgroundColor: "rgba(255,179,199,0)" }, { backgroundColor: "rgba(255,179,199,1)", duration: 0.5, immediateRender: false }, 37.0);
   })();
   plate("Hand the phones to a chatbot?", 41.0, 43.35);
