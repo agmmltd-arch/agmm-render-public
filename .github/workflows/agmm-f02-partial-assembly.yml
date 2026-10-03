@@ -1,0 +1,133 @@
+name: AGMM F02 partial segment assembly (proposal)
+run-name: F02 partial mechanical assembly · ${{ github.run_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type ASSEMBLE-F02-MECHANICAL-ONLY to proceed on hosted Linux
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: agmm-f02-partial-mechanical-assembly
+  cancel-in-progress: false
+
+jobs:
+  assemble:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Require explicit mechanical-only confirmation and pinned repository
+        run: |
+          set -euo pipefail
+          test "$CONFIRMATION" = "ASSEMBLE-F02-MECHANICAL-ONLY"
+          test "$GITHUB_REPOSITORY" = "agmmltd-arch/agmm-render-public"
+          python3 .github/scripts/f02_partial_assembly.py validate-contract
+
+      - name: Capture exact run, job, artifact and release metadata
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/f02_partial_assembly.py snapshot --repo "$GITHUB_REPOSITORY" --snapshots metadata
+
+      - name: Preflight run provenance, all render jobs, artifact expiry, and sealed releases
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/f02_partial_assembly.py preflight --snapshots metadata
+
+      - name: Download sealed source package and code-only QA helper overlay
+        run: |
+          set -euo pipefail
+          mkdir -p source-download qa-download
+          gh release download F02-profit-qualifier-20261003 -R "$GITHUB_REPOSITORY" -p source.tar.gz --dir source-download
+          gh release download F02-r2c-landscape-4k-202609302152 -R "$GITHUB_REPOSITORY" -p qa-overlay-r4e-seg12.tar.gz --dir qa-download
+          python3 .github/scripts/f02_partial_assembly.py prepare-source \
+            --source-archive source-download/source.tar.gz \
+            --overlay-archive qa-download/qa-overlay-r4e-seg12.tar.gz \
+            --package-dir package --overlay-dir qa-helper
+
+      - name: Retain and stage all 75 original parts plus only replacement 51/52
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/f02_partial_assembly.py download-and-stage \
+            --snapshots metadata --downloads downloads --lineage-dir lineage \
+            --segments-dir assembly/segments
+
+      - name: Run verifier self-test on hosted Linux
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 qa-helper/.github/scripts/assemble_verify.py --self-test
+
+      - name: Assemble complete 651.6-second F02 master and proxy on hosted Linux
+        run: |
+          set -euo pipefail
+          mkdir -p remote-final
+          cp lineage/F02-LINEAGE.json remote-final/F02-LINEAGE.json
+          SEGS_JSON="$(python3 .github/scripts/f02_partial_assembly.py print-segments-json)"
+          python3 qa-helper/.github/scripts/assemble_verify.py \
+            --segments-json "$SEGS_JSON" --duration 651.6 \
+            --segments-dir assembly/segments --package-dir package \
+            --output-dir remote-final --fid F02
+          python3 .github/scripts/f02_partial_assembly.py final-receipt \
+            --lineage-dir lineage --output-dir remote-final
+          python3 .github/scripts/f02_partial_assembly.py refresh-sums --output-dir remote-final
+
+      - name: Export segment-level lineage (originals remain separate from replacements)
+        if: ${{ success() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: F02-PARTIAL-SEGMENT-LINEAGE-${{ github.run_id }}
+          path: |
+            lineage/F02-LINEAGE.json
+            lineage/parent/
+            lineage/replacement/
+            metadata/
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+
+      - name: Export 4K master and mechanical receipts
+        if: ${{ success() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: F02-PARTIAL-MASTER-4K-${{ github.run_id }}
+          path: |
+            remote-final/F02-MASTER-4K.mp4
+            remote-final/F02-LINEAGE.json
+            remote-final/F02-PARTIAL-ASSEMBLY-RECEIPT.json
+            remote-final/REMOTE-INTEGRITY.json
+            remote-final/AUDIO-GAIN-RECEIPT.json
+            remote-final/SHA256SUMS.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+
+      - name: Export 1080 review proxy and exact derivation receipt
+        if: ${{ success() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: F02-PARTIAL-REVIEW-1080-${{ github.run_id }}
+          path: |
+            remote-final/F02-MASTER-1080-from-4K.mp4
+            remote-final/F02-MASTER-1080-from-4K.mp4.derived.json
+            remote-final/F02-LINEAGE.json
+            remote-final/F02-PARTIAL-ASSEMBLY-RECEIPT.json
+            remote-final/REMOTE-INTEGRITY.json
+            remote-final/AUDIO-GAIN-RECEIPT.json
+            remote-final/SHA256SUMS.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
