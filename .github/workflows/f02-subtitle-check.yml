@@ -31,6 +31,9 @@ jobs:
           echo 'ee3b1112296d73e05d03edd84577368a83f3cd804395a255b9af3d33277918b2  project/film/sets_b.js' | sha256sum -c -
           echo 'a15a31f13b64f12cd653889854554043ef2ea67fd2e1be35c13b21595eab265b  repairs/F02/sets_b.js' | sha256sum -c -
           cp repairs/F02/sets_b.js project/film/sets_b.js
+          echo 'a3142c43aaeab010ea32daeea432f0fc3612e1c0b3fa50e7c67861571246e619  project/film/film.js' | sha256sum -c -
+          echo 'e34a12b2f9a616d3c68bd69c3cc11472f67c573c3f5ef26d65347f8a044c484e  repairs/F02/film.js' | sha256sum -c -
+          cp repairs/F02/film.js project/film/film.js
           npm install --no-save playwright@1.55.1
           npx playwright install --with-deps chromium
       - name: Capture actual repaired composition on hosted browser
@@ -48,13 +51,13 @@ jobs:
             await page.waitForFunction(()=>!!window.__f02Render,{},{timeout:120000});
             await page.evaluate(()=>document.fonts.ready);
             fs.mkdirSync('review/F02-subtitle',{recursive:true});
-            for(const t of [88.5,440,616]){
+            for(const t of [88.5,440,615.4,616,619.6]){
               await page.evaluate(t=>{window.__F02TL.pause();window.__F02TL.time(t);window.__f02Set(t);window.__f02Set(t);},t);
               await page.waitForTimeout(250);
               await page.screenshot({path:`review/F02-subtitle/frame-${t}.jpg`,type:'jpeg',quality:95});
             }
             if(errors.length)throw new Error(errors.join('\n'));
-            fs.writeFileSync('review/F02-subtitle/receipt.json',JSON.stringify({run_id:process.env.GITHUB_RUN_ID,source_sha256:'0c91c32f918c9de4c8239f91c1471bd791fc75394a69431a4f362a8d8bf9ddad',repair_sha256:'a15a31f13b64f12cd653889854554043ef2ea67fd2e1be35c13b21595eab265b',times:[88.5,440,616],scope:'targeted source snapshots; not rendered-film/audio approval',release_approval:'NOT_GRANTED'},null,2));
+            fs.writeFileSync('review/F02-subtitle/receipt.json',JSON.stringify({run_id:process.env.GITHUB_RUN_ID,source_sha256:'0c91c32f918c9de4c8239f91c1471bd791fc75394a69431a4f362a8d8bf9ddad',repair_sha256:'a15a31f13b64f12cd653889854554043ef2ea67fd2e1be35c13b21595eab265b',times:[88.5,440,615.4,616,619.6],camera_repair_sha256:'e34a12b2f9a616d3c68bd69c3cc11472f67c573c3f5ef26d65347f8a044c484e',scope:'targeted source snapshots; not rendered-film/audio approval',release_approval:'NOT_GRANTED'},null,2));
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
