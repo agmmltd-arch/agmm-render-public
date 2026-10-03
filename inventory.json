@@ -1,0 +1,64 @@
+{
+  "schema": "s86-hosted-source-inventory-v1",
+  "status": "INVENTORY_ONLY_NOT_APPROVAL",
+  "release_tag": "S86-r2-source-202610010547",
+  "source_asset": {
+    "name": "source.tar.gz",
+    "asset_id": 602456631,
+    "size_bytes": 9830053,
+    "sha256": "c8fa6aea8bc904de1183ef648188de4d7ec2ab0d432be623f6b165fd7ac4408b",
+    "sha256_source": "GitHub release asset digest matched to local source receipt"
+  },
+  "source_text": {
+    "s86-a/spec.js": {
+      "sha256": "48efe5272944b5d44d922b4d4e52e1acde0dc0f7c49d7c2ba485004a711766a7",
+      "bytes": 23074,
+      "copied_to_review_branch": true
+    },
+    "s86-b/spec.js": {
+      "sha256": "4bff6e6d723f23f481c552abcc6c3b052acc6061117a6a2497ca4bafac7772c2",
+      "bytes": 23075,
+      "copied_to_review_branch": true
+    },
+    "s86-c/spec.js": {
+      "sha256": "48efe5272944b5d44d922b4d4e52e1acde0dc0f7c49d7c2ba485004a711766a7",
+      "bytes": 23074,
+      "copied_to_review_branch": true
+    },
+    "s86-d/spec.js": {
+      "sha256": "48efe5272944b5d44d922b4d4e52e1acde0dc0f7c49d7c2ba485004a711766a7",
+      "bytes": 23074,
+      "copied_to_review_branch": true
+    }
+  },
+  "source_archive_name_only_media_hints": [],
+  "media_member_content_opened": false,
+  "media_member_sha256_recomputed": false,
+  "release_sidecar_assets": [
+    {
+      "name": "parts.json",
+      "asset_id": 602456630,
+      "size_bytes": 617,
+      "sha256_from_release_api": "1585e81e26e654aabc04ebe0f851a81f0cd13962069027557f1e29db2dadc02d",
+      "downloaded_by_inventory": false,
+      "copied_to_review_branch": false
+    },
+    {
+      "name": "mix.wav",
+      "asset_id": 602456632,
+      "size_bytes": 17452902,
+      "sha256_from_release_api": "0c252cdf6e412fc2ccadcdb29b940d6a23b7c527276ebf79da468b7f633df436",
+      "downloaded_by_inventory": false,
+      "copied_to_review_branch": false
+    }
+  ],
+  "branch_content_allowlist": [
+    "inventory.json",
+    "source/s86-a/spec.js",
+    "source/s86-b/spec.js",
+    "source/s86-c/spec.js",
+    "source/s86-d/spec.js"
+  ],
+  "media_uploaded_to_review_branch": false,
+  "release_approval": false
+}
