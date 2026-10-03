@@ -1,0 +1,88 @@
+{
+  "capture_class": "source_composition_not_final_master",
+  "editorial_status": "NOT_REVIEWED",
+  "frames": [
+    {
+      "bytes": 1151866,
+      "composition_time": 239.2667,
+      "film_time": 245.25,
+      "name": "investment_1b",
+      "path": "frames/investment_1b.png",
+      "sha256": "da3e70750819a8da3e52fe0a17f274a88b0589f0a4d821556f523686841dcaf0"
+    },
+    {
+      "bytes": 1143623,
+      "composition_time": 239.4167,
+      "film_time": 245.4,
+      "name": "investment_card_full",
+      "path": "frames/investment_card_full.png",
+      "sha256": "0683f8a9b4e12a2014793fcef44cc9b03d2ed63a2b635d3d0c75916e5294c2e8"
+    },
+    {
+      "bytes": 1142932,
+      "composition_time": 241.0,
+      "film_time": 246.983,
+      "name": "investment_card_during_phrase",
+      "path": "frames/investment_card_during_phrase.png",
+      "sha256": "3ed355fb124892b1819e3f61fd74eefabb22f09c872efd0f69a4171039d7e869"
+    },
+    {
+      "bytes": 1142572,
+      "composition_time": 241.9167,
+      "film_time": 247.9,
+      "name": "investment_card_outro",
+      "path": "frames/investment_card_outro.png",
+      "sha256": "6d7b88a591c383be52862feae6b31e48272ad93e4eb860960f283ebef0fbde77"
+    },
+    {
+      "bytes": 950904,
+      "composition_time": 242.6167,
+      "film_time": 248.6,
+      "name": "bridge_which_valued",
+      "path": "frames/bridge_which_valued.png",
+      "sha256": "402f90270f1147685f3635b74d306e1736420a82c84d0ab0a70346a6833d04fd"
+    },
+    {
+      "bytes": 951469,
+      "composition_time": 244.2867,
+      "film_time": 250.27,
+      "name": "valuation_8_65",
+      "path": "frames/valuation_8_65.png",
+      "sha256": "d4a0a70ff3f24d5ac743268c2dabfd566b2ef65619f802405d61579cf723c495"
+    },
+    {
+      "bytes": 1168343,
+      "composition_time": 245.7167,
+      "film_time": 251.7,
+      "name": "valuation_billion",
+      "path": "frames/valuation_billion.png",
+      "sha256": "7209789f66a7ae6ceaf1fbb355f0323e6103295a8f8fdc34b9f25811f5c24614"
+    },
+    {
+      "bytes": 1166458,
+      "composition_time": 246.1167,
+      "film_time": 252.1,
+      "name": "valuation_card_outro",
+      "path": "frames/valuation_card_outro.png",
+      "sha256": "f40b30b27fc7409eb9290992f4b22ea9f5ff511cbd834afc7cc2959745036f94"
+    },
+    {
+      "bytes": 950879,
+      "composition_time": 246.9,
+      "film_time": 252.883,
+      "name": "next_shot",
+      "path": "frames/next_shot.png",
+      "sha256": "e740ab381523bc24e4bfa50fa30d848afb8f850571ed5902d5eed38e4e8e18ab"
+    }
+  ],
+  "github_immutable_release": false,
+  "kind": "f07-source-composition-review-capture",
+  "overlay_release_asset_bytes": 77722,
+  "overlay_release_asset_id": 608555583,
+  "overlay_release_tag": "F07-code-overlay-6c3ec29f09a5e22eff2a3061ea737c50b8d02438a4877671096d82301076e2cc",
+  "overlay_sha256": "6c3ec29f09a5e22eff2a3061ea737c50b8d02438a4877671096d82301076e2cc",
+  "release_approval": "NOT_GRANTED",
+  "repo_immutable_releases_enabled": null,
+  "source_release": "F07-r4-actions-full-landscape-4k-20260930194517",
+  "source_sha256": "10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7"
+}
