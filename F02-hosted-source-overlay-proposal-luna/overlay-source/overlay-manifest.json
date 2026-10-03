@@ -1,0 +1,14 @@
+{
+  "files": {
+    "film/film.js": {
+      "bytes": 80180,
+      "sha256": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b"
+    },
+    "film/sets_a.js": {
+      "bytes": 41858,
+      "sha256": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e"
+    }
+  },
+  "kind": "f02-two-file-owner-source-overlay",
+  "source_scope": "film/film.js and film/sets_a.js only"
+}

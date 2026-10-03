@@ -1,0 +1,30 @@
+{
+  "schema": "f02-source-composition-capture-plan-v1",
+  "parent_release": "F02-profit-qualifier-20261003",
+  "parent_release_id": 402632642,
+  "parent_asset_id": 608285956,
+  "parent_source_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
+  "film_js_sha256": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b",
+  "sets_a_sha256": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e",
+  "capture_class": "source_composition_not_final_master",
+  "captures": [
+    {"name":"printer_rise_1","time":8.533},
+    {"name":"printer_rise_2","time":8.6},
+    {"name":"printer_rise_3","time":8.667},
+    {"name":"printer_label","time":9.5},
+    {"name":"printer_pre_cut","time":10.28},
+    {"name":"printer_cut","time":10.3},
+    {"name":"printer_post_cut","time":10.32},
+    {"name":"floor_700","time":12.57},
+    {"name":"opening_profit","time":76.2},
+    {"name":"profit_before","time":108.1},
+    {"name":"profit_landing","time":108.2},
+    {"name":"profit_during","time":108.3},
+    {"name":"profit_clear","time":108.7},
+    {"name":"duplicate_before","time":439.5},
+    {"name":"duplicate_edge_1","time":439.75},
+    {"name":"duplicate_edge_2","time":439.8}
+  ],
+  "editorial_status": "NOT_REVIEWED",
+  "release_approval": "NOT_GRANTED"
+}
