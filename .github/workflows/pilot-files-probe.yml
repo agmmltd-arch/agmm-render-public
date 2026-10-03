@@ -1,0 +1,33 @@
+name: Pilot Files Probe
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        ref: main
+        fetch-depth: 1
+    
+    - name: Run pilot files probe
+      id: probe
+      run: |
+        python3 .github/scripts/pilot_files_probe.py > probe-result.json
+      env:
+        AGMM_GEMINI_FREE_REVIEW_KEY: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY }}
+    
+    - name: Upload probe result
+      if: always()
+      uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
+      with:
+        name: probe-result
+        path: probe-result.json
+        retention-days: 1
