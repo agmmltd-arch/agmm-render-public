@@ -1,5 +1,8 @@
 name: AGMM verified hosted film preview export
 on:
+  workflow_run:
+    workflows: [AGMM film segments render]
+    types: [completed]
   workflow_dispatch:
     inputs:
       run_id:
@@ -12,18 +15,19 @@ permissions:
   actions: read
   contents: write
 concurrency:
-  group: film-preview-${{ inputs.run_id }}
+  group: film-preview-${{ inputs.run_id || github.event.workflow_run.id }}
   cancel-in-progress: false
 jobs:
   export:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.id == 37114306772 && github.event.workflow_run.conclusion == 'success') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
-      RUN_ID: ${{ inputs.run_id }}
-      TAG: ${{ inputs.tag }}
-      FID: ${{ inputs.fid }}
+      RUN_ID: ${{ inputs.run_id || github.event.workflow_run.id }}
+      TAG: ${{ inputs.tag || 'F02-root-hosted-full-20261003-0950' }}
+      FID: ${{ inputs.fid || 'F02' }}
     steps:
       - name: Verify source workflow before any artifact download
         shell: bash
@@ -45,21 +49,21 @@ jobs:
           PYCODE
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: ${{ inputs.tag }}-MASTER-4K
+          name: ${{ inputs.tag || 'F02-root-hosted-full-20261003-0950' }}-MASTER-4K
           path: master
-          run-id: ${{ inputs.run_id }}
+          run-id: ${{ inputs.run_id || github.event.workflow_run.id }}
           github-token: ${{ github.token }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: ${{ inputs.tag }}-REVIEW-1080
+          name: ${{ inputs.tag || 'F02-root-hosted-full-20261003-0950' }}-REVIEW-1080
           path: review
-          run-id: ${{ inputs.run_id }}
+          run-id: ${{ inputs.run_id || github.event.workflow_run.id }}
           github-token: ${{ github.token }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: ${{ inputs.tag }}-MACOS-VISION-OCR
+          name: ${{ inputs.tag || 'F02-root-hosted-full-20261003-0950' }}-MACOS-VISION-OCR
           path: ocr
-          run-id: ${{ inputs.run_id }}
+          run-id: ${{ inputs.run_id || github.event.workflow_run.id }}
           github-token: ${{ github.token }}
       - name: Verify exact mechanical outputs and publish a preview without approval
         shell: bash
@@ -100,14 +104,29 @@ jobs:
               if f['name'] in assets:
                   a=assets[f['name']];assert a['size']==f['size'] and a.get('digest')=='sha256:'+f['sha256'],'existing asset differs; no overwrite'
               else:subprocess.run(['gh','release','upload',tag,f['path'],'-R',repo],check=True)
-              f['url']='https://github.com/'+repo+'/releases/download/'+tag+'/'+f['name'];f.pop('path')
+              f.pop('path')
+          published=json.loads(subprocess.check_output(['gh','api','repos/'+repo+'/releases/tags/'+tag]))
+          assets={a['name']:a for a in published['assets']}
+          for f in files:
+              a=assets[f['name']]
+              assert a['size']==f['size'] and a.get('digest')=='sha256:'+f['sha256']
+              f['url']=a['browser_download_url']
+              assert f['url']=='https://github.com/'+repo+'/releases/download/'+tag+'/'+f['name']
           Path('receipts').mkdir()
           receipt={'source_run_id':int(rid),'repository':repo,'source_workflow_commit':json.loads(Path('source-run.json').read_text())['head_sha'],'files':files,'integrity':report,'ocr':json.loads(Path('ocr/OCR-CHECK-2.json').read_text()),'review_status':'NOT_RUN','release_approval':'NOT_GRANTED'}
           Path('receipts/HOSTED-PREVIEW.json').write_text(json.dumps(receipt,indent=2))
+          # Small metadata only: enables library discovery without Mac media transfer.
+          import base64
+          dest='repos/'+repo+'/contents/status/'+fid+'-preview.json'
+          prior=subprocess.run(['gh','api',dest],capture_output=True,text=True)
+          payload={'message':'Publish verified '+fid+' preview metadata, no approval','content':base64.b64encode(json.dumps(receipt).encode()).decode()}
+          if prior.returncode==0:payload['sha']=json.loads(prior.stdout)['sha']
+          Path('preview-payload.json').write_text(json.dumps(payload))
+          subprocess.run(['gh','api','--method','PUT',dest,'--input','preview-payload.json'],check=True,stdout=subprocess.DEVNULL)
           PYCODE
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ${{ inputs.fid }}-${{ inputs.run_id }}-TEXT-RECEIPT
+          name: ${{ inputs.fid || 'F02' }}-${{ inputs.run_id || github.event.workflow_run.id }}-TEXT-RECEIPT
           path: receipts/HOSTED-PREVIEW.json
           if-no-files-found: error
           retention-days: 7
