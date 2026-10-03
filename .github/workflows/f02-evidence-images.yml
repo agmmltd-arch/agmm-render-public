@@ -1,0 +1,47 @@
+name: F02 existing evidence image access
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: f02-existing-evidence-images
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Extract existing held evidence on hosted Linux only
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == agmmltd-arch/agmm-render-public ]]
+          gh release download evidence-F02-37122482883 --repo "$GITHUB_REPOSITORY" --pattern F02-OCR-review-candidates.pdf
+          printf '%s  %s\n' c7469f7b43a87dbeba0a7467109684bfcfaecf3ac73d98534fe3a3a93a6c0c4a F02-OCR-review-candidates.pdf | sha256sum -c -
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          mkdir evidence
+          pdfimages -j F02-OCR-review-candidates.pdf evidence/candidate
+          python3 - <<'PYHOST'
+          import base64,json,os,subprocess
+          from pathlib import Path
+          assert os.environ.get('GITHUB_ACTIONS')=='true' and os.environ.get('RUNNER_OS')=='Linux'
+          repo=os.environ['GITHUB_REPOSITORY'];assert repo=='agmmltd-arch/agmm-render-public'
+          def api(path,payload=None):
+              args=['gh','api',f'repos/{repo}/{path}']
+              if payload is not None:args+=['--method','POST','--input','-']
+              return json.loads(subprocess.check_output(args,input=None if payload is None else json.dumps(payload).encode()))
+          images=sorted(Path('evidence').glob('candidate-*.jpg'))
+          assert len(images)==21 and len(list(Path('evidence').iterdir()))==21
+          base=api('git/ref/heads/main')['object']['sha']
+          tree=api(f'git/commits/{base}')['tree']['sha'];entries=[]
+          for n,p in enumerate(images,1):
+              assert 0<p.stat().st_size<5_000_000
+              blob=api('git/blobs',{'encoding':'base64','content':base64.b64encode(p.read_bytes()).decode()})['sha']
+              entries.append({'path':f'review/F02/candidate-{n:03}.jpg','mode':'100644','type':'blob','sha':blob})
+          t=api('git/trees',{'base_tree':tree,'tree':entries})['sha']
+          c=api('git/commits',{'message':'Expose held F02 PDF embedded candidate images for remote inspection only','tree':t,'parents':[base]})['sha']
+          api('git/refs',{'ref':'refs/heads/review-evidence-F02-37122482883','sha':c})
+          print(json.dumps({'commit':c,'images':21,'source_pdf_sha256':'c7469f7b43a87dbeba0a7467109684bfcfaecf3ac73d98534fe3a3a93a6c0c4a','scope':'PDF_EMBEDDED_CANDIDATE_IMAGES_ONLY','release_approval':'NOT_GRANTED'}))
+          PYHOST
