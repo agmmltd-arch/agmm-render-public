@@ -1,0 +1,166 @@
+name: F07 create-only source overlay and source-composition review capture
+run-name: F07 source overlay capture ${{ github.run_id }}
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  package-and-capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: agmmltd-arch/agmm-render-public
+      SOURCE_RELEASE: F07-r4-actions-full-landscape-4k-20260930194517
+      SOURCE_ASSET_ID: '601625680'
+      SOURCE_SHA256: 10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7
+      SOURCE_BYTES: '43650580'
+      HELPER_COMMIT: 5e511639891bceae531e0fcb0d10866f42edb414
+      HYPERFRAMES_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 5e511639891bceae531e0fcb0d10866f42edb414
+          path: helper-base
+          persist-credentials: false
+      - name: Guard public Linux target and verify repository/source metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == "$GH_REPO" ]]
+          gh api "repos/$GH_REPO" > repository.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('repository.json'))
+          assert r['full_name']=='agmmltd-arch/agmm-render-public' and r['private'] is False and r['visibility']=='public'
+          PY
+          if gh api "repos/$GH_REPO/immutable-releases" > immutable-releases.json; then
+            python3 - <<'PY'
+          import json
+          value=json.load(open('immutable-releases.json')).get('enabled')
+          assert value in (True,False), 'immutable-release setting response is malformed'
+          PY
+          else
+            echo '{"enabled":null,"availability":"unavailable"}' > immutable-releases.json
+          fi
+          gh api "repos/$GH_REPO/releases/tags/$SOURCE_RELEASE" > parent-release.json
+          gh api "repos/$GH_REPO/releases/assets/$SOURCE_ASSET_ID" > parent-asset.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('parent-release.json')); a=json.load(open('parent-asset.json'))
+          assert r['tag_name']=='F07-r4-actions-full-landscape-4k-20260930194517' and not r['draft']
+          assert a['id']==601625680 and a['name']=='source.tar.gz' and a['size']==43650580
+          assert a['state']=='uploaded' and a['digest']=='sha256:10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7'
+          assert any(x.get('id')==a['id'] and x.get('name')==a['name'] and x.get('size')==a['size'] and x.get('digest')==a['digest'] for x in r.get('assets',[]))
+          PY
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+      - name: Install existing film renderer system dependencies
+        run: sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg libnss3 libatk-bridge2.0-0 libgbm1 libxkbcommon0 libasound2t64 libxcomposite1 libxdamage1 libxrandr2 libpango-1.0-0 libcairo2 fonts-liberation
+      - name: Build the exact existing 11-member QA overlay on hosted Linux
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/f07_overlay_capture.py package \
+            --source-root F07-hosted-overlay-capture-proposal-luna/overlay-source \
+            --helper-root helper-base --output f07-qa-overlay.tar.gz --receipt overlay-receipt.json
+          sha256sum f07-qa-overlay.tar.gz > F07-QA-OVERLAY.sha256
+          OVERLAY_SHA=$(sha256sum f07-qa-overlay.tar.gz | cut -d ' ' -f1)
+          TAG="F07-code-overlay-$OVERLAY_SHA"
+          if gh release view "$TAG" -R "$GH_REPO" >/dev/null 2>&1; then
+            echo 'refusing to overwrite an existing content-addressed release tag' >&2; exit 1
+          fi
+          gh release create "$TAG" f07-qa-overlay.tar.gz F07-QA-OVERLAY.sha256 overlay-receipt.json \
+            --repo "$GH_REPO" --target "$GITHUB_SHA" --draft --title "F07 code-only QA overlay $OVERLAY_SHA" \
+            --notes 'Three verified F07 film-code files plus the pinned existing QA helper allowlist. No media or voice. Hash receipt binds the archive.'
+          RELEASE_ID=$(gh api "repos/$GH_REPO/releases/tags/$TAG" --jq .id)
+          gh api --method PATCH "repos/$GH_REPO/releases/$RELEASE_ID" -F draft=false >/dev/null
+          gh api "repos/$GH_REPO/releases/tags/$TAG" > overlay-release.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('overlay-release.json'))
+          assert r['tag_name'].startswith('F07-code-overlay-') and r['draft'] is False
+          assets={a['name']:a for a in r['assets']}
+          a=assets['f07-qa-overlay.tar.gz']
+          expected=open('F07-QA-OVERLAY.sha256').read().split()[0]
+          assert a['digest']=='sha256:'+expected and a['state']=='uploaded'
+          assert a['size']==json.load(open('overlay-receipt.json'))['archive_bytes']
+          setting=json.load(open('immutable-releases.json')).get('enabled')
+          r['repo_immutable_releases_enabled']=setting if setting in (True,False) else None
+          r['overlay_sha256']=expected; r['asset_id']=a['id']; r['asset_bytes']=a['size']
+          json.dump(r,open('overlay-release.json','w'),indent=2)
+          release_immutable=r.get('immutable')
+          release_state='unknown' if release_immutable not in (True,False) else str(release_immutable).lower()
+          setting_state='unknown' if r['repo_immutable_releases_enabled'] not in (True,False) else str(r['repo_immutable_releases_enabled']).lower()
+          open('OVERLAY-RELEASE-IDENTITY.txt','w').write(f"tag={r['tag_name']}\nasset_id={a['id']}\nasset_sha256={expected}\nasset_bytes={a['size']}\ngithub_immutable_release={release_state}\nrepo_immutable_releases_enabled={setting_state}\n")
+          PY
+      - name: Download and verify the exact sealed F07 parent on hosted Linux
+        run: |
+          set -euo pipefail
+          gh release download "$SOURCE_RELEASE" -R "$GH_REPO" -p source.tar.gz -D input
+          test "$(wc -c < input/source.tar.gz | tr -d ' ')" = "$SOURCE_BYTES"
+          test "$(sha256sum input/source.tar.gz | cut -d ' ' -f1)" = "$SOURCE_SHA256"
+          mkdir project qa_overlay
+          tar -xzf input/source.tar.gz -C project
+          (cd project && sha256sum -c SHA256SUMS.txt >/dev/null && python3 static_check.py)
+          gh release download "$(sed -n 's/^tag=//p' OVERLAY-RELEASE-IDENTITY.txt)" -R "$GH_REPO" -p f07-qa-overlay.tar.gz -D input
+          test "$(sha256sum input/f07-qa-overlay.tar.gz | cut -d ' ' -f1)" = "$(sed -n 's/^asset_sha256=//p' OVERLAY-RELEASE-IDENTITY.txt)"
+          test "$(wc -c < input/f07-qa-overlay.tar.gz | tr -d ' ')" = "$(sed -n 's/^asset_bytes=//p' OVERLAY-RELEASE-IDENTITY.txt)"
+          python3 - input/f07-qa-overlay.tar.gz qa_overlay <<'PY'
+          import pathlib, shutil, sys, tarfile
+          archive, out=pathlib.Path(sys.argv[1]),pathlib.Path(sys.argv[2]).resolve()
+          allowed={'.github/scripts/assemble_verify.py','.github/scripts/run_existing_ocr_check.py','qa/gate.py','kit/tools/frame_check.py','kit/tools/ocr_vision.swift','kit/platforms/platforms.py','kit/platforms/frames.json','film/film.js','film/film.css','film/sets_studio.js','film-overlay.sha256'}
+          with tarfile.open(archive,'r:gz') as tf:
+              members=tf.getmembers()
+              assert len(members)==len(allowed) and {m.name for m in members}==allowed
+              for m in members:
+                  assert m.isfile() and m.size<=2_000_000
+                  dest=(out/m.name).resolve(); assert out in dest.parents
+                  dest.parent.mkdir(parents=True,exist_ok=True)
+                  with dest.open('wb') as f: shutil.copyfileobj(tf.extractfile(m),f)
+          PY
+          (cd qa_overlay && sha256sum -c film-overlay.sha256)
+          cp qa_overlay/film/film.js project/film/film.js
+          cp qa_overlay/film/film.css project/film/film.css
+          cp qa_overlay/film/sets_studio.js project/film/sets_studio.js
+          (cd project && python3 static_check.py)
+      - name: Capture named film-clock source-composition stills
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' > capture-times.txt
+          import json
+          print(",".join(f"{row['film_time']:.3f}" for row in json.load(open("F07-hosted-overlay-capture-proposal-luna/capture-plan.json"))["captures"]))
+          PY
+          TIMES=$(cat capture-times.txt)
+          npx --yes hyperframes@0.8.71 snapshot project/film --at "$TIMES" --no-end --describe false --no-browser-gpu --timeout 180000 --output "$GITHUB_WORKSPACE/source-frames"
+          python3 .github/scripts/f07_overlay_capture.py collect \
+            --snapshots source-frames --plan F07-hosted-overlay-capture-proposal-luna/capture-plan.json \
+            --overlay-release overlay-release.json \
+            --output f07-review
+      - name: Publish only the nine source frames and bound text receipts
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted source review'
+          git config user.email 'evidence@users.noreply.github.com'
+          BRANCH="review-F07-source-capture-$GITHUB_RUN_ID"
+          git checkout --orphan "$BRANCH"
+          git rm -rf --cached . >/dev/null
+          mkdir -p public-review
+          cp -R f07-review/frames public-review/
+          cp f07-review/CAPTURE-RECEIPT.json f07-review/SHA256SUMS.txt public-review/
+          cp OVERLAY-RELEASE-IDENTITY.txt public-review/
+          git add public-review
+          python3 - <<'PY'
+          import subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert len(names)==12 and all(n.startswith('public-review/') and n.lower().endswith(('.png','.json','.txt')) for n in names)
+          assert sum(n.endswith('.png') for n in names)==9
+          PY
+          git commit -m 'F07 source-composition review frames; NOT final master approval'
+          git push origin "HEAD:refs/heads/$BRANCH"

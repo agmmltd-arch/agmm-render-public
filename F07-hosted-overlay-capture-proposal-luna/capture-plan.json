@@ -1,0 +1,22 @@
+{
+  "schema": "f07-source-composition-capture-plan-v1",
+  "source_release": "F07-r4-actions-full-landscape-4k-20260930194517",
+  "source_asset_id": 601625680,
+  "source_asset_sha256": "10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7",
+  "overlay_film_js_sha256": "338774796521aafe7f784441d0a07dac7e1ed9486985483d3f6ab8324708e8b1",
+  "clock_rule": "film time = composition time + 5.9833 after last warp span",
+  "captures": [
+    {"name":"investment_1b","composition_time":239.2667,"film_time":245.250},
+    {"name":"investment_card_full","composition_time":239.4167,"film_time":245.400},
+    {"name":"investment_card_during_phrase","composition_time":241.0000,"film_time":246.983},
+    {"name":"investment_card_outro","composition_time":241.9167,"film_time":247.900},
+    {"name":"bridge_which_valued","composition_time":242.6167,"film_time":248.600},
+    {"name":"valuation_8_65","composition_time":244.2867,"film_time":250.270},
+    {"name":"valuation_billion","composition_time":245.7167,"film_time":251.700},
+    {"name":"valuation_card_outro","composition_time":246.1167,"film_time":252.100},
+    {"name":"next_shot","composition_time":246.9000,"film_time":252.883}
+  ],
+  "editorial_status":"NOT_REVIEWED",
+  "release_approval":"NOT_GRANTED",
+  "capture_class":"source_composition_not_final_master"
+}
