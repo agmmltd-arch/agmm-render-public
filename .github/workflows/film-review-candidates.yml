@@ -33,9 +33,9 @@ jobs:
           PY
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: F02-root-hosted-full-20261003-0950-REVIEW-1080
+          name: F02-craft-repaired-full-20261003-1420-REVIEW-1080
           path: proxy
-          run-id: 37114306772
+          run-id: 37125818648
           github-token: ${{ github.token }}
       - name: Extract candidates on hosted runner only
         run: |
@@ -48,7 +48,7 @@ jobs:
         run: |
           set -euo pipefail
           TAG="evidence-F02-$GITHUB_RUN_ID"
-          gh release create "$TAG" --title "F02 OCR candidate frames - not approval" --notes '21 selected candidate frames from the exact held proxy; not full-frame/audio review or release approval.'
+          gh release create "$TAG" --title "F02 OCR candidate frames - not approval" --notes '32 selected candidate frames from the exact held proxy; not full-frame/audio review or release approval.'
           gh release upload "$TAG" review-evidence/F02-OCR-review-candidates.pdf review-evidence/candidate-receipt.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
