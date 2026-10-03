@@ -1,0 +1,161 @@
+name: S86 focused hosted source-frame capture (proposal only)
+run-name: S86 repaired-source frame review
+on:
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE: S86-r2-source-202610010547
+      SOURCE_SHA256: c8fa6aea8bc904de1183ef648188de4d7ec2ab0d432be623f6b165fd7ac4408b
+      PARTS_SHA256: 1585e81e26e654aabc04ebe0f851a81f0cd13962069027557f1e29db2dadc02d
+      PLAN_SHA256: 132f4a559d84bb37570b4776c75fe38b68a38625d541bf10df6dcb4e5a48b7e5
+      MEDIA_IDENTITY_SHA256: 6f9464e534981c16d6e6a451d0759799347b553df468fe5ee6f74812dcbfe32c
+      TAG: S86-r2-focused-source-frames
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_RUN_ID: ${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: d9c59b7ead62dd87a0d42abc58d40af9d24c2ed4
+          path: engine
+          persist-credentials: false
+      - name: Verify host, public repository, frozen source assets, plan and capture implementation before media transfer
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == agmmltd-arch/agmm-render-public ]]
+          [[ "$(git -C engine rev-parse HEAD)" == d9c59b7ead62dd87a0d42abc58d40af9d24c2ed4 ]]
+          [[ "$(git -C engine rev-parse HEAD:.github/scripts/capture_short_package.py)" == 65f9b89f126c6113a91061a2f1f361954c96a0ae ]]
+          [[ "$(git -C engine rev-parse HEAD:.github/scripts/render_short_package.py)" == 754099346a84c5bd305f5684ef24399a53bd9697 ]]
+          [[ "$(git -C engine rev-parse HEAD:.github/workflows/agmm-short-capture.yml)" == 3cb41404efec5fed821510b8d8717b8188221891 ]]
+          sha256sum -c <(printf '%s  %s\n' "$PLAN_SHA256" '.github/plans/s86-r2-source-frame-plan.json')
+          gh api repos/agmmltd-arch/agmm-render-public > repository.json
+          gh api repos/agmmltd-arch/agmm-render-public/releases/tags/"$RELEASE" > source-release.json
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          repo = json.loads(Path('repository.json').read_text())
+          release = json.loads(Path('source-release.json').read_text())
+          assert repo['full_name'] == 'agmmltd-arch/agmm-render-public' and repo['private'] is False and repo['visibility'] == 'public'
+          assert release['tag_name'] == os.environ['RELEASE']
+          assets = {a['name']: a for a in release['assets']}
+          expected = {
+              'source.tar.gz': (602456631, 9830053, 'sha256:' + os.environ['SOURCE_SHA256']),
+              'parts.json': (602456630, 617, 'sha256:' + os.environ['PARTS_SHA256']),
+              'mix.wav': (602456632, 17452902, 'sha256:0c252cdf6e412fc2ccadcdb29b940d6a23b7c527276ebf79da468b7f633df436'),
+          }
+          assert set(assets) == set(expected), 'sealed source release asset set changed'
+          for name, (asset_id, size, digest) in expected.items():
+              asset = assets[name]
+              assert (asset['id'], asset['size'], asset['digest']) == (asset_id, size, digest), f'{name} identity changed'
+          plan = json.loads(Path('.github/plans/s86-r2-source-frame-plan.json').read_text())
+          assert plan['version'] == 1 and plan['short_id'] == 'S86' and plan['include_part_seams'] is True
+          assert plan['source_sha256'] == os.environ['SOURCE_SHA256'] and plan['parts_sha256'] == os.environ['PARTS_SHA256']
+          assert plan['media_identity_sha256'] == os.environ['MEDIA_IDENTITY_SHA256']
+          PY
+          mkdir exact-input
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p source.tar.gz -p parts.json -D exact-input
+          echo "$SOURCE_SHA256  exact-input/source.tar.gz" | sha256sum -c -
+          echo "$PARTS_SHA256  exact-input/parts.json" | sha256sum -c -
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+      - name: Prepare the exact repaired source and six bounded named captures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 engine/.github/scripts/capture_short_package.py prepare \
+            --source exact-input/source.tar.gz --parts exact-input/parts.json \
+            --plan .github/plans/s86-r2-source-frame-plan.json --output prepared \
+            --source-sha256 "$SOURCE_SHA256" --parts-sha256 "$PARTS_SHA256" \
+            --capture-plan-sha256 "$PLAN_SHA256" --media-identity-sha256 "$MEDIA_IDENTITY_SHA256"
+      - name: Capture the source compositions at the flagged windows and every generated part seam
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p raw-snapshots captured
+          python3 - <<'PY' > capture-groups.tsv
+          import json
+          data = json.load(open('prepared/CAPTURE-MANIFEST.json'))
+          for row in data['by_look']:
+              print(row['look'], row['file'], row['times_csv'], sep='\t')
+          PY
+          while IFS=$'\t' read -r look file times; do
+            test "$file" = index.html
+            (cd "prepared/project/$look" && python3 static_check.py) > "captured/$look.static-check.log" 2>&1
+            npx --yes hyperframes@0.8.71 snapshot "prepared/project/$look" \
+              --at "$times" --no-end --describe false --no-browser-gpu --timeout 180000 \
+              --output "$GITHUB_WORKSPACE/raw-snapshots/$look" \
+              > "captured/$look.snapshot.log" 2>&1
+            python3 engine/.github/scripts/capture_short_package.py collect \
+              --manifest prepared/CAPTURE-MANIFEST.json --look "$look" \
+              --snapshots "raw-snapshots/$look" --output "captured/$look" \
+              --log "captured/$look.snapshot.log"
+            cp "captured/$look.static-check.log" "captured/$look/static-check.log"
+          done < capture-groups.tsv
+      - name: Bundle stills and source-bound text receipts only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 engine/.github/scripts/capture_short_package.py bundle \
+            --manifest prepared/CAPTURE-MANIFEST.json \
+            --media-identities prepared/MEDIA-IDENTITIES.json \
+            --captured captured --output capture-pack
+          cp prepared/INPUT-RECEIPT.json capture-pack/
+          test "$(find capture-pack -type f \( -name '*.mp4' -o -name '*.mov' -o -name '*.webm' \) | wc -l | tr -d ' ')" = 0
+      - name: Build a small public receipt and allowlisted image pack
+        shell: bash
+        run: python3 .github/scripts/make_s86_public_review.py capture-pack s86-public-review
+      - name: Publish only the run-specific source frames and receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted evidence'
+          git config user.email 'evidence@users.noreply.github.com'
+          BRANCH="review-S86-source-frames-$GITHUB_RUN_ID"
+          git checkout --orphan "$BRANCH"
+          git rm -rf --cached . >/dev/null
+          git add s86-public-review/frames/*.png \
+            s86-public-review/CAPTURE-EVIDENCE.json \
+            s86-public-review/INPUT-RECEIPT.json \
+            s86-public-review/PUBLIC-REVIEW-RECEIPT.json \
+            s86-public-review/REVIEW-SHA256SUMS.txt
+          python3 - <<'PY'
+          import json, re, subprocess
+          rows = subprocess.check_output(['git','ls-files','--stage','-z'], text=True).split('\0')
+          staged = {}
+          for row in rows:
+              if not row:
+                  continue
+              metadata, path = row.split('\t', 1)
+              mode = metadata.split()[0]
+              assert mode == '100644', f'non-regular staged mode: {path}'
+              assert path not in staged, f'duplicate staged path: {path}'
+              staged[path] = mode
+          prefix = 's86-public-review/'
+          receipt_path = prefix + 'PUBLIC-REVIEW-RECEIPT.json'
+          receipt = json.load(open(receipt_path))
+          frame_paths = {prefix + row['file'] for row in receipt['captures']}
+          assert len(frame_paths) == 15 and all(re.fullmatch(re.escape(prefix) + r'frames/[A-Za-z0-9._-]+\.png', p) for p in frame_paths)
+          exact = frame_paths | {prefix + name for name in (
+              'CAPTURE-EVIDENCE.json', 'INPUT-RECEIPT.json',
+              'PUBLIC-REVIEW-RECEIPT.json', 'REVIEW-SHA256SUMS.txt')}
+          assert set(staged) == exact, f'public review staged set differs: {sorted(set(staged) ^ exact)}'
+          assert len(staged) == 19
+          print('staged public review allowlist PASS: 15 PNGs + 3 JSON + checksum text')
+          PY
+          git commit -m 'S86 repaired-source crop review frames; NOT approval'
+          git push origin "HEAD:refs/heads/$BRANCH"
