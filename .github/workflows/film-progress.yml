@@ -4,7 +4,7 @@ on:
     inputs:
       run_id:
         required: true
-        default: '37114306772'
+        default: '37125818648'
       follow:
         type: boolean
         default: true
@@ -24,7 +24,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
-      RUN_ID: ${{ inputs.run_id || '37114306772' }}
+      RUN_ID: ${{ inputs.run_id || '37125818648' }}
       FOLLOW: ${{ inputs.follow || false }}
     steps:
       - name: Fetch exact hosted metadata only
