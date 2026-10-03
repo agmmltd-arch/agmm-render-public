@@ -1,0 +1,151 @@
+name: S90 official-source crops only
+run-name: S90 source pack ${{ github.run_id }}
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: s90-source-pack-capture
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: agmmltd-arch/agmm-render-public
+      S90_PLAN_SHA256: da81ea62eeb36ddfab4b63b748894b567e2268c105d00e82d83638fed4c939d5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Guard verified public Ubuntu target and frozen source plan
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == "$GH_REPO" && "$GITHUB_REF" == refs/heads/main ]]
+          gh api "repos/$GH_REPO" > "$RUNNER_TEMP/s90-repository.json"
+          python3 - <<'PY'
+          import hashlib,json,pathlib,os
+          repo=json.load(open(pathlib.Path(os.environ['RUNNER_TEMP'])/'s90-repository.json'))
+          assert repo.get('full_name')=='agmmltd-arch/agmm-render-public'
+          assert repo.get('private') is False and repo.get('visibility')=='public'
+          plan_path=pathlib.Path('.github/scripts/s90-source-pack-plan.json')
+          raw=plan_path.read_bytes()
+          assert hashlib.sha256(raw).hexdigest()==os.environ['S90_PLAN_SHA256']
+          plan=json.loads(raw)
+          assert plan['schema']=='agmm-source-pack-plan-v1' and plan['story_id']=='S90'
+          assert plan['source']['url']=='https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter'
+          assert plan['source']['publisher']=='Channel 4' and plan['source']['date']=='20 October 2025'
+          assert len(plan['claims'])==8 and [c['id'] for c in plan['claims']]==list(range(1,9))
+          assert plan['collection']['photos'] is False and plan['collection']['clips'] is False
+          assert plan['collection']['follow_links'] is False and plan['collection']['full_page_screenshot'] is False
+          PY
+      - name: Install the pinned Playwright capture runtime on Ubuntu
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.1
+          npx playwright install --with-deps chromium
+      - name: Capture exact native Channel 4 source DOM crops
+        id: capture
+        continue-on-error: true
+        env:
+          S90_CAPTURE_DIR: ${{ runner.temp }}/s90-source-capture
+        run: |
+          set -euo pipefail
+          node .github/scripts/s90-source-pack.mjs
+      - name: Prepare an exact allowlisted public review payload, including failure receipts
+        if: always()
+        env:
+          CAPTURE_OUTCOME: ${{ steps.capture.outcome }}
+        run: |
+          set -euo pipefail
+          export S90_CAPTURE_DIR="$RUNNER_TEMP/s90-source-capture"
+          export S90_REVIEW_DIR="$RUNNER_TEMP/s90-source-review"
+          python3 - <<'PY'
+          import json,os,pathlib
+          src=pathlib.Path(os.environ['S90_CAPTURE_DIR']); out=pathlib.Path(os.environ['S90_REVIEW_DIR'])
+          src.mkdir(parents=True,exist_ok=True)
+          out.mkdir(parents=True,exist_ok=True)
+          plan_path=pathlib.Path('.github/scripts/s90-source-pack-plan.json')
+          plan=json.loads(plan_path.read_text())
+          if not (src/'CAPTURE-RECEIPT.json').exists():
+              (src/'CAPTURE-RECEIPT.json').write_text(json.dumps({
+                'schema':'agmm-source-pack-capture-receipt-v1','story_id':'S90',
+                'status':'SOURCE_CAPTURE_NOT_RUN','failure_stage':'workflow-runtime',
+                'failure':'Playwright capture did not run to completion; see GitHub Actions run logs.',
+                'capture_step_outcome':os.environ.get('CAPTURE_OUTCOME'),
+                'assets_published':False,'render_approval':'NOT_GRANTED','release_approval':'NOT_GRANTED'
+              },indent=2)+'\n')
+          if not (src/'SOURCE-IDENTITY.json').exists():
+              (src/'SOURCE-IDENTITY.json').write_text(json.dumps({
+                'schema':'agmm-source-page-identity-v1','story_id':'S90',
+                'pinned_url':plan['source']['url'],'publisher':plan['source']['publisher'],
+                'expected_title':plan['source']['title'],'expected_date':plan['source']['date'],
+                'capture_stage':'SOURCE_CAPTURE_NOT_RUN','capture_step_outcome':os.environ.get('CAPTURE_OUTCOME'),
+                'editorial_status':'SOURCE_CAPTURE_FAILED'
+              },indent=2)+'\n')
+          receipt=json.loads((src/'CAPTURE-RECEIPT.json').read_text())
+          (out/'SOURCE-PLAN.json').write_bytes(plan_path.read_bytes())
+          for name in ('CAPTURE-RECEIPT.json','SOURCE-IDENTITY.json'):
+              (out/name).write_bytes((src/name).read_bytes())
+          success=receipt.get('status')=='SOURCE_CROPS_CAPTURED_NEEDS_ROOT_EYES'
+          if success:
+              expected=['header-channel4.png','release-title.png','release-date.png']+[f'claim-{n:02d}.png' for n in range(1,9)]
+              assert receipt.get('files')==expected and receipt.get('asset_count')==len(expected)
+              for name in expected:
+                  if not (src/name).is_file(): raise SystemExit('refusing incomplete source crop set')
+                  (out/name).write_bytes((src/name).read_bytes())
+              manifest=json.loads((src/'manifest.json').read_text())
+              assert manifest.get('source_plan_sha256')==os.environ['S90_PLAN_SHA256']
+              assert manifest.get('source',{}).get('publisher')=='Channel 4'
+              assert manifest.get('source',{}).get('credit_line')=='Source: Channel 4, News Release, 20 October 2025'
+              assert len(manifest.get('claim_bindings',[]))==8 and len(manifest.get('assets',[]))==len(expected)
+              (out/'manifest.json').write_bytes((src/'manifest.json').read_bytes())
+          names=sorted(p.name for p in out.iterdir() if p.is_file())
+          required={'SOURCE-PLAN.json','CAPTURE-RECEIPT.json','SOURCE-IDENTITY.json'}
+          if success:
+              required|={'manifest.json'}|{f'claim-{n:02d}.png' for n in range(1,9)}|{'header-channel4.png','release-title.png','release-date.png'}
+          assert set(names)==required, f'unexpected public source-pack output files: {names}'
+          PY
+          (cd "$RUNNER_TEMP/s90-source-review" && sha256sum * > SHA256SUMS.txt)
+          test -s "$RUNNER_TEMP/s90-source-review/SHA256SUMS.txt"
+      - name: Publish only the source crops and TEXT receipts to a run-specific public review branch
+        if: always()
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted source review'
+          git config user.email 'evidence@users.noreply.github.com'
+          BRANCH="review-S90-source-pack-$GITHUB_RUN_ID"
+          git checkout --orphan "$BRANCH"
+          git rm -rf --cached . >/dev/null
+          TARGET="public-review/S90/$GITHUB_RUN_ID"
+          mkdir -p "$TARGET"
+          cp "$RUNNER_TEMP/s90-source-review/"* "$TARGET/"
+          git add --all "$TARGET"
+          python3 - "$TARGET" <<'PY'
+          import pathlib,subprocess,sys
+          target=pathlib.Path(sys.argv[1])
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          actual={p.name for p in target.iterdir() if p.is_file()}
+          receipt=__import__('json').loads((target/'CAPTURE-RECEIPT.json').read_text())
+          required={'SOURCE-PLAN.json','CAPTURE-RECEIPT.json','SOURCE-IDENTITY.json','SHA256SUMS.txt'}
+          if receipt.get('status')=='SOURCE_CROPS_CAPTURED_NEEDS_ROOT_EYES':
+            required|={'manifest.json'}|{f'claim-{i:02d}.png' for i in range(1,9)}|{'header-channel4.png','release-title.png','release-date.png'}
+          assert actual==required, f'public source-pack branch has wrong file set: {actual}'
+          assert all(n.startswith(str(target)+'/') for n in names)
+          assert actual <= {'SOURCE-PLAN.json','CAPTURE-RECEIPT.json','SOURCE-IDENTITY.json','manifest.json','SHA256SUMS.txt',
+            'header-channel4.png','release-title.png','release-date.png',*[f'claim-{i:02d}.png' for i in range(1,9)]}
+          assert len(actual)==len(names)
+          PY
+          git commit -m 'S90 official source crops; root review required, not release approval'
+          git push origin "HEAD:refs/heads/$BRANCH"
+      - name: Fail the run after preserving the capture receipt if the source capture failed
+        if: always()
+        env:
+          CAPTURE_OUTCOME: ${{ steps.capture.outcome }}
+        run: |
+          if [[ "$CAPTURE_OUTCOME" != success ]]; then
+            echo "S90 source capture failed or did not run; failure receipt was preserved on the run branch."
+            exit 1
+          fi
