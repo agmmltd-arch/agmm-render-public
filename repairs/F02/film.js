@@ -309,6 +309,7 @@
     return { screen: { mode: "chat", lines: [">Something's wrong with my order", "I'm sorry to hear that."], button: T >= 588.4 }, lift: 1 };
   }
   // the scoreboard: keyframes per slot {t, to, lamp, sub}; each flip takes 0.55 s, no intermediate characters
+  var boardFigureWindows = [];
   var B0 = [[75.25, "?", 0, "RESOLUTION TIME"], [82.6, "11 MIN", 0, "RESOLUTION TIME"], [84.2, "<2 MIN", 0, "WAS 11 MIN"], [84.7, null, 1],
             [425.3, "", 0, ""], [428.3, "11 MIN", 0, "RESOLUTION TIME"], [429.3, "<2 MIN", 0, "WAS 11 MIN"], [429.8, null, 1]];
   var B1 = [[75.25, "?", 0, "CHATS IN MONTH ONE"], [87.6, "2.3M", 0, "CHATS IN MONTH ONE"], [91.4, "700", 0, "FULL-TIME AGENTS' WORK"], [91.9, null, 1], [265.6, "800", 1, "AGENTS' WORK, MAY 2025"],
@@ -332,7 +333,7 @@
     if (i === 1 && T >= 265.6 && T < 425.3) { q.from = "700"; }
     return q;
   }
-  function board(T) { return { slots: [0, 1, 2, 3, 4].map(function (i) { return slot(i, T); }) }; }
+  function board(T) { return { headers: boardFigureWindows.some(function (w) { return T >= w[0] && T < w[1]; }) ? 0 : 1, slots: [0, 1, 2, 3, 4].map(function (i) { return slot(i, T); }) }; }
   function scales(T) {
     var drops = [], tilt = 0;
     if (T < 200) { drops = [{ side: 1, t: 178.2 }, { side: 0, t: 180.1 }, { side: 1, t: 182.5, stack: 1 }, { side: 1, t: 183.4, stack: 2 }];
@@ -406,7 +407,8 @@
     show(l, a, b, { blur: 8, din: 0.4, y: 16 });
   }
   function slam(e, a) { hide(e); full.fromTo(e, { opacity: 0, scale: 1.25, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.18, ease: "power3.out", immediateRender: false }, a); }
-  function fig(num, lab, a, aLab, b, pink, top) {
+  function fig(num, lab, a, aLab, b, pink, top, clearBoardHeaders) {
+    if (clearBoardHeaders) boardFigureWindows.push([a - 0.04, b]);
     var f = el("div", "fig" + (pink ? " pink" : ""), LY, '<div class="num">' + num + '</div><div class="lab">' + lab + "</div>");
     if (top) f.style.top = top + "px";
     slam(f.querySelector(".num"), a); slam(f.querySelector(".lab"), aLab);
@@ -672,10 +674,10 @@
   plate("Too much focus on cost", 413.9, 417.2, "red ul");
   quote(wq("“we have to rethink this and make customer service this human part of what Klarna is”", 417.45, 423.45), "Sebastian Siemiatkowski", "20VC, as reported by Customer Experience Dive", 417.35, 424.35, [10]);
   plate("Now go back to the scoreboard", 425.2, 427.3);
-  fig("11 min → under 2", "speed", 427.6, 427.8, 429.85, false, 110);
-  fig("700 → 800", "agents’ work", 431.2, 431.4, 433.55, false, 110);
-  fig("-25%", "repeat questions", 435.0, 435.2, 436.35, false, 110);
-  fig("$40M", "expected profit", 436.8, 437.0, 439.75, true, 110);
+  fig("11 min → under 2", "speed", 427.6, 427.8, 429.85, false, 110, true);
+  fig("700 → 800", "agents’ work", 431.2, 431.4, 433.55, false, 110, true);
+  fig("-25%", "repeat questions", 435.0, 435.2, 436.35, false, 110, true);
+  fig("$40M", "expected profit", 436.8, 437.0, 439.75, true, 110, true);
   plate("The AI hit every number", 440.6, 443.4, "ul");
   plate("Quality fell", 445.8, 446.95, "red ul");
   head("Forbes", "16 Jul 2026", "How Klarna’s AI agent strategy <span class=\"m\">backfired</span> but became a useful lesson", "", 447.0, 451.4, 448.4);
