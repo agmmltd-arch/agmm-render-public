@@ -84,21 +84,71 @@ async function visibleHeaderLogo(page, selector, pattern) {
         && style.visibility !== 'hidden' && Number(style.opacity || 1) > 0;
     };
     const headers = [...document.querySelectorAll(selector)];
+    const visibleHeaderCount = headers.filter(visible).length;
     const candidates = [];
     for (const header of headers) {
       if (!visible(header)) continue;
       for (const el of header.querySelectorAll('img,svg,[role="img"]')) {
-        if (!visible(el)) continue;
         const attrs = [el.getAttribute('alt'), el.getAttribute('aria-label'), el.getAttribute('title')]
           .filter(Boolean).join(' ');
         if (!pattern.test(attrs)) continue;
-        const src = el instanceof HTMLImageElement ? el.currentSrc || el.src : '';
+        // Images are blocked during discovery, so a genuine logo can have a zero-size box.
+        // Discover it by accessible name inside the visible publisher header, then verify
+        // dimensions and successful load against this exact URL on the second pass.
+        const src = el instanceof HTMLImageElement ? (el.getAttribute('src') || el.currentSrc || el.src) : '';
+        const rect = el.getBoundingClientRect();
         candidates.push({ headerIndex: headers.indexOf(header), src, tag: el.tagName.toLowerCase(),
-          label: [el.getAttribute('alt'), el.getAttribute('aria-label'), el.getAttribute('title')].filter(Boolean).join(' ') });
+          label: attrs, discovery_box: { width: rect.width, height: rect.height } });
       }
     }
-    return { headerCount: headers.length, candidates };
+    return { headerCount: headers.length, visibleHeaderCount, candidates };
   }, { selector, patternText: pattern });
+}
+
+async function waitForHeaderLogoDom(page, selector, patternText, timeout = 20000) {
+  await page.waitForFunction(({ selector, patternText }) => {
+    const pattern = new RegExp(patternText, 'i');
+    const visible = el => {
+      const rect = el.getBoundingClientRect(); const style = getComputedStyle(el);
+      return rect.width > 0 && rect.height > 0 && style.display !== 'none'
+        && style.visibility !== 'hidden' && Number(style.opacity || 1) > 0;
+    };
+    return [...document.querySelectorAll(selector)].some(header => visible(header)
+      && [...header.querySelectorAll('img,svg,[role="img"]')].some(el => {
+        const name = [el.getAttribute('alt'), el.getAttribute('aria-label'), el.getAttribute('title')]
+          .filter(Boolean).join(' ');
+        return pattern.test(name);
+      }));
+  }, { selector, patternText }, { timeout });
+}
+
+async function waitForLoadedHeaderLogo(page, selector, patternText, expected) {
+  try {
+    await page.waitForFunction(({ selector, patternText, expected }) => {
+      const pattern = new RegExp(patternText, 'i');
+      const visible = el => {
+        const rect = el.getBoundingClientRect(); const style = getComputedStyle(el);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none'
+          && style.visibility !== 'hidden' && Number(style.opacity || 1) > 0;
+      };
+      return [...document.querySelectorAll(selector)].some(header => visible(header)
+        && [...header.querySelectorAll('img,svg,[role="img"]')].some(el => {
+          const name = [el.getAttribute('alt'), el.getAttribute('aria-label'), el.getAttribute('title')]
+            .filter(Boolean).join(' ');
+          if (!pattern.test(name) || name !== expected.label || el.tagName.toLowerCase() !== expected.tag
+              || !visible(el)) return false;
+          if (el instanceof HTMLImageElement) {
+            return (el.currentSrc || el.src) === expected.url && el.complete && el.naturalWidth > 0;
+          }
+          return el instanceof SVGElement && el.ownerSVGElement === null
+            && el.querySelectorAll('path,rect,circle,polygon,text,line,polyline').length > 0;
+        }));
+    }, { selector, patternText, expected }, { timeout: 20000 });
+    return true;
+  } catch (error) {
+    if (error?.name === 'TimeoutError') return false;
+    throw error;
+  }
 }
 
 async function capture(plan, outputDir) {
@@ -118,7 +168,8 @@ async function capture(plan, outputDir) {
     publisher: plan.source.publisher, document_type: plan.source.document_type,
     expected_title: plan.source.title, observed_title: null,
     expected_date: plan.source.date, observed_date: null,
-    title_verified: false, date_verified: false, visible_header_logo_candidates: [],
+    title_verified: false, date_verified: false, identified_header_logo_candidates: [],
+    header_discovery: null, navigation_init_errors: [],
     no_photos_or_clips_requested: true, editorial_status: 'NOT_REVIEWED',
     release_approval: 'NOT_GRANTED',
   };
@@ -126,6 +177,25 @@ async function capture(plan, outputDir) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 2,
       serviceWorkers: 'block', reducedMotion: 'reduce' });
     page = await context.newPage();
+    page.on('pageerror', error => {
+      const message = String(error?.message || '');
+      if (/globalnav/i.test(message) && identity.navigation_init_errors.length < 5) {
+        identity.navigation_init_errors.push({
+          name: String(error?.name || 'Error').slice(0, 48),
+          message: message.replace(/https?:\/\/[^\s)]+/gi, '[url]').slice(0, 240),
+        });
+      }
+    });
+    page.on('console', message => {
+      const text = String(message?.text?.() || '');
+      if (message?.type?.() === 'error' && /globalnav/i.test(text)
+          && identity.navigation_init_errors.length < 5) {
+        identity.navigation_init_errors.push({
+          name: 'ConsoleError',
+          message: text.replace(/https?:\/\/[^\s)]+/gi, '[url]').slice(0, 240),
+        });
+      }
+    });
     await page.route('**/*', async route => {
       const request = route.request();
       const url = new URL(request.url());
@@ -152,39 +222,54 @@ async function capture(plan, outputDir) {
     await page.waitForLoadState('domcontentloaded');
 
     failureStage = 'header-mark-identification';
+    let headerDomReady = true;
+    try {
+      // Channel 4 injects its global navigation asynchronously. Wait for the observed
+      // accessible mark in the actual visible publisher header, not a fixed sleep.
+      await waitForHeaderLogoDom(page, plan.source.header_selector,
+        plan.source.logo_accessibility_pattern, 20000);
+    } catch (error) {
+      if (error?.name !== 'TimeoutError') throw error;
+      headerDomReady = false;
+    }
     const header = await visibleHeaderLogo(page, plan.source.header_selector, plan.source.logo_accessibility_pattern);
+    identity.header_discovery = {
+      selector: plan.source.header_selector,
+      dom_ready_with_accessible_logo: headerDomReady,
+      header_count: header.headerCount,
+      visible_header_count: header.visibleHeaderCount,
+      candidates: header.candidates.map(c => ({ tag: c.tag, accessible_label: c.label || null,
+        source_host: c.src ? new URL(c.src, pageUrl).hostname : null, discovery_box: c.discovery_box })),
+      navigation_init_errors: identity.navigation_init_errors,
+    };
+    if (!headerDomReady) {
+      throw new Error(`Channel 4 global navigation did not expose its accessible logo within 20 seconds (headers=${header.headerCount}, visible_headers=${header.visibleHeaderCount}, candidates=${header.candidates.length}, navigation_errors=${identity.navigation_init_errors.length})`);
+    }
     if (header.candidates.length !== 1 || (header.candidates[0].tag === 'img' && !header.candidates[0].src)) {
-      throw new Error('could not identify exactly one accessible real Channel 4 mark inside the visible native site header');
+      throw new Error(`could not identify exactly one accessible real Channel 4 mark inside the visible native site header (headers=${header.headerCount}, visible_headers=${header.visibleHeaderCount}, candidates=${header.candidates.length})`);
     }
     const logoUrl = new URL(header.candidates[0].src || pageUrl);
     if (!hostAllowed(logoUrl.hostname) || logoUrl.protocol !== 'https:') {
       throw new Error('identified header mark is not served from the Channel 4 HTTPS publisher domain');
     }
     allowedLogoUrls.add(logoUrl.href);
-    identity.visible_header_logo_candidates = [{ host: logoUrl.hostname, tag: header.candidates[0].tag,
-      accessible_label: header.candidates[0].label || null }];
+    identity.identified_header_logo_candidates = [{ host: logoUrl.hostname, tag: header.candidates[0].tag,
+      accessible_label: header.candidates[0].label || null,
+      discovery_box: header.candidates[0].discovery_box,
+      second_pass_visibility_required: true, second_pass_loaded: false }];
 
     failureStage = 'source-render';
     const secondResponse = await page.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 90000 });
     if (!secondResponse || secondResponse.status() !== responseStatus || normalizeURL(page.url()) !== normalizeURL(pageUrl)) {
       throw new Error('pinned source identity changed between image-blocked inspection and header-logo capture');
     }
-    await page.evaluate(() => document.fonts.ready);
-    const logoLoaded = await page.evaluate(({ selector, patternText }) => {
-      const pattern = new RegExp(patternText, 'i');
-      const headers = [...document.querySelectorAll(selector)];
-      for (const header of headers) {
-        for (const el of header.querySelectorAll('img,svg,[role="img"]')) {
-          const attrs = [el.getAttribute('alt'), el.getAttribute('aria-label'), el.getAttribute('title')]
-            .filter(Boolean).join(' ');
-          if (pattern.test(attrs) && el instanceof HTMLImageElement && el.complete && el.naturalWidth > 0) return true;
-          if (pattern.test(attrs) && el instanceof SVGElement && el.ownerSVGElement === null
-              && el.querySelectorAll('path,rect,circle,polygon,text,line,polyline').length > 0) return true;
-        }
-      }
-      return false;
-    }, { selector: plan.source.header_selector, patternText: plan.source.logo_accessibility_pattern });
+    const logoLoaded = await waitForLoadedHeaderLogo(page, plan.source.header_selector,
+      plan.source.logo_accessibility_pattern, {
+        tag: header.candidates[0].tag, label: header.candidates[0].label,
+        url: header.candidates[0].tag === 'img' ? logoUrl.href : null,
+      });
     if (!logoLoaded) throw new Error('Channel 4 header logo image did not load from the pinned publisher domain');
+    identity.identified_header_logo_candidates[0].second_pass_loaded = true;
 
     failureStage = 'title-date-validation';
     const titleMatches = await page.locator(plan.source.title_selector).evaluateAll((els, expected) => {

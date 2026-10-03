@@ -85,17 +85,34 @@ test('workflow never requests source photos, clips, or link traversal', () => {
   assert.match(yml, /plan\['collection'\]\['full_page_screenshot'\] is False/);
 });
 
-test('logo-loaded browser evaluation passes selector and pattern in its single argument object', () => {
+test('async navigation discovery accepts blocked logo dimensions but loaded pass requires exact visible publisher mark', () => {
   const script = fs.readFileSync(path.join(here, '../.github/scripts/s90-source-pack.mjs'), 'utf8');
-  assert.match(script, /page\.evaluate\(\(\{ selector, patternText \}\) => \{/);
-  assert.match(script, /\}, \{ selector: plan\.source\.header_selector, patternText: plan\.source\.logo_accessibility_pattern \}\);/);
-  assert.doesNotMatch(script, /\},\s*plan\.source\.header_selector,\s*plan\.source\.logo_accessibility_pattern\s*\);/);
-  const sourceInspection = script.slice(script.indexOf('async function visibleHeaderLogo'), script.indexOf('async function capture'));
-  const logoLoadCheck = script.slice(script.indexOf('const logoLoaded ='), script.indexOf("if (!logoLoaded)"));
-  assert.match(sourceInspection, /getAttribute\('alt'\).*getAttribute\('aria-label'\).*getAttribute\('title'/s);
-  assert.match(logoLoadCheck, /getAttribute\('alt'\).*getAttribute\('aria-label'\).*getAttribute\('title'/s);
-  assert.doesNotMatch(sourceInspection, /getAttribute\('(class|src|href)'\)/);
-  assert.doesNotMatch(logoLoadCheck, /getAttribute\('(class|src|href)'\)/);
+  const discovery = script.slice(script.indexOf('async function visibleHeaderLogo'), script.indexOf('async function waitForHeaderLogoDom'));
+  const loaded = script.slice(script.indexOf('async function waitForLoadedHeaderLogo'), script.indexOf('async function capture'));
+  assert.match(discovery, /page\.evaluate\(\(\{ selector, patternText \}\) => \{/);
+  assert.match(discovery, /const visibleHeaderCount = headers\.filter\(visible\)\.length/);
+  assert.doesNotMatch(discovery, /if \(!visible\(el\)\) continue/);
+  assert.match(discovery, /getAttribute\('src'\) \|\| el\.currentSrc \|\| el\.src/);
+  assert.match(script, /await waitForHeaderLogoDom\(page, plan\.source\.header_selector/);
+  assert.match(script, /message\?\.type\?\.\(\) === 'error' && \/globalnav\/i\.test\(text\)/);
+  assert.match(script, /message\.replace\(\/https\?:\\\/\\\/\[\^\\s\)\]\+\/gi, '\[url\]'\)\.slice\(0, 240\)/);
+  assert.match(script, /header_count: header\.headerCount[\s\S]*visible_header_count: header\.visibleHeaderCount[\s\S]*candidates: header\.candidates\.map/);
+  assert.match(loaded, /\|\| !visible\(el\)\) return false/);
+  assert.match(loaded, /\(el\.currentSrc \|\| el\.src\) === expected\.url && el\.complete && el\.naturalWidth > 0/);
+  assert.match(loaded, /name !== expected\.label \|\| el\.tagName\.toLowerCase\(\) !== expected\.tag/);
+
+  const regex = new RegExp(plan.source.logo_accessibility_pattern, 'i');
+  const blockedMark = { headerVisible:true, label:'Channel4.com Homepage', box:{width:0,height:0},
+    src:'https://all4nav.channel4.com/globalnav/static/2.1.34/images/all4_logo.svg' };
+  const discovers = row => row.headerVisible && regex.test(row.label);
+  const secondPassAccepts = (row, image) => row.headerVisible && regex.test(row.label)
+    && row.box.width > 0 && row.box.height > 0 && image.complete && image.naturalWidth > 0 && image.url === row.src;
+  assert.equal(discovers(blockedMark), true);
+  assert.equal(secondPassAccepts(blockedMark, {complete:false,naturalWidth:0,url:''}), false);
+  const visibleMark = { ...blockedMark, box:{width:200,height:80} };
+  assert.equal(secondPassAccepts(visibleMark, {complete:true,naturalWidth:200,
+    url:'https://assets-corporate.channel4.com/AI-Presenter.jpg'}), false);
+  assert.equal(secondPassAccepts(visibleMark, {complete:true,naturalWidth:200,url:blockedMark.src}), true);
 });
 
 test('actual labelled Channel4.com logo passes while an unlabelled Channel 4 presenter photo does not', () => {
