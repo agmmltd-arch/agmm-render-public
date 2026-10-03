@@ -19,14 +19,14 @@ concurrency:
   cancel-in-progress: false
 jobs:
   export:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.id == 37114306772 && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')) }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.id == 37125818648 && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
       RUN_ID: ${{ inputs.run_id || github.event.workflow_run.id }}
-      TAG: ${{ inputs.tag || 'F02-root-hosted-full-20261003-0950' }}
+      TAG: ${{ inputs.tag || 'F02-craft-repaired-full-20261003-1420' }}
       FID: ${{ inputs.fid || 'F02' }}
     steps:
       - name: Verify source workflow before any artifact download
@@ -58,19 +58,19 @@ jobs:
           PYCODE
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: ${{ inputs.tag || 'F02-root-hosted-full-20261003-0950' }}-MASTER-4K
+          name: ${{ inputs.tag || 'F02-craft-repaired-full-20261003-1420' }}-MASTER-4K
           path: master
           run-id: ${{ inputs.run_id || github.event.workflow_run.id }}
           github-token: ${{ github.token }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: ${{ inputs.tag || 'F02-root-hosted-full-20261003-0950' }}-REVIEW-1080
+          name: ${{ inputs.tag || 'F02-craft-repaired-full-20261003-1420' }}-REVIEW-1080
           path: review
           run-id: ${{ inputs.run_id || github.event.workflow_run.id }}
           github-token: ${{ github.token }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: ${{ inputs.tag || 'F02-root-hosted-full-20261003-0950' }}-MACOS-VISION-OCR
+          name: ${{ inputs.tag || 'F02-craft-repaired-full-20261003-1420' }}-MACOS-VISION-OCR
           path: ocr
           run-id: ${{ inputs.run_id || github.event.workflow_run.id }}
           github-token: ${{ github.token }}
