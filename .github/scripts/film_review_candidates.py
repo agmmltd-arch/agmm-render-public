@@ -6,11 +6,13 @@ from pathlib import Path
 import platform
 import subprocess
 
-RUN = 37114306772
+RUN = 37125818648
 REPO = 'agmmltd-arch/agmm-render-public'
 PROXY = 'F02-MASTER-1080-from-4K.mp4'
-TIMES = (36.5,37,37.5,39.5,40,40.5,88.5,89,89.5,430,430.75,431.5,
-         432.5,433,433.5,439,439.5,440,615.5,616,616.5)
+TIMES = (36.5,39.5,41.5,42,88.5,89,89.5,208.5,209,209.5,210,358,
+         430,430.5,431,436.5,437,437.5,439,439.5,440,555.5,556,
+         604,605,607,607.5,610,612.5,615.5,616,616.5)
+
 
 def guard():
     if platform.system() != 'Linux' or os.environ.get('GITHUB_ACTIONS') != 'true':
@@ -72,7 +74,7 @@ def main():
             page = Image.new('RGB',(1920,1240),'white');page.paste(image.convert('RGB'),(0,130))
         draw = ImageDraw.Draw(page)
         draw.text((24,12),f'F02 frame {number} at {number/30:.6f}s - OCR candidate, NOT a confirmed defect',font=font,fill='black')
-        draw.text((24,49),'21 selected frames only. No full-film visual/audio review or release approval.',font=font,fill='black')
+        draw.text((24,49),f'{len(TIMES)} selected frames only. No full-film visual/audio review or release approval.',font=font,fill='black')
         draw.text((24,86),f'Proxy SHA256: {contract["sha256"]}',font=font,fill='black')
         pages.append(page)
     pages[0].save(out/'F02-OCR-review-candidates.pdf',save_all=True,append_images=pages[1:],
