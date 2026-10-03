@@ -321,7 +321,7 @@ def _generate_content_blind(
             "temperature": 0.1,
             "topK": 16,
             "topP": 0.8,
-            "maxOutputTokens": 512,
+            "maxOutputTokens": 4096,
         }
     }
     
@@ -418,11 +418,15 @@ def main() -> int:
             if parts and isinstance(parts, list):
                 candidates_text = parts[0].get("text", "")
                 
+        finish_reason = candidates[0].get("finishReason") if candidates else None
+        if finish_reason and finish_reason != "STOP":
+            raise UploadRefused(f"Incomplete inference: finishReason={finish_reason}")
         if not candidates_text.strip() or not generation_result.get("modelVersion"):
             raise UploadRefused("Inference returned no observations or observed modelVersion")
         result: ProbeResult = {
             "actualmodelVersion": generation_result["modelVersion"],
             "usage": generation_result.get("usageMetadata", {}),
+            "finish_reason": finish_reason,
             "sourcehash": provenance["sha256"],
             "input_provenance": {
                 "sha256": provenance["sha256"],
