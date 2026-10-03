@@ -1,0 +1,3802 @@
+{
+  "schema_version": 1,
+  "kind": "F02_EXACT_MASTER_SEAM_CONTEXT_SAMPLE",
+  "source_repository": "agmmltd-arch/agmm-render-public",
+  "source_run_id": 37146440125,
+  "source_workflow": ".github/workflows/agmm-f02-partial-assembly.yml",
+  "source_workflow_head": "3be0bf2c26e2186710002796a80b1eda115c1d3f",
+  "source_release_tag": "preview-F02-37146440125",
+  "source_receipt_sha256": "cc0d364aae718266ca2a955adfacdffa46fff02e12e6cbe3442f236fb9cbff5f",
+  "master_filename": "F02-MASTER-4K.mp4",
+  "master_size": 2849432872,
+  "master_sha256": "276ae17ca24d46c9b08508dc2cfaec00bc89ad6c1d3e4b96fd7d490e64c7c51e",
+  "source_fps": 30,
+  "source_frame_count": 19548,
+  "source_resolution": [
+    3840,
+    2160
+  ],
+  "boundary_count": 74,
+  "hosted_runner_capacity": {
+    "runner_os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "scratch_free_bytes": 92408020992,
+    "minimum_scratch_bytes": 12884901888
+  },
+  "seam_context_frames": 370,
+  "repair_context": {
+    "center_frame": 13185,
+    "center_time_s": 439.5,
+    "radius_frames": 2
+  },
+  "unique_png_count": 375,
+  "png_bytes_total": 1531599629,
+  "producer_segment_full_decode_receipt": "PASS (source-bound receipt; 75 segments)",
+  "reassembled_master_probe": {
+    "width": 3840,
+    "height": 2160,
+    "r_frame_rate": "30/1",
+    "nb_frames": 19548
+  },
+  "combined_master_single_ffmpeg_decode_and_extract": "PASS",
+  "scope": "375 selected 4K frame PNGs: five frames around each of 74 joins plus five at 439.5s. Not a full-film human review.",
+  "ocr_status": "NOT_RUN",
+  "full_visual_review": "NOT_RUN",
+  "motion_review": "NOT_RUN",
+  "audio_review": "NOT_RUN",
+  "pilot_comparison": "NOT_RUN",
+  "thumbnail_review": "NOT_RUN",
+  "review_status": "NOT_REVIEWED",
+  "release_approval": "NOT_GRANTED",
+  "frames": [
+    {
+      "index": 256,
+      "time_s": 8.533333333333333,
+      "roles": [
+        "seam:01-02"
+      ],
+      "filename": "frame-00256.png",
+      "size": 3728655,
+      "sha256": "96711dce4cd47f198edbac343f6be1eb0fb8e5242c875b832cbe925062a4498b"
+    },
+    {
+      "index": 257,
+      "time_s": 8.566666666666666,
+      "roles": [
+        "seam:01-02"
+      ],
+      "filename": "frame-00257.png",
+      "size": 3488337,
+      "sha256": "9570bd8fe0b1394dc8c9a0d3f82ae8ec29f10b320f999c630362ae4effd79c49"
+    },
+    {
+      "index": 258,
+      "time_s": 8.6,
+      "roles": [
+        "seam:01-02"
+      ],
+      "filename": "frame-00258.png",
+      "size": 3602212,
+      "sha256": "0109de65dd4bb66a776f7bed63813672f2f431a603de6927cb0fa29a69842b81"
+    },
+    {
+      "index": 259,
+      "time_s": 8.633333333333333,
+      "roles": [
+        "seam:01-02"
+      ],
+      "filename": "frame-00259.png",
+      "size": 3694077,
+      "sha256": "e6b04eed2fde419ec76a9ceda1d5f188418c0d8ef7e1c202233652b3828fe11d"
+    },
+    {
+      "index": 260,
+      "time_s": 8.666666666666666,
+      "roles": [
+        "seam:01-02"
+      ],
+      "filename": "frame-00260.png",
+      "size": 3736949,
+      "sha256": "bc1eea0face3ef3ef1bd4fe94acdb53e3c8428c82b24ef8b5abeb0fe410557ff"
+    },
+    {
+      "index": 514,
+      "time_s": 17.133333333333333,
+      "roles": [
+        "seam:02-03"
+      ],
+      "filename": "frame-00514.png",
+      "size": 6618263,
+      "sha256": "4887168c5787cc01d2a1c7fb754cf1fe34966d8b19fb296a8f76746a8d946982"
+    },
+    {
+      "index": 515,
+      "time_s": 17.166666666666668,
+      "roles": [
+        "seam:02-03"
+      ],
+      "filename": "frame-00515.png",
+      "size": 6415978,
+      "sha256": "e10242f1786f1ce13935393c93d5efbc07ba5102f9bfbed68a475e0228daf3d8"
+    },
+    {
+      "index": 516,
+      "time_s": 17.2,
+      "roles": [
+        "seam:02-03"
+      ],
+      "filename": "frame-00516.png",
+      "size": 6126876,
+      "sha256": "f5e0faabd4fe2679b2fe3d38eb8d889e044b763870dc9b436933751bbf909307"
+    },
+    {
+      "index": 517,
+      "time_s": 17.233333333333334,
+      "roles": [
+        "seam:02-03"
+      ],
+      "filename": "frame-00517.png",
+      "size": 6493997,
+      "sha256": "0e34dec0c2da515af8eb5b336fb090cb247667695b0a8f77ab70245130a44f23"
+    },
+    {
+      "index": 518,
+      "time_s": 17.266666666666666,
+      "roles": [
+        "seam:02-03"
+      ],
+      "filename": "frame-00518.png",
+      "size": 6475870,
+      "sha256": "19f35883896b024becb32a7691985d16e0a831fac62aeef2fab8aa47c52fba63"
+    },
+    {
+      "index": 772,
+      "time_s": 25.733333333333334,
+      "roles": [
+        "seam:03-04"
+      ],
+      "filename": "frame-00772.png",
+      "size": 4894939,
+      "sha256": "806c6dbec232d6a28c9bd08a5ac31508c167aae7607950c8b7b065637f270d9c"
+    },
+    {
+      "index": 773,
+      "time_s": 25.766666666666666,
+      "roles": [
+        "seam:03-04"
+      ],
+      "filename": "frame-00773.png",
+      "size": 4796232,
+      "sha256": "1bae8281e8ed0c46ec39d228a549a84209f066c5ae6c8129e9493a9eed5b0d5d"
+    },
+    {
+      "index": 774,
+      "time_s": 25.8,
+      "roles": [
+        "seam:03-04"
+      ],
+      "filename": "frame-00774.png",
+      "size": 4459717,
+      "sha256": "8bde86598dd2f5063a260b7a678cc3f6ad39f2be8ddd53f85f1906923b59e4f8"
+    },
+    {
+      "index": 775,
+      "time_s": 25.833333333333332,
+      "roles": [
+        "seam:03-04"
+      ],
+      "filename": "frame-00775.png",
+      "size": 4612694,
+      "sha256": "44434e9abe29e0b03d1e1740b6fdcd0530478f7ea8cae8ebb7f09d422567680e"
+    },
+    {
+      "index": 776,
+      "time_s": 25.866666666666667,
+      "roles": [
+        "seam:03-04"
+      ],
+      "filename": "frame-00776.png",
+      "size": 4746931,
+      "sha256": "1108d71dd28447684abe4bccbf7f07e1097ee66fda24fa826d04559848d4c290"
+    },
+    {
+      "index": 1030,
+      "time_s": 34.333333333333336,
+      "roles": [
+        "seam:04-05"
+      ],
+      "filename": "frame-01030.png",
+      "size": 4612916,
+      "sha256": "1823d6854b37ce1b6b1e0f2b13c852f1cc88c4ce052e2bb96f0f959ecfc9354b"
+    },
+    {
+      "index": 1031,
+      "time_s": 34.36666666666667,
+      "roles": [
+        "seam:04-05"
+      ],
+      "filename": "frame-01031.png",
+      "size": 4598025,
+      "sha256": "61b47e2fad13697a3e021b3be9c23982e2ec37381a0279bfec0538b2e6f5705a"
+    },
+    {
+      "index": 1032,
+      "time_s": 34.4,
+      "roles": [
+        "seam:04-05"
+      ],
+      "filename": "frame-01032.png",
+      "size": 4423527,
+      "sha256": "a78910d470baf40fc74b9df68dc0474f92b0c7aa205a8c135230762f213c01fc"
+    },
+    {
+      "index": 1033,
+      "time_s": 34.43333333333333,
+      "roles": [
+        "seam:04-05"
+      ],
+      "filename": "frame-01033.png",
+      "size": 4422241,
+      "sha256": "bf847c5aaeb833514eb5257bef03fce99dbfdfbb8584c47dc84f345bce64db61"
+    },
+    {
+      "index": 1034,
+      "time_s": 34.46666666666667,
+      "roles": [
+        "seam:04-05"
+      ],
+      "filename": "frame-01034.png",
+      "size": 4495449,
+      "sha256": "bc1e75257477068db3aa5cc17345d0bcc0968257270ba36fac502100947f7c80"
+    },
+    {
+      "index": 1288,
+      "time_s": 42.93333333333333,
+      "roles": [
+        "seam:05-06"
+      ],
+      "filename": "frame-01288.png",
+      "size": 4540611,
+      "sha256": "b91a1619ec6354e4438341e2be13d656c71e6bead2d77aebb7844a13a1bd189e"
+    },
+    {
+      "index": 1289,
+      "time_s": 42.96666666666667,
+      "roles": [
+        "seam:05-06"
+      ],
+      "filename": "frame-01289.png",
+      "size": 4277121,
+      "sha256": "816836fc131e9fe56a0b91f93537862d4981402e7768b7bfa9968d5f697ae5a1"
+    },
+    {
+      "index": 1290,
+      "time_s": 43.0,
+      "roles": [
+        "seam:05-06"
+      ],
+      "filename": "frame-01290.png",
+      "size": 4067256,
+      "sha256": "a982225e09eeaad3aefc00eea490acfb916f6ed0df28d1b2ded88649e6be0510"
+    },
+    {
+      "index": 1291,
+      "time_s": 43.03333333333333,
+      "roles": [
+        "seam:05-06"
+      ],
+      "filename": "frame-01291.png",
+      "size": 4100251,
+      "sha256": "1239d3d3b7e7e3ab71bff0d1c52ad95e2169e5ce43856a9e09f8167ba509bc98"
+    },
+    {
+      "index": 1292,
+      "time_s": 43.06666666666667,
+      "roles": [
+        "seam:05-06"
+      ],
+      "filename": "frame-01292.png",
+      "size": 4124827,
+      "sha256": "f4d148e838d7867843eba99436d24d7ac8dd37a76c1406c09236dc1f233b8f11"
+    },
+    {
+      "index": 1546,
+      "time_s": 51.53333333333333,
+      "roles": [
+        "seam:06-07"
+      ],
+      "filename": "frame-01546.png",
+      "size": 690187,
+      "sha256": "f89d08bc3de7c7fbf269582047c314054ef770a6cda6aa68f8659e7807af1589"
+    },
+    {
+      "index": 1547,
+      "time_s": 51.56666666666667,
+      "roles": [
+        "seam:06-07"
+      ],
+      "filename": "frame-01547.png",
+      "size": 617702,
+      "sha256": "1dd868894d1dba3094b6d5e55788f0b4fea1c95cc82e3a0a762d8b062ababa92"
+    },
+    {
+      "index": 1548,
+      "time_s": 51.6,
+      "roles": [
+        "seam:06-07"
+      ],
+      "filename": "frame-01548.png",
+      "size": 765256,
+      "sha256": "9ce2c252151998dfcea294e1c1bb113034822e3d2c102d170736f9eb0cf8f99d"
+    },
+    {
+      "index": 1549,
+      "time_s": 51.63333333333333,
+      "roles": [
+        "seam:06-07"
+      ],
+      "filename": "frame-01549.png",
+      "size": 776585,
+      "sha256": "392de12a7763ae7d9dce68bfb20647e7d23398c76451f588526e6ba5f76f4001"
+    },
+    {
+      "index": 1550,
+      "time_s": 51.666666666666664,
+      "roles": [
+        "seam:06-07"
+      ],
+      "filename": "frame-01550.png",
+      "size": 733240,
+      "sha256": "9d613dde0cfa3d4fca4aafb5b1f2ad5a9abfcbfd7fda08da154b6e913e8fbc29"
+    },
+    {
+      "index": 1804,
+      "time_s": 60.13333333333333,
+      "roles": [
+        "seam:07-08"
+      ],
+      "filename": "frame-01804.png",
+      "size": 4842689,
+      "sha256": "cce52a2d1793437690232d7a5eb997d3cfebc923769d7f14a5fee1deb77ee0f7"
+    },
+    {
+      "index": 1805,
+      "time_s": 60.166666666666664,
+      "roles": [
+        "seam:07-08"
+      ],
+      "filename": "frame-01805.png",
+      "size": 4759829,
+      "sha256": "596e7288bcadeb42523cb4fcf6e5250896b6ce78b3cd154a275f675db780fb29"
+    },
+    {
+      "index": 1806,
+      "time_s": 60.2,
+      "roles": [
+        "seam:07-08"
+      ],
+      "filename": "frame-01806.png",
+      "size": 4633379,
+      "sha256": "944b29be12a08ba9d3dd786f192748a2142110aebe65552c2257774f96879dfd"
+    },
+    {
+      "index": 1807,
+      "time_s": 60.233333333333334,
+      "roles": [
+        "seam:07-08"
+      ],
+      "filename": "frame-01807.png",
+      "size": 4665056,
+      "sha256": "2d61b13eca2bd1af091f47b7d1e8f068008859aa03746fae8249ef20aaef7185"
+    },
+    {
+      "index": 1808,
+      "time_s": 60.266666666666666,
+      "roles": [
+        "seam:07-08"
+      ],
+      "filename": "frame-01808.png",
+      "size": 4685625,
+      "sha256": "60437b35616fcd5753fab39c1bda65190824a165342bb23f4a5fb4674a6c2588"
+    },
+    {
+      "index": 2062,
+      "time_s": 68.73333333333333,
+      "roles": [
+        "seam:08-09"
+      ],
+      "filename": "frame-02062.png",
+      "size": 4900063,
+      "sha256": "acbc60c012ecebd7c579d22b3ddae1b0373032912503e5464ec03d10febebc7e"
+    },
+    {
+      "index": 2063,
+      "time_s": 68.76666666666667,
+      "roles": [
+        "seam:08-09"
+      ],
+      "filename": "frame-02063.png",
+      "size": 4724961,
+      "sha256": "5f4558c6d70e868b462609d07fe0b97af6060e5b13d4e9678533cc6f9c5adc9b"
+    },
+    {
+      "index": 2064,
+      "time_s": 68.8,
+      "roles": [
+        "seam:08-09"
+      ],
+      "filename": "frame-02064.png",
+      "size": 4649135,
+      "sha256": "4f92854f15d592feb3316291ee1f50925b3b8af23aef16189238b2485ec5b674"
+    },
+    {
+      "index": 2065,
+      "time_s": 68.83333333333333,
+      "roles": [
+        "seam:08-09"
+      ],
+      "filename": "frame-02065.png",
+      "size": 4722399,
+      "sha256": "9311131375ecccccfb47b8ea5e278a11ffa5d24967e3491326f6beaa91ee1063"
+    },
+    {
+      "index": 2066,
+      "time_s": 68.86666666666666,
+      "roles": [
+        "seam:08-09"
+      ],
+      "filename": "frame-02066.png",
+      "size": 4838034,
+      "sha256": "37a7e5796e871daf924f72b528d80697324fca43f3e644a2f41768273b0a1c7e"
+    },
+    {
+      "index": 2320,
+      "time_s": 77.33333333333333,
+      "roles": [
+        "seam:09-10"
+      ],
+      "filename": "frame-02320.png",
+      "size": 2943092,
+      "sha256": "ed0a3367252d0bbf53488da39c43703b4d718bcf5e71d6821dff1a49d8f5a329"
+    },
+    {
+      "index": 2321,
+      "time_s": 77.36666666666666,
+      "roles": [
+        "seam:09-10"
+      ],
+      "filename": "frame-02321.png",
+      "size": 2903773,
+      "sha256": "863aac5381a7f3d0dcfca7307bb7fab8039098caf4be13b681a3d7f2e26e4476"
+    },
+    {
+      "index": 2322,
+      "time_s": 77.4,
+      "roles": [
+        "seam:09-10"
+      ],
+      "filename": "frame-02322.png",
+      "size": 2840331,
+      "sha256": "02782bfb4a86e1f5e562b87be693716dff7ed2f0b5d695796133b88ae318a2a3"
+    },
+    {
+      "index": 2323,
+      "time_s": 77.43333333333334,
+      "roles": [
+        "seam:09-10"
+      ],
+      "filename": "frame-02323.png",
+      "size": 2947494,
+      "sha256": "2e04c62edbf7a0883dad8eff4921e4c87376ce80d112e99bd22f3eb23ffc918f"
+    },
+    {
+      "index": 2324,
+      "time_s": 77.46666666666667,
+      "roles": [
+        "seam:09-10"
+      ],
+      "filename": "frame-02324.png",
+      "size": 2993474,
+      "sha256": "bdaae15d8f8d033a44b41ccd872b325e368cd2f1ee54a146c7e715c770169ad7"
+    },
+    {
+      "index": 2578,
+      "time_s": 85.93333333333334,
+      "roles": [
+        "seam:10-11"
+      ],
+      "filename": "frame-02578.png",
+      "size": 4373155,
+      "sha256": "b78fd9bbfd0c83502af6483c500d9c7d41c3cb468ed35d968da725af9704c93a"
+    },
+    {
+      "index": 2579,
+      "time_s": 85.96666666666667,
+      "roles": [
+        "seam:10-11"
+      ],
+      "filename": "frame-02579.png",
+      "size": 4265838,
+      "sha256": "4a3ec4dad43773bcb01ede217420f61c0331e35cc52479209382683c6535a5f7"
+    },
+    {
+      "index": 2580,
+      "time_s": 86.0,
+      "roles": [
+        "seam:10-11"
+      ],
+      "filename": "frame-02580.png",
+      "size": 3906385,
+      "sha256": "dcb749a2b4d96253e1a9b5a725ef30dfffe2fe3934e6ba875ca942a592cb5040"
+    },
+    {
+      "index": 2581,
+      "time_s": 86.03333333333333,
+      "roles": [
+        "seam:10-11"
+      ],
+      "filename": "frame-02581.png",
+      "size": 4016047,
+      "sha256": "8a8fc72977a6767d224607e8c71554f93f24608ef8db2a3659bf4847a077c797"
+    },
+    {
+      "index": 2582,
+      "time_s": 86.06666666666666,
+      "roles": [
+        "seam:10-11"
+      ],
+      "filename": "frame-02582.png",
+      "size": 4054757,
+      "sha256": "322c35c35262cbae61d54939f56a37d9a36913a03a08e40494f66ed2abc5eeae"
+    },
+    {
+      "index": 2836,
+      "time_s": 94.53333333333333,
+      "roles": [
+        "seam:11-12"
+      ],
+      "filename": "frame-02836.png",
+      "size": 3834491,
+      "sha256": "9252b2335a152dffd5394e5eb9b5c1aad56384ea26c9291abc9a93321a650e0e"
+    },
+    {
+      "index": 2837,
+      "time_s": 94.56666666666666,
+      "roles": [
+        "seam:11-12"
+      ],
+      "filename": "frame-02837.png",
+      "size": 3723158,
+      "sha256": "26a9569ca27fce87ac5fda5cb2168b6ba7e28a39a8b9c8be2e5a20d2ebb7863d"
+    },
+    {
+      "index": 2838,
+      "time_s": 94.6,
+      "roles": [
+        "seam:11-12"
+      ],
+      "filename": "frame-02838.png",
+      "size": 3355660,
+      "sha256": "515e5616e6ccf9015f9dfcdb7d6674cdddccf1e14b2a48b1c0db9424ebca6086"
+    },
+    {
+      "index": 2839,
+      "time_s": 94.63333333333334,
+      "roles": [
+        "seam:11-12"
+      ],
+      "filename": "frame-02839.png",
+      "size": 3585786,
+      "sha256": "a9135430cf45c3286608615450f65dd7bbdd8c31f987b0ed15fcb8d8209d1ab4"
+    },
+    {
+      "index": 2840,
+      "time_s": 94.66666666666667,
+      "roles": [
+        "seam:11-12"
+      ],
+      "filename": "frame-02840.png",
+      "size": 3755363,
+      "sha256": "5bdfc1b806156d7794b93d0913d4e228952b0a988e34ce9e37910f4a0200bc40"
+    },
+    {
+      "index": 3094,
+      "time_s": 103.13333333333334,
+      "roles": [
+        "seam:12-13"
+      ],
+      "filename": "frame-03094.png",
+      "size": 3702892,
+      "sha256": "9c9007da1218d7557984f5979ae8627ab2a363d5abdad1b2fcbfa661e39bf908"
+    },
+    {
+      "index": 3095,
+      "time_s": 103.16666666666667,
+      "roles": [
+        "seam:12-13"
+      ],
+      "filename": "frame-03095.png",
+      "size": 3511878,
+      "sha256": "5afb52c4efd66c9d4550a1be892684a59cdccf6e99e76f7fe5feadd8fde400e2"
+    },
+    {
+      "index": 3096,
+      "time_s": 103.2,
+      "roles": [
+        "seam:12-13"
+      ],
+      "filename": "frame-03096.png",
+      "size": 3716571,
+      "sha256": "b58bd5a83fb3e762b1b40e138e67d117875615a09e3906cde2876563d2b7c8c1"
+    },
+    {
+      "index": 3097,
+      "time_s": 103.23333333333333,
+      "roles": [
+        "seam:12-13"
+      ],
+      "filename": "frame-03097.png",
+      "size": 3778460,
+      "sha256": "c0b880e985e6af6e0cf8b0c3939c263cb78a88c805821cf725f63eb647a1dcb2"
+    },
+    {
+      "index": 3098,
+      "time_s": 103.26666666666667,
+      "roles": [
+        "seam:12-13"
+      ],
+      "filename": "frame-03098.png",
+      "size": 3857425,
+      "sha256": "c88552b0cae6271d737940047a3131667c22616fccd9caa38978a549f10b9292"
+    },
+    {
+      "index": 3352,
+      "time_s": 111.73333333333333,
+      "roles": [
+        "seam:13-14"
+      ],
+      "filename": "frame-03352.png",
+      "size": 1737275,
+      "sha256": "c92f976eab4ce7d7abf3c5e7bda4aace8a3b82ed974b7655a77aa1e7a1a9e36b"
+    },
+    {
+      "index": 3353,
+      "time_s": 111.76666666666667,
+      "roles": [
+        "seam:13-14"
+      ],
+      "filename": "frame-03353.png",
+      "size": 1619536,
+      "sha256": "891db7306f82fdf8ec1d10d8706cc8f9bf4fafd57ea1a70d354e262a229de631"
+    },
+    {
+      "index": 3354,
+      "time_s": 111.8,
+      "roles": [
+        "seam:13-14"
+      ],
+      "filename": "frame-03354.png",
+      "size": 1862618,
+      "sha256": "0ecc713fdc7666c935182ff3b7cda8ada411632a0c964b2ccd1e84a5cfe898ac"
+    },
+    {
+      "index": 3355,
+      "time_s": 111.83333333333333,
+      "roles": [
+        "seam:13-14"
+      ],
+      "filename": "frame-03355.png",
+      "size": 1861440,
+      "sha256": "d95702a85948216cd24796b44c1756c0f463b8145a4c8c5abbfe8bd93dcafd22"
+    },
+    {
+      "index": 3356,
+      "time_s": 111.86666666666666,
+      "roles": [
+        "seam:13-14"
+      ],
+      "filename": "frame-03356.png",
+      "size": 1885214,
+      "sha256": "18225e71c2ac599a918765bcad885bb7d527bf5c07a73961e75fbe08c03d0ac7"
+    },
+    {
+      "index": 3610,
+      "time_s": 120.33333333333333,
+      "roles": [
+        "seam:14-15"
+      ],
+      "filename": "frame-03610.png",
+      "size": 3267347,
+      "sha256": "055b500219b22590054dc701c1373c218c54b3a1b3376825a1e421c8708ba457"
+    },
+    {
+      "index": 3611,
+      "time_s": 120.36666666666666,
+      "roles": [
+        "seam:14-15"
+      ],
+      "filename": "frame-03611.png",
+      "size": 3196995,
+      "sha256": "997a20df0a2649487555cdc83531cb51b822eac3fbf91ccd6a1b65a5c7500091"
+    },
+    {
+      "index": 3612,
+      "time_s": 120.4,
+      "roles": [
+        "seam:14-15"
+      ],
+      "filename": "frame-03612.png",
+      "size": 3025691,
+      "sha256": "f42e2da450d7f62fca5fd8bdd18c9fdfe88679be5878e7fa2608263ab932d78b"
+    },
+    {
+      "index": 3613,
+      "time_s": 120.43333333333334,
+      "roles": [
+        "seam:14-15"
+      ],
+      "filename": "frame-03613.png",
+      "size": 3107844,
+      "sha256": "d314c9cd4afc85bdef460c538a6cb48fc0a89841f7d5cdeaef865e0108c39731"
+    },
+    {
+      "index": 3614,
+      "time_s": 120.46666666666667,
+      "roles": [
+        "seam:14-15"
+      ],
+      "filename": "frame-03614.png",
+      "size": 3158425,
+      "sha256": "44cce3fe3f431448b1186ccde93f28a4fc549ee07fae1f21b926cf61a60620cd"
+    },
+    {
+      "index": 3868,
+      "time_s": 128.93333333333334,
+      "roles": [
+        "seam:15-16"
+      ],
+      "filename": "frame-03868.png",
+      "size": 3642889,
+      "sha256": "00fe60cc867cc73aeeac60ac4a936328ce1d8e912a9625f4fe756b66f2f449b3"
+    },
+    {
+      "index": 3869,
+      "time_s": 128.96666666666667,
+      "roles": [
+        "seam:15-16"
+      ],
+      "filename": "frame-03869.png",
+      "size": 3607261,
+      "sha256": "674c8754647a124e3d0e2ef7f0a63f5ca0da144358dba1903aa2df907575cc50"
+    },
+    {
+      "index": 3870,
+      "time_s": 129.0,
+      "roles": [
+        "seam:15-16"
+      ],
+      "filename": "frame-03870.png",
+      "size": 3481193,
+      "sha256": "67fbe4594842fa4f53dbe4c6ae318ded05049f11b3e6be8173020bd936035309"
+    },
+    {
+      "index": 3871,
+      "time_s": 129.03333333333333,
+      "roles": [
+        "seam:15-16"
+      ],
+      "filename": "frame-03871.png",
+      "size": 3519318,
+      "sha256": "bc3025974a14af2094172a3528186ca8397fc0bb8eaa66374bc46e5d1a328b17"
+    },
+    {
+      "index": 3872,
+      "time_s": 129.06666666666666,
+      "roles": [
+        "seam:15-16"
+      ],
+      "filename": "frame-03872.png",
+      "size": 3447536,
+      "sha256": "044f37b972736ba58d8d29eb449bb5fe9f1aae98e4b7591ca37aed96d96158f8"
+    },
+    {
+      "index": 4126,
+      "time_s": 137.53333333333333,
+      "roles": [
+        "seam:16-17"
+      ],
+      "filename": "frame-04126.png",
+      "size": 7238517,
+      "sha256": "3dce30201c4daf2fa248182abdb863765cd11ad5a7830889215b62c4120f6c2c"
+    },
+    {
+      "index": 4127,
+      "time_s": 137.56666666666666,
+      "roles": [
+        "seam:16-17"
+      ],
+      "filename": "frame-04127.png",
+      "size": 7250961,
+      "sha256": "e920abef6b61895932df5c8727b27a0512d9c7e6ffd7e0e8ba21e48dde9310c4"
+    },
+    {
+      "index": 4128,
+      "time_s": 137.6,
+      "roles": [
+        "seam:16-17"
+      ],
+      "filename": "frame-04128.png",
+      "size": 6453501,
+      "sha256": "002d6c18df6d61921a5a2aeaea4e7e96dcb03020730ca909718bdb44247e0002"
+    },
+    {
+      "index": 4129,
+      "time_s": 137.63333333333333,
+      "roles": [
+        "seam:16-17"
+      ],
+      "filename": "frame-04129.png",
+      "size": 6612846,
+      "sha256": "8ecd8a39de47666ffd8eae897eb0eda747270f16a0cd9b01ba0c483863e7207f"
+    },
+    {
+      "index": 4130,
+      "time_s": 137.66666666666666,
+      "roles": [
+        "seam:16-17"
+      ],
+      "filename": "frame-04130.png",
+      "size": 6602258,
+      "sha256": "6206960dc4611db96c32538e4aeda7e047b6dda84cfc404c00997e261eb9548c"
+    },
+    {
+      "index": 4384,
+      "time_s": 146.13333333333333,
+      "roles": [
+        "seam:17-18"
+      ],
+      "filename": "frame-04384.png",
+      "size": 733039,
+      "sha256": "98db1aeb72c7e79c608b2541174335878fd81eb85113e60c776e0d0bd192c057"
+    },
+    {
+      "index": 4385,
+      "time_s": 146.16666666666666,
+      "roles": [
+        "seam:17-18"
+      ],
+      "filename": "frame-04385.png",
+      "size": 702033,
+      "sha256": "ab3831c0af41982b97ec6c445b641f7a6b2d9a7e6931c1338be0ce1b6088471f"
+    },
+    {
+      "index": 4386,
+      "time_s": 146.2,
+      "roles": [
+        "seam:17-18"
+      ],
+      "filename": "frame-04386.png",
+      "size": 773064,
+      "sha256": "f9426086b084aac7b9930b7d08084fc6f70fecc05813eca4a1ba736fbdceaa5b"
+    },
+    {
+      "index": 4387,
+      "time_s": 146.23333333333332,
+      "roles": [
+        "seam:17-18"
+      ],
+      "filename": "frame-04387.png",
+      "size": 772485,
+      "sha256": "7580c39bff4c9b9c357c9fe2d0b4e1f887c47f57ea1c29173f7504514e367aea"
+    },
+    {
+      "index": 4388,
+      "time_s": 146.26666666666668,
+      "roles": [
+        "seam:17-18"
+      ],
+      "filename": "frame-04388.png",
+      "size": 712894,
+      "sha256": "b15828cd613de4271ffe0805a170338f10658a488f8e1cdeda8647652605ade6"
+    },
+    {
+      "index": 4642,
+      "time_s": 154.73333333333332,
+      "roles": [
+        "seam:18-19"
+      ],
+      "filename": "frame-04642.png",
+      "size": 7605805,
+      "sha256": "631d32108dedf1288445a2c9b7c5bf67af1c6205761993702312bf820b12733a"
+    },
+    {
+      "index": 4643,
+      "time_s": 154.76666666666668,
+      "roles": [
+        "seam:18-19"
+      ],
+      "filename": "frame-04643.png",
+      "size": 7568010,
+      "sha256": "6399bf5689888f153921112e57ccfb096f52445dca8f1dead87b9c1be5751c86"
+    },
+    {
+      "index": 4644,
+      "time_s": 154.8,
+      "roles": [
+        "seam:18-19"
+      ],
+      "filename": "frame-04644.png",
+      "size": 7004642,
+      "sha256": "db7fa85a6a403526a7757953e3aa95c8e836e40212551fcdf009d7f3fd4a8507"
+    },
+    {
+      "index": 4645,
+      "time_s": 154.83333333333334,
+      "roles": [
+        "seam:18-19"
+      ],
+      "filename": "frame-04645.png",
+      "size": 7308946,
+      "sha256": "d3e29db3a2846c3a901ba732e90903c7090d92959dead308cd2020e21b741543"
+    },
+    {
+      "index": 4646,
+      "time_s": 154.86666666666667,
+      "roles": [
+        "seam:18-19"
+      ],
+      "filename": "frame-04646.png",
+      "size": 7383189,
+      "sha256": "58ba9d239de7e2c94095f49231aff0666722f21d04f935443c7ca09d9596c54a"
+    },
+    {
+      "index": 4900,
+      "time_s": 163.33333333333334,
+      "roles": [
+        "seam:19-20"
+      ],
+      "filename": "frame-04900.png",
+      "size": 3162963,
+      "sha256": "afe94de2ace30d5c6c5a256587d32cf7d67e767cae6187a2796897b2af315e05"
+    },
+    {
+      "index": 4901,
+      "time_s": 163.36666666666667,
+      "roles": [
+        "seam:19-20"
+      ],
+      "filename": "frame-04901.png",
+      "size": 3062367,
+      "sha256": "661e68d403824b178c61fed6c1c05bbaa09f4dfe1080b5259cf99bc5dea40333"
+    },
+    {
+      "index": 4902,
+      "time_s": 163.4,
+      "roles": [
+        "seam:19-20"
+      ],
+      "filename": "frame-04902.png",
+      "size": 2874859,
+      "sha256": "e7be89b44eae0dda1aae6334866e2a810aef0bfbeeaeb81dee8d8fa202c53a69"
+    },
+    {
+      "index": 4903,
+      "time_s": 163.43333333333334,
+      "roles": [
+        "seam:19-20"
+      ],
+      "filename": "frame-04903.png",
+      "size": 2937104,
+      "sha256": "863c6a515588ab08c17dd207a26ca98873cd62a106b42aabc96aedf0dbbfc2b5"
+    },
+    {
+      "index": 4904,
+      "time_s": 163.46666666666667,
+      "roles": [
+        "seam:19-20"
+      ],
+      "filename": "frame-04904.png",
+      "size": 2984348,
+      "sha256": "4d39db0df676e0c84d3bdca86077fbcc073a91368cac43656d290f4d84435f0e"
+    },
+    {
+      "index": 5158,
+      "time_s": 171.93333333333334,
+      "roles": [
+        "seam:20-21"
+      ],
+      "filename": "frame-05158.png",
+      "size": 3332358,
+      "sha256": "7a50b17f63f0030b1a16d46ea361de83a53f69a5c3f9400fbea8bcee8129b942"
+    },
+    {
+      "index": 5159,
+      "time_s": 171.96666666666667,
+      "roles": [
+        "seam:20-21"
+      ],
+      "filename": "frame-05159.png",
+      "size": 3123932,
+      "sha256": "be834e446dafe99cff8b555cb22963ccc17659cd34ac3f9626d643b38526ae10"
+    },
+    {
+      "index": 5160,
+      "time_s": 172.0,
+      "roles": [
+        "seam:20-21"
+      ],
+      "filename": "frame-05160.png",
+      "size": 3271533,
+      "sha256": "8bb53e9cb0c2f4ae5921dfc2f282f4d16830a58d3c1b38997c7c1ea3a9fbd43b"
+    },
+    {
+      "index": 5161,
+      "time_s": 172.03333333333333,
+      "roles": [
+        "seam:20-21"
+      ],
+      "filename": "frame-05161.png",
+      "size": 3279866,
+      "sha256": "b66142fb15bf78b5215be04bafc6ae8ed2805639017c5df787a10ea9abfa0598"
+    },
+    {
+      "index": 5162,
+      "time_s": 172.06666666666666,
+      "roles": [
+        "seam:20-21"
+      ],
+      "filename": "frame-05162.png",
+      "size": 3310712,
+      "sha256": "120b84b19cc6f724c89844323a16f589329684705d2ad8c552592e7e0e981dc5"
+    },
+    {
+      "index": 5416,
+      "time_s": 180.53333333333333,
+      "roles": [
+        "seam:21-22"
+      ],
+      "filename": "frame-05416.png",
+      "size": 3773171,
+      "sha256": "81a9a1d01c1df1730e7382e2ce9539f13af5ce16eb60d417305376bdcd713cce"
+    },
+    {
+      "index": 5417,
+      "time_s": 180.56666666666666,
+      "roles": [
+        "seam:21-22"
+      ],
+      "filename": "frame-05417.png",
+      "size": 3577968,
+      "sha256": "1fb8cc0fec66afe93f75867133038d0eb39fe707688caf87fe22eae150c1022e"
+    },
+    {
+      "index": 5418,
+      "time_s": 180.6,
+      "roles": [
+        "seam:21-22"
+      ],
+      "filename": "frame-05418.png",
+      "size": 3619793,
+      "sha256": "18ca5bda5123d145ea546d3bf0c0cd6187788c6a6331f50088fbc84f7554958b"
+    },
+    {
+      "index": 5419,
+      "time_s": 180.63333333333333,
+      "roles": [
+        "seam:21-22"
+      ],
+      "filename": "frame-05419.png",
+      "size": 3648813,
+      "sha256": "27aaceceb4e9790210c7f4c3a420a25fb94dd8040d4a2bec351a4e4324ff64c0"
+    },
+    {
+      "index": 5420,
+      "time_s": 180.66666666666666,
+      "roles": [
+        "seam:21-22"
+      ],
+      "filename": "frame-05420.png",
+      "size": 3630106,
+      "sha256": "0cfbf9d24efa7a04f9fe04ca861edf4ec7a48b3ecd0a8e8901b1fbd6f911dcd9"
+    },
+    {
+      "index": 5674,
+      "time_s": 189.13333333333333,
+      "roles": [
+        "seam:22-23"
+      ],
+      "filename": "frame-05674.png",
+      "size": 3834611,
+      "sha256": "6e97d8e514b23e83b3cff10c3ba88d341aea137c78bce165fa2a6a327cae0a8d"
+    },
+    {
+      "index": 5675,
+      "time_s": 189.16666666666666,
+      "roles": [
+        "seam:22-23"
+      ],
+      "filename": "frame-05675.png",
+      "size": 3584541,
+      "sha256": "96e8e9c3650a58df88d3fa89e861e3f71934ccc86490bb756490c78d078d307f"
+    },
+    {
+      "index": 5676,
+      "time_s": 189.2,
+      "roles": [
+        "seam:22-23"
+      ],
+      "filename": "frame-05676.png",
+      "size": 3675028,
+      "sha256": "5a05b9a25e32608334f7cee53d36c0c1cc0c659d3a148730e612424538c2cde8"
+    },
+    {
+      "index": 5677,
+      "time_s": 189.23333333333332,
+      "roles": [
+        "seam:22-23"
+      ],
+      "filename": "frame-05677.png",
+      "size": 3613341,
+      "sha256": "480705aa039965bdfe99cd5c13dc0bd1a75e61d0d6277272e2064c44a7d882b5"
+    },
+    {
+      "index": 5678,
+      "time_s": 189.26666666666668,
+      "roles": [
+        "seam:22-23"
+      ],
+      "filename": "frame-05678.png",
+      "size": 3916083,
+      "sha256": "16d38de7202c1b535d60f8db876cde78cc59978e0d9945cce93b6ad45a985c28"
+    },
+    {
+      "index": 5932,
+      "time_s": 197.73333333333332,
+      "roles": [
+        "seam:23-24"
+      ],
+      "filename": "frame-05932.png",
+      "size": 3710149,
+      "sha256": "97d55f16a4cd992fc158ac3cfdd668d6a5be7b4aab2f127b1396bdc29f9c4001"
+    },
+    {
+      "index": 5933,
+      "time_s": 197.76666666666668,
+      "roles": [
+        "seam:23-24"
+      ],
+      "filename": "frame-05933.png",
+      "size": 3641297,
+      "sha256": "a2261032a3757dd60101f92e50989c5b5d486933a2a59d9136fbb2dc161808a6"
+    },
+    {
+      "index": 5934,
+      "time_s": 197.8,
+      "roles": [
+        "seam:23-24"
+      ],
+      "filename": "frame-05934.png",
+      "size": 3733217,
+      "sha256": "ed12a6978e4cabe412bf261e65e807c5becbd2bbd2cada269244d01827e9f8c1"
+    },
+    {
+      "index": 5935,
+      "time_s": 197.83333333333334,
+      "roles": [
+        "seam:23-24"
+      ],
+      "filename": "frame-05935.png",
+      "size": 3760100,
+      "sha256": "f351b707bc5d5c64153d476582a89b390f6cab0b3524300d34cd326fedea0c1b"
+    },
+    {
+      "index": 5936,
+      "time_s": 197.86666666666667,
+      "roles": [
+        "seam:23-24"
+      ],
+      "filename": "frame-05936.png",
+      "size": 3755737,
+      "sha256": "73111f3ea948bc5cb4a9f2928b82c253b15382694cdb43ce7dc5996f101930ca"
+    },
+    {
+      "index": 6190,
+      "time_s": 206.33333333333334,
+      "roles": [
+        "seam:24-25"
+      ],
+      "filename": "frame-06190.png",
+      "size": 5561796,
+      "sha256": "9bf2a288b162027fd6430df1d410797ff374cc4856cfa1c1826bb3709729124e"
+    },
+    {
+      "index": 6191,
+      "time_s": 206.36666666666667,
+      "roles": [
+        "seam:24-25"
+      ],
+      "filename": "frame-06191.png",
+      "size": 5575335,
+      "sha256": "f384727614a469b3266ee472a7152d1906210ce843c85ff32f14c6753738fdf1"
+    },
+    {
+      "index": 6192,
+      "time_s": 206.4,
+      "roles": [
+        "seam:24-25"
+      ],
+      "filename": "frame-06192.png",
+      "size": 5554075,
+      "sha256": "b3badc0258be66be7e3a389f62d6a9a962a4add361cee491918880a2927e3890"
+    },
+    {
+      "index": 6193,
+      "time_s": 206.43333333333334,
+      "roles": [
+        "seam:24-25"
+      ],
+      "filename": "frame-06193.png",
+      "size": 5683321,
+      "sha256": "8af25189018c9185afb2cad21bf04256e3c17f5094b1c613437eb32464b5af42"
+    },
+    {
+      "index": 6194,
+      "time_s": 206.46666666666667,
+      "roles": [
+        "seam:24-25"
+      ],
+      "filename": "frame-06194.png",
+      "size": 5708109,
+      "sha256": "a2ea1cd070fa1845fb79c27fb3af2111c7d46717accab1c9f893fdd4e3cba624"
+    },
+    {
+      "index": 6448,
+      "time_s": 214.93333333333334,
+      "roles": [
+        "seam:25-26"
+      ],
+      "filename": "frame-06448.png",
+      "size": 3661378,
+      "sha256": "de42fbee8c29b0886a40813eb076ae88fced4862630ae623e0d7c511a81a1e6c"
+    },
+    {
+      "index": 6449,
+      "time_s": 214.96666666666667,
+      "roles": [
+        "seam:25-26"
+      ],
+      "filename": "frame-06449.png",
+      "size": 3464912,
+      "sha256": "790f0d8d2e1da479eb41725f8b6783d3b135b48b1fd2ebdc9553c6397c197fb8"
+    },
+    {
+      "index": 6450,
+      "time_s": 215.0,
+      "roles": [
+        "seam:25-26"
+      ],
+      "filename": "frame-06450.png",
+      "size": 3493988,
+      "sha256": "80adbd33bc59665127332f048ef926a3dce19003e10564a3d28b3ae38bba91bb"
+    },
+    {
+      "index": 6451,
+      "time_s": 215.03333333333333,
+      "roles": [
+        "seam:25-26"
+      ],
+      "filename": "frame-06451.png",
+      "size": 3503278,
+      "sha256": "3c4707b0655524c924d25fef5234be0827c078126f1e92403862feb44ec33648"
+    },
+    {
+      "index": 6452,
+      "time_s": 215.06666666666666,
+      "roles": [
+        "seam:25-26"
+      ],
+      "filename": "frame-06452.png",
+      "size": 3484765,
+      "sha256": "666073bbdc521d47fb12670991d44d4c8934b4947c5d063ceae617fa389ce206"
+    },
+    {
+      "index": 6706,
+      "time_s": 223.53333333333333,
+      "roles": [
+        "seam:26-27"
+      ],
+      "filename": "frame-06706.png",
+      "size": 5232911,
+      "sha256": "b188ad96e3782ccb81f4e27105b53d96194947bb527966d1db36b6efc4e1e20d"
+    },
+    {
+      "index": 6707,
+      "time_s": 223.56666666666666,
+      "roles": [
+        "seam:26-27"
+      ],
+      "filename": "frame-06707.png",
+      "size": 4907564,
+      "sha256": "029a089731a0a7bc64dd832fd177bb9d3f94d9da3a2cdb0a237e1101e39fbb11"
+    },
+    {
+      "index": 6708,
+      "time_s": 223.6,
+      "roles": [
+        "seam:26-27"
+      ],
+      "filename": "frame-06708.png",
+      "size": 4919419,
+      "sha256": "76eb0bde5163e1953a1590b1ca5274e815e6a1cfc65d415cf8158e37b831d7f7"
+    },
+    {
+      "index": 6709,
+      "time_s": 223.63333333333333,
+      "roles": [
+        "seam:26-27"
+      ],
+      "filename": "frame-06709.png",
+      "size": 4946908,
+      "sha256": "3400a9030695c130025e99945c094108867e534606346fa00132fa379acaa84a"
+    },
+    {
+      "index": 6710,
+      "time_s": 223.66666666666666,
+      "roles": [
+        "seam:26-27"
+      ],
+      "filename": "frame-06710.png",
+      "size": 4886734,
+      "sha256": "41cf542286c12e1922355cf28cea55fbe54a14756d8c1c1338b1981dc0e761fb"
+    },
+    {
+      "index": 6964,
+      "time_s": 232.13333333333333,
+      "roles": [
+        "seam:27-28"
+      ],
+      "filename": "frame-06964.png",
+      "size": 548741,
+      "sha256": "86fe6e65c96e86a106ca34515faf1fa29e7c98f5425a2a0387d75d18b6495563"
+    },
+    {
+      "index": 6965,
+      "time_s": 232.16666666666666,
+      "roles": [
+        "seam:27-28"
+      ],
+      "filename": "frame-06965.png",
+      "size": 538950,
+      "sha256": "044a11023075ae06f29222c42d2dd9b4ef9b34309127cd05d875404c5ce3affd"
+    },
+    {
+      "index": 6966,
+      "time_s": 232.2,
+      "roles": [
+        "seam:27-28"
+      ],
+      "filename": "frame-06966.png",
+      "size": 666238,
+      "sha256": "f55ecd0d465dbf630bf797078a41c0d879f8bb4556735e4bec4f87f2148c908b"
+    },
+    {
+      "index": 6967,
+      "time_s": 232.23333333333332,
+      "roles": [
+        "seam:27-28"
+      ],
+      "filename": "frame-06967.png",
+      "size": 667700,
+      "sha256": "7f28d3b6ecdc918faebcf7d17957edfde4bddc96e139548c65549145e5c55aa3"
+    },
+    {
+      "index": 6968,
+      "time_s": 232.26666666666668,
+      "roles": [
+        "seam:27-28"
+      ],
+      "filename": "frame-06968.png",
+      "size": 655288,
+      "sha256": "fb43103844c1008a143393cd46388bc218c0e892acf807b91076cdbf134335d6"
+    },
+    {
+      "index": 7222,
+      "time_s": 240.73333333333332,
+      "roles": [
+        "seam:28-29"
+      ],
+      "filename": "frame-07222.png",
+      "size": 3164816,
+      "sha256": "b6e110d5680aef994e2a6dd97dd0b0e819bdcaae9a97c14c6b8bd31735da6059"
+    },
+    {
+      "index": 7223,
+      "time_s": 240.76666666666668,
+      "roles": [
+        "seam:28-29"
+      ],
+      "filename": "frame-07223.png",
+      "size": 3051993,
+      "sha256": "bfdccda76f141393ad161449427044c6739d3d511ad403444c7909837d1b2c2c"
+    },
+    {
+      "index": 7224,
+      "time_s": 240.8,
+      "roles": [
+        "seam:28-29"
+      ],
+      "filename": "frame-07224.png",
+      "size": 3118040,
+      "sha256": "159800548eb851dcd3d4f242f73789cb2d32b765b7cce8d15cda1dda94f1b0a0"
+    },
+    {
+      "index": 7225,
+      "time_s": 240.83333333333334,
+      "roles": [
+        "seam:28-29"
+      ],
+      "filename": "frame-07225.png",
+      "size": 3132502,
+      "sha256": "b63806c1eb888b0fc9393b9c1aab4803f06b39793edff487568c6cd531d67229"
+    },
+    {
+      "index": 7226,
+      "time_s": 240.86666666666667,
+      "roles": [
+        "seam:28-29"
+      ],
+      "filename": "frame-07226.png",
+      "size": 3166861,
+      "sha256": "354e8e16ae46c9e66dbb87e6eb285fb1d233d119ab44a8830c5fad8ec47115fa"
+    },
+    {
+      "index": 7480,
+      "time_s": 249.33333333333334,
+      "roles": [
+        "seam:29-30"
+      ],
+      "filename": "frame-07480.png",
+      "size": 7769244,
+      "sha256": "fb3be108192b59713a887edeab96579e95e403fa6cdbaf7221ab2b6f940f2836"
+    },
+    {
+      "index": 7481,
+      "time_s": 249.36666666666667,
+      "roles": [
+        "seam:29-30"
+      ],
+      "filename": "frame-07481.png",
+      "size": 7738398,
+      "sha256": "39134aabd6f48e6a2e223dab67ef25cacdc990ce54d897ab066d5298a7369222"
+    },
+    {
+      "index": 7482,
+      "time_s": 249.4,
+      "roles": [
+        "seam:29-30"
+      ],
+      "filename": "frame-07482.png",
+      "size": 7135224,
+      "sha256": "6e93dca54ca7638fca4aa3cb6611b625e49060e91fc1d4ae93e617b939564be3"
+    },
+    {
+      "index": 7483,
+      "time_s": 249.43333333333334,
+      "roles": [
+        "seam:29-30"
+      ],
+      "filename": "frame-07483.png",
+      "size": 7457359,
+      "sha256": "53253493bfe9aacf0931731e74faa6111867e50593cc39d7773e971b22455573"
+    },
+    {
+      "index": 7484,
+      "time_s": 249.46666666666667,
+      "roles": [
+        "seam:29-30"
+      ],
+      "filename": "frame-07484.png",
+      "size": 7482860,
+      "sha256": "31d3697cded13d151d291f455f28684d7e5a71e690a4ab0c12999bc13f922b97"
+    },
+    {
+      "index": 7738,
+      "time_s": 257.93333333333334,
+      "roles": [
+        "seam:30-31"
+      ],
+      "filename": "frame-07738.png",
+      "size": 5003931,
+      "sha256": "fecea9b6c200dfe11e01ebe4fe5203b6d5a5259a5b852c172406bf0ec1446331"
+    },
+    {
+      "index": 7739,
+      "time_s": 257.96666666666664,
+      "roles": [
+        "seam:30-31"
+      ],
+      "filename": "frame-07739.png",
+      "size": 4948143,
+      "sha256": "cc2e535976c3cae2a7185fd5c1cc94715b4dad4f443e4a0fbee21e8c9b75fc95"
+    },
+    {
+      "index": 7740,
+      "time_s": 258.0,
+      "roles": [
+        "seam:30-31"
+      ],
+      "filename": "frame-07740.png",
+      "size": 4809822,
+      "sha256": "9e1ef312c8c9b75ba4bebe113f77ca1c2d6113067aa07dc5b03d740406516924"
+    },
+    {
+      "index": 7741,
+      "time_s": 258.03333333333336,
+      "roles": [
+        "seam:30-31"
+      ],
+      "filename": "frame-07741.png",
+      "size": 4933227,
+      "sha256": "cb0662d3ceba184f7d17fb2efe113b3ddc595c163695f88193025fdeeb57fdd2"
+    },
+    {
+      "index": 7742,
+      "time_s": 258.06666666666666,
+      "roles": [
+        "seam:30-31"
+      ],
+      "filename": "frame-07742.png",
+      "size": 4967546,
+      "sha256": "2b1f29edc683770866538c8939e0dcdd7cecc63d31e4ee9343bf08d482576a2e"
+    },
+    {
+      "index": 7996,
+      "time_s": 266.53333333333336,
+      "roles": [
+        "seam:31-32"
+      ],
+      "filename": "frame-07996.png",
+      "size": 4107904,
+      "sha256": "e3c7131913104f0088af0cff0bb102fbc92cbde342a0771e4224e12acc03f6d7"
+    },
+    {
+      "index": 7997,
+      "time_s": 266.56666666666666,
+      "roles": [
+        "seam:31-32"
+      ],
+      "filename": "frame-07997.png",
+      "size": 4055262,
+      "sha256": "d3018f1ba223dab661368162237eba90f689bce79c2b5276788503a7f5fc94e8"
+    },
+    {
+      "index": 7998,
+      "time_s": 266.6,
+      "roles": [
+        "seam:31-32"
+      ],
+      "filename": "frame-07998.png",
+      "size": 3527473,
+      "sha256": "6af9a44cbf6e9cc5b2cd7a8e6abd83f7c8adf0450c1a7c065b51f5140d9037ab"
+    },
+    {
+      "index": 7999,
+      "time_s": 266.6333333333333,
+      "roles": [
+        "seam:31-32"
+      ],
+      "filename": "frame-07999.png",
+      "size": 3743142,
+      "sha256": "151bc4bf1ec211488e2dbba26d669c6634960acb35a6058a05cbee775cc3c20f"
+    },
+    {
+      "index": 8000,
+      "time_s": 266.6666666666667,
+      "roles": [
+        "seam:31-32"
+      ],
+      "filename": "frame-08000.png",
+      "size": 3862029,
+      "sha256": "0a030023b362669d5970c1c4126347a9cea73b8dd592bd2a3760f77223c2cc46"
+    },
+    {
+      "index": 8254,
+      "time_s": 275.1333333333333,
+      "roles": [
+        "seam:32-33"
+      ],
+      "filename": "frame-08254.png",
+      "size": 3788011,
+      "sha256": "f48fbf111942d332b08889a79e95d09a4646e8222884120abcff69c2cca5e333"
+    },
+    {
+      "index": 8255,
+      "time_s": 275.1666666666667,
+      "roles": [
+        "seam:32-33"
+      ],
+      "filename": "frame-08255.png",
+      "size": 3554887,
+      "sha256": "acde3b00d4f0d3953a031ed9edda2eb557fda3d9b0f5b30ca91d4f67ba41f7dc"
+    },
+    {
+      "index": 8256,
+      "time_s": 275.2,
+      "roles": [
+        "seam:32-33"
+      ],
+      "filename": "frame-08256.png",
+      "size": 3511412,
+      "sha256": "ebf3fea198e8f1b41fb894277b95290f1006403220e4d6588ea34afd152d3c83"
+    },
+    {
+      "index": 8257,
+      "time_s": 275.23333333333335,
+      "roles": [
+        "seam:32-33"
+      ],
+      "filename": "frame-08257.png",
+      "size": 3827920,
+      "sha256": "4a0ee184dd18079c59eacbcb84271ef32784f79680648595dc8583c10d3c9348"
+    },
+    {
+      "index": 8258,
+      "time_s": 275.26666666666665,
+      "roles": [
+        "seam:32-33"
+      ],
+      "filename": "frame-08258.png",
+      "size": 3899274,
+      "sha256": "08899e2c11a1a8fe831afb315b0fe2bd10cd13ad69fdeb6f45476d3ae423fc24"
+    },
+    {
+      "index": 8512,
+      "time_s": 283.73333333333335,
+      "roles": [
+        "seam:33-34"
+      ],
+      "filename": "frame-08512.png",
+      "size": 5606962,
+      "sha256": "33a1f13ca61fffd10df13ee270480d7fa082148b5173991c340bfd47181fcb3a"
+    },
+    {
+      "index": 8513,
+      "time_s": 283.76666666666665,
+      "roles": [
+        "seam:33-34"
+      ],
+      "filename": "frame-08513.png",
+      "size": 5457564,
+      "sha256": "d9f8aebaa9b5dc8d04127f481d89dba4039b99c95d59477f15da88722133f093"
+    },
+    {
+      "index": 8514,
+      "time_s": 283.8,
+      "roles": [
+        "seam:33-34"
+      ],
+      "filename": "frame-08514.png",
+      "size": 5580790,
+      "sha256": "e5a1e875f42fab6f84fd8753cc71490c0f14fc830113c0d6e1fc6b2950ab0b88"
+    },
+    {
+      "index": 8515,
+      "time_s": 283.8333333333333,
+      "roles": [
+        "seam:33-34"
+      ],
+      "filename": "frame-08515.png",
+      "size": 5601452,
+      "sha256": "a9775fd1d82db940df01cac60d1a1ce458c0fcc25b2746d57a6cf46a72e8cf6b"
+    },
+    {
+      "index": 8516,
+      "time_s": 283.8666666666667,
+      "roles": [
+        "seam:33-34"
+      ],
+      "filename": "frame-08516.png",
+      "size": 5649021,
+      "sha256": "6cd01e236e37a2d37420a9b0ea8a611ffb5ba25609a065c4b456955de29e4e78"
+    },
+    {
+      "index": 8770,
+      "time_s": 292.3333333333333,
+      "roles": [
+        "seam:34-35"
+      ],
+      "filename": "frame-08770.png",
+      "size": 4170541,
+      "sha256": "dd71f3a3858aaffe73071478224ed24ec8fa5c3b4eabc0f2e2d286726e9d6606"
+    },
+    {
+      "index": 8771,
+      "time_s": 292.3666666666667,
+      "roles": [
+        "seam:34-35"
+      ],
+      "filename": "frame-08771.png",
+      "size": 3975036,
+      "sha256": "2617021e6eb26458367d7ba7e115ba1263a3e20aeee9c10608a33f99c1683b15"
+    },
+    {
+      "index": 8772,
+      "time_s": 292.4,
+      "roles": [
+        "seam:34-35"
+      ],
+      "filename": "frame-08772.png",
+      "size": 3973678,
+      "sha256": "31e363c226739aa24ecc11abc81a7414845b5c24a62c0f21e1c584e37f088659"
+    },
+    {
+      "index": 8773,
+      "time_s": 292.43333333333334,
+      "roles": [
+        "seam:34-35"
+      ],
+      "filename": "frame-08773.png",
+      "size": 4022463,
+      "sha256": "c7a0770ba730508a8e45348cb7f2b46493402129d922b78a15caa833eac40146"
+    },
+    {
+      "index": 8774,
+      "time_s": 292.46666666666664,
+      "roles": [
+        "seam:34-35"
+      ],
+      "filename": "frame-08774.png",
+      "size": 4018843,
+      "sha256": "a515aa2ff1ff70a0672e95749a6fa1a9e88a2d3e71beadee415e6f191fd19345"
+    },
+    {
+      "index": 9028,
+      "time_s": 300.93333333333334,
+      "roles": [
+        "seam:35-36"
+      ],
+      "filename": "frame-09028.png",
+      "size": 3999695,
+      "sha256": "5b485bbd379f803c581c69fd011b54cbae81bc8c7ffa0bee429f4945b5d7be77"
+    },
+    {
+      "index": 9029,
+      "time_s": 300.96666666666664,
+      "roles": [
+        "seam:35-36"
+      ],
+      "filename": "frame-09029.png",
+      "size": 3860139,
+      "sha256": "7225fdf212567ca4ddcc1965a67b73c4aa28d691276f502faa716dfe452cf6eb"
+    },
+    {
+      "index": 9030,
+      "time_s": 301.0,
+      "roles": [
+        "seam:35-36"
+      ],
+      "filename": "frame-09030.png",
+      "size": 3666449,
+      "sha256": "f52972b049b4faedde73d9c091fd13939eb8fd64cb15390a8aa9743627d91d34"
+    },
+    {
+      "index": 9031,
+      "time_s": 301.03333333333336,
+      "roles": [
+        "seam:35-36"
+      ],
+      "filename": "frame-09031.png",
+      "size": 3742100,
+      "sha256": "49cec99b89fc5584b344ab0fbd1f5ce049beb27e661b50c3f15ead79ec3ccaf9"
+    },
+    {
+      "index": 9032,
+      "time_s": 301.06666666666666,
+      "roles": [
+        "seam:35-36"
+      ],
+      "filename": "frame-09032.png",
+      "size": 3793157,
+      "sha256": "d0a740f8b68095467a4fc85427e07c0e3f07607b8d1b841d32bcf0bfdd1e7a83"
+    },
+    {
+      "index": 9286,
+      "time_s": 309.53333333333336,
+      "roles": [
+        "seam:36-37"
+      ],
+      "filename": "frame-09286.png",
+      "size": 1490677,
+      "sha256": "91dde3e71e3ca8f1bbad75f8852f9e7c13368d1fc935c7ffc27be41d884533a2"
+    },
+    {
+      "index": 9287,
+      "time_s": 309.56666666666666,
+      "roles": [
+        "seam:36-37"
+      ],
+      "filename": "frame-09287.png",
+      "size": 1438218,
+      "sha256": "9be60919bbcbc696442dc4d4669cdb8d8d50f365515cf58e972372a92123db2d"
+    },
+    {
+      "index": 9288,
+      "time_s": 309.6,
+      "roles": [
+        "seam:36-37"
+      ],
+      "filename": "frame-09288.png",
+      "size": 1594320,
+      "sha256": "a3f086535f89e2bfad5f2f5366a14c439e8bf3f156cf6312ae1bcf073a69960b"
+    },
+    {
+      "index": 9289,
+      "time_s": 309.6333333333333,
+      "roles": [
+        "seam:36-37"
+      ],
+      "filename": "frame-09289.png",
+      "size": 1653889,
+      "sha256": "b6d9388872e86e9d4919352ffb005f81b9b069f73127677b9bcc814934646d73"
+    },
+    {
+      "index": 9290,
+      "time_s": 309.6666666666667,
+      "roles": [
+        "seam:36-37"
+      ],
+      "filename": "frame-09290.png",
+      "size": 1593254,
+      "sha256": "33cd8853ca8160d2751d672091aa92460215f9eb2d6ef8f3960d6393ac7fc3be"
+    },
+    {
+      "index": 9544,
+      "time_s": 318.1333333333333,
+      "roles": [
+        "seam:37-38"
+      ],
+      "filename": "frame-09544.png",
+      "size": 5711880,
+      "sha256": "e8cc62462f81f82e6992bdffd4be96efa32282c56ab689643c15b49dd6a67c8d"
+    },
+    {
+      "index": 9545,
+      "time_s": 318.1666666666667,
+      "roles": [
+        "seam:37-38"
+      ],
+      "filename": "frame-09545.png",
+      "size": 5566535,
+      "sha256": "ed7e3591cdfaba01dc4cbfa863082e7a516f7029db03ec3c2f58f086a541d09d"
+    },
+    {
+      "index": 9546,
+      "time_s": 318.2,
+      "roles": [
+        "seam:37-38"
+      ],
+      "filename": "frame-09546.png",
+      "size": 5725551,
+      "sha256": "2cc1179b4030aedbfa37023fbeb5c1c6a019d60cf12829f842612fe7b70eee4d"
+    },
+    {
+      "index": 9547,
+      "time_s": 318.23333333333335,
+      "roles": [
+        "seam:37-38"
+      ],
+      "filename": "frame-09547.png",
+      "size": 5766052,
+      "sha256": "e5ba96f00c1d5100819ccb2cbbe0ecca3fb5cc588c86d653f19b30fdb7e7996e"
+    },
+    {
+      "index": 9548,
+      "time_s": 318.26666666666665,
+      "roles": [
+        "seam:37-38"
+      ],
+      "filename": "frame-09548.png",
+      "size": 5739828,
+      "sha256": "4963045c159002142ad785628d8875336d43a60bce084777be41739dff241625"
+    },
+    {
+      "index": 9802,
+      "time_s": 326.73333333333335,
+      "roles": [
+        "seam:38-39"
+      ],
+      "filename": "frame-09802.png",
+      "size": 6194632,
+      "sha256": "aec4d05fa1bb075cd76c9afbddd89241c4c209b6645f9fdd048734797afe52c3"
+    },
+    {
+      "index": 9803,
+      "time_s": 326.76666666666665,
+      "roles": [
+        "seam:38-39"
+      ],
+      "filename": "frame-09803.png",
+      "size": 6152624,
+      "sha256": "161c47fd38d8056b599d0f5d73800d12620681e6949384b070774b4303ecb9ae"
+    },
+    {
+      "index": 9804,
+      "time_s": 326.8,
+      "roles": [
+        "seam:38-39"
+      ],
+      "filename": "frame-09804.png",
+      "size": 5634382,
+      "sha256": "099412879491919a8a935d9e820373a6ee7958b9d3ff2ed04b20d41b51d2422d"
+    },
+    {
+      "index": 9805,
+      "time_s": 326.8333333333333,
+      "roles": [
+        "seam:38-39"
+      ],
+      "filename": "frame-09805.png",
+      "size": 5962125,
+      "sha256": "f15ea1e97bdf57fc2928662076b80f1f9414d244689dbcafdd691e8f26461eb2"
+    },
+    {
+      "index": 9806,
+      "time_s": 326.8666666666667,
+      "roles": [
+        "seam:38-39"
+      ],
+      "filename": "frame-09806.png",
+      "size": 5988391,
+      "sha256": "123dcbfcd59912c30fe0127aab644194d6cbf511623ff2d16ceef45f0f899ef6"
+    },
+    {
+      "index": 10060,
+      "time_s": 335.3333333333333,
+      "roles": [
+        "seam:39-40"
+      ],
+      "filename": "frame-10060.png",
+      "size": 8891055,
+      "sha256": "3045beb7c1767331db0063daf2e021039bf3d656a0360f21427c01202b0f65f7"
+    },
+    {
+      "index": 10061,
+      "time_s": 335.3666666666667,
+      "roles": [
+        "seam:39-40"
+      ],
+      "filename": "frame-10061.png",
+      "size": 8726573,
+      "sha256": "767afd1bce7fdee9fba47b814f80cb36a7e7d4ca57dd6b222e8bd7d45f7665e9"
+    },
+    {
+      "index": 10062,
+      "time_s": 335.4,
+      "roles": [
+        "seam:39-40"
+      ],
+      "filename": "frame-10062.png",
+      "size": 7266318,
+      "sha256": "0e8c21326ba6370fc0fa8f6bda99541f38528af05d4ad759c0e3f38436e040a1"
+    },
+    {
+      "index": 10063,
+      "time_s": 335.43333333333334,
+      "roles": [
+        "seam:39-40"
+      ],
+      "filename": "frame-10063.png",
+      "size": 7305376,
+      "sha256": "72734d40d0859c42aa7ad5eb8bc610cfd9d8a7468be49a4c6f9fcf3de6794ec7"
+    },
+    {
+      "index": 10064,
+      "time_s": 335.46666666666664,
+      "roles": [
+        "seam:39-40"
+      ],
+      "filename": "frame-10064.png",
+      "size": 7227026,
+      "sha256": "d93559982484bcd1efb1fda6fdaa1c163776d4c896cae888b68c4553d844f287"
+    },
+    {
+      "index": 10318,
+      "time_s": 343.93333333333334,
+      "roles": [
+        "seam:40-41"
+      ],
+      "filename": "frame-10318.png",
+      "size": 4967114,
+      "sha256": "a1611f6b30dd8af781b9d063d33560adf282d160e63786bdd890f3d8c85188db"
+    },
+    {
+      "index": 10319,
+      "time_s": 343.96666666666664,
+      "roles": [
+        "seam:40-41"
+      ],
+      "filename": "frame-10319.png",
+      "size": 4957821,
+      "sha256": "260b7e50f41985c89680d5a052387b5f9ec1553a26ed0b7c6fa872dbfcc57d5b"
+    },
+    {
+      "index": 10320,
+      "time_s": 344.0,
+      "roles": [
+        "seam:40-41"
+      ],
+      "filename": "frame-10320.png",
+      "size": 4819338,
+      "sha256": "7ad87666638080416ca5de3ae147fe914b2e5cf60cb50c195f2afa59e5658b8a"
+    },
+    {
+      "index": 10321,
+      "time_s": 344.03333333333336,
+      "roles": [
+        "seam:40-41"
+      ],
+      "filename": "frame-10321.png",
+      "size": 4793446,
+      "sha256": "88a9d04bacecd64df2fc63c88325ca326ddb84d1cb07018b950c60bb61a8abf5"
+    },
+    {
+      "index": 10322,
+      "time_s": 344.06666666666666,
+      "roles": [
+        "seam:40-41"
+      ],
+      "filename": "frame-10322.png",
+      "size": 4592664,
+      "sha256": "2c9f92b7dffbf80e460491fe6f9d8ba35c6e0d02a996b1957a6c504d8eb1cb00"
+    },
+    {
+      "index": 10576,
+      "time_s": 352.53333333333336,
+      "roles": [
+        "seam:41-42"
+      ],
+      "filename": "frame-10576.png",
+      "size": 1679634,
+      "sha256": "97b4f8cda2c2a107a70b4986e6d129f2729077129d57481e832d572d4b5bf236"
+    },
+    {
+      "index": 10577,
+      "time_s": 352.56666666666666,
+      "roles": [
+        "seam:41-42"
+      ],
+      "filename": "frame-10577.png",
+      "size": 1518052,
+      "sha256": "da57ae7a5c3d45285814823e0eb7360bdf055eeb97f0b79a5404270461e32c31"
+    },
+    {
+      "index": 10578,
+      "time_s": 352.6,
+      "roles": [
+        "seam:41-42"
+      ],
+      "filename": "frame-10578.png",
+      "size": 1724524,
+      "sha256": "0429fbfb0c53275d18ea3a15a65b3fd86ed6a26273bbf52e2e23eba9c3e7d062"
+    },
+    {
+      "index": 10579,
+      "time_s": 352.6333333333333,
+      "roles": [
+        "seam:41-42"
+      ],
+      "filename": "frame-10579.png",
+      "size": 1794502,
+      "sha256": "372dd53248b84dc9b9b3df2b11fa064e01b7793cd5b92094d01450b6e5963c32"
+    },
+    {
+      "index": 10580,
+      "time_s": 352.6666666666667,
+      "roles": [
+        "seam:41-42"
+      ],
+      "filename": "frame-10580.png",
+      "size": 1719836,
+      "sha256": "9e6d5cf7f66191ebc2953352fb875f5bc944df8d55b619e2b81d3686b0b36014"
+    },
+    {
+      "index": 10834,
+      "time_s": 361.1333333333333,
+      "roles": [
+        "seam:42-43"
+      ],
+      "filename": "frame-10834.png",
+      "size": 8169910,
+      "sha256": "605dbf928c6ed3eac43caa989d7584878e8f4ff341026f14c336db867e906cd3"
+    },
+    {
+      "index": 10835,
+      "time_s": 361.1666666666667,
+      "roles": [
+        "seam:42-43"
+      ],
+      "filename": "frame-10835.png",
+      "size": 8152524,
+      "sha256": "47f240e5c233311f3654bed9f69c765b12a809e83b2d496fb49e35ce85fe70c1"
+    },
+    {
+      "index": 10836,
+      "time_s": 361.2,
+      "roles": [
+        "seam:42-43"
+      ],
+      "filename": "frame-10836.png",
+      "size": 7643236,
+      "sha256": "f4301fce079da128afe3f026afe5da7b6eef07550152a58a7bd96f93b3181098"
+    },
+    {
+      "index": 10837,
+      "time_s": 361.23333333333335,
+      "roles": [
+        "seam:42-43"
+      ],
+      "filename": "frame-10837.png",
+      "size": 7885835,
+      "sha256": "79a5e18da8b80ad355a4c33fb9b5ce086c6b95cacdc3a13b7f57ff407322ddfe"
+    },
+    {
+      "index": 10838,
+      "time_s": 361.26666666666665,
+      "roles": [
+        "seam:42-43"
+      ],
+      "filename": "frame-10838.png",
+      "size": 7989038,
+      "sha256": "4d0e6180d565c6fb76df5f8931db788386261dac7197995f2eb6e633a4515fed"
+    },
+    {
+      "index": 11092,
+      "time_s": 369.73333333333335,
+      "roles": [
+        "seam:43-44"
+      ],
+      "filename": "frame-11092.png",
+      "size": 4419832,
+      "sha256": "a79e53d19b3da506c08d085c29de75ff39e12141733a15fa11b22f0b06211dc9"
+    },
+    {
+      "index": 11093,
+      "time_s": 369.76666666666665,
+      "roles": [
+        "seam:43-44"
+      ],
+      "filename": "frame-11093.png",
+      "size": 4379585,
+      "sha256": "35857e7156b4b3c11898b0c38f28bbfeb4a8261ca733a0a86706dbf3b537c19d"
+    },
+    {
+      "index": 11094,
+      "time_s": 369.8,
+      "roles": [
+        "seam:43-44"
+      ],
+      "filename": "frame-11094.png",
+      "size": 4073598,
+      "sha256": "b493d17323d5a35021e2abfaf9764dd587f9535d07191515a186292a9d3f15de"
+    },
+    {
+      "index": 11095,
+      "time_s": 369.8333333333333,
+      "roles": [
+        "seam:43-44"
+      ],
+      "filename": "frame-11095.png",
+      "size": 4170757,
+      "sha256": "842bd8c2428a644a8469b355ed65e5dae1c6f333e3e608fb6dbb315e5acb8abe"
+    },
+    {
+      "index": 11096,
+      "time_s": 369.8666666666667,
+      "roles": [
+        "seam:43-44"
+      ],
+      "filename": "frame-11096.png",
+      "size": 4182893,
+      "sha256": "d3bbfb31efd092c9a6ceeba238235f47e7d2931dbb1233e058e3bbf6e55ec27e"
+    },
+    {
+      "index": 11350,
+      "time_s": 378.3333333333333,
+      "roles": [
+        "seam:44-45"
+      ],
+      "filename": "frame-11350.png",
+      "size": 6651015,
+      "sha256": "ccc5204ba71c9587f7c419286e06c356df1edac18830bd361080826303c5359a"
+    },
+    {
+      "index": 11351,
+      "time_s": 378.3666666666667,
+      "roles": [
+        "seam:44-45"
+      ],
+      "filename": "frame-11351.png",
+      "size": 6581021,
+      "sha256": "8a7a58d65222ce0e4ae588244fcdbee6bf273a1c6761cf9360a1168ed3de5f50"
+    },
+    {
+      "index": 11352,
+      "time_s": 378.4,
+      "roles": [
+        "seam:44-45"
+      ],
+      "filename": "frame-11352.png",
+      "size": 6099071,
+      "sha256": "a32a6aee0eacee4078c2960cd90f151a93d281f590a7a818b36f369ecf5167f8"
+    },
+    {
+      "index": 11353,
+      "time_s": 378.43333333333334,
+      "roles": [
+        "seam:44-45"
+      ],
+      "filename": "frame-11353.png",
+      "size": 6252780,
+      "sha256": "0d77cbd1e4396a2d18d203cbdf449f8dc4ea2f1d43cddf4fc9d7a7c4a302de5a"
+    },
+    {
+      "index": 11354,
+      "time_s": 378.46666666666664,
+      "roles": [
+        "seam:44-45"
+      ],
+      "filename": "frame-11354.png",
+      "size": 6335367,
+      "sha256": "daf2d6e00c8f8296658329006de796bc77e8360a255c12d2b652607764792734"
+    },
+    {
+      "index": 11608,
+      "time_s": 386.93333333333334,
+      "roles": [
+        "seam:45-46"
+      ],
+      "filename": "frame-11608.png",
+      "size": 4139501,
+      "sha256": "19b7e8ed000ae3370124e2c52246080c4fe569cbc11553a5d25598b1af11c0ca"
+    },
+    {
+      "index": 11609,
+      "time_s": 386.96666666666664,
+      "roles": [
+        "seam:45-46"
+      ],
+      "filename": "frame-11609.png",
+      "size": 4002046,
+      "sha256": "7179110a67dc3c83a7f77574c81be2bd70b963837813c02761b87febe3e1e498"
+    },
+    {
+      "index": 11610,
+      "time_s": 387.0,
+      "roles": [
+        "seam:45-46"
+      ],
+      "filename": "frame-11610.png",
+      "size": 4022831,
+      "sha256": "1197128d1ecd062db301ff78af067e086db1b4db7eac2acca12075b4e551d7a8"
+    },
+    {
+      "index": 11611,
+      "time_s": 387.03333333333336,
+      "roles": [
+        "seam:45-46"
+      ],
+      "filename": "frame-11611.png",
+      "size": 4073223,
+      "sha256": "989cd761148753f64928fb76d1f6eea535c1d779bd0803976cc3e1ed2febf7e7"
+    },
+    {
+      "index": 11612,
+      "time_s": 387.06666666666666,
+      "roles": [
+        "seam:45-46"
+      ],
+      "filename": "frame-11612.png",
+      "size": 3968543,
+      "sha256": "3ed0a54d21a53728aa76edb0e46dea7a888d687f8616ef73f83f7550d99236e1"
+    },
+    {
+      "index": 11866,
+      "time_s": 395.53333333333336,
+      "roles": [
+        "seam:46-47"
+      ],
+      "filename": "frame-11866.png",
+      "size": 1786038,
+      "sha256": "eb051bc4c2c1bd5344d27726c825880ba57cd726a4f3170cf8357b142acf81ff"
+    },
+    {
+      "index": 11867,
+      "time_s": 395.56666666666666,
+      "roles": [
+        "seam:46-47"
+      ],
+      "filename": "frame-11867.png",
+      "size": 1640797,
+      "sha256": "a783cf94ec4a0956b6ec5cdab9c0a405ceb89950d462fe7b4dc9f5c572da6f03"
+    },
+    {
+      "index": 11868,
+      "time_s": 395.6,
+      "roles": [
+        "seam:46-47"
+      ],
+      "filename": "frame-11868.png",
+      "size": 1949693,
+      "sha256": "08ccd3ea54c424af63c912f8613a532e157dbbaef122743c7cfaf8b19e2e6eb4"
+    },
+    {
+      "index": 11869,
+      "time_s": 395.6333333333333,
+      "roles": [
+        "seam:46-47"
+      ],
+      "filename": "frame-11869.png",
+      "size": 1958730,
+      "sha256": "97e53a5cc5bf981fa67790acc07c0326d089117432aac07ec462ec5665ded01f"
+    },
+    {
+      "index": 11870,
+      "time_s": 395.6666666666667,
+      "roles": [
+        "seam:46-47"
+      ],
+      "filename": "frame-11870.png",
+      "size": 1912016,
+      "sha256": "452b74b81bf95677eaab3205f23f72697c7131ad35be29a76692cfefcd931e53"
+    },
+    {
+      "index": 12124,
+      "time_s": 404.1333333333333,
+      "roles": [
+        "seam:47-48"
+      ],
+      "filename": "frame-12124.png",
+      "size": 4809918,
+      "sha256": "80ccc6525f4bdd17c04bfdba9e275742dd1420dcee3ae17582b2853ebeb9f88a"
+    },
+    {
+      "index": 12125,
+      "time_s": 404.1666666666667,
+      "roles": [
+        "seam:47-48"
+      ],
+      "filename": "frame-12125.png",
+      "size": 4932186,
+      "sha256": "f19cc47fe34ab42d62c1a3bba85dd859fbc2b9829fb28bca4a06bb93b88b165a"
+    },
+    {
+      "index": 12126,
+      "time_s": 404.2,
+      "roles": [
+        "seam:47-48"
+      ],
+      "filename": "frame-12126.png",
+      "size": 4472436,
+      "sha256": "254857dcf698be507e3d0814843823b85803aafbed7b3188fb1473e9b90a8147"
+    },
+    {
+      "index": 12127,
+      "time_s": 404.23333333333335,
+      "roles": [
+        "seam:47-48"
+      ],
+      "filename": "frame-12127.png",
+      "size": 4507985,
+      "sha256": "5b75bc5e243198173ce124edbe4945fae9a80d07c5eb38214473b4f4a21e86c0"
+    },
+    {
+      "index": 12128,
+      "time_s": 404.26666666666665,
+      "roles": [
+        "seam:47-48"
+      ],
+      "filename": "frame-12128.png",
+      "size": 4747894,
+      "sha256": "e89122a11393ab156bc078e3a9d3afd2714a031484e42b20e045c7b5db2396e8"
+    },
+    {
+      "index": 12382,
+      "time_s": 412.73333333333335,
+      "roles": [
+        "seam:48-49"
+      ],
+      "filename": "frame-12382.png",
+      "size": 9129466,
+      "sha256": "e16aa1a28b8c8c4e27d456d78baa5319c84eac7fc3b8f37150187dbcdd07fec2"
+    },
+    {
+      "index": 12383,
+      "time_s": 412.76666666666665,
+      "roles": [
+        "seam:48-49"
+      ],
+      "filename": "frame-12383.png",
+      "size": 9193189,
+      "sha256": "81b8cd5a698fe1c953952b01766b830fdb16415b0dffd619c688e0fb6ea883b8"
+    },
+    {
+      "index": 12384,
+      "time_s": 412.8,
+      "roles": [
+        "seam:48-49"
+      ],
+      "filename": "frame-12384.png",
+      "size": 8330914,
+      "sha256": "cc5e3838e2619afeacd68efc647171e7bc5c22a7e08023b0b0a7593f2b9c4413"
+    },
+    {
+      "index": 12385,
+      "time_s": 412.8333333333333,
+      "roles": [
+        "seam:48-49"
+      ],
+      "filename": "frame-12385.png",
+      "size": 8801791,
+      "sha256": "5fbf609f921f33ade9f830ff7ad65ce5a4084cddfd7e7ce0c3215b104693b112"
+    },
+    {
+      "index": 12386,
+      "time_s": 412.8666666666667,
+      "roles": [
+        "seam:48-49"
+      ],
+      "filename": "frame-12386.png",
+      "size": 8792230,
+      "sha256": "6fccd1ab53e5ba504ec4e0769364fd829808fa910672b6c0094f3625fd4e5acd"
+    },
+    {
+      "index": 12640,
+      "time_s": 421.3333333333333,
+      "roles": [
+        "seam:49-50"
+      ],
+      "filename": "frame-12640.png",
+      "size": 1890449,
+      "sha256": "7d2ae1bb72848c1043f743f30dd06c8307c5ac529b6ffaa6baf01f9b59442885"
+    },
+    {
+      "index": 12641,
+      "time_s": 421.3666666666667,
+      "roles": [
+        "seam:49-50"
+      ],
+      "filename": "frame-12641.png",
+      "size": 1847642,
+      "sha256": "694cf6909e4bcaeb30daf354eecaefbd63279e8df24e149e3c8d23a41e613342"
+    },
+    {
+      "index": 12642,
+      "time_s": 421.4,
+      "roles": [
+        "seam:49-50"
+      ],
+      "filename": "frame-12642.png",
+      "size": 2025874,
+      "sha256": "9fd82a6a34bccd156534af516e6de5f3c2e8cbb8ed93f84a64f865332be8c190"
+    },
+    {
+      "index": 12643,
+      "time_s": 421.43333333333334,
+      "roles": [
+        "seam:49-50"
+      ],
+      "filename": "frame-12643.png",
+      "size": 2042290,
+      "sha256": "bc0412d7fc6bf0688c1880464e773deae8f2a7be0ad5125199868d3262dd280f"
+    },
+    {
+      "index": 12644,
+      "time_s": 421.46666666666664,
+      "roles": [
+        "seam:49-50"
+      ],
+      "filename": "frame-12644.png",
+      "size": 1998219,
+      "sha256": "af27dc0fe2d023f5fc8270e70a23b393d30fb082022ddcad2a4ba8583492155e"
+    },
+    {
+      "index": 12898,
+      "time_s": 429.93333333333334,
+      "roles": [
+        "seam:50-51"
+      ],
+      "filename": "frame-12898.png",
+      "size": 4375637,
+      "sha256": "98d828a1a8cbf7c161111958203f90c28255b6fbb997545bbc7b3f84ed244235"
+    },
+    {
+      "index": 12899,
+      "time_s": 429.96666666666664,
+      "roles": [
+        "seam:50-51"
+      ],
+      "filename": "frame-12899.png",
+      "size": 4481912,
+      "sha256": "22e33e4d202ea2f28589dca58affe2f09c3d3a916184c4cbff7c7460f7ad6706"
+    },
+    {
+      "index": 12900,
+      "time_s": 430.0,
+      "roles": [
+        "seam:50-51"
+      ],
+      "filename": "frame-12900.png",
+      "size": 4186417,
+      "sha256": "f03cf5c3fd1a7782c7f4600e29f66b2539dd66821b5ddb9a2f60abbd2f5a8c45"
+    },
+    {
+      "index": 12901,
+      "time_s": 430.03333333333336,
+      "roles": [
+        "seam:50-51"
+      ],
+      "filename": "frame-12901.png",
+      "size": 4215721,
+      "sha256": "09c7157b57d3827aadc2d78e907b1de17f74739ffe50d19095cfb86b84caf9d6"
+    },
+    {
+      "index": 12902,
+      "time_s": 430.06666666666666,
+      "roles": [
+        "seam:50-51"
+      ],
+      "filename": "frame-12902.png",
+      "size": 4439915,
+      "sha256": "d67c3062db25778731b29ab5604480d3a2ab90951cf197931c5bd0077412ec97"
+    },
+    {
+      "index": 13156,
+      "time_s": 438.53333333333336,
+      "roles": [
+        "seam:51-52"
+      ],
+      "filename": "frame-13156.png",
+      "size": 5027168,
+      "sha256": "b961d63221b5f05011ffd4ba4e4875d854f9c643120406b48a9fa07f5a33101a"
+    },
+    {
+      "index": 13157,
+      "time_s": 438.56666666666666,
+      "roles": [
+        "seam:51-52"
+      ],
+      "filename": "frame-13157.png",
+      "size": 5099271,
+      "sha256": "e1c8e4ae2c6ff9de4614fdce874a2c54966adf1da1b45cff921d1716f7a0867e"
+    },
+    {
+      "index": 13158,
+      "time_s": 438.6,
+      "roles": [
+        "seam:51-52"
+      ],
+      "filename": "frame-13158.png",
+      "size": 4423763,
+      "sha256": "ec8f90e9514c2defd57e362189de5e61398f8771eeb4351438db9c8d5e26483b"
+    },
+    {
+      "index": 13159,
+      "time_s": 438.6333333333333,
+      "roles": [
+        "seam:51-52"
+      ],
+      "filename": "frame-13159.png",
+      "size": 4490468,
+      "sha256": "ddd0c8a831ddc94fcbda2216b0a8fdeb329b84efd9a8c978ba7f581b1c390086"
+    },
+    {
+      "index": 13160,
+      "time_s": 438.6666666666667,
+      "roles": [
+        "seam:51-52"
+      ],
+      "filename": "frame-13160.png",
+      "size": 4524810,
+      "sha256": "064c752578edee6530b530d42a5852bfd46cdcdaa7e8b6626bece23178267403"
+    },
+    {
+      "index": 13183,
+      "time_s": 439.43333333333334,
+      "roles": [
+        "repair-context:439.5s"
+      ],
+      "filename": "frame-13183.png",
+      "size": 4891679,
+      "sha256": "b56ba8e50a187de2ef4a6f45a2c231a5acae268a657cac5b529260914b33aeb5"
+    },
+    {
+      "index": 13184,
+      "time_s": 439.46666666666664,
+      "roles": [
+        "repair-context:439.5s"
+      ],
+      "filename": "frame-13184.png",
+      "size": 4964955,
+      "sha256": "b5150d2f58b7344b56dd8c60ad68c34d4872940fa94f4ac230f7414acf1691c7"
+    },
+    {
+      "index": 13185,
+      "time_s": 439.5,
+      "roles": [
+        "repair-context:439.5s"
+      ],
+      "filename": "frame-13185.png",
+      "size": 4688483,
+      "sha256": "c5216bc005acb4999cf62887b70e7526287a773e55417ae10cf1931ce6b4d606"
+    },
+    {
+      "index": 13186,
+      "time_s": 439.53333333333336,
+      "roles": [
+        "repair-context:439.5s"
+      ],
+      "filename": "frame-13186.png",
+      "size": 4867231,
+      "sha256": "fb0bcae87dfbd1e9ac68a129e5a39336fae345880a80cccb9e75eae9559ba1b2"
+    },
+    {
+      "index": 13187,
+      "time_s": 439.56666666666666,
+      "roles": [
+        "repair-context:439.5s"
+      ],
+      "filename": "frame-13187.png",
+      "size": 5040933,
+      "sha256": "e880f4b765bdcaaa103e8289377e6c37c6a1cb9b6936f0c0dbc8444caf1ae8c6"
+    },
+    {
+      "index": 13414,
+      "time_s": 447.1333333333333,
+      "roles": [
+        "seam:52-53"
+      ],
+      "filename": "frame-13414.png",
+      "size": 1614179,
+      "sha256": "9727f2819fd5139a83421b725806a720bfb82a11402ee120647f8336a2106790"
+    },
+    {
+      "index": 13415,
+      "time_s": 447.1666666666667,
+      "roles": [
+        "seam:52-53"
+      ],
+      "filename": "frame-13415.png",
+      "size": 1519818,
+      "sha256": "4011ae792894bfb2a8fd86d1fa7dc25886956dfad5b94e85ea750d307f1fe8b8"
+    },
+    {
+      "index": 13416,
+      "time_s": 447.2,
+      "roles": [
+        "seam:52-53"
+      ],
+      "filename": "frame-13416.png",
+      "size": 1594976,
+      "sha256": "9d709666ed6890bc07579f06d456b758dd428c9e40d63bb39f7fd5afd47e0e3a"
+    },
+    {
+      "index": 13417,
+      "time_s": 447.23333333333335,
+      "roles": [
+        "seam:52-53"
+      ],
+      "filename": "frame-13417.png",
+      "size": 1653173,
+      "sha256": "07d3e74b2ee9388017141046d2f09199c00c6bf4d634b74f05749b6fefbd3ed9"
+    },
+    {
+      "index": 13418,
+      "time_s": 447.26666666666665,
+      "roles": [
+        "seam:52-53"
+      ],
+      "filename": "frame-13418.png",
+      "size": 1588195,
+      "sha256": "f55f780bf56ece3d0931cbac8741feb735eaac7fcb9a5b147c5857b8f077f218"
+    },
+    {
+      "index": 13672,
+      "time_s": 455.73333333333335,
+      "roles": [
+        "seam:53-54"
+      ],
+      "filename": "frame-13672.png",
+      "size": 4399327,
+      "sha256": "9f9e0d4956aef8eb3880faad0268c4502ecb42d97fddf5d85666aaf6f5c80fe3"
+    },
+    {
+      "index": 13673,
+      "time_s": 455.76666666666665,
+      "roles": [
+        "seam:53-54"
+      ],
+      "filename": "frame-13673.png",
+      "size": 4263987,
+      "sha256": "da666c29c3d4e54009d985c963764a249e01277c2aa40671f5012456f1a78ed2"
+    },
+    {
+      "index": 13674,
+      "time_s": 455.8,
+      "roles": [
+        "seam:53-54"
+      ],
+      "filename": "frame-13674.png",
+      "size": 4191382,
+      "sha256": "db22e5d207c136c84c4934a8e4887702ffbf649e56dcd99bb0223a6605a932cf"
+    },
+    {
+      "index": 13675,
+      "time_s": 455.8333333333333,
+      "roles": [
+        "seam:53-54"
+      ],
+      "filename": "frame-13675.png",
+      "size": 4221154,
+      "sha256": "9639f0e59d83d767cf87b56b9fe7f44b4d7d98d22526e790f55849861613a075"
+    },
+    {
+      "index": 13676,
+      "time_s": 455.8666666666667,
+      "roles": [
+        "seam:53-54"
+      ],
+      "filename": "frame-13676.png",
+      "size": 4302740,
+      "sha256": "f5070310fb11265d36419f9119503d077c961bbf26e12b5c51a984961b9c4fcd"
+    },
+    {
+      "index": 13930,
+      "time_s": 464.3333333333333,
+      "roles": [
+        "seam:54-55"
+      ],
+      "filename": "frame-13930.png",
+      "size": 3750301,
+      "sha256": "64efbe9e390b788de5e1b04126f39038a51c02d545be16661a731e10c52ba04b"
+    },
+    {
+      "index": 13931,
+      "time_s": 464.3666666666667,
+      "roles": [
+        "seam:54-55"
+      ],
+      "filename": "frame-13931.png",
+      "size": 3806138,
+      "sha256": "9ed5d5872fe9f7b04dc5e5d8c821f4a8b77e8db6b2dea9ea46cb350c031abbf6"
+    },
+    {
+      "index": 13932,
+      "time_s": 464.4,
+      "roles": [
+        "seam:54-55"
+      ],
+      "filename": "frame-13932.png",
+      "size": 3652888,
+      "sha256": "4105eb5fcf9cc315598855109920f7698daebb3b2e2dcf84034591b79a14fdf2"
+    },
+    {
+      "index": 13933,
+      "time_s": 464.43333333333334,
+      "roles": [
+        "seam:54-55"
+      ],
+      "filename": "frame-13933.png",
+      "size": 3661598,
+      "sha256": "52c41633522f408ceaa0e676fa4eef778836d2d1bffca1599d16398c15dff13b"
+    },
+    {
+      "index": 13934,
+      "time_s": 464.46666666666664,
+      "roles": [
+        "seam:54-55"
+      ],
+      "filename": "frame-13934.png",
+      "size": 3761882,
+      "sha256": "4de6639c0990910b0ea30c784ab2601bb4619b5efe07861cc28c865b3119ea5b"
+    },
+    {
+      "index": 14188,
+      "time_s": 472.93333333333334,
+      "roles": [
+        "seam:55-56"
+      ],
+      "filename": "frame-14188.png",
+      "size": 3726554,
+      "sha256": "1101b60e8082f33699b94043f336109cbf1ab2436334445f25141d18dd241caa"
+    },
+    {
+      "index": 14189,
+      "time_s": 472.96666666666664,
+      "roles": [
+        "seam:55-56"
+      ],
+      "filename": "frame-14189.png",
+      "size": 3610910,
+      "sha256": "7278fc65a97386b011b23c54e73876b32064758441634a3155f3be1fcc51184a"
+    },
+    {
+      "index": 14190,
+      "time_s": 473.0,
+      "roles": [
+        "seam:55-56"
+      ],
+      "filename": "frame-14190.png",
+      "size": 3592958,
+      "sha256": "bf3aef57ae9fc01819253b87fe1c82c93a0c5aa3440adf2e5050b36fe4a2a8fb"
+    },
+    {
+      "index": 14191,
+      "time_s": 473.03333333333336,
+      "roles": [
+        "seam:55-56"
+      ],
+      "filename": "frame-14191.png",
+      "size": 3726932,
+      "sha256": "01e8a3f28a0e26d4a0cacfd50f4a54c4c2e1635f7554adda3a972cda3f28c259"
+    },
+    {
+      "index": 14192,
+      "time_s": 473.06666666666666,
+      "roles": [
+        "seam:55-56"
+      ],
+      "filename": "frame-14192.png",
+      "size": 3703976,
+      "sha256": "40bd3ac83efb83fcb3ed2052048cb1309c89033ef6cf0764fe59b9c0bb601bb2"
+    },
+    {
+      "index": 14446,
+      "time_s": 481.53333333333336,
+      "roles": [
+        "seam:56-57"
+      ],
+      "filename": "frame-14446.png",
+      "size": 2271843,
+      "sha256": "21c7797744b830975d73bf6bf185f1081c8f95d2c83f5c5580a5e5b3d8169035"
+    },
+    {
+      "index": 14447,
+      "time_s": 481.56666666666666,
+      "roles": [
+        "seam:56-57"
+      ],
+      "filename": "frame-14447.png",
+      "size": 2237956,
+      "sha256": "13f0f7154d3c73d66799a6bbc89d0266bd054a36322940212de67a7463db511a"
+    },
+    {
+      "index": 14448,
+      "time_s": 481.6,
+      "roles": [
+        "seam:56-57"
+      ],
+      "filename": "frame-14448.png",
+      "size": 2350068,
+      "sha256": "63d8a3bf9888baf9fd90408e6cfec0aa067179c6e8fb5865a6d0e9334b08f138"
+    },
+    {
+      "index": 14449,
+      "time_s": 481.6333333333333,
+      "roles": [
+        "seam:56-57"
+      ],
+      "filename": "frame-14449.png",
+      "size": 2357543,
+      "sha256": "1d07afed5970ddd3f794b55cb7f38334b4995424fbb6de3a280a01ebff25b624"
+    },
+    {
+      "index": 14450,
+      "time_s": 481.6666666666667,
+      "roles": [
+        "seam:56-57"
+      ],
+      "filename": "frame-14450.png",
+      "size": 2321350,
+      "sha256": "7493cec0ee0d24440dbce2a2b573c34d9c64a5d61c4433261f6dbbb7b74f43fe"
+    },
+    {
+      "index": 14704,
+      "time_s": 490.1333333333333,
+      "roles": [
+        "seam:57-58"
+      ],
+      "filename": "frame-14704.png",
+      "size": 5674514,
+      "sha256": "0782ab0fce87455d2ba148470e3a8bead7ed6798a599421620ce93db63786dd9"
+    },
+    {
+      "index": 14705,
+      "time_s": 490.1666666666667,
+      "roles": [
+        "seam:57-58"
+      ],
+      "filename": "frame-14705.png",
+      "size": 5568811,
+      "sha256": "1888900c6014fb270001467c1ed0139c6810b854dc6f7511143de4372b0fa1eb"
+    },
+    {
+      "index": 14706,
+      "time_s": 490.2,
+      "roles": [
+        "seam:57-58"
+      ],
+      "filename": "frame-14706.png",
+      "size": 5026430,
+      "sha256": "21a3096cf1804b60fb98841d764fa6befe7d614b229f750ef6a7b2e58b2b03ad"
+    },
+    {
+      "index": 14707,
+      "time_s": 490.23333333333335,
+      "roles": [
+        "seam:57-58"
+      ],
+      "filename": "frame-14707.png",
+      "size": 5378757,
+      "sha256": "1a9f69c6a2c3e9576cafb690a20d625f5f3fd46fe23591da66254e37da54b35d"
+    },
+    {
+      "index": 14708,
+      "time_s": 490.26666666666665,
+      "roles": [
+        "seam:57-58"
+      ],
+      "filename": "frame-14708.png",
+      "size": 5431597,
+      "sha256": "f190392e62722fa2dd1eaa7beb79f9f4ccdcc3bee745617aefed28436271c8f2"
+    },
+    {
+      "index": 14962,
+      "time_s": 498.73333333333335,
+      "roles": [
+        "seam:58-59"
+      ],
+      "filename": "frame-14962.png",
+      "size": 4682643,
+      "sha256": "e7e34d1ea308d7988366003073bb9991008a73c85bb9fc06855d517fc946fa4e"
+    },
+    {
+      "index": 14963,
+      "time_s": 498.76666666666665,
+      "roles": [
+        "seam:58-59"
+      ],
+      "filename": "frame-14963.png",
+      "size": 4421901,
+      "sha256": "8bc95767335b29e8839368ee26688debd2e38d5571ed35b297c5a154c1ab193e"
+    },
+    {
+      "index": 14964,
+      "time_s": 498.8,
+      "roles": [
+        "seam:58-59"
+      ],
+      "filename": "frame-14964.png",
+      "size": 4488339,
+      "sha256": "6922fd25d6c01ed456550dc07a12852fdacbd0c07cf8b1d6c48df3e9b13bfa13"
+    },
+    {
+      "index": 14965,
+      "time_s": 498.8333333333333,
+      "roles": [
+        "seam:58-59"
+      ],
+      "filename": "frame-14965.png",
+      "size": 4483145,
+      "sha256": "df6bcf4e83c9585b69be06cccce0ec90a057b796c244537ba76163dad391f665"
+    },
+    {
+      "index": 14966,
+      "time_s": 498.8666666666667,
+      "roles": [
+        "seam:58-59"
+      ],
+      "filename": "frame-14966.png",
+      "size": 4538678,
+      "sha256": "2fb9d2562b3eee1ce2fdd12dce5ac0804ded5ec1518090994b81d9d81a62dc8c"
+    },
+    {
+      "index": 15220,
+      "time_s": 507.3333333333333,
+      "roles": [
+        "seam:59-60"
+      ],
+      "filename": "frame-15220.png",
+      "size": 3780484,
+      "sha256": "33ca31117b0165c94d02892ffd9c77ff0ebb2f4cb920d2765f73a64e4c59f550"
+    },
+    {
+      "index": 15221,
+      "time_s": 507.3666666666667,
+      "roles": [
+        "seam:59-60"
+      ],
+      "filename": "frame-15221.png",
+      "size": 3650017,
+      "sha256": "7ab8d1b565ed3598ba8bb4abe763f60705c4b9375b25a86855518725ef0883d8"
+    },
+    {
+      "index": 15222,
+      "time_s": 507.4,
+      "roles": [
+        "seam:59-60"
+      ],
+      "filename": "frame-15222.png",
+      "size": 3679200,
+      "sha256": "a7cf15919b733503041abd60cef06ccbb8750afdb4ea422bd1a4a10e35fc48fe"
+    },
+    {
+      "index": 15223,
+      "time_s": 507.43333333333334,
+      "roles": [
+        "seam:59-60"
+      ],
+      "filename": "frame-15223.png",
+      "size": 3690177,
+      "sha256": "9386eb47c72c7a1b84ffb708018f7a39dd167d3ab791084e6148b684533a8af3"
+    },
+    {
+      "index": 15224,
+      "time_s": 507.46666666666664,
+      "roles": [
+        "seam:59-60"
+      ],
+      "filename": "frame-15224.png",
+      "size": 3670793,
+      "sha256": "3b86c6f59a49f2b56f83d37b0ec9eedff816f994358c3cce236024ac3c3c684d"
+    },
+    {
+      "index": 15478,
+      "time_s": 515.9333333333333,
+      "roles": [
+        "seam:60-61"
+      ],
+      "filename": "frame-15478.png",
+      "size": 2218090,
+      "sha256": "51676a49e74f2ee7dbe311cb728b37b4f9843c9817bd293a67a3ec1b528b3bd7"
+    },
+    {
+      "index": 15479,
+      "time_s": 515.9666666666667,
+      "roles": [
+        "seam:60-61"
+      ],
+      "filename": "frame-15479.png",
+      "size": 2076116,
+      "sha256": "e1746159b4e1e425c5d7bdf1ae8d9c6ffb0887e258ad3d8f5fa3ce68be6b3fe8"
+    },
+    {
+      "index": 15480,
+      "time_s": 516.0,
+      "roles": [
+        "seam:60-61"
+      ],
+      "filename": "frame-15480.png",
+      "size": 2358634,
+      "sha256": "f327dcf80b2959b8cc8e16cd092cc61c1c2054374c1ace40e3b2fb71f966985c"
+    },
+    {
+      "index": 15481,
+      "time_s": 516.0333333333333,
+      "roles": [
+        "seam:60-61"
+      ],
+      "filename": "frame-15481.png",
+      "size": 2357800,
+      "sha256": "695fffe1ae9d1722ac83d5ac0cc487a6ecadc691bf2f82747ebc01d01663b977"
+    },
+    {
+      "index": 15482,
+      "time_s": 516.0666666666667,
+      "roles": [
+        "seam:60-61"
+      ],
+      "filename": "frame-15482.png",
+      "size": 2296481,
+      "sha256": "65a31014ea8724956fa77ffb3ffa0b984c685ff3fe906f67f7b7aee85304c11c"
+    },
+    {
+      "index": 15736,
+      "time_s": 524.5333333333333,
+      "roles": [
+        "seam:61-62"
+      ],
+      "filename": "frame-15736.png",
+      "size": 5923935,
+      "sha256": "396ec791907b77b710a83d1977742fd13b4874a69c2ff8f39e77198ac5ef7065"
+    },
+    {
+      "index": 15737,
+      "time_s": 524.5666666666667,
+      "roles": [
+        "seam:61-62"
+      ],
+      "filename": "frame-15737.png",
+      "size": 5850239,
+      "sha256": "34ed1eca69ae7f6f2f2fd1bf0abaa2f9554455f8b85ab98b289626013b95ba92"
+    },
+    {
+      "index": 15738,
+      "time_s": 524.6,
+      "roles": [
+        "seam:61-62"
+      ],
+      "filename": "frame-15738.png",
+      "size": 5621481,
+      "sha256": "c2271a3c59775809af4004e03db63ea3c22619e266e36620d16ce72aab37ece1"
+    },
+    {
+      "index": 15739,
+      "time_s": 524.6333333333333,
+      "roles": [
+        "seam:61-62"
+      ],
+      "filename": "frame-15739.png",
+      "size": 5776792,
+      "sha256": "8b26144e9a27c060df7f9e1ba425ab443054c648b3b2dfdbc6227983bf45e9b5"
+    },
+    {
+      "index": 15740,
+      "time_s": 524.6666666666666,
+      "roles": [
+        "seam:61-62"
+      ],
+      "filename": "frame-15740.png",
+      "size": 5925618,
+      "sha256": "0fc303ad432be1e5cdb8abe579061c3fe13dffd41721dc37bbb9bac2a1cde6d7"
+    },
+    {
+      "index": 15994,
+      "time_s": 533.1333333333333,
+      "roles": [
+        "seam:62-63"
+      ],
+      "filename": "frame-15994.png",
+      "size": 5530358,
+      "sha256": "7f8390d35c555c8362bc782f37fff274394be8b10c4f79b03d5774a73c79118e"
+    },
+    {
+      "index": 15995,
+      "time_s": 533.1666666666666,
+      "roles": [
+        "seam:62-63"
+      ],
+      "filename": "frame-15995.png",
+      "size": 5440656,
+      "sha256": "65766d3dc905063fbd6f685338030d95d952e07fab6262dd5e32ef217f0934fc"
+    },
+    {
+      "index": 15996,
+      "time_s": 533.2,
+      "roles": [
+        "seam:62-63"
+      ],
+      "filename": "frame-15996.png",
+      "size": 5309991,
+      "sha256": "67a320c8459abb50fb3756fcf77e67d2a3daa0a09fa45a1d3a6a498ceced245a"
+    },
+    {
+      "index": 15997,
+      "time_s": 533.2333333333333,
+      "roles": [
+        "seam:62-63"
+      ],
+      "filename": "frame-15997.png",
+      "size": 5412705,
+      "sha256": "b16c3481a5087b9d31f39dea38f9f7d453e27d5304a521b10c223ab439371548"
+    },
+    {
+      "index": 15998,
+      "time_s": 533.2666666666667,
+      "roles": [
+        "seam:62-63"
+      ],
+      "filename": "frame-15998.png",
+      "size": 5497649,
+      "sha256": "405104c2f98c50d271d18dc8447d736e1e0792edcc3bfb346478cb14ee2ffe41"
+    },
+    {
+      "index": 16252,
+      "time_s": 541.7333333333333,
+      "roles": [
+        "seam:63-64"
+      ],
+      "filename": "frame-16252.png",
+      "size": 1830983,
+      "sha256": "708d938399a059dfabdd332fda177742427edeb46212dd69f8120ed535aa7dcf"
+    },
+    {
+      "index": 16253,
+      "time_s": 541.7666666666667,
+      "roles": [
+        "seam:63-64"
+      ],
+      "filename": "frame-16253.png",
+      "size": 1735417,
+      "sha256": "89244f653b8ca79111b3ca30a35db4c609b734e6d73eb192608b05315ce0f81b"
+    },
+    {
+      "index": 16254,
+      "time_s": 541.8,
+      "roles": [
+        "seam:63-64"
+      ],
+      "filename": "frame-16254.png",
+      "size": 1545248,
+      "sha256": "95a0af05984c2dc4e0df71c32635e94cf05f1222e4a6606a454491919540ae7d"
+    },
+    {
+      "index": 16255,
+      "time_s": 541.8333333333334,
+      "roles": [
+        "seam:63-64"
+      ],
+      "filename": "frame-16255.png",
+      "size": 1635176,
+      "sha256": "c12fcb2fe42fe57157580ad7995beb6ef04bdc547719da09c2b7cee746f30a9a"
+    },
+    {
+      "index": 16256,
+      "time_s": 541.8666666666667,
+      "roles": [
+        "seam:63-64"
+      ],
+      "filename": "frame-16256.png",
+      "size": 1619547,
+      "sha256": "248045596d1e357855890173084baa65ef3e121570c0a8d505463e75fb4ad52d"
+    },
+    {
+      "index": 16510,
+      "time_s": 550.3333333333334,
+      "roles": [
+        "seam:64-65"
+      ],
+      "filename": "frame-16510.png",
+      "size": 4716140,
+      "sha256": "5ef231626fd55d0ede73dede6d421da048cc30ad57a6bf0baf4eacde34d6838b"
+    },
+    {
+      "index": 16511,
+      "time_s": 550.3666666666667,
+      "roles": [
+        "seam:64-65"
+      ],
+      "filename": "frame-16511.png",
+      "size": 4731951,
+      "sha256": "63eca1decbe8670f916eee130fd5bd9585b008a43411676d5819dbd39777a5c2"
+    },
+    {
+      "index": 16512,
+      "time_s": 550.4,
+      "roles": [
+        "seam:64-65"
+      ],
+      "filename": "frame-16512.png",
+      "size": 4561767,
+      "sha256": "e63a075358fedd28374efd73c0bbd0c62a85b560add1d072dbebbbd1ec5c7961"
+    },
+    {
+      "index": 16513,
+      "time_s": 550.4333333333333,
+      "roles": [
+        "seam:64-65"
+      ],
+      "filename": "frame-16513.png",
+      "size": 4591027,
+      "sha256": "3ff45c164e9d14d46b6582bdb1514f9fcbd11af8da8e3c6eee8347b4119a7068"
+    },
+    {
+      "index": 16514,
+      "time_s": 550.4666666666667,
+      "roles": [
+        "seam:64-65"
+      ],
+      "filename": "frame-16514.png",
+      "size": 4536894,
+      "sha256": "b3f45987ca85db0a8d609aad039b0fc5c533941d16bcc75aa4b52ef26b329c81"
+    },
+    {
+      "index": 16768,
+      "time_s": 558.9333333333333,
+      "roles": [
+        "seam:65-66"
+      ],
+      "filename": "frame-16768.png",
+      "size": 4277174,
+      "sha256": "59567e03864856d05d800a520aa6f75a913ec2401f1d3c8bdad06e48e1bcacb9"
+    },
+    {
+      "index": 16769,
+      "time_s": 558.9666666666667,
+      "roles": [
+        "seam:65-66"
+      ],
+      "filename": "frame-16769.png",
+      "size": 4354268,
+      "sha256": "fab1a8761bce92428b74d0eac3b7158af77e9ea181a5368467be42a4dfdd2060"
+    },
+    {
+      "index": 16770,
+      "time_s": 559.0,
+      "roles": [
+        "seam:65-66"
+      ],
+      "filename": "frame-16770.png",
+      "size": 4114896,
+      "sha256": "f344c7e69866ce1e5a949f48b96ca4137e56bf4e7610ec2f969932076688bdc4"
+    },
+    {
+      "index": 16771,
+      "time_s": 559.0333333333333,
+      "roles": [
+        "seam:65-66"
+      ],
+      "filename": "frame-16771.png",
+      "size": 4123092,
+      "sha256": "4d2a78429445decde4eb228981a4d30a8f9b7de409552b46add5a8d4c97dd721"
+    },
+    {
+      "index": 16772,
+      "time_s": 559.0666666666667,
+      "roles": [
+        "seam:65-66"
+      ],
+      "filename": "frame-16772.png",
+      "size": 4042989,
+      "sha256": "53b3ba1dc5744a1e77948f0c1ec5696a02200cc279c19b451d1e6b31ed58b3c3"
+    },
+    {
+      "index": 17026,
+      "time_s": 567.5333333333333,
+      "roles": [
+        "seam:66-67"
+      ],
+      "filename": "frame-17026.png",
+      "size": 4471362,
+      "sha256": "8c44210752bd442d3c0aeb9a3302ec06f3c7fb922cefc0d7a85cd404b608b14f"
+    },
+    {
+      "index": 17027,
+      "time_s": 567.5666666666667,
+      "roles": [
+        "seam:66-67"
+      ],
+      "filename": "frame-17027.png",
+      "size": 4551196,
+      "sha256": "bd0f4fb571d679760e23279b8b8bdbbc7f911c86be6ebda77b4d0eb401cc2982"
+    },
+    {
+      "index": 17028,
+      "time_s": 567.6,
+      "roles": [
+        "seam:66-67"
+      ],
+      "filename": "frame-17028.png",
+      "size": 4402401,
+      "sha256": "f56432a274a96a415c6eda3a7e9dc463f182e5b13577b6df929d5081b53765f6"
+    },
+    {
+      "index": 17029,
+      "time_s": 567.6333333333333,
+      "roles": [
+        "seam:66-67"
+      ],
+      "filename": "frame-17029.png",
+      "size": 4445041,
+      "sha256": "b17f52b8ef2b3e66461a5284088f8d18bde4bfd992c23d8a001d1675b7f931f0"
+    },
+    {
+      "index": 17030,
+      "time_s": 567.6666666666666,
+      "roles": [
+        "seam:66-67"
+      ],
+      "filename": "frame-17030.png",
+      "size": 4232239,
+      "sha256": "1d1df76ee4728169e5257f22fc26329eff177edf01d39818253585787233b941"
+    },
+    {
+      "index": 17284,
+      "time_s": 576.1333333333333,
+      "roles": [
+        "seam:67-68"
+      ],
+      "filename": "frame-17284.png",
+      "size": 1097126,
+      "sha256": "d0fbc3bfc14af922e40d9ab779508e7230293060bf189e73d963ad81e6248045"
+    },
+    {
+      "index": 17285,
+      "time_s": 576.1666666666666,
+      "roles": [
+        "seam:67-68"
+      ],
+      "filename": "frame-17285.png",
+      "size": 1070680,
+      "sha256": "03ea3b1715a307aabc5284382214cbde67f7599317bdb65de353e9d7d10fe415"
+    },
+    {
+      "index": 17286,
+      "time_s": 576.2,
+      "roles": [
+        "seam:67-68"
+      ],
+      "filename": "frame-17286.png",
+      "size": 1202693,
+      "sha256": "afe75de3f57db818ba9369e2860f26c10814372ff7b8c0dbf69cee11480bb70e"
+    },
+    {
+      "index": 17287,
+      "time_s": 576.2333333333333,
+      "roles": [
+        "seam:67-68"
+      ],
+      "filename": "frame-17287.png",
+      "size": 1203253,
+      "sha256": "a0210332367763903ac924d1ddcbd8fc2713be46c09d1ff64aa309937d729b5b"
+    },
+    {
+      "index": 17288,
+      "time_s": 576.2666666666667,
+      "roles": [
+        "seam:67-68"
+      ],
+      "filename": "frame-17288.png",
+      "size": 1191287,
+      "sha256": "3b2dcf6a9d70730da924776597bb4029307fd1c08fe200f0173aa4c512c5705b"
+    },
+    {
+      "index": 17542,
+      "time_s": 584.7333333333333,
+      "roles": [
+        "seam:68-69"
+      ],
+      "filename": "frame-17542.png",
+      "size": 5422673,
+      "sha256": "74c92f213e7ec0237dff5d8bf7e93b9927521bbdfb5428be2a51bf75745f1936"
+    },
+    {
+      "index": 17543,
+      "time_s": 584.7666666666667,
+      "roles": [
+        "seam:68-69"
+      ],
+      "filename": "frame-17543.png",
+      "size": 5465778,
+      "sha256": "1f612244efd363ce2a487543a963b976706dc2662c47b700883b587252b969c2"
+    },
+    {
+      "index": 17544,
+      "time_s": 584.8,
+      "roles": [
+        "seam:68-69"
+      ],
+      "filename": "frame-17544.png",
+      "size": 5010524,
+      "sha256": "bf209b9e3a79437f989ffa32c7a826e2301245f496a9c102fe0c28474f1ef078"
+    },
+    {
+      "index": 17545,
+      "time_s": 584.8333333333334,
+      "roles": [
+        "seam:68-69"
+      ],
+      "filename": "frame-17545.png",
+      "size": 5153815,
+      "sha256": "5fbad32eafaf4f84049b51ef363ad4c61ae5f8da173ed923897bdbefe8d341a8"
+    },
+    {
+      "index": 17546,
+      "time_s": 584.8666666666667,
+      "roles": [
+        "seam:68-69"
+      ],
+      "filename": "frame-17546.png",
+      "size": 5185639,
+      "sha256": "1cdf39e9cc77a5a47070600af58edbd93341c911d021fc13c10b69956803e1b0"
+    },
+    {
+      "index": 17800,
+      "time_s": 593.3333333333334,
+      "roles": [
+        "seam:69-70"
+      ],
+      "filename": "frame-17800.png",
+      "size": 2754981,
+      "sha256": "50bf398e41d27c2b2d5072d93945b454227bbeb2237e9b4ae554db2de99e4b7d"
+    },
+    {
+      "index": 17801,
+      "time_s": 593.3666666666667,
+      "roles": [
+        "seam:69-70"
+      ],
+      "filename": "frame-17801.png",
+      "size": 2609794,
+      "sha256": "ab983f830621ad18c7720421b55dbb7850631c51ba13aa81b9ffad10ee955608"
+    },
+    {
+      "index": 17802,
+      "time_s": 593.4,
+      "roles": [
+        "seam:69-70"
+      ],
+      "filename": "frame-17802.png",
+      "size": 2763597,
+      "sha256": "6d64d6c7da598bf034e7218a545f5904daa30716587752818f4ec02c98e4e75e"
+    },
+    {
+      "index": 17803,
+      "time_s": 593.4333333333333,
+      "roles": [
+        "seam:69-70"
+      ],
+      "filename": "frame-17803.png",
+      "size": 2762893,
+      "sha256": "99450dc36f984e665655a9b21162f88750b483fa80784f61498c4db5c24e596d"
+    },
+    {
+      "index": 17804,
+      "time_s": 593.4666666666667,
+      "roles": [
+        "seam:69-70"
+      ],
+      "filename": "frame-17804.png",
+      "size": 2716265,
+      "sha256": "62651211c8fc9af42d1f771f718a5f8fe8b12dea4f2b6ccd6a170263ed5e2285"
+    },
+    {
+      "index": 18058,
+      "time_s": 601.9333333333333,
+      "roles": [
+        "seam:70-71"
+      ],
+      "filename": "frame-18058.png",
+      "size": 5378029,
+      "sha256": "5a0e34a499a89b5db2d0333936365faf5af0bddd1e803f9e60195001a3b8563b"
+    },
+    {
+      "index": 18059,
+      "time_s": 601.9666666666667,
+      "roles": [
+        "seam:70-71"
+      ],
+      "filename": "frame-18059.png",
+      "size": 5368170,
+      "sha256": "207c0fd7ff157f2954e24481404f87a28ea5ab91952009c950c899c46d4372b9"
+    },
+    {
+      "index": 18060,
+      "time_s": 602.0,
+      "roles": [
+        "seam:70-71"
+      ],
+      "filename": "frame-18060.png",
+      "size": 4948852,
+      "sha256": "a740063114e460f04941c5cbc9c259420fdc64af10d034dada07a1e6daff8881"
+    },
+    {
+      "index": 18061,
+      "time_s": 602.0333333333333,
+      "roles": [
+        "seam:70-71"
+      ],
+      "filename": "frame-18061.png",
+      "size": 5117915,
+      "sha256": "cd203d553829b4b9161f2023d6006bf00525c90a763b18816724a74820f6c7e7"
+    },
+    {
+      "index": 18062,
+      "time_s": 602.0666666666667,
+      "roles": [
+        "seam:70-71"
+      ],
+      "filename": "frame-18062.png",
+      "size": 5196889,
+      "sha256": "b49207aeaef71c777eb7e1de37fe1cef36f5a4c9ebe71dc1cce6e49dcb265ff4"
+    },
+    {
+      "index": 18316,
+      "time_s": 610.5333333333333,
+      "roles": [
+        "seam:71-72"
+      ],
+      "filename": "frame-18316.png",
+      "size": 4016005,
+      "sha256": "1fa05ae7a2bad698570c5fd31d6460e7a8a651d3900984f12136e35a10b0e98e"
+    },
+    {
+      "index": 18317,
+      "time_s": 610.5666666666667,
+      "roles": [
+        "seam:71-72"
+      ],
+      "filename": "frame-18317.png",
+      "size": 4005713,
+      "sha256": "f046156627f2d7a035248169c380ef70e2fa7d90099e6d648a2aa84d25693553"
+    },
+    {
+      "index": 18318,
+      "time_s": 610.6,
+      "roles": [
+        "seam:71-72"
+      ],
+      "filename": "frame-18318.png",
+      "size": 4032856,
+      "sha256": "538a927d450119e8ba993e2efe1cbe716280ae3b3343693b29fe87cd9d1b159c"
+    },
+    {
+      "index": 18319,
+      "time_s": 610.6333333333333,
+      "roles": [
+        "seam:71-72"
+      ],
+      "filename": "frame-18319.png",
+      "size": 4047275,
+      "sha256": "63745e8ec1dde4d24902aac683ed95210c35ab34895820124f606f19a253c82a"
+    },
+    {
+      "index": 18320,
+      "time_s": 610.6666666666666,
+      "roles": [
+        "seam:71-72"
+      ],
+      "filename": "frame-18320.png",
+      "size": 4061132,
+      "sha256": "4fb92cf2f4b01a6754d1b9d2091ec786d762feed327be8f164d0666b8da0d130"
+    },
+    {
+      "index": 18574,
+      "time_s": 619.1333333333333,
+      "roles": [
+        "seam:72-73"
+      ],
+      "filename": "frame-18574.png",
+      "size": 3332376,
+      "sha256": "3efdd35835adf96b255bc154595f0b1adc7b26e732621f7ee05f6baab7bc5e8b"
+    },
+    {
+      "index": 18575,
+      "time_s": 619.1666666666666,
+      "roles": [
+        "seam:72-73"
+      ],
+      "filename": "frame-18575.png",
+      "size": 3235101,
+      "sha256": "599a0452e0030c9c21badd59d9d5e68d8a2d81836c2235e3299a73d5dbc39ddb"
+    },
+    {
+      "index": 18576,
+      "time_s": 619.2,
+      "roles": [
+        "seam:72-73"
+      ],
+      "filename": "frame-18576.png",
+      "size": 3012620,
+      "sha256": "68cc8b6c8aaf46715929a564149f14a1d87ba87a5d31bbf11d768599f54b42b2"
+    },
+    {
+      "index": 18577,
+      "time_s": 619.2333333333333,
+      "roles": [
+        "seam:72-73"
+      ],
+      "filename": "frame-18577.png",
+      "size": 3073201,
+      "sha256": "6c0548fa7251b2a78c443882b210b97b8f446e2e4cc6ad7defcf7b9fea39210d"
+    },
+    {
+      "index": 18578,
+      "time_s": 619.2666666666667,
+      "roles": [
+        "seam:72-73"
+      ],
+      "filename": "frame-18578.png",
+      "size": 3107592,
+      "sha256": "dfc83f0dc00fc1e56abee185f1e13617772eacccffe6b58d46670031d4f9d614"
+    },
+    {
+      "index": 18832,
+      "time_s": 627.7333333333333,
+      "roles": [
+        "seam:73-74"
+      ],
+      "filename": "frame-18832.png",
+      "size": 1338134,
+      "sha256": "c00146eee3e38d429149884328a68d0510f20fa3203f86d1cd4f438777e67b6c"
+    },
+    {
+      "index": 18833,
+      "time_s": 627.7666666666667,
+      "roles": [
+        "seam:73-74"
+      ],
+      "filename": "frame-18833.png",
+      "size": 1326002,
+      "sha256": "3a97d238a381602d827984438c73b606a617af72bac7ec1bf13efc501b03f628"
+    },
+    {
+      "index": 18834,
+      "time_s": 627.8,
+      "roles": [
+        "seam:73-74"
+      ],
+      "filename": "frame-18834.png",
+      "size": 1437123,
+      "sha256": "2949c0c990b83bef566d6f0ac5710fee36c23e0af90281c99b9456ca9e4e09b7"
+    },
+    {
+      "index": 18835,
+      "time_s": 627.8333333333334,
+      "roles": [
+        "seam:73-74"
+      ],
+      "filename": "frame-18835.png",
+      "size": 1441586,
+      "sha256": "7422c702fc933b6091a1de3321b0fdfde86c5ba6890494c9c651835f6e3a9e60"
+    },
+    {
+      "index": 18836,
+      "time_s": 627.8666666666667,
+      "roles": [
+        "seam:73-74"
+      ],
+      "filename": "frame-18836.png",
+      "size": 1394068,
+      "sha256": "dec46c6de9408bd01f2f27a359fff0bf29ce8fec82146566914fe52afff8971e"
+    },
+    {
+      "index": 19090,
+      "time_s": 636.3333333333334,
+      "roles": [
+        "seam:74-75"
+      ],
+      "filename": "frame-19090.png",
+      "size": 4137588,
+      "sha256": "bdd0d48c42c498343f745447e881d66da9bf2a1ba643c1493e5e9ab8e312e4f8"
+    },
+    {
+      "index": 19091,
+      "time_s": 636.3666666666667,
+      "roles": [
+        "seam:74-75"
+      ],
+      "filename": "frame-19091.png",
+      "size": 4146902,
+      "sha256": "e28bfe40b4111d22ab8d8031e74d327742a1bba3ba6a818b4b1a9faaf7dc8829"
+    },
+    {
+      "index": 19092,
+      "time_s": 636.4,
+      "roles": [
+        "seam:74-75"
+      ],
+      "filename": "frame-19092.png",
+      "size": 3822806,
+      "sha256": "ab2bb6f67bc203f0a090c1a008e76dcec1a6289226b2e315bc95e6119f46db57"
+    },
+    {
+      "index": 19093,
+      "time_s": 636.4333333333333,
+      "roles": [
+        "seam:74-75"
+      ],
+      "filename": "frame-19093.png",
+      "size": 3856862,
+      "sha256": "2d7827eb9b01905acd6afc4a0387032128f210c37e915b930b5e6a7f85014692"
+    },
+    {
+      "index": 19094,
+      "time_s": 636.4666666666667,
+      "roles": [
+        "seam:74-75"
+      ],
+      "filename": "frame-19094.png",
+      "size": 3997334,
+      "sha256": "966eaf5a97716f611ce9868d1e8d95bdf32bc7c81cd864415a310ab2eb56cf7e"
+    }
+  ]
+}
