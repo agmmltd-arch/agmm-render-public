@@ -1,0 +1,169 @@
+{
+  "branch": "review-S86-source-frames-37150356834",
+  "capture_count": 15,
+  "capture_evidence_sha256": "5f3488feeb3ab0dde80d87c001e8a1032a679c8fdac578cd5281602010d675ca",
+  "capture_plan_sha256": "132f4a559d84bb37570b4776c75fe38b68a38625d541bf10df6dcb4e5a48b7e5",
+  "captures": [
+    {
+      "bytes": 1551061,
+      "file": "frames/01-seam-S86-A-to-S86-B-m040.png",
+      "global": 15.126667,
+      "height": 1920,
+      "look": "s86-a",
+      "name": "seam-S86-A-to-S86-B-m040",
+      "sha256": "6aee472c2ce610046a516aae820aae5798275adb55bda031e23ea57133dff9c1",
+      "width": 1080
+    },
+    {
+      "bytes": 1534451,
+      "file": "frames/02-seam-S86-A-to-S86-B-p020.png",
+      "global": 15.186667,
+      "height": 1920,
+      "look": "s86-b",
+      "name": "seam-S86-A-to-S86-B-p020",
+      "sha256": "cddae14d7b512d5c399f7077bacdd6a974ae07fd5a50cd70db24be0080692964",
+      "width": 1080
+    },
+    {
+      "bytes": 1549822,
+      "file": "frames/03-seam-S86-A-to-S86-B-p060.png",
+      "global": 15.226667,
+      "height": 1920,
+      "look": "s86-b",
+      "name": "seam-S86-A-to-S86-B-p060",
+      "sha256": "21e40d7df46b906dadf63823eb8aa7ed55f861441304d63c4a415128a96baae1",
+      "width": 1080
+    },
+    {
+      "bytes": 1743313,
+      "file": "frames/04-ico-entry-23p05.png",
+      "global": 23.05,
+      "height": 1920,
+      "look": "s86-b",
+      "name": "ico-entry-23p05",
+      "sha256": "307de9fbd303246452db510a7dd405e9a3ee157668f962abac6f7cb1c2318cc4",
+      "width": 1080
+    },
+    {
+      "bytes": 1762814,
+      "file": "frames/05-ico-mid-25p70.png",
+      "global": 25.7,
+      "height": 1920,
+      "look": "s86-b",
+      "name": "ico-mid-25p70",
+      "sha256": "06274e8d0fb0a07a02dedc6a3dac9fdb16b483650fb8057fa61a87beadd04677",
+      "width": 1080
+    },
+    {
+      "bytes": 1803576,
+      "file": "frames/06-ico-exit-28p35.png",
+      "global": 28.35,
+      "height": 1920,
+      "look": "s86-b",
+      "name": "ico-exit-28p35",
+      "sha256": "33a14c1bdbece1827360638baaf5dc14d476f3fa42d0b90ed5ffd39c13e0961d",
+      "width": 1080
+    },
+    {
+      "bytes": 1744598,
+      "file": "frames/07-seam-S86-B-to-S86-C-m040.png",
+      "global": 30.293333,
+      "height": 1920,
+      "look": "s86-b",
+      "name": "seam-S86-B-to-S86-C-m040",
+      "sha256": "d9b37b94b5e60e3b191ebb5fc3725e9884ea8d38134907c7a12872325e69078b",
+      "width": 1080
+    },
+    {
+      "bytes": 1736638,
+      "file": "frames/08-seam-S86-B-to-S86-C-p020.png",
+      "global": 30.353333,
+      "height": 1920,
+      "look": "s86-c",
+      "name": "seam-S86-B-to-S86-C-p020",
+      "sha256": "d39e4c82d411808f476517672d4c27959e5f96c60cbb33518f2ef3613973e26b",
+      "width": 1080
+    },
+    {
+      "bytes": 1743399,
+      "file": "frames/09-seam-S86-B-to-S86-C-p060.png",
+      "global": 30.393333,
+      "height": 1920,
+      "look": "s86-c",
+      "name": "seam-S86-B-to-S86-C-p060",
+      "sha256": "6ea444f0342c5939a6e1ee6e878e16362f91b8edb9280bffeca239d738b3c822",
+      "width": 1080
+    },
+    {
+      "bytes": 1823682,
+      "file": "frames/10-seam-S86-C-to-S86-D-m040.png",
+      "global": 45.46,
+      "height": 1920,
+      "look": "s86-c",
+      "name": "seam-S86-C-to-S86-D-m040",
+      "sha256": "9cacbb6875a134d20cf501c2c019e08941a452a685c0522f7843524a61810c33",
+      "width": 1080
+    },
+    {
+      "bytes": 1801362,
+      "file": "frames/11-seam-S86-C-to-S86-D-p020.png",
+      "global": 45.52,
+      "height": 1920,
+      "look": "s86-d",
+      "name": "seam-S86-C-to-S86-D-p020",
+      "sha256": "ba11005970bf13bf99b91b7610703f55c4020e73f7ece2aa857c851d858f11b1",
+      "width": 1080
+    },
+    {
+      "bytes": 1798573,
+      "file": "frames/12-seam-S86-C-to-S86-D-p060.png",
+      "global": 45.56,
+      "height": 1920,
+      "look": "s86-d",
+      "name": "seam-S86-C-to-S86-D-p060",
+      "sha256": "5714351466972a9c0ce68d4afd51b1b71e6dac0c3a47872bb2e170cbc8736185",
+      "width": 1080
+    },
+    {
+      "bytes": 1681447,
+      "file": "frames/13-scope-entry-49p841.png",
+      "global": 49.841,
+      "height": 1920,
+      "look": "s86-d",
+      "name": "scope-entry-49p841",
+      "sha256": "e56570d424c1a077f6d88b786bdba3c8b8e4a60c6742d4de32021415038aa8c6",
+      "width": 1080
+    },
+    {
+      "bytes": 1705468,
+      "file": "frames/14-scope-mid-52p188.png",
+      "global": 52.188,
+      "height": 1920,
+      "look": "s86-d",
+      "name": "scope-mid-52p188",
+      "sha256": "c4dde7a6d2237bf79801db4a7192c9beb0168e06c24ac23cae6c972865fc7afa",
+      "width": 1080
+    },
+    {
+      "bytes": 1734288,
+      "file": "frames/15-scope-exit-54p545.png",
+      "global": 54.545,
+      "height": 1920,
+      "look": "s86-d",
+      "name": "scope-exit-54p545",
+      "sha256": "9a3c94fbd2b5d575216c48e86c46220bbb3ac5b8b1395d1b78388f63173b9b6f",
+      "width": 1080
+    }
+  ],
+  "editorial_status": "NOT_REVIEWED",
+  "input_receipt_sha256": "473d58390b7aceba87697554e35b9fa8f28ad1c32240c2cee2372a4082cdd77d",
+  "kind": "S86-public-source-frame-review-pack",
+  "media_identity_sha256": "6f9464e534981c16d6e6a451d0759799347b553df468fe5ee6f74812dcbfe32c",
+  "parts_sha256": "1585e81e26e654aabc04ebe0f851a81f0cd13962069027557f1e29db2dadc02d",
+  "release_approval": "NOT_GRANTED",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "run_id": 37150356834,
+  "scope": "source composition PNG stills only; no assembled master, audio, source archive or media identities list",
+  "source_release": "S86-r2-source-202610010547",
+  "source_sha256": "c8fa6aea8bc904de1183ef648188de4d7ec2ab0d432be623f6b165fd7ac4408b"
+}
