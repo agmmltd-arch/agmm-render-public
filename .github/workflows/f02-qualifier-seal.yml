@@ -1,0 +1,71 @@
+name: F02 seal scoped profit qualifier repair on hosted runner
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: f02-seal-profit-qualifier-repair
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: F02-profit-qualifier-20261003
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify original sealed source and exact inspected repairs
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == agmmltd-arch/agmm-render-public ]]
+          gh release download F02-craft-repair-20261003 -p source.tar.gz
+          echo '359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f  source.tar.gz' | sha256sum -c -
+          mkdir project
+          python3 - <<'PYCODE'
+          import pathlib,tarfile
+          with tarfile.open('source.tar.gz','r:gz') as tf:
+              members=tf.getmembers();root=pathlib.Path('project').resolve()
+              assert len(members)<8192 and sum(m.size for m in members)<1024**3
+              for m in members:
+                  p=(root/m.name).resolve()
+                  assert (p==root or root in p.parents) and (m.isfile() or m.isdir()),m.name
+              tf.extractall(root,filter='data')
+          PYCODE
+          (cd project && sha256sum -c SHA256SUMS.txt >/dev/null && python3 static_check.py)
+          echo 'ba768dd9c11f2d322ffe8f6fa274f80e0daa620009515c452cbdf5a365e971c8  project/film/film.js' | sha256sum -c -
+          echo 'e3a7468c564569230a4efa83fae6edd45fc677a4a5548621f9a18219227cd974  project/film/film.css' | sha256sum -c -
+          echo '9d548b35125934111243f78a6c6baa95d2e931eb219af372994cc8c8b4e5dd1c  project/film/sets_b.js' | sha256sum -c -
+          echo '6025a4347a8eaed17e31eaebf7834e33ec4af26cc7f59be586ac59ba5157fa1c  project/film/img/openai-official.png' | sha256sum -c -
+          echo 'a3511296dc51da187c20bd7c523b1eb4d00ff6dddeeeea1dcb4f4ce33a95f691  repairs/F02-qualifier-final/film.js' | sha256sum -c -
+          cp repairs/F02-qualifier-final/film.js project/film/film.js
+          node --check project/film/film.js
+          (cd project && python3 static_check.py)
+      - name: Reseal source and retain exact provenance
+        run: |
+          set -euo pipefail
+          mv source.tar.gz original-source.tar.gz
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          import hashlib,json,os
+          root=Path('project');files=sorted(p for p in root.rglob('*') if p.is_file() and p.name!='SHA256SUMS.txt')
+          digest=lambda p:hashlib.file_digest(p.open('rb'),'sha256').hexdigest()
+          (root/'SHA256SUMS.txt').write_text(''.join(f'{digest(p)}  ./{p.relative_to(root).as_posix()}\n' for p in files))
+          manifest={'film':'F02','run_id':int(os.environ['GITHUB_RUN_ID']),'code_commit':os.environ['GITHUB_SHA'],'parent_package_sha256':'359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f','repair_files':{p:digest(root/p) for p in ['film/film.js','film/film.css','film/sets_b.js','film/img/openai-official.png']},'qualifier_source_evidence_run':37142912333,'changed_interval':[436.4,439.8],'changed_source_only':'both436.4camera look targets5.5to4.9;439.8wide restoredbyte-identicalto parent','logo_evidence_run':37125089707,'logo_evidence_commit':'63b082baa70d3ea3dd291d4864efdc5258d49049','media_processing':'HOSTED ONLY','release_approval':'NOT_GRANTED','visual_review_scope':'targeted source snapshots only; independent complete master/audio/pilot review required'}
+          Path('source-receipt.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          PYCODE
+          (cd project && sha256sum -c SHA256SUMS.txt >/dev/null)
+          tar -czf source.tar.gz -C project .
+          python3 - <<'PYCODE'
+          import hashlib,json,pathlib
+          p=pathlib.Path('source.tar.gz');r=json.loads(pathlib.Path('source-receipt.json').read_text());r.update(package_sha256=hashlib.file_digest(p.open('rb'),'sha256').hexdigest(),package_bytes=p.stat().st_size)
+          pathlib.Path('source-receipt.json').write_text(json.dumps(r,indent=2)+'\n')
+          print(json.dumps(r,indent=2))
+          PYCODE
+      - name: Publish new sealed source without replacing previous assets
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" source.tar.gz source-receipt.json --target "$GITHUB_SHA" --title 'F02 scoped profit qualifier repair, source only' --notes 'Hosted-only reseal of current reviewed source plus scoped436.4 profit qualifier camera fix. All unchanged source and media retained; no full-master approval. NOT render completion or release approval.'
