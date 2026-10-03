@@ -40,7 +40,7 @@ jobs:
           echo 'e3a7468c564569230a4efa83fae6edd45fc677a4a5548621f9a18219227cd974  repairs/F02/film.css' | sha256sum -c -
           echo '9d548b35125934111243f78a6c6baa95d2e931eb219af372994cc8c8b4e5dd1c  repairs/F02/sets_b.js' | sha256sum -c -
           cp repairs/F02/{film.js,film.css,sets_b.js} project/film/
-          gh api 'repos/agmmltd-arch/agmm-render-public/contents/review/F02-subtitle/openai-official.png?ref=63b082baa70d3ea3dd291d4864efdc5258d49049' -H 'Accept: application/vnd.github.raw+json' > project/film/img/openai-official.png
+          curl --fail --location --max-time 60 'https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/63b082baa70d3ea3dd291d4864efdc5258d49049/review/F02-subtitle/openai-official.png' --output project/film/img/openai-official.png
           echo '6025a4347a8eaed17e31eaebf7834e33ec4af26cc7f59be586ac59ba5157fa1c  project/film/img/openai-official.png' | sha256sum -c -
           node --check project/film/film.js
           node --check project/film/sets_b.js
