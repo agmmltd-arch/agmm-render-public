@@ -59,60 +59,27 @@ jobs:
           chrome-version: stable
       - name: Install existing film renderer system dependencies
         run: sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg libnss3 libatk-bridge2.0-0 libgbm1 libxkbcommon0 libasound2t64 libxcomposite1 libxdamage1 libxrandr2 libpango-1.0-0 libcairo2 fonts-liberation
-      - name: Build the exact existing 11-member QA overlay on hosted Linux
+      - name: Reuse the verified already-published source overlay without packaging again
         run: |
           set -euo pipefail
-          # Reuse the authenticated QA overlay: these helper files do not exist in the renderer checkout.
-          gh release download "$SOURCE_RELEASE" -R "$GH_REPO" -p qa-overlay-r4e-seg12.tar.gz -D helper-input
-          test "$(wc -c < helper-input/qa-overlay-r4e-seg12.tar.gz | tr -d ' ')" = 77973
-          test "$(sha256sum helper-input/qa-overlay-r4e-seg12.tar.gz | cut -d ' ' -f1)" = 76daca8d0d38c7bc26ca13dcc29a6e0da82f77f07c0f25028671b72f850e717f
-          python3 - <<'PYCODE'
-          import importlib.util, pathlib, shutil, tarfile
-          spec=importlib.util.spec_from_file_location('capture','.github/scripts/f07_overlay_capture.py')
-          module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
-          with tarfile.open('helper-input/qa-overlay-r4e-seg12.tar.gz','r:gz') as tf:
-              members=tf.getmembers()
-              assert len(members)==len(module.ALLOWED_MEMBERS) and {m.name for m in members}==module.ALLOWED_MEMBERS
-              for m in members:
-                  assert m.isfile() and m.size<=module.MAX_OVERLAY_FILE_BYTES
-                  if m.name not in module.HELPER_FILES: continue
-                  dest=pathlib.Path('helper-base')/m.name
-                  dest.parent.mkdir(parents=True,exist_ok=True)
-                  with dest.open('wb') as out: shutil.copyfileobj(tf.extractfile(m),out)
-          PYCODE
-          python3 .github/scripts/f07_overlay_capture.py package \
-            --source-root F07-hosted-overlay-capture-proposal-luna/overlay-source \
-            --helper-root helper-base --output f07-qa-overlay.tar.gz --receipt overlay-receipt.json
-          sha256sum f07-qa-overlay.tar.gz > F07-QA-OVERLAY.sha256
-          OVERLAY_SHA=$(sha256sum f07-qa-overlay.tar.gz | cut -d ' ' -f1)
-          TAG="F07-code-overlay-$OVERLAY_SHA"
-          if gh release view "$TAG" -R "$GH_REPO" >/dev/null 2>&1; then
-            echo 'refusing to overwrite an existing content-addressed release tag' >&2; exit 1
-          fi
-          gh release create "$TAG" f07-qa-overlay.tar.gz F07-QA-OVERLAY.sha256 overlay-receipt.json \
-            --repo "$GH_REPO" --target "$GITHUB_SHA" --draft --title "F07 code-only QA overlay $OVERLAY_SHA" \
-            --notes 'Three verified F07 film-code files plus the pinned existing QA helper allowlist. No media or voice. Hash receipt binds the archive.'
-          RELEASE_ID=$(gh api "repos/$GH_REPO/releases/tags/$TAG" --jq .id)
-          gh api --method PATCH "repos/$GH_REPO/releases/$RELEASE_ID" -F draft=false >/dev/null
+          TAG=F07-code-overlay-6c3ec29f09a5e22eff2a3061ea737c50b8d02438a4877671096d82301076e2cc
           gh api "repos/$GH_REPO/releases/tags/$TAG" > overlay-release.json
-          python3 - <<'PY'
+          python3 - <<'PYCODE'
           import json
           r=json.load(open('overlay-release.json'))
-          assert r['tag_name'].startswith('F07-code-overlay-') and r['draft'] is False
+          expected='6c3ec29f09a5e22eff2a3061ea737c50b8d02438a4877671096d82301076e2cc'
+          assert r['id']==402696548 and r['tag_name']=='F07-code-overlay-'+expected and r['draft'] is False
+          assert r['target_commitish']=='6b79a736a7f0ed1b36264ad708dfaf909fc02579'
           assets={a['name']:a for a in r['assets']}
+          assert set(assets)=={'f07-qa-overlay.tar.gz','F07-QA-OVERLAY.sha256','overlay-receipt.json'}
           a=assets['f07-qa-overlay.tar.gz']
-          expected=open('F07-QA-OVERLAY.sha256').read().split()[0]
-          assert a['digest']=='sha256:'+expected and a['state']=='uploaded'
-          assert a['size']==json.load(open('overlay-receipt.json'))['archive_bytes']
+          assert a['id']==608555583 and a['digest']=='sha256:'+expected and a['size']==77722 and a['state']=='uploaded'
+          r['overlay_sha256']=expected; r['asset_id']=a['id']; r['asset_bytes']=a['size']
           setting=json.load(open('immutable-releases.json')).get('enabled')
           r['repo_immutable_releases_enabled']=setting if setting in (True,False) else None
-          r['overlay_sha256']=expected; r['asset_id']=a['id']; r['asset_bytes']=a['size']
           json.dump(r,open('overlay-release.json','w'),indent=2)
-          release_immutable=r.get('immutable')
-          release_state='unknown' if release_immutable not in (True,False) else str(release_immutable).lower()
-          setting_state='unknown' if r['repo_immutable_releases_enabled'] not in (True,False) else str(r['repo_immutable_releases_enabled']).lower()
-          open('OVERLAY-RELEASE-IDENTITY.txt','w').write(f"tag={r['tag_name']}\nasset_id={a['id']}\nasset_sha256={expected}\nasset_bytes={a['size']}\ngithub_immutable_release={release_state}\nrepo_immutable_releases_enabled={setting_state}\n")
-          PY
+          open('OVERLAY-RELEASE-IDENTITY.txt','w').write(f"tag={r['tag_name']}\nasset_id={a['id']}\nasset_sha256={expected}\nasset_bytes={a['size']}\n")
+          PYCODE
       - name: Download and verify the exact sealed F07 parent on hosted Linux
         run: |
           set -euo pipefail
