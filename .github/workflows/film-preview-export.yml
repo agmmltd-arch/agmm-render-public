@@ -47,6 +47,7 @@ jobs:
           assert d['path']=='.github/workflows/agmm-film.yml' and d['event']=='workflow_dispatch'
           assert d['status']=='completed' and d['conclusion'] in ('success','failure')
           if d['conclusion']=='failure':
+              assert Path('source-jobs.json').is_file(), 'Source job provenance missing'
               jobs=json.loads(Path('source-jobs.json').read_text())
               assert jobs['total_count']==len(jobs['jobs']) and jobs['jobs']
               assert all(j['run_id']==d['id'] and j['status']=='completed' for j in jobs['jobs'])
@@ -88,7 +89,7 @@ jobs:
           required={'segment_decode','segment_flicker','master_full_decode','derived_full_decode','encoded_audio_loudness_and_true_peak'}
           assert required<=set(report['checks']) and all(report['checks'][k]=='PASS' for k in required)
           ocr=json.loads(Path('ocr/OCR-CHECK-2.json').read_text())
-          assert ocr['kind']=='existing_gate_check_only' and ocr['release_approval']=='NOT_GRANTED'
+          assert ocr.get('kind')=='existing_gate_check_only' and ocr.get('release_approval')=='NOT_GRANTED'
           assert ocr['check']['status'] in ('PASS','FAIL')
           sums={}
           for line in Path('master/SHA256SUMS.txt').read_text().splitlines():
