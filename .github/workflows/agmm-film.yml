@@ -41,7 +41,7 @@ on:
         required: false
         default: false
       assemble_full:
-        description: Assemble a complete 73-segment F07 4K run on the hosted runner
+        description: Assemble a complete 4K run on the hosted runner
         type: boolean
         required: false
         default: false
@@ -62,6 +62,9 @@ on:
         type: boolean
         required: false
         default: true
+      fid:
+        description: Film ID (e.g., F02, F07)
+        required: true
 
 permissions:
   contents: read
@@ -85,6 +88,9 @@ jobs:
       WORKERS: ${{ inputs.workers }}
       GH_TOKEN: ${{ github.token }}
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
@@ -175,10 +181,12 @@ jobs:
           ffprobe -v error -select_streams v:0 -show_entries stream=width,height,nb_frames -of csv=p=0 "$GITHUB_WORKSPACE/out/SEG$I.mp4"
       - name: Hosted full decode, probe and flicker verification
         if: ${{ inputs.remote_only }}
+        env:
+          FID: ${{ inputs.fid }}
         run: |
           FRAMES=$(python3 -c 'import os; print(round(float(os.environ["LN"]) * 30))')
-          python3 qa_overlay/.github/scripts/assemble_verify.py --check-segment \
-            "out/SEG${I}.mp4" --expected-frames "$FRAMES"
+          python3 .github/scripts/assemble_verify.py --check-segment \
+            "out/SEG${I}.mp4" --expected-frames "$FRAMES" --fid "$FID"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -203,7 +211,11 @@ jobs:
       OVERLAY_ASSET: ${{ inputs.overlay_release_asset }}
       OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
       OVERLAY_RELEASE: ${{ inputs.overlay_release || inputs.release }}
+      FID: ${{ inputs.fid }}
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
       - name: Install FFmpeg
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
@@ -239,6 +251,7 @@ jobs:
           PYCODE
           (cd package && sha256sum -c SHA256SUMS.txt && python3 static_check.py)
       - name: Apply the hash-bound reviewed film source overlay
+        if: ${{ inputs.apply_source_overlay }}
         run: |
           (cd qa_overlay && sha256sum -c film-overlay.sha256)
           cp qa_overlay/film/film.js package/film/film.js
@@ -248,6 +261,7 @@ jobs:
       - name: Assemble and fully verify on hosted runner
         env:
           GH_TOKEN: ${{ github.token }}
+          FID: ${{ inputs.fid }}
         run: |
           set -euo pipefail
           DURATION=$(python3 - <<'PYCODE'
@@ -260,8 +274,8 @@ jobs:
           print(match.group(1))
           PYCODE
           )
-          python3 qa_overlay/.github/scripts/assemble_verify.py --segments-json "$SEGS_JSON" \
-            --duration "$DURATION" --segments-dir segments --package-dir package --output-dir remote-final
+          python3 .github/scripts/assemble_verify.py --segments-json "$SEGS_JSON" \
+            --duration "$DURATION" --segments-dir segments --package-dir package --output-dir remote-final --fid "$FID"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -273,7 +287,7 @@ jobs:
         if: always()
         with:
           name: ${{ inputs.tag }}-AUDIO-GAIN-PROOF
-          path: remote-final/F07-MIX-GAIN-ADJUSTED.flac
+          path: remote-final/${{ env.FID }}-MIX-GAIN-ADJUSTED.flac
           retention-days: 1
           compression-level: 0
           if-no-files-found: warn
@@ -281,7 +295,7 @@ jobs:
         with:
           name: ${{ inputs.tag }}-MASTER-4K
           path: |
-            remote-final/F07-MASTER-4K.mp4
+            remote-final/${{ env.FID }}-MASTER-4K.mp4
             remote-final/AUDIO-GAIN-RECEIPT.json
             remote-final/REMOTE-INTEGRITY.json
             remote-final/SHA256SUMS.txt
@@ -292,8 +306,8 @@ jobs:
         with:
           name: ${{ inputs.tag }}-REVIEW-1080
           path: |
-            remote-final/F07-MASTER-1080-from-4K.mp4
-            remote-final/F07-MASTER-1080-from-4K.mp4.derived.json
+            remote-final/${{ env.FID }}-MASTER-1080-from-4K.mp4
+            remote-final/${{ env.FID }}-MASTER-1080-from-4K.mp4.derived.json
             remote-final/AUDIO-GAIN-RECEIPT.json
             remote-final/REMOTE-INTEGRITY.json
             remote-final/SHA256SUMS.txt
@@ -308,7 +322,11 @@ jobs:
     timeout-minutes: 90
     env:
       GH_TOKEN: ${{ github.token }}
+      FID: ${{ inputs.fid }}
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           pattern: ${{ inputs.tag }}-REVIEW-1080
@@ -316,7 +334,7 @@ jobs:
           merge-multiple: true
       - name: Fetch and safely extract OCR code overlay
         env:
-          RELEASE: ${{ inputs.release }}
+          RELEASE: ${{ inputs.overlay_release || inputs.release }}
           OVERLAY_ASSET: ${{ inputs.overlay_release_asset }}
           OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
         run: |
@@ -339,13 +357,15 @@ jobs:
               with d.open("wb") as f: shutil.copyfileobj(tf.extractfile(m),f)
           PYCODE
       - name: Build exact native Vision OCR and run existing Check 2 only
+        env:
+          FID: ${{ inputs.fid }}
         run: |
           set -euo pipefail
           brew install ffmpeg
           swiftc -O -framework Foundation -framework Vision -framework AppKit -o qa_overlay/kit/tools/ocr_vision qa_overlay/kit/tools/ocr_vision.swift
           python3 -m venv .venv
           .venv/bin/python -m pip install --quiet numpy pillow
-          .venv/bin/python qa_overlay/.github/scripts/run_existing_ocr_check.py --video review/F07-MASTER-1080-from-4K.mp4 --v2-root qa_overlay --out ocr-results --platform youtube
+          .venv/bin/python qa_overlay/.github/scripts/run_existing_ocr_check.py --video review/${{ env.FID }}-MASTER-1080-from-4K.mp4 --v2-root qa_overlay --out ocr-results --platform youtube
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
