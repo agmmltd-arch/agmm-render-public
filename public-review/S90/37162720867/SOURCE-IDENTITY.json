@@ -1,0 +1,22 @@
+{
+  "schema": "agmm-source-page-identity-v1",
+  "story_id": "S90",
+  "pinned_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+  "final_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+  "http_status": 200,
+  "publisher": "Channel 4",
+  "document_type": "News Release",
+  "expected_title": "Channel 4 makes TV history with Britain's first AI presenter",
+  "observed_title": null,
+  "expected_date": "20 October 2025",
+  "observed_date": null,
+  "title_verified": false,
+  "date_verified": false,
+  "visible_header_logo_candidates": [],
+  "no_photos_or_clips_requested": true,
+  "editorial_status": "SOURCE_CAPTURE_FAILED",
+  "release_approval": "NOT_GRANTED",
+  "capture_stage": "header-mark-identification",
+  "captured_at": "2026-10-03T23:44:55.427Z",
+  "failure": "could not identify exactly one accessible real Channel 4 mark inside the visible native site header"
+}

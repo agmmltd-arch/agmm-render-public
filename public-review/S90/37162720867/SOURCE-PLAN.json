@@ -1,0 +1,85 @@
+{
+  "schema": "agmm-source-pack-plan-v1",
+  "story_id": "S90",
+  "source": {
+    "url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+    "publisher": "Channel 4",
+    "document_type": "News Release",
+    "title": "Channel 4 makes TV history with Britain's first AI presenter",
+    "date": "20 October 2025",
+    "credit_line": "Source: Channel 4, News Release, 20 October 2025",
+    "header_selector": "header,[role=banner]",
+    "title_selector": "h1",
+    "date_selector": ".c-article-date",
+    "logo_accessibility_pattern": "channel\\s*4|channel4|c4(?:[._/-]|$)",
+    "source_identity_requirement": "The final URL, one visible h1, one visible publication date, and selected source paragraphs must match this plan before any screenshot is retained."
+  },
+  "collection": {
+    "allowed_host_suffix": ".channel4.com",
+    "allow_cross_host_navigation": false,
+    "allow_images": "Only same-publisher image requests referenced by an accessible Channel 4 logo element inside the visible site header; every other image is blocked.",
+    "allow_media": false,
+    "allow_iframes": false,
+    "follow_links": false,
+    "photos": false,
+    "clips": false,
+    "full_page_screenshot": false,
+    "screenshots_are_native_dom_elements": true
+  },
+  "claims": [
+    {
+      "id": 1,
+      "spoken_claim": "The programme's own presenter appeared throughout reporting from different locations and was entirely AI-generated.",
+      "required_source_phrases": ["programme's own presenter", "appears throughout reporting from different locations", "entirely AI-generated"]
+    },
+    {
+      "id": 2,
+      "spoken_claim": "The programme was Will AI Take My Job?",
+      "required_source_phrases": ["Will AI Take My Job?", "Dispatches investigates how AI automation is reshaping the workplace"]
+    },
+    {
+      "id": 3,
+      "spoken_claim": "The presenter's face, voice and movements were made with AI, without a single frame of real-world filming.",
+      "required_source_phrases": ["their face, voice and movements all created through AI technology", "without a single frame of real-world filming"]
+    },
+    {
+      "id": 4,
+      "spoken_claim": "The presenter said: Some of you might have guessed: I don't exist, I wasn't on location reporting this story.",
+      "required_source_phrases": ["Some of you might have guessed: I don't exist, I wasn't on location reporting this story."]
+    },
+    {
+      "id": 5,
+      "spoken_claim": "The presenter said: Because I'm not real.",
+      "required_source_phrases": ["Because I'm not real."]
+    },
+    {
+      "id": 6,
+      "spoken_claim": "Channel 4 did it on purpose as a deliberate stunt.",
+      "required_source_phrases": ["as part of a deliberate on-screen stunt to show just how convincing artificial intelligence has become"]
+    },
+    {
+      "id": 7,
+      "spoken_claim": "Louisa Compton said it showed how easy it is to hoodwink audiences with content they cannot verify.",
+      "required_source_phrases": ["how easy it is to hoodwink audiences with content they have no way of verifying"]
+    },
+    {
+      "id": 8,
+      "spoken_claim": "Louisa Compton was Channel 4's head of news.",
+      "required_source_phrases": ["Louisa Compton, Head of News and Current Affairs, Specialist Factual and Sport at Channel 4, said:"]
+    }
+  ],
+  "non_source_advice": {
+    "text": "Confirm bank-detail changes by calling a number already held, never one supplied in a message.",
+    "publisher": "AGMM original practical advice",
+    "included_in_channel4_claims": false
+  },
+  "asset_policy": {
+    "header": "Capture the unchanged native page header with its real Channel 4 mark. The mark may appear only inside the source evidence pane in the later composition; no standalone or re-drawn logo.",
+    "title_and_date": "Capture the live page's actual h1 and date element, not a typeset reconstruction.",
+    "claim_paragraphs": "Capture the live page's actual DOM paragraph containing each required phrase. Never synthesize a document or use saved source text as a graphic.",
+    "rights_status": "NOT_ASSESSED; a root/editorial reviewer must inspect every source crop and determine the exact fair-dealing basis and placement before use.",
+    "release_approval": "NOT_GRANTED",
+    "render_approval": "NOT_GRANTED",
+    "editorial_review": "NEEDS_ROOT_EYES"
+  }
+}
