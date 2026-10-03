@@ -1,0 +1,104 @@
+name: S86 hosted sealed-source text inventory
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      S86_RELEASE_TAG: S86-r2-source-202610010547
+      S86_SOURCE_ASSET_ID: "602456631"
+      S86_PACKAGE_SHA256: c8fa6aea8bc904de1183ef648188de4d7ec2ab0d432be623f6b165fd7ac4408b
+      S86_PACKAGE_BYTES: "9830053"
+      S86_EXPECTED_REPOSITORY: agmmltd-arch/agmm-render-public
+
+    steps:
+      - name: Check out workflow and text-only inventory helper
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+
+      - name: Confirm expected public repository before release access
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "$S86_EXPECTED_REPOSITORY"
+          gh api "repos/${GITHUB_REPOSITORY}" \
+            --jq '{full_name,private,visibility}' \
+            > "$RUNNER_TEMP/s86-repository.json"
+          python3 .github/scripts/s86_hosted_source_inventory.py check-repository \
+            --metadata "$RUNNER_TEMP/s86-repository.json" \
+            --expected-repository "$S86_EXPECTED_REPOSITORY"
+
+      - name: Confirm sealed release source and sidecar metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${S86_RELEASE_TAG}" \
+            --jq '{tag_name,assets:[.assets[] | select(.id == 602456630 or .id == 602456631 or .id == 602456632) | {id,name,size,digest,state}]}' \
+            > "$RUNNER_TEMP/s86-release.json"
+          python3 .github/scripts/s86_hosted_source_inventory.py check-release \
+            --metadata "$RUNNER_TEMP/s86-release.json" \
+            --release-tag "$S86_RELEASE_TAG"
+
+      - name: Download and authenticate the sealed source archive on hosted Linux
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/s86-parent"
+          gh release download "$S86_RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern source.tar.gz \
+            --dir "$RUNNER_TEMP/s86-parent"
+          printf '%s  %s\n' "$S86_PACKAGE_SHA256" "$RUNNER_TEMP/s86-parent/source.tar.gz" \
+            | sha256sum --check --status
+          test "$(stat -c '%s' "$RUNNER_TEMP/s86-parent/source.tar.gz")" = "$S86_PACKAGE_BYTES"
+
+      - name: Extract only four source spec files and write inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/s86_hosted_source_inventory.py inventory \
+            --archive "$RUNNER_TEMP/s86-parent/source.tar.gz" \
+            --expected-sha256 "$S86_PACKAGE_SHA256" \
+            --release-tag "$S86_RELEASE_TAG" \
+            --output "$RUNNER_TEMP/s86-inventory"
+
+      - name: Publish only source text and inventory to an orphan review branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="review/s86-source-inventory-${GITHUB_RUN_ID}"
+          if git ls-remote --heads origin "refs/heads/${branch}" | grep -q .; then
+            echo "Review branch already exists; refusing to replace it."
+            exit 1
+          fi
+          git switch --orphan "$branch"
+          git clean -fdx
+          mkdir -p source
+          cp -R "$RUNNER_TEMP/s86-inventory/source/." source/
+          cp "$RUNNER_TEMP/s86-inventory/inventory.json" inventory.json
+          git add -- inventory.json source/s86-a/spec.js source/s86-b/spec.js \
+            source/s86-c/spec.js source/s86-d/spec.js
+          git diff --cached --check
+          actual="$(git diff --cached --name-only | LC_ALL=C sort)"
+          expected="$(printf '%s\n' inventory.json source/s86-a/spec.js source/s86-b/spec.js \
+            source/s86-c/spec.js source/s86-d/spec.js | LC_ALL=C sort)"
+          test "$actual" = "$expected"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Inventory sealed S86 source text"
+          tree="$(git ls-tree -r --name-only HEAD | LC_ALL=C sort)"
+          test "$tree" = "$expected"
+          git push origin "HEAD:refs/heads/${branch}"
