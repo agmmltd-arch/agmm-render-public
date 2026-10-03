@@ -21,11 +21,6 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: true
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          ref: 5e511639891bceae531e0fcb0d10866f42edb414
-          path: helper-base
-          persist-credentials: false
       - name: Guard public Linux target and verify repository/source metadata
         shell: bash
         run: |
@@ -67,6 +62,24 @@ jobs:
       - name: Build the exact existing 11-member QA overlay on hosted Linux
         run: |
           set -euo pipefail
+          # Reuse the authenticated QA overlay: these helper files do not exist in the renderer checkout.
+          gh release download "$SOURCE_RELEASE" -R "$GH_REPO" -p qa-overlay-r4e-seg12.tar.gz -D helper-input
+          test "$(wc -c < helper-input/qa-overlay-r4e-seg12.tar.gz | tr -d ' ')" = 77973
+          test "$(sha256sum helper-input/qa-overlay-r4e-seg12.tar.gz | cut -d ' ' -f1)" = 76daca8d0d38c7bc26ca13dcc29a6e0da82f77f07c0f25028671b72f850e717f
+          python3 - <<'PYCODE'
+          import importlib.util, pathlib, shutil, tarfile
+          spec=importlib.util.spec_from_file_location('capture','.github/scripts/f07_overlay_capture.py')
+          module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+          with tarfile.open('helper-input/qa-overlay-r4e-seg12.tar.gz','r:gz') as tf:
+              members=tf.getmembers()
+              assert len(members)==len(module.ALLOWED_MEMBERS) and {m.name for m in members}==module.ALLOWED_MEMBERS
+              for m in members:
+                  assert m.isfile() and m.size<=module.MAX_OVERLAY_FILE_BYTES
+                  if m.name not in module.HELPER_FILES: continue
+                  dest=pathlib.Path('helper-base')/m.name
+                  dest.parent.mkdir(parents=True,exist_ok=True)
+                  with dest.open('wb') as out: shutil.copyfileobj(tf.extractfile(m),out)
+          PYCODE
           python3 .github/scripts/f07_overlay_capture.py package \
             --source-root F07-hosted-overlay-capture-proposal-luna/overlay-source \
             --helper-root helper-base --output f07-qa-overlay.tar.gz --receipt overlay-receipt.json
