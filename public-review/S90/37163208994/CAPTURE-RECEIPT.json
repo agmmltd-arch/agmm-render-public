@@ -1,0 +1,25 @@
+{
+  "schema": "agmm-source-pack-capture-receipt-v1",
+  "story_id": "S90",
+  "status": "SOURCE_CROPS_CAPTURED_NEEDS_ROOT_EYES",
+  "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+  "source_plan_sha256": "da81ea62eeb36ddfab4b63b748894b567e2268c105d00e82d83638fed4c939d5",
+  "asset_count": 11,
+  "files": [
+    "header-channel4.png",
+    "release-title.png",
+    "release-date.png",
+    "claim-01.png",
+    "claim-02.png",
+    "claim-03.png",
+    "claim-04.png",
+    "claim-05.png",
+    "claim-06.png",
+    "claim-07.png",
+    "claim-08.png"
+  ],
+  "editorial_status": "NEEDS_ROOT_EYES",
+  "rights_status": "NOT_ASSESSED",
+  "render_approval": "NOT_GRANTED",
+  "release_approval": "NOT_GRANTED"
+}

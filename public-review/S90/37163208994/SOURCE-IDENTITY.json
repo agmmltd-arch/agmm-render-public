@@ -1,0 +1,52 @@
+{
+  "schema": "agmm-source-page-identity-v1",
+  "story_id": "S90",
+  "pinned_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+  "final_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+  "http_status": 200,
+  "publisher": "Channel 4",
+  "document_type": "News Release",
+  "expected_title": "Channel 4 makes TV history with Britain's first AI presenter",
+  "observed_title": "Channel 4 makes TV history with Britain’s first AI presenter",
+  "expected_date": "20 October 2025",
+  "observed_date": "20 October 2025",
+  "title_verified": true,
+  "date_verified": true,
+  "identified_header_logo_candidates": [
+    {
+      "host": "all4nav.channel4.com",
+      "tag": "img",
+      "accessible_label": "Channel4.com Homepage",
+      "discovery_box": {
+        "width": 221.890625,
+        "height": 40
+      },
+      "second_pass_visibility_required": true,
+      "second_pass_loaded": true
+    }
+  ],
+  "header_discovery": {
+    "selector": "header,[role=banner]",
+    "dom_ready_with_accessible_logo": true,
+    "header_count": 2,
+    "visible_header_count": 2,
+    "candidates": [
+      {
+        "tag": "img",
+        "accessible_label": "Channel4.com Homepage",
+        "source_host": "all4nav.channel4.com",
+        "discovery_box": {
+          "width": 221.890625,
+          "height": 40
+        }
+      }
+    ],
+    "navigation_init_errors": []
+  },
+  "navigation_init_errors": [],
+  "no_photos_or_clips_requested": true,
+  "editorial_status": "NOT_REVIEWED",
+  "release_approval": "NOT_GRANTED",
+  "capture_stage": "SOURCE_CROPS_CAPTURED",
+  "captured_at": "2026-10-03T23:54:20.771Z"
+}
