@@ -72,12 +72,19 @@ jobs:
           python3 .github/scripts/seal_s86_b_overlay.py seal \
             --source "$RUNNER_TEMP/s86-parent/source.tar.gz" \
             --parts "$RUNNER_TEMP/s86-parent/parts.json" \
+            --parts-output "$RUNNER_TEMP/s86-sealed/parts.json" \
             --mix "$RUNNER_TEMP/s86-parent/mix.wav" \
             --output "$RUNNER_TEMP/s86-sealed/source.tar.gz" \
             --receipt "$RUNNER_TEMP/s86-sealed/source-receipt.json"
-          cp "$RUNNER_TEMP/s86-parent/parts.json" "$RUNNER_TEMP/s86-sealed/parts.json"
           cp "$RUNNER_TEMP/s86-parent/mix.wav" "$RUNNER_TEMP/s86-sealed/mix.wav"
-          test "$(sha256sum "$RUNNER_TEMP/s86-sealed/parts.json" | cut -d ' ' -f1)" = "$PARENT_PARTS_SHA256"
+          python3 - "$RUNNER_TEMP/s86-sealed/source.tar.gz" "$RUNNER_TEMP/s86-sealed/parts.json" <<'PY'
+          import hashlib, json, pathlib, sys
+          source, parts = map(pathlib.Path, sys.argv[1:])
+          data = json.loads(parts.read_text(encoding="utf-8"))
+          digest = hashlib.sha256(source.read_bytes()).hexdigest()
+          if data.get("sha256") != digest or data.get("bytes") != source.stat().st_size:
+              raise SystemExit("sealed parts.json does not bind the new source archive")
+          PY
           test "$(sha256sum "$RUNNER_TEMP/s86-sealed/mix.wav" | cut -d ' ' -f1)" = "$PARENT_MIX_SHA256"
 
       - name: Publish new source-only release without replacing its parent
@@ -96,4 +103,4 @@ jobs:
             "$RUNNER_TEMP/s86-sealed/mix.wav" \
             --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
             --title "S86-B scoped crop source seal" \
-            --notes "Hosted source-only seal of one reviewed S86-B crop field. Parts and mix are byte-identical to the immutable parent. No render or release approval."
+            --notes "Hosted source-only seal of one reviewed S86-B crop field. Part timeline and frames are unchanged; package hash and byte count are rebound to the new archive. Mix is byte-identical to the immutable parent. No render or release approval."

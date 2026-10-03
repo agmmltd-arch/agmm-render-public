@@ -136,6 +136,35 @@ def _checksum_patch(data: bytes, old_sha: str, new_sha: str) -> bytes:
     return b"".join(lines)
 
 
+def _rebind_parts(
+    data: bytes,
+    *,
+    parent_sha256: str,
+    parent_bytes: int,
+    sealed_sha256: str,
+    sealed_bytes: int,
+) -> tuple[bytes, str]:
+    """Rebind only the package identity fields; preserve all timeline/frame values."""
+    try:
+        value = json.loads(data)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("Parent parts.json is not valid UTF-8 JSON.") from exc
+    if not isinstance(value, dict) or not isinstance(value.get("parts"), list):
+        raise ValueError("Parent parts.json must contain a top-level parts array.")
+    if value.get("sha256") != parent_sha256 or value.get("bytes") != parent_bytes:
+        raise ValueError("Parent parts.json does not bind the authenticated parent source bytes.")
+    semantic = {key: item for key, item in value.items() if key not in {"sha256", "bytes"}}
+    timeline_digest = sha(json.dumps(semantic, sort_keys=True, separators=(",", ":"),
+                                     ensure_ascii=False).encode("utf-8"))
+    rebound = dict(value)
+    rebound["sha256"] = sealed_sha256
+    rebound["bytes"] = sealed_bytes
+    preserved = {key: item for key, item in rebound.items() if key not in {"sha256", "bytes"}}
+    if preserved != semantic:
+        raise ValueError("Rebinding changed part timeline or frame values.")
+    return (json.dumps(rebound, indent=2, ensure_ascii=False) + "\n").encode("utf-8"), timeline_digest
+
+
 def seal_archive_bytes(
     archive_bytes: bytes,
     parts_bytes: bytes,
@@ -144,8 +173,8 @@ def seal_archive_bytes(
     env: Mapping[str, str],
     system: str,
     contract: Mapping[str, object] | None = None,
-) -> tuple[bytes, dict[str, object]]:
-    """Authenticate inputs, patch B only, then return a newly sealed tar and receipt data."""
+) -> tuple[bytes, bytes, dict[str, object]]:
+    """Authenticate inputs, patch B, rebind parts.json, and return sealed bytes plus receipt."""
     require_hosted_linux(env, system)
     c = dict(contract or {})
     expected_parent = str(c.get("parent_sha256", PARENT_SHA256))
@@ -159,6 +188,12 @@ def seal_archive_bytes(
         raise ValueError("Parent source archive byte count or SHA-256 mismatch.")
     if sha(parts_bytes) != expected_parts or sha(mix_bytes) != expected_mix:
         raise ValueError("Original parts.json or mix.wav SHA-256 mismatch.")
+    try:
+        parent_parts = json.loads(parts_bytes)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("Parent parts.json is not valid UTF-8 JSON.") from exc
+    if not isinstance(parent_parts, dict) or parent_parts.get("sha256") != expected_parent or parent_parts.get("bytes") != expected_parent_bytes:
+        raise ValueError("Parent parts.json does not bind the authenticated parent source bytes.")
 
     with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:gz") as parent:
         members = safe_members(parent)
@@ -224,6 +259,16 @@ def seal_archive_bytes(
     for name in before:
         if name not in changed and before[name] != after[name]:
             raise ValueError(f"Unexpected source package member changed: {name}")
+    sealed_source_sha = sha(new_archive)
+    sealed_parts_bytes, parts_semantic_sha = _rebind_parts(
+        parts_bytes,
+        parent_sha256=expected_parent,
+        parent_bytes=expected_parent_bytes,
+        sealed_sha256=sealed_source_sha,
+        sealed_bytes=len(new_archive),
+    )
+    if json.loads(sealed_parts_bytes).get("sha256") != sealed_source_sha or json.loads(sealed_parts_bytes).get("bytes") != len(new_archive):
+        raise ValueError("Resealed parts.json does not bind the exact new source archive.")
     receipt = {
         "schema": "s86-b-hosted-source-seal-v1",
         "status": "SOURCE_SEALED_NOT_RENDERED_OR_APPROVED",
@@ -241,9 +286,14 @@ def seal_archive_bytes(
         "archive_member_count": len(members),
         "member_sha256_before": {name: sha(data) for name, data in sorted(before.items())},
         "member_sha256_after": {name: sha(data) for name, data in sorted(after.items())},
-        "source_sha256": sha(new_archive),
+        "source_sha256": sealed_source_sha,
         "source_bytes": len(new_archive),
-        "parts_sha256": sha(parts_bytes),
+        "parent_parts_sha256": sha(parts_bytes),
+        "sealed_parts_sha256": sha(sealed_parts_bytes),
+        "parts_binding_before": {"sha256": expected_parent, "bytes": expected_parent_bytes},
+        "parts_binding_after": {"sha256": sealed_source_sha, "bytes": len(new_archive)},
+        "parts_timeline_frames_semantic_sha256": parts_semantic_sha,
+        "parts_timeline_frames_preserved": True,
         "mix_sha256": sha(mix_bytes),
         "workflow_run_id": env.get("GITHUB_RUN_ID"),
         "workflow_commit": env.get("GITHUB_SHA"),
@@ -251,7 +301,7 @@ def seal_archive_bytes(
         "release_approval": "NOT_GRANTED",
         "visual_review": "REQUIRED_AFTER_HOSTED_CAPTURE",
     }
-    return new_archive, receipt
+    return new_archive, sealed_parts_bytes, receipt
 
 
 def main() -> None:
@@ -264,6 +314,7 @@ def main() -> None:
     seal = sub.add_parser("seal")
     seal.add_argument("--source", type=Path, required=True)
     seal.add_argument("--parts", type=Path, required=True)
+    seal.add_argument("--parts-output", type=Path, required=True)
     seal.add_argument("--mix", type=Path, required=True)
     seal.add_argument("--output", type=Path, required=True)
     seal.add_argument("--receipt", type=Path, required=True)
@@ -277,9 +328,10 @@ def main() -> None:
         print("PASS: immutable parent asset metadata confirmed.")
         return
     require_hosted_linux(os.environ, platform.system())
-    output, receipt = seal_archive_bytes(args.source.read_bytes(), args.parts.read_bytes(), args.mix.read_bytes(),
-                                        env=os.environ, system=platform.system())
+    output, parts_output, receipt = seal_archive_bytes(args.source.read_bytes(), args.parts.read_bytes(), args.mix.read_bytes(),
+                                                       env=os.environ, system=platform.system())
     args.output.write_bytes(output)
+    args.parts_output.write_bytes(parts_output)
     args.receipt.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(receipt, indent=2))
 
