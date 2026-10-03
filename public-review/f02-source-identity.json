@@ -1,0 +1,15 @@
+{
+  "asset_bytes": 37971326,
+  "asset_id": 608687529,
+  "asset_name": "source.tar.gz",
+  "asset_sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+  "asset_state": "uploaded",
+  "create_only_tag_absence_preflight": true,
+  "editorial_status": "NOT_REVIEWED",
+  "github_immutable_release_feature": "not asserted",
+  "release_approval": "NOT_GRANTED",
+  "release_id": 402725212,
+  "release_tag": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "source_receipt_sha256": "5af6fa61bdb9ef64d0d22826d0439b47edbdbb2146a401caece86064d59a59f0"
+}

@@ -1,0 +1,135 @@
+{
+  "capture_class": "source_composition_not_final_master",
+  "editorial_status": "NOT_REVIEWED",
+  "frames": [
+    {
+      "bytes": 1637875,
+      "name": "printer_rise_1",
+      "path": "frames/printer_rise_1.png",
+      "sha256": "31edde907fe8bf63d2df096953f96c3c9bebe4b6716516d38c39b575f4e57fa0",
+      "time": 8.533
+    },
+    {
+      "bytes": 1632140,
+      "name": "printer_rise_2",
+      "path": "frames/printer_rise_2.png",
+      "sha256": "f1e49b51113d4f54d18d64809898d5c4c0277eca8b80d23b315aab47f3b96de9",
+      "time": 8.6
+    },
+    {
+      "bytes": 1625577,
+      "name": "printer_rise_3",
+      "path": "frames/printer_rise_3.png",
+      "sha256": "9f7de7ee7a5b57a7ae95fdb684b1d06c49f53d5107fb0bc296eb413f81240cd3",
+      "time": 8.667
+    },
+    {
+      "bytes": 1403936,
+      "name": "printer_label",
+      "path": "frames/printer_label.png",
+      "sha256": "a0de4835402818a777e516087b070e275c554927992609c34b2420dbd3ce37eb",
+      "time": 9.5
+    },
+    {
+      "bytes": 1367075,
+      "name": "printer_pre_cut",
+      "path": "frames/printer_pre_cut.png",
+      "sha256": "c13f14edab41ff8df36193e761b9a729dc8b63768cebf9ea379001601aa996fd",
+      "time": 10.28
+    },
+    {
+      "bytes": 1327562,
+      "name": "printer_cut",
+      "path": "frames/printer_cut.png",
+      "sha256": "5a59ce0d8cd7792e9d9e89c53336383a3f5fa154bc971a889dc7ebbd127c557e",
+      "time": 10.3
+    },
+    {
+      "bytes": 1327319,
+      "name": "printer_post_cut",
+      "path": "frames/printer_post_cut.png",
+      "sha256": "7d93458c27f85c3d94111e684e11b45bba0f6b82e4729fc9461f25f98fa2dd64",
+      "time": 10.32
+    },
+    {
+      "bytes": 2325174,
+      "name": "floor_700",
+      "path": "frames/floor_700.png",
+      "sha256": "d7ea2c9fbcb687aa563577a91dc814a971c166a7f96003e0665229841f131564",
+      "time": 12.57
+    },
+    {
+      "bytes": 1575211,
+      "name": "opening_profit",
+      "path": "frames/opening_profit.png",
+      "sha256": "136b65b7dc0f08bdc33aa71e4b0929e15e1df94e2f289e62914e4a0b3dc73e73",
+      "time": 76.2
+    },
+    {
+      "bytes": 2000527,
+      "name": "profit_before",
+      "path": "frames/profit_before.png",
+      "sha256": "cca8256ed4d0fb763ec3003fda447794983b45413d173ece5a96b5f73ae2c23f",
+      "time": 108.1
+    },
+    {
+      "bytes": 1995307,
+      "name": "profit_landing",
+      "path": "frames/profit_landing.png",
+      "sha256": "3e3e275541c62d5a6a34bace209fd085298980eb671e683e0d81af566a444e27",
+      "time": 108.2
+    },
+    {
+      "bytes": 1992775,
+      "name": "profit_during",
+      "path": "frames/profit_during.png",
+      "sha256": "7747fc24dabb254fce6d724e172b83a85d1049cca8b2aa03875d6d0bd18020d6",
+      "time": 108.3
+    },
+    {
+      "bytes": 2121180,
+      "name": "profit_clear",
+      "path": "frames/profit_clear.png",
+      "sha256": "8ea4cc28dd56a66a8730f95f821e3ade8ca807ede4308873865a1ec1269edd1e",
+      "time": 108.7
+    },
+    {
+      "bytes": 2321735,
+      "name": "duplicate_before",
+      "path": "frames/duplicate_before.png",
+      "sha256": "69f1eb7422a2eaa9d2919c19356eb2dbdbff6e932f06e725b0c8fe0779218c6e",
+      "time": 439.5
+    },
+    {
+      "bytes": 2320541,
+      "name": "duplicate_edge_1",
+      "path": "frames/duplicate_edge_1.png",
+      "sha256": "ac672c17b77b17163db3a0e3c8383bbef1dc8719f47b2d865e2f48cf74aefa09",
+      "time": 439.75
+    },
+    {
+      "bytes": 1562299,
+      "name": "duplicate_edge_2",
+      "path": "frames/duplicate_edge_2.png",
+      "sha256": "3db4dd1210f886cf888b6fabba5ba950fefb28f7ebe1782986cf1750f71ceeb9",
+      "time": 439.8
+    }
+  ],
+  "kind": "f02-source-composition-capture",
+  "overlay_files": {
+    "film/film.js": {
+      "bytes": 80180,
+      "sha256": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b"
+    },
+    "film/sets_a.js": {
+      "bytes": 41858,
+      "sha256": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e"
+    }
+  },
+  "parent_source_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
+  "release_approval": "NOT_GRANTED",
+  "source_asset_id": 608687529,
+  "source_asset_sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+  "source_release": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+  "source_release_id": 402725212
+}
