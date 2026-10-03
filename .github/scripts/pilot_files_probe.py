@@ -20,6 +20,7 @@ import platform
 import sys
 import time
 import urllib.request
+import urllib.error
 from typing import TypedDict
 
 # Constants from the problem statement
@@ -51,6 +52,12 @@ class ProbeResult(TypedDict):
     candidates_text: str
     file_provenance: dict
     limitations: str
+
+
+class ProviderHTTPError(RuntimeError):
+    def __init__(self, status):
+        self.status = status
+        super().__init__(f"Provider HTTP {status}")
 
 
 class UploadRefused(RuntimeError):
@@ -99,6 +106,8 @@ def _http(method: str, url: str, headers: dict, data: bytes = b"", timeout: int 
                 {k.lower(): v for k, v in response.headers.items()},
                 body,
             )
+    except urllib.error.HTTPError as e:
+        raise ProviderHTTPError(e.code) from None
     except Exception as e:
         err_msg = str(e)
         key_val = headers.get("x-goog-api-key")
@@ -321,13 +330,17 @@ def _generate_content_blind(
         "Content-Type": "application/json",
     }
     
-    status, _, response_body = _http(
-        "POST",
-        f"{API}/v1beta/models/{MODEL}:generateContent",
-        headers,
-        json.dumps(request_data).encode(),
-        timeout=60
-    )
+    for attempt in range(3):
+        try:
+            status, _, response_body = _http(
+                "POST", f"{API}/v1beta/models/{MODEL}:generateContent",
+                headers, json.dumps(request_data).encode(), timeout=60
+            )
+            break
+        except ProviderHTTPError as error:
+            if error.status not in (500, 502, 503, 504) or attempt == 2:
+                raise
+            time.sleep(15 * (attempt + 1))
     
     if status != 200:
         raise UploadRefused(f"generateContent failed: HTTP {status}")
@@ -445,6 +458,10 @@ def main() -> int:
                 print(f"File deletion failed for resource: {file_name}. Original expiration time was {expiration_str}.", file=sys.stderr)
                 
         if inference_error:
+            print(json.dumps({"release_approval": "NOT_GRANTED", "NOT_RELEASE_APPROVAL": True,
+                              "error_type": type(inference_error).__name__, "error": clean_msg,
+                              "cleanup": {"file_name": file_name, "deleted": deletion_success,
+                                          "expiration": expiration_str}}))
             return 1
             
         if result:
