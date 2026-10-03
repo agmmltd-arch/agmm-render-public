@@ -89,12 +89,41 @@ jobs:
           outputs=report['outputs'];files=[]
           for folder,name,sizekey in [('master',fid+'-MASTER-4K.mp4','master_bytes'),('review',fid+'-MASTER-1080-from-4K.mp4','derived_bytes')]:
               p=Path(folder)/name;size=outputs[sizekey]
-              assert type(size) is int and 0<size<2000000000 and p.stat().st_size==size
+              assert type(size) is int and 0<size<(20000000000 if folder=='master' else 2000000000) and p.stat().st_size==size
               h=hashlib.sha256()
               with p.open('rb') as stream:
                   for chunk in iter(lambda:stream.read(1048576),b''):h.update(chunk)
               assert h.hexdigest()==sums[name]
               files.append({'name':name,'sha256':h.hexdigest(),'size':size,'path':str(p)})
+          def split_for_release(source, directory, limit=1500000000):
+              assert type(limit) is int and 0<limit<2000000000
+              directory.mkdir(exist_ok=True)
+              parts=[];whole=hashlib.sha256();total=0
+              with source.open('rb') as stream:
+                  index=1
+                  while True:
+                      first=stream.read(min(1048576,limit))
+                      if not first: break
+                      target=directory/(source.name+'.part'+str(index).zfill(4))
+                      size=0;digest=hashlib.sha256()
+                      with target.open('wb') as out:
+                          chunk=first
+                          while chunk:
+                              out.write(chunk);digest.update(chunk);whole.update(chunk);size+=len(chunk);total+=len(chunk)
+                              if size==limit: break
+                              chunk=stream.read(min(1048576,limit-size))
+                      parts.append({'name':target.name,'sha256':digest.hexdigest(),'size':size,'path':str(target)})
+                      index+=1
+              return parts,whole.hexdigest(),total
+          master_parts=None
+          if files[0]['size']>=2000000000:
+              original=files[0]
+              parts,combined_sha,total=split_for_release(Path(original['path']),Path('master-parts'))
+              assert combined_sha==original['sha256'] and total==original['size'] and len(parts)>1
+              master_parts={k:original[k] for k in ('name','size','sha256')}
+              master_parts['parts']=[p['name'] for p in parts]
+              master_parts['reassembly']='Concatenate listed parts in order on a hosted runner; verify size and SHA256 before use. No re-encoding.'
+              files=parts+[files[1]]
           exists=subprocess.run(['gh','release','view',tag,'-R',repo],capture_output=True)
           if exists.returncode:
               subprocess.run(['gh','release','create',tag,'-R',repo,'--target',json.loads(Path('source-run.json').read_text())['head_sha'],'--title',fid+' review preview','--notes','Hosted mechanical verification complete. Independent audiovisual, editorial and thumbnail review pending. NOT RELEASE APPROVED.'],check=True)
@@ -114,6 +143,8 @@ jobs:
               assert f['url']=='https://github.com/'+repo+'/releases/download/'+tag+'/'+f['name']
           Path('receipts').mkdir()
           receipt={'source_run_id':int(rid),'repository':repo,'source_workflow_commit':json.loads(Path('source-run.json').read_text())['head_sha'],'files':files,'integrity':report,'ocr':json.loads(Path('ocr/OCR-CHECK-2.json').read_text()),'review_status':'NOT_RUN','release_approval':'NOT_GRANTED'}
+          if master_parts is not None:
+              receipt.update(schema_version=2,master=master_parts)
           Path('receipts/HOSTED-PREVIEW.json').write_text(json.dumps(receipt,indent=2))
           # Small metadata only: enables library discovery without Mac media transfer.
           import base64
