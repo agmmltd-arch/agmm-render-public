@@ -5,6 +5,10 @@ on:
       run_id:
         required: true
         default: '37114306772'
+      follow:
+        type: boolean
+        default: true
+        description: Follow this active run for at most 40 minutes
   schedule:
     - cron: '*/5 * * * *'
 permissions:
@@ -16,11 +20,12 @@ concurrency:
 jobs:
   snapshot:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 45
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
       RUN_ID: ${{ inputs.run_id || '37114306772' }}
+      FOLLOW: ${{ inputs.follow || false }}
     steps:
       - name: Fetch exact hosted metadata only
         shell: bash
@@ -28,6 +33,7 @@ jobs:
           set -euo pipefail
           [[ "$REPO" == agmmltd-arch/agmm-render-public ]]
           [[ "$RUN_ID" =~ ^[0-9]{8,20}$ ]]
+          for attempt in $(seq 1 20); do
           gh api "repos/$REPO/actions/runs/$RUN_ID" > run.json
           gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" > jobs.json
           gh api "repos/$REPO/contents/status/F02.json" > existing.json 2>/dev/null || printf '{}' > existing.json
@@ -46,5 +52,9 @@ jobs:
           existing=json.loads(Path('existing.json').read_text())
           if existing.get('sha'): payload['sha']=existing['sha']
           Path('payload.json').write_text(json.dumps(payload))
+          if run['status']=='completed': Path('RUN_COMPLETE').write_text(run.get('conclusion') or 'unknown')
           PYCODE
           gh api --method PUT "repos/$REPO/contents/status/F02.json" --input payload.json > /dev/null
+          if [[ -f RUN_COMPLETE || "$FOLLOW" != true ]]; then break; fi
+          if [[ "$attempt" -lt 20 ]]; then sleep 120; fi
+          done
