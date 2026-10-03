@@ -1,0 +1,28 @@
+{
+  "run_id": "37142912333",
+  "code_commit": "e10b6b0e431bd155bfe75b8cf3476243103b8144",
+  "parent_release": "F02-craft-repair-20261003",
+  "parent_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+  "parent_film_sha256": "ba768dd9c11f2d322ffe8f6fa274f80e0daa620009515c452cbdf5a365e971c8",
+  "camera_repair_sha256": "5a2e5c70a72092b8b530232a7874a979039fbe8917bf6997f03ce606b660cab8",
+  "times": [
+    436.35,
+    436.4,
+    436.76,
+    437.1,
+    438.24,
+    439,
+    439.25,
+    439.5,
+    439.75,
+    439.8,
+    440,
+    441,
+    442,
+    443.49,
+    443.5
+  ],
+  "scope": "targeted changed-source snapshots, including following wide-camera transition; not rendered-film or audio approval",
+  "release_approval": "NOT_GRANTED",
+  "media_processing": "HOSTED Linux ONLY"
+}
