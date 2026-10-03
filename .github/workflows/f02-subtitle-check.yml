@@ -32,10 +32,30 @@ jobs:
           echo '9d548b35125934111243f78a6c6baa95d2e931eb219af372994cc8c8b4e5dd1c  repairs/F02/sets_b.js' | sha256sum -c -
           cp repairs/F02/sets_b.js project/film/sets_b.js
           echo 'a3142c43aaeab010ea32daeea432f0fc3612e1c0b3fa50e7c67861571246e619  project/film/film.js' | sha256sum -c -
-          echo '82ff8d98b8550196f52dbfc606fbc37b106656d768c2d4bd66348696e0e6af5b  repairs/F02/film.js' | sha256sum -c -
+          echo 'ba768dd9c11f2d322ffe8f6fa274f80e0daa620009515c452cbdf5a365e971c8  repairs/F02/film.js' | sha256sum -c -
           cp repairs/F02/film.js project/film/film.js
+          echo '584eed0929c560c72d58122c8fa57af23b24b24e3f58741b7905be3048098323  project/film/film.css' | sha256sum -c -
+          echo 'e3a7468c564569230a4efa83fae6edd45fc677a4a5548621f9a18219227cd974  repairs/F02/film.css' | sha256sum -c -
+          cp repairs/F02/film.css project/film/film.css
           npm install --no-save playwright@1.55.1
           npx playwright install --with-deps chromium
+      - name: Freeze verified official-organisation logo on hosted runner only
+        run: |
+          set -euo pipefail
+          gh api orgs/openai > openai-org.json
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          import json,urllib.request,hashlib,struct
+          org=json.loads(Path('openai-org.json').read_text())
+          url='https://avatars.githubusercontent.com/u/14957082?v=4'
+          assert org['html_url']=='https://github.com/openai' and org['blog']=='https://openai.com/' and org['avatar_url']==url
+          req=urllib.request.urlopen(url,timeout=30)
+          assert req.geturl().startswith('https://avatars.githubusercontent.com/')
+          data=req.read(1000001);assert len(data)<=1000000 and data[:8]==b'\x89PNG\r\n\x1a\n'
+          width,height=struct.unpack('>II',data[16:24]);assert width==height and width>=144
+          Path('project/film/img/openai-official.png').write_bytes(data)
+          Path('openai-asset-receipt.json').write_text(json.dumps({'source_url':url,'official_org':'https://github.com/openai','verified_domain':'openai.com','sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'width':width,'height':height,'no_redraw':True,'processing_location':'hosted Linux','release_approval':'NOT_GRANTED'},indent=2))
+          PYCODE
       - name: Capture actual repaired composition on hosted browser
         run: |
           set -euo pipefail
@@ -51,13 +71,15 @@ jobs:
             await page.waitForFunction(()=>!!window.__f02Render,{},{timeout:120000});
             await page.evaluate(()=>document.fonts.ready);
             fs.mkdirSync('review/F02-subtitle',{recursive:true});
-            for(const t of [427.56,427.6,429.85,431.16,431.2,431.5,433.55,434.96,435.2,436.35,436.76,439,439.75,440,616]){
+            for(const t of [36.4,36.5,37.5,39.5,40.4,431.5,439,440,616]){
               await page.evaluate(t=>{window.__F02TL.pause();window.__F02TL.time(t);window.__f02Set(t);window.__f02Set(t);},t);
               await page.waitForTimeout(250);
               await page.screenshot({path:`review/F02-subtitle/frame-${t}.jpg`,type:'jpeg',quality:95});
             }
             if(errors.length)throw new Error(errors.join('\n'));
-            fs.writeFileSync('review/F02-subtitle/receipt.json',JSON.stringify({run_id:process.env.GITHUB_RUN_ID,source_sha256:'0c91c32f918c9de4c8239f91c1471bd791fc75394a69431a4f362a8d8bf9ddad',repair_sha256:'9d548b35125934111243f78a6c6baa95d2e931eb219af372994cc8c8b4e5dd1c',times:[427.56,427.6,429.85,431.16,431.2,431.5,433.55,434.96,435.2,436.35,436.76,439,439.75,440,616],camera_repair_sha256:'82ff8d98b8550196f52dbfc606fbc37b106656d768c2d4bd66348696e0e6af5b',scope:'targeted source snapshots; not rendered-film/audio approval',release_approval:'NOT_GRANTED'},null,2));
+            fs.copyFileSync('project/film/img/openai-official.png','review/F02-subtitle/openai-official.png');
+            fs.copyFileSync('openai-asset-receipt.json','review/F02-subtitle/openai-asset-receipt.json');
+            fs.writeFileSync('review/F02-subtitle/receipt.json',JSON.stringify({run_id:process.env.GITHUB_RUN_ID,source_sha256:'0c91c32f918c9de4c8239f91c1471bd791fc75394a69431a4f362a8d8bf9ddad',repair_sha256:'9d548b35125934111243f78a6c6baa95d2e931eb219af372994cc8c8b4e5dd1c',times:[427.56,427.6,429.85,431.16,431.2,431.5,433.55,434.96,435.2,436.35,436.76,439,439.75,440,616],camera_repair_sha256:'ba768dd9c11f2d322ffe8f6fa274f80e0daa620009515c452cbdf5a365e971c8',scope:'targeted source snapshots; not rendered-film/audio approval',release_approval:'NOT_GRANTED'},null,2));
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
