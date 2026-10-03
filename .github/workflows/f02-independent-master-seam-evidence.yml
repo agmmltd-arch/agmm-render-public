@@ -1,0 +1,115 @@
+name: F02 exact-master seam context evidence (proposal)
+on:
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+concurrency:
+  group: f02-exact-master-seam-evidence
+  cancel-in-progress: false
+jobs:
+  seam-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_REPO: agmmltd-arch/agmm-render-public
+      SOURCE_RUN: "37146440125"
+      SOURCE_TAG: preview-F02-37146440125
+      GH_PAGER: ""
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+      - name: Guard exact hosted runner and fetch source metadata/text receipt
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux ]]
+          [[ "$GITHUB_REPOSITORY" == "$SOURCE_REPO" ]]
+          mkdir -p "$RUNNER_TEMP/source" "$RUNNER_TEMP/parts"
+          gh api "repos/$SOURCE_REPO" > "$RUNNER_TEMP/source/repository.json"
+          gh api "repos/$SOURCE_REPO/actions/runs/$SOURCE_RUN" > "$RUNNER_TEMP/source/run.json"
+          gh api "repos/$SOURCE_REPO/releases/tags/$SOURCE_TAG" > "$RUNNER_TEMP/source/release.json"
+          gh release download "$SOURCE_TAG" --repo "$SOURCE_REPO" --pattern HOSTED-PREVIEW.json --dir "$RUNNER_TEMP/source"
+          python3 .github/scripts/f02_master_seam_evidence.py \
+            --validate-source \
+            --repo-json "$RUNNER_TEMP/source/repository.json" \
+            --run-json "$RUNNER_TEMP/source/run.json" \
+            --release-json "$RUNNER_TEMP/source/release.json" \
+            --receipt "$RUNNER_TEMP/source/HOSTED-PREVIEW.json" \
+            --plan-out "$RUNNER_TEMP/source/FRAME-PLAN.json"
+      - name: Require 12 GiB hosted scratch before media transfer
+        run: >-
+          python3 .github/scripts/f02_master_seam_evidence.py --check-runner
+          --capacity-out "$RUNNER_TEMP/source/capacity.json"
+      - name: Download only the two pinned master parts
+        run: |
+          set -euo pipefail
+          gh release download "$SOURCE_TAG" --repo "$SOURCE_REPO" \
+            --pattern 'F02-MASTER-4K.mp4.part0001' \
+            --pattern 'F02-MASTER-4K.mp4.part0002' \
+            --dir "$RUNNER_TEMP/parts"
+      - name: Hash parts, verify ordered master identity, decode once and extract 4K evidence PNGs
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python3 .github/scripts/f02_master_seam_evidence.py \
+            --extract \
+            --repo-json "$RUNNER_TEMP/source/repository.json" \
+            --run-json "$RUNNER_TEMP/source/run.json" \
+            --receipt "$RUNNER_TEMP/source/HOSTED-PREVIEW.json" \
+            --release-json "$RUNNER_TEMP/source/release.json" \
+            --capacity-json "$RUNNER_TEMP/source/capacity.json" \
+            --parts-dir "$RUNNER_TEMP/parts" \
+            --master-out "$RUNNER_TEMP/F02-MASTER-4K.mp4" \
+            --evidence-out review-evidence
+      - name: Enforce public evidence payload bound
+        run: |
+          set -euo pipefail
+          size=$(du -sk review-evidence | awk '{print $1 * 1024}')
+          (( size > 0 && size <= 2147483648 ))
+          test "$(find review-evidence -maxdepth 1 -name 'frame-*.png' -type f | wc -l | tr -d ' ')" = 375
+          files=()
+          for path in review-evidence/*; do
+            [[ -f "$path" && ! -L "$path" ]]
+            name=${path##*/}
+            if [[ "$name" == "SEAM-EVIDENCE.json" || "$name" == "README.txt" ]]; then
+              files+=("$path")
+            elif [[ "$name" =~ ^frame-[0-9]{5}\.png$ ]]; then
+              files+=("$path")
+            else
+              echo "Unexpected evidence path: $path" >&2
+              exit 1
+            fi
+          done
+          test "${#files[@]}" = 377
+          chmod 0644 -- "${files[@]}"
+          printf '%s\n' "${files[@]}" > "$RUNNER_TEMP/source/stage-allowlist.txt"
+      - name: Publish bounded evidence on a new orphan branch
+        run: |
+          set -euo pipefail
+          branch="review-F02-seams-37146440125-$GITHUB_RUN_ID"
+          git config user.name 'AGMM hosted seam evidence'
+          git config user.email 'evidence@users.noreply.github.com'
+          git checkout --orphan "$branch"
+          git rm -rf --cached . >/dev/null 2>&1 || true
+          mapfile -t files < "$RUNNER_TEMP/source/stage-allowlist.txt"
+          git add -- "${files[@]}"
+          test "$(git diff --cached --name-only | wc -l | tr -d ' ')" = 377
+          while read -r mode object stage staged; do
+            [[ "$mode" == 100644 ]]
+          done < <(git ls-files -s)
+          while IFS= read -r staged; do
+            case "$staged" in
+              review-evidence/SEAM-EVIDENCE.json|review-evidence/README.txt|review-evidence/frame-[0-9][0-9][0-9][0-9][0-9].png) ;;
+              *) echo "Unexpected staged path: $staged" >&2; exit 1 ;;
+            esac
+          done < <(git diff --cached --name-only)
+          git commit -m 'F02 corrected master seam-context PNG evidence; no approval'
+          git push origin "HEAD:refs/heads/$branch"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: F02-SEAM-EVIDENCE-TEXT-37146440125
+          path: review-evidence/SEAM-EVIDENCE.json
+          retention-days: 7
