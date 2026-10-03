@@ -1,0 +1,48 @@
+name: S86 existing compact review evidence export (proposal only)
+on:
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Verify public repository and immutable artifact metadata before download
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == agmmltd-arch/agmm-render-public ]]
+          gh api repos/agmmltd-arch/agmm-render-public > repository.json
+          gh api repos/agmmltd-arch/agmm-render-public/actions/artifacts/11142017440 > artifact.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('repository.json')); a=json.load(open('artifact.json'))
+          assert r['full_name']=='agmmltd-arch/agmm-render-public' and r['private'] is False and r['visibility']=='public'
+          w=a['workflow_run']
+          assert a['id']==11142017440 and a['name']=='S86-r2-4k-REVIEW-COMPACT' and a['expired'] is False
+          assert a['size_in_bytes']==2507581 and w['id']==36816767405
+          assert w['head_sha']=='9e34bc8aca7786583c771a2e203232071c8ddf5d'
+          PY
+      - name: Download the exact existing artifact on hosted runner
+        shell: bash
+        run: gh api repos/agmmltd-arch/agmm-render-public/actions/artifacts/11142017440/zip > artifact.zip
+      - name: Inspect names and export only allowed JPEG and text evidence
+        shell: bash
+        run: python3 .github/scripts/export_s86_review_compact.py artifact.zip artifact.json repository.json review-export
+      - name: Publish evidence-only review branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted evidence'
+          git config user.email 'evidence@users.noreply.github.com'
+          git checkout --orphan "review-S86-r2-compact-$GITHUB_RUN_ID"
+          git rm -rf --cached . >/dev/null
+          git add review-export/review/*.jpg review-export/TECHNICAL-EVIDENCE.json review-export/SHA256SUMS.txt review-export/EXPORT-RECEIPT.json
+          git diff --cached --name-only | python3 -c 'import sys; p=[x.strip() for x in sys.stdin if x.strip()]; assert p and all(x.startswith("review-export/") and x.lower().endswith((".jpg",".json",".txt")) for x in p); print("public allowlist PASS")'
+          git commit -m 'S86 r2 existing review JPEGs and text evidence; NOT approval'
+          git push origin "HEAD:refs/heads/review-S86-r2-compact-$GITHUB_RUN_ID"
