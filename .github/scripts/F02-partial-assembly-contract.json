@@ -43,11 +43,11 @@
     ],
     "source_seal_run": 37143329617
   },
-  "qa_overlay": {
-    "release": "F02-r2c-landscape-4k-202609302152",
-    "asset": "qa-overlay-r4e-seg12.tar.gz",
-    "sha256": "76daca8d0d38c7bc26ca13dcc29a6e0da82f77f07c0f25028671b72f850e717f",
-    "purpose": "code-only QA helper source; extract only .github/scripts/assemble_verify.py; never apply film source files from overlay."
+  "authoritative_assembler": {
+    "path": ".github/scripts/assemble_verify.py",
+    "sha256": "eac69b56c018c3b1b122d5e48a1ed962c3334e3ab91d04d155db6402e8f1dac6",
+    "source_commit": "088d62de686272206a52cc166307672bdf37ac55",
+    "source": "GitHub contents API text at the pinned F02 replacement workflow commit; matches hosted-patch source bytes."
   },
   "segments": [
     {

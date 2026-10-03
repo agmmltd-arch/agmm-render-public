@@ -31,19 +31,7 @@ ARTIFACT_RETENTION_BUFFER = timedelta(hours=4)
 MAX_ARCHIVE_FILES = 30_000
 MAX_ARCHIVE_BYTES = 2_000_000_000
 MAX_ARCHIVE_MEMBER_BYTES = 500_000_000
-QA_OVERLAY_ALLOWLIST = {
-    ".github/scripts/assemble_verify.py",
-    ".github/scripts/run_existing_ocr_check.py",
-    "qa/gate.py",
-    "kit/tools/frame_check.py",
-    "kit/tools/ocr_vision.swift",
-    "kit/platforms/platforms.py",
-    "kit/platforms/frames.json",
-    "film/film.js",
-    "film/film.css",
-    "film/sets_studio.js",
-    "film-overlay.sha256",
-}
+AUTHORITATIVE_HELPER_SHA256 = "eac69b56c018c3b1b122d5e48a1ed962c3334e3ab91d04d155db6402e8f1dac6"
 RENDER_JOB_RE = re.compile(r"^render \((\d{1,2}),\s*([0-9]+(?:\.[0-9]+)?),\s*([0-9]+(?:\.[0-9]+)?)\)$")
 
 
@@ -109,6 +97,11 @@ def validate_contract(c: dict[str, Any]) -> None:
         raise Refusal("wrong final sealed source code commit")
     if comp.get("apply_source_overlay") is not False:
         raise Refusal("apply_source_overlay must be false")
+    helper = c.get("authoritative_assembler", {})
+    if (helper.get("path") != ".github/scripts/assemble_verify.py"
+            or helper.get("sha256") != AUTHORITATIVE_HELPER_SHA256
+            or helper.get("source_commit") != comp.get("sealed_source_code_commit")):
+        raise Refusal("authoritative assembler path/hash/source commit pin changed")
     parent, replacement = c.get("parent", {}), c.get("replacement", {})
     pins = [
         (parent.get("run_id"), 37125818648),
@@ -182,11 +175,6 @@ def validate_contract(c: dict[str, Any]) -> None:
         raise Refusal(f"only segments 51 and 52 may be replacements; got {replacement_ids}")
     if (segs[50]["t0"], segs[50]["len"], segs[51]["t0"], segs[51]["len"]) != (430.0, 8.6, 438.6, 8.6):
         raise Refusal("replacement windows do not exactly match the sealed render input")
-    overlay = c.get("qa_overlay", {})
-    if (overlay.get("release") != "F02-r2c-landscape-4k-202609302152"
-            or overlay.get("asset") != "qa-overlay-r4e-seg12.tar.gz"
-            or overlay.get("sha256") != "76daca8d0d38c7bc26ca13dcc29a6e0da82f77f07c0f25028671b72f850e717f"):
-        raise Refusal("QA overlay pin changed")
 
 
 def render_jobs(jobs: list[dict[str, Any]], expected_rows: list[dict[str, Any]], run_id: int) -> None:
@@ -323,9 +311,6 @@ def validate_metadata(c: dict[str, Any], snapshots: Path,
     validate_release(read_json_or_jsonl(snapshots / "source-release.json"),
                      c["composition"]["sealed_source_release"], "source.tar.gz",
                      c["composition"]["sealed_source_package_sha256"])
-    overlay = c["qa_overlay"]
-    validate_release(read_json_or_jsonl(snapshots / "qa-overlay-release.json"),
-                     overlay["release"], overlay["asset"], overlay["sha256"])
     return records
 
 
@@ -363,9 +348,8 @@ def snapshot_metadata(repo: str, out: Path, c: dict[str, Any]) -> None:
             if p.returncode:
                 raise Refusal(f"GitHub API pagination failed: {endpoint}: {p.stderr[-1000:]}")
             (d / filename).write_text(p.stdout)
-    for tag, name in ((c["composition"]["sealed_source_release"], "source-release.json"),
-                      (c["qa_overlay"]["release"], "qa-overlay-release.json")):
-        (out / name).write_text(json.dumps(gh_json(f"repos/{repo}/releases/tags/{tag}"), indent=2) + "\n")
+    tag = c["composition"]["sealed_source_release"]
+    (out / "source-release.json").write_text(json.dumps(gh_json(f"repos/{repo}/releases/tags/{tag}"), indent=2) + "\n")
 
 
 def safe_archive_members(tf: tarfile.TarFile, *, exact: set[str] | None = None) -> list[tarfile.TarInfo]:
@@ -452,17 +436,25 @@ def verify_package_checksums(package: Path) -> None:
         raise Refusal("sealed package checksum manifest is empty")
 
 
-def prepare_source(source_archive: Path, overlay_archive: Path, package_dir: Path,
-                   overlay_dir: Path, c: dict[str, Any]) -> dict[str, Any]:
+def verify_authoritative_helper(helper_path: Path, c: dict[str, Any]) -> dict[str, Any]:
+    expected = c["authoritative_assembler"]["sha256"]
+    if not helper_path.is_file() or helper_path.is_symlink():
+        raise Refusal(f"authoritative assembler missing or symlinked: {helper_path}")
+    actual = sha256(helper_path)
+    if actual != expected:
+        raise Refusal(f"authoritative assembler SHA-256 mismatch: expected {expected}, got {actual}")
+    return {"path": c["authoritative_assembler"]["path"], "sha256": actual,
+            "source_commit": c["authoritative_assembler"]["source_commit"], "status": "PASS"}
+
+
+def prepare_source(source_archive: Path, package_dir: Path,
+                   c: dict[str, Any]) -> dict[str, Any]:
     if sys.platform == "darwin":
         raise Refusal("media/source extraction is forbidden on Darwin; hosted Ubuntu runner only")
     comp = c["composition"]
     source_hash = sha256(source_archive)
     if source_hash != comp["sealed_source_package_sha256"]:
         raise Refusal("downloaded sealed source archive hash mismatch")
-    overlay_hash = sha256(overlay_archive)
-    if overlay_hash != c["qa_overlay"]["sha256"]:
-        raise Refusal("downloaded QA helper overlay hash mismatch")
     if comp.get("apply_source_overlay") is not False:
         raise Refusal("refusing to apply source overlay; contract must set false")
     if package_dir.exists() and any(package_dir.iterdir()):
@@ -486,20 +478,7 @@ def prepare_source(source_archive: Path, overlay_archive: Path, package_dir: Pat
                            check=False, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     if check.returncode:
         raise Refusal(f"sealed source static check failed: {check.stdout[-3000:]}")
-    if overlay_dir.exists() and any(overlay_dir.iterdir()):
-        raise Refusal("QA helper extraction destination is not empty")
-    with tarfile.open(overlay_archive, "r:gz") as tf:
-        members = safe_archive_members(tf, exact=QA_OVERLAY_ALLOWLIST)
-        # Extract only the verifier; source JS/CSS/studio files from the overlay are never applied.
-        helper_members = [m for m in members if m.name == ".github/scripts/assemble_verify.py"]
-        if len(helper_members) != 1:
-            raise Refusal("QA overlay lacks a unique assemble_verify.py")
-        safe_extract(tf, helper_members, overlay_dir)
-    helper = overlay_dir / ".github" / "scripts" / "assemble_verify.py"
-    if not helper.is_file():
-        raise Refusal("verified assemble_verify helper did not extract")
     return {"sealed_source_sha256": source_hash, "sealed_source_bytes": source_archive.stat().st_size,
-            "qa_overlay_sha256": overlay_hash, "qa_helper_sha256": sha256(helper),
             "source_static_check": "PASS", "apply_source_overlay": False,
             "source_member_count": len(members), "source_release": comp["sealed_source_release"],
             "source_package_sha256": comp["sealed_source_package_sha256"]}
@@ -703,21 +682,20 @@ def self_test() -> None:
             pass
         else:
             raise AssertionError("negative contract test accepted invalid input")
-    print("self-test PASS: exact 75-part grid, only 51/52 replaced; overlay refusal tested; no media opened")
+    print("self-test PASS: exact 75-part grid, only 51/52 replaced; source overlay refusal tested; no media opened")
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["validate-contract", "snapshot", "preflight", "prepare-source",
+    ap.add_argument("command", choices=["validate-contract", "snapshot", "preflight", "verify-authoritative-helper", "prepare-source",
                                         "download-and-stage", "print-segments-json", "final-receipt", "refresh-sums", "self-test"])
     ap.add_argument("--contract", type=Path, default=CONTRACT_PATH)
     ap.add_argument("--repo", default=EXPECTED_REPO)
     ap.add_argument("--snapshots", type=Path, default=Path("metadata"))
     ap.add_argument("--downloads", type=Path, default=Path("downloads"))
     ap.add_argument("--source-archive", type=Path, default=Path("source.tar.gz"))
-    ap.add_argument("--overlay-archive", type=Path, default=Path("qa-overlay.tar.gz"))
+    ap.add_argument("--helper", type=Path, default=Path(".github/scripts/assemble_verify.py"))
     ap.add_argument("--package-dir", type=Path, default=Path("package"))
-    ap.add_argument("--overlay-dir", type=Path, default=Path("qa_overlay"))
     ap.add_argument("--lineage-dir", type=Path, default=Path("lineage"))
     ap.add_argument("--segments-dir", type=Path, default=Path("assembly/segments"))
     ap.add_argument("--output-dir", type=Path, default=Path("remote-final"))
@@ -732,9 +710,10 @@ def main() -> int:
     elif a.command == "preflight":
         validate_contract(c); validate_metadata(c, a.snapshots)
         print("preflight PASS; all source/run/artifact metadata pinned before media downloads")
+    elif a.command == "verify-authoritative-helper":
+        validate_contract(c); print(json.dumps(verify_authoritative_helper(a.helper, c), indent=2))
     elif a.command == "prepare-source":
-        validate_contract(c); print(json.dumps(prepare_source(a.source_archive, a.overlay_archive,
-                                                              a.package_dir, a.overlay_dir, c), indent=2))
+        validate_contract(c); print(json.dumps(prepare_source(a.source_archive, a.package_dir, c), indent=2))
     elif a.command == "download-and-stage":
         validate_contract(c)
         if sys.platform == "darwin": raise Refusal("hosted Ubuntu runner only")

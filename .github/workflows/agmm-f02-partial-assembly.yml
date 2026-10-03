@@ -36,6 +36,12 @@ jobs:
           test "$GITHUB_REPOSITORY" = "agmmltd-arch/agmm-render-public"
           python3 .github/scripts/f02_partial_assembly.py validate-contract
 
+      - name: Verify checked-out authoritative assembler source hash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/f02_partial_assembly.py verify-authoritative-helper \
+            --helper .github/scripts/assemble_verify.py
+
       - name: Capture exact run, job, artifact and release metadata
         run: |
           set -euo pipefail
@@ -46,16 +52,14 @@ jobs:
           set -euo pipefail
           python3 .github/scripts/f02_partial_assembly.py preflight --snapshots metadata
 
-      - name: Download sealed source package and code-only QA helper overlay
+      - name: Download and verify the sealed F02 source package
         run: |
           set -euo pipefail
-          mkdir -p source-download qa-download
+          mkdir -p source-download
           gh release download F02-profit-qualifier-20261003 -R "$GITHUB_REPOSITORY" -p source.tar.gz --dir source-download
-          gh release download F02-r2c-landscape-4k-202609302152 -R "$GITHUB_REPOSITORY" -p qa-overlay-r4e-seg12.tar.gz --dir qa-download
           python3 .github/scripts/f02_partial_assembly.py prepare-source \
             --source-archive source-download/source.tar.gz \
-            --overlay-archive qa-download/qa-overlay-r4e-seg12.tar.gz \
-            --package-dir package --overlay-dir qa-helper
+            --package-dir package
 
       - name: Retain and stage all 75 original parts plus only replacement 51/52
         run: |
@@ -69,7 +73,7 @@ jobs:
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends ffmpeg
-          python3 qa-helper/.github/scripts/assemble_verify.py --self-test
+          python3 .github/scripts/assemble_verify.py --self-test
 
       - name: Assemble complete 651.6-second F02 master and proxy on hosted Linux
         run: |
@@ -77,7 +81,7 @@ jobs:
           mkdir -p remote-final
           cp lineage/F02-LINEAGE.json remote-final/F02-LINEAGE.json
           SEGS_JSON="$(python3 .github/scripts/f02_partial_assembly.py print-segments-json)"
-          python3 qa-helper/.github/scripts/assemble_verify.py \
+          python3 .github/scripts/assemble_verify.py \
             --segments-json "$SEGS_JSON" --duration 651.6 \
             --segments-dir assembly/segments --package-dir package \
             --output-dir remote-final --fid F02
@@ -86,7 +90,7 @@ jobs:
           python3 .github/scripts/f02_partial_assembly.py refresh-sums --output-dir remote-final
 
       - name: Export segment-level lineage (originals remain separate from replacements)
-        if: ${{ success() }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: F02-PARTIAL-SEGMENT-LINEAGE-${{ github.run_id }}
@@ -97,7 +101,7 @@ jobs:
             metadata/
           retention-days: 1
           compression-level: 0
-          if-no-files-found: error
+          if-no-files-found: ignore
 
       - name: Export 4K master and mechanical receipts
         if: ${{ success() }}
