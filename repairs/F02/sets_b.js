@@ -134,7 +134,7 @@ export function createSetsB(K) {
         sl.lamp.material.color.copy(OFF).lerp(q.amber ? AMBER : GREEN, lp); sl.halo.material.color.copy(q.amber ? AMBER : GREEN); sl.halo.material.opacity = 0.9 * lp * (0.9 + 0.1 * Math.sin(T * 5 + i));
         sl.setSub(q.sub || "");
         sl.cross.visible = (q.cross || 0) > 0; sl.cross.scale.set(EASE.out(q.cross || 0), 1, 1);
-        sl.lm.material.opacity = on;
+        sl.lm.material.opacity = on * (s.headers === undefined ? 1 : s.headers);
       });
     }, anchors: { s0: [slotsX(0), 7.9, 0.3], s1: [slotsX(1), 7.9, 0.3], s2: [slotsX(2), 7.9, 0.3], s3: [slotsX(3), 7.9, 0.3], s4: [slotsX(4), 7.9, 0.3] },
       slotX: slotsX };
