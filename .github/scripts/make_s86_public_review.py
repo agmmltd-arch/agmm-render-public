@@ -13,11 +13,11 @@ import struct
 from typing import Union
 
 REPO = "agmmltd-arch/agmm-render-public"
-SOURCE_SHA256 = "c8fa6aea8bc904de1183ef648188de4d7ec2ab0d432be623f6b165fd7ac4408b"
+SOURCE_SHA256 = "895e2d27d64ab24278de4b31fd5eb93686f23b96dc814e19ee1ad7f7bd2126f5"
 PARTS_SHA256 = "1585e81e26e654aabc04ebe0f851a81f0cd13962069027557f1e29db2dadc02d"
-PLAN_SHA256 = "132f4a559d84bb37570b4776c75fe38b68a38625d541bf10df6dcb4e5a48b7e5"
+PLAN_SHA256 = "92795eb311b2f189057601a039d576e2141703a94d70d77c6157cb7ddb607ef9"
 MEDIA_SHA256 = "6f9464e534981c16d6e6a451d0759799347b553df468fe5ee6f74812dcbfe32c"
-SOURCE_RELEASE = "S86-r2-source-202610010547"
+SOURCE_RELEASE = "S86-b-crop-overlay-37152228591"
 NAMED = {
     "ico-entry-23p05", "ico-mid-25p70", "ico-exit-28p35",
     "scope-entry-49p841", "scope-mid-52p188", "scope-exit-54p545",

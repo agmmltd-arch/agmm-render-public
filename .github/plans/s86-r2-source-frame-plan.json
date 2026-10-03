@@ -1,16 +1,52 @@
 {
   "version": 1,
   "short_id": "S86",
-  "source_sha256": "c8fa6aea8bc904de1183ef648188de4d7ec2ab0d432be623f6b165fd7ac4408b",
+  "source_sha256": "895e2d27d64ab24278de4b31fd5eb93686f23b96dc814e19ee1ad7f7bd2126f5",
   "parts_sha256": "1585e81e26e654aabc04ebe0f851a81f0cd13962069027557f1e29db2dadc02d",
   "media_identity_sha256": "6f9464e534981c16d6e6a451d0759799347b553df468fe5ee6f74812dcbfe32c",
   "include_part_seams": true,
   "captures": [
-    {"name": "ico-entry-23p05", "kind": "beat", "global": 23.05, "local": 7.883333, "look": "s86-b"},
-    {"name": "ico-mid-25p70", "kind": "beat", "global": 25.70, "local": 10.533333, "look": "s86-b"},
-    {"name": "ico-exit-28p35", "kind": "beat", "global": 28.35, "local": 13.183333, "look": "s86-b"},
-    {"name": "scope-entry-49p841", "kind": "beat", "global": 49.841, "local": 4.341, "look": "s86-d"},
-    {"name": "scope-mid-52p188", "kind": "beat", "global": 52.188, "local": 6.688, "look": "s86-d"},
-    {"name": "scope-exit-54p545", "kind": "beat", "global": 54.545, "local": 9.045, "look": "s86-d"}
+    {
+      "name": "ico-entry-23p05",
+      "kind": "beat",
+      "global": 23.05,
+      "local": 7.883333,
+      "look": "s86-b"
+    },
+    {
+      "name": "ico-mid-25p70",
+      "kind": "beat",
+      "global": 25.7,
+      "local": 10.533333,
+      "look": "s86-b"
+    },
+    {
+      "name": "ico-exit-28p35",
+      "kind": "beat",
+      "global": 28.35,
+      "local": 13.183333,
+      "look": "s86-b"
+    },
+    {
+      "name": "scope-entry-49p841",
+      "kind": "beat",
+      "global": 49.841,
+      "local": 4.341,
+      "look": "s86-d"
+    },
+    {
+      "name": "scope-mid-52p188",
+      "kind": "beat",
+      "global": 52.188,
+      "local": 6.688,
+      "look": "s86-d"
+    },
+    {
+      "name": "scope-exit-54p545",
+      "kind": "beat",
+      "global": 54.545,
+      "local": 9.045,
+      "look": "s86-d"
+    }
   ]
 }
