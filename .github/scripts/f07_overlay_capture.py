@@ -53,6 +53,7 @@ CAPTURES = [
     {"name":"next_shot","composition_time":246.9000,"film_time":252.883},
 ]
 SNAPSHOT_RE = re.compile(r"^frame-(\d+)-at-([0-9]+(?:\.[0-9]+)?)s\.png$")
+SNAPSHOT_AUXILIARY_FILES = {"contact-sheet.jpg"}
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 PNG_IEND = b"\x00\x00\x00\x00IEND\xaeB`\x82"
 MAX_OVERLAY_FILE_BYTES = 2_000_000
@@ -181,9 +182,11 @@ def collect_snapshots(snapshot_dir: Path, plan_path: Path, overlay_release_path:
         raise ValueError("overlay release receipt does not bind the published archive asset")
     by_time = {f"{row['film_time']:.3f}": row for row in rows}
     entries = list(snapshot_dir.iterdir())
-    if any(p.is_symlink() or not p.is_file() or p.suffix.lower() != ".png" for p in entries):
-        raise ValueError("snapshot folder contains a symlink or a non-PNG/unapproved file")
-    files = entries
+    if any(p.is_symlink() or not p.is_file() for p in entries):
+        raise ValueError("snapshot folder contains a symlink or non-regular file")
+    files = [p for p in entries if p.name not in SNAPSHOT_AUXILIARY_FILES]
+    if any(p.suffix.lower() != ".png" for p in files):
+        raise ValueError("snapshot folder contains a non-PNG/unapproved file")
     if len(files) != len(rows):
         raise ValueError("snapshot set is symlinked or differs from the exact nine-frame plan")
     parsed = {}
