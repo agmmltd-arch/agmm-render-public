@@ -373,17 +373,32 @@ def safe_archive_members(tf: tarfile.TarFile, *, exact: set[str] | None = None) 
     if len(members) > MAX_ARCHIVE_FILES:
         raise Refusal("archive has too many entries")
     names: set[str] = set()
+    normalized_members: list[tarfile.TarInfo] = []
+    root_seen = False
     total = 0
     for m in members:
         raw = m.name
         path = PurePosixPath(raw)
-        if path.is_absolute() or ".." in path.parts or not path.parts:
+        if path.is_absolute() or ".." in path.parts:
             raise Refusal(f"unsafe archive member path: {raw}")
-        if raw in names:
-            raise Refusal(f"duplicate archive member: {raw}")
-        names.add(raw)
         if not (m.isfile() or m.isdir()):
             raise Refusal(f"archive member type forbidden: {raw}")
+        # Conventional `tar -C package .` archives contain a harmless root directory.
+        # Skip only that directory; a regular file named `.` is never accepted.
+        if not path.parts:
+            if not m.isdir():
+                raise Refusal(f"archive root entry must be a directory: {raw}")
+            if root_seen:
+                raise Refusal(f"duplicate archive root directory: {raw}")
+            root_seen = True
+            continue
+        normalized = PurePosixPath(*path.parts).as_posix()
+        if normalized in names:
+            raise Refusal(f"duplicate archive member after path normalization: {normalized}")
+        names.add(normalized)
+        # Use the normalized relative path for allowlist checks and extraction.
+        m.name = normalized
+        normalized_members.append(m)
         if m.size < 0 or m.size > MAX_ARCHIVE_MEMBER_BYTES:
             raise Refusal(f"archive member size out of bounds: {raw}")
         total += m.size
@@ -391,7 +406,7 @@ def safe_archive_members(tf: tarfile.TarFile, *, exact: set[str] | None = None) 
         raise Refusal("archive expanded size exceeds safety limit")
     if exact is not None and names != exact:
         raise Refusal(f"QA overlay member allowlist mismatch: {sorted(names ^ exact)}")
-    return members
+    return normalized_members
 
 
 def safe_extract(tf: tarfile.TarFile, members: list[tarfile.TarInfo], destination: Path) -> None:
