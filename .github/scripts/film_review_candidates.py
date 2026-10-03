@@ -76,6 +76,7 @@ def main():
         draw.text((24,12),f'F02 frame {number} at {number/30:.6f}s - OCR candidate, NOT a confirmed defect',font=font,fill='black')
         draw.text((24,49),f'{len(TIMES)} selected frames only. No full-film visual/audio review or release approval.',font=font,fill='black')
         draw.text((24,86),f'Proxy SHA256: {contract["sha256"]}',font=font,fill='black')
+        page.save(out/f'candidate-{number:05d}.jpg',quality=95,subsampling=0)
         pages.append(page)
     pages[0].save(out/'F02-OCR-review-candidates.pdf',save_all=True,append_images=pages[1:],
                   resolution=144,quality=95,subsampling=0)
