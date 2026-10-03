@@ -1,0 +1,108 @@
+{
+  "kind": "S86-hosted-review-compact-export",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "source_run_id": 36816767405,
+  "source_run_head_sha": "9e34bc8aca7786583c771a2e203232071c8ddf5d",
+  "artifact_id": 11142017440,
+  "artifact_name": "S86-r2-4k-REVIEW-COMPACT",
+  "artifact_sha256": "e884b5bf960f7da41f5d355aa6ee14a0010e46baf85e22ed2400b2e8792112e6",
+  "scope": "existing compact review JPEGs and two text receipts only; no rerender",
+  "archive_members": [
+    "SHA256SUMS.txt",
+    "TECHNICAL-EVIDENCE.json",
+    "review/CONTACT-SHEET.jpg",
+    "review/frame-01-000.400s.jpg",
+    "review/frame-02-015.127s.jpg",
+    "review/frame-03-015.150s.jpg",
+    "review/frame-04-015.187s.jpg",
+    "review/frame-05-015.227s.jpg",
+    "review/frame-06-030.293s.jpg",
+    "review/frame-07-030.300s.jpg",
+    "review/frame-08-030.353s.jpg",
+    "review/frame-09-030.393s.jpg",
+    "review/frame-10-045.450s.jpg",
+    "review/frame-11-045.460s.jpg",
+    "review/frame-12-045.520s.jpg",
+    "review/frame-13-045.560s.jpg",
+    "review/frame-14-060.200s.jpg"
+  ],
+  "editorial_status": "NOT_REVIEWED",
+  "release_approval": "NOT_GRANTED",
+  "files": [
+    {
+      "path": "review/CONTACT-SHEET.jpg",
+      "bytes": 605276,
+      "sha256": "a5d805e3c8eb63cc6e846b41b971776f354258b2813d4df2fa958b6e59053683"
+    },
+    {
+      "path": "review/frame-01-000.400s.jpg",
+      "bytes": 165325,
+      "sha256": "4c972073a977696fd612e64884a51b44ce191a34ed92aca028e43b1a36dd3224"
+    },
+    {
+      "path": "review/frame-02-015.127s.jpg",
+      "bytes": 139656,
+      "sha256": "bc7842a5950c96d717e2b01b0bd18e4ab3415e7a1d0640edf863fd162791f1c8"
+    },
+    {
+      "path": "review/frame-03-015.150s.jpg",
+      "bytes": 139328,
+      "sha256": "e9b0b6e74bf3e387e81b8d21217ae9bdd4e8997fa4313d30e7b6d84606509fac"
+    },
+    {
+      "path": "review/frame-04-015.187s.jpg",
+      "bytes": 140627,
+      "sha256": "0996dc627256e700f984a9df00720ce30812cf08f9d8c80d99d2c16fc82d70bc"
+    },
+    {
+      "path": "review/frame-05-015.227s.jpg",
+      "bytes": 140256,
+      "sha256": "2723ee8d424a91671aa02e3c8a446df35d34fb2f03cb6588fcdac6a20d4077e8"
+    },
+    {
+      "path": "review/frame-06-030.293s.jpg",
+      "bytes": 131461,
+      "sha256": "d74c88b83a68ff0059182ded9bbfa0d1c1b6b38d512dfad454468a4c5fa17e1f"
+    },
+    {
+      "path": "review/frame-07-030.300s.jpg",
+      "bytes": 131461,
+      "sha256": "d74c88b83a68ff0059182ded9bbfa0d1c1b6b38d512dfad454468a4c5fa17e1f"
+    },
+    {
+      "path": "review/frame-08-030.353s.jpg",
+      "bytes": 132512,
+      "sha256": "4e218eaac3ae54affb2b3594bba1f94ad77d7e15d969a824d1c1a59bf31a6f61"
+    },
+    {
+      "path": "review/frame-09-030.393s.jpg",
+      "bytes": 135768,
+      "sha256": "6e2d77f475c0d66fc7e7ace5f27e3adaa47dcb74574af97c1c00723af11f0845"
+    },
+    {
+      "path": "review/frame-10-045.450s.jpg",
+      "bytes": 146225,
+      "sha256": "e73017a0386dc117bbae7c75fc78c5b24ec046b3e47ddc24d23612b0d41c0316"
+    },
+    {
+      "path": "review/frame-11-045.460s.jpg",
+      "bytes": 146225,
+      "sha256": "e73017a0386dc117bbae7c75fc78c5b24ec046b3e47ddc24d23612b0d41c0316"
+    },
+    {
+      "path": "review/frame-12-045.520s.jpg",
+      "bytes": 146474,
+      "sha256": "1a030418290b8cf0776388a137229bcdfed58477d65239b5d66cba83a2831b5f"
+    },
+    {
+      "path": "review/frame-13-045.560s.jpg",
+      "bytes": 147191,
+      "sha256": "ef70761681c46642bdc2417ecd7c32e5383446d4b63cf81001e66694654007ee"
+    },
+    {
+      "path": "review/frame-14-060.200s.jpg",
+      "bytes": 88239,
+      "sha256": "acd4741de28ef2f661cd6ada308dfa18ba01c76e38b56ab11a38b8d58491d0e7"
+    }
+  ]
+}
