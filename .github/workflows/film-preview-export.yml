@@ -1,0 +1,113 @@
+name: AGMM verified hosted film preview export
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        required: true
+      tag:
+        required: true
+      fid:
+        required: true
+permissions:
+  actions: read
+  contents: write
+concurrency:
+  group: film-preview-${{ inputs.run_id }}
+  cancel-in-progress: false
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      RUN_ID: ${{ inputs.run_id }}
+      TAG: ${{ inputs.tag }}
+      FID: ${{ inputs.fid }}
+    steps:
+      - name: Verify source workflow before any artifact download
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$REPO" == agmmltd-arch/agmm-render-public ]]
+          [[ "$RUN_ID" =~ ^[0-9]{8,20}$ && "$FID" =~ ^F[0-9]{2}$ && "$TAG" =~ ^[A-Za-z0-9._-]{1,120}$ ]]
+          gh api "repos/$REPO/actions/runs/$RUN_ID" > source-run.json
+          python3 - <<'PYCODE'
+          import json,os,sys
+          from pathlib import Path
+          assert sys.platform.startswith('linux') and os.environ.get('GITHUB_ACTIONS')=='true'
+          assert os.environ['TAG'].startswith(os.environ['FID']+'-')
+          d=json.loads(Path('source-run.json').read_text())
+          assert d['id']==int(os.environ['RUN_ID']) and d['repository']['full_name']==os.environ['REPO']
+          assert d['path']=='.github/workflows/agmm-film.yml' and d['event']=='workflow_dispatch'
+          assert d['status']=='completed' and d['conclusion']=='success'
+          assert d['display_title']=='AGMM film '+os.environ['TAG']
+          PYCODE
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ inputs.tag }}-MASTER-4K
+          path: master
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ inputs.tag }}-REVIEW-1080
+          path: review
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ inputs.tag }}-MACOS-VISION-OCR
+          path: ocr
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+      - name: Verify exact mechanical outputs and publish a preview without approval
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          import hashlib,json,os,re,subprocess,sys
+          from pathlib import Path
+          assert sys.platform.startswith('linux') and os.environ.get('GITHUB_ACTIONS')=='true'
+          fid=os.environ['FID'];repo=os.environ['REPO'];rid=os.environ['RUN_ID'];tag='preview-'+fid+'-'+rid
+          report=json.loads(Path('master/REMOTE-INTEGRITY.json').read_text())
+          assert report==json.loads(Path('review/REMOTE-INTEGRITY.json').read_text())
+          assert report['kind']=='mechanical_integrity_only' and report['editorial_gate']=='NOT_RUN' and report['release_approval']=='NOT_GRANTED'
+          required={'segment_decode','segment_flicker','master_full_decode','derived_full_decode','encoded_audio_loudness_and_true_peak'}
+          assert required<=set(report['checks']) and all(report['checks'][k]=='PASS' for k in required)
+          assert json.loads(Path('ocr/OCR-CHECK-2.json').read_text())['check']['status']=='PASS'
+          sums={}
+          for line in Path('master/SHA256SUMS.txt').read_text().splitlines():
+              sha,name=line.split('  ',1)
+              assert re.fullmatch('[a-f0-9]{64}',sha) and name not in sums
+              sums[name]=sha
+          assert Path('master/SHA256SUMS.txt').read_bytes()==Path('review/SHA256SUMS.txt').read_bytes()
+          outputs=report['outputs'];files=[]
+          for folder,name,sizekey in [('master',fid+'-MASTER-4K.mp4','master_bytes'),('review',fid+'-MASTER-1080-from-4K.mp4','derived_bytes')]:
+              p=Path(folder)/name;size=outputs[sizekey]
+              assert type(size) is int and 0<size<2000000000 and p.stat().st_size==size
+              h=hashlib.sha256()
+              with p.open('rb') as stream:
+                  for chunk in iter(lambda:stream.read(1048576),b''):h.update(chunk)
+              assert h.hexdigest()==sums[name]
+              files.append({'name':name,'sha256':h.hexdigest(),'size':size,'path':str(p)})
+          exists=subprocess.run(['gh','release','view',tag,'-R',repo],capture_output=True)
+          if exists.returncode:
+              subprocess.run(['gh','release','create',tag,'-R',repo,'--target',json.loads(Path('source-run.json').read_text())['head_sha'],'--title',fid+' review preview','--notes','Hosted mechanical verification complete. Independent audiovisual, editorial and thumbnail review pending. NOT RELEASE APPROVED.'],check=True)
+          release=json.loads(subprocess.check_output(['gh','api','repos/'+repo+'/releases/tags/'+tag]))
+          assets={a['name']:a for a in release['assets']}
+          for f in files:
+              if f['name'] in assets:
+                  a=assets[f['name']];assert a['size']==f['size'] and a.get('digest')=='sha256:'+f['sha256'],'existing asset differs; no overwrite'
+              else:subprocess.run(['gh','release','upload',tag,f['path'],'-R',repo],check=True)
+              f['url']='https://github.com/'+repo+'/releases/download/'+tag+'/'+f['name'];f.pop('path')
+          Path('receipts').mkdir()
+          receipt={'source_run_id':int(rid),'repository':repo,'source_workflow_commit':json.loads(Path('source-run.json').read_text())['head_sha'],'files':files,'integrity':report,'ocr':json.loads(Path('ocr/OCR-CHECK-2.json').read_text()),'review_status':'NOT_RUN','release_approval':'NOT_GRANTED'}
+          Path('receipts/HOSTED-PREVIEW.json').write_text(json.dumps(receipt,indent=2))
+          PYCODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.fid }}-${{ inputs.run_id }}-TEXT-RECEIPT
+          path: receipts/HOSTED-PREVIEW.json
+          if-no-files-found: error
+          retention-days: 7
