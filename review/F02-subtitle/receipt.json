@@ -1,0 +1,25 @@
+{
+  "run_id": "37124668918",
+  "source_sha256": "0c91c32f918c9de4c8239f91c1471bd791fc75394a69431a4f362a8d8bf9ddad",
+  "repair_sha256": "9d548b35125934111243f78a6c6baa95d2e931eb219af372994cc8c8b4e5dd1c",
+  "times": [
+    427.56,
+    427.6,
+    429.85,
+    431.16,
+    431.2,
+    431.5,
+    433.55,
+    434.96,
+    435.2,
+    436.35,
+    436.76,
+    439,
+    439.75,
+    440,
+    616
+  ],
+  "camera_repair_sha256": "82ff8d98b8550196f52dbfc606fbc37b106656d768c2d4bd66348696e0e6af5b",
+  "scope": "targeted source snapshots; not rendered-film/audio approval",
+  "release_approval": "NOT_GRANTED"
+}
