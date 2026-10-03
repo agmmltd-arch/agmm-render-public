@@ -1,0 +1,172 @@
+name: F02 capture-only review of retained sealed source package
+run-name: F02 source capture ${{ github.run_id }}
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: f02-source-capture-only
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: agmmltd-arch/agmm-render-public
+      SOURCE_RELEASE_ID: '402725212'
+      SOURCE_TAG: F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68
+      SOURCE_ASSET_ID: '608687529'
+      SOURCE_BYTES: '37971326'
+      SOURCE_SHA256: db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68
+      RECEIPT_ASSET_ID: '608687530'
+      RECEIPT_BYTES: '2081'
+      RECEIPT_SHA256: 5af6fa61bdb9ef64d0d22826d0439b47edbdbb2146a401caece86064d59a59f0
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Guard public Linux target and resolve the published release by exact list match
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == "$GH_REPO" ]]
+          gh api "repos/$GH_REPO" > repository.json
+          gh api --paginate --slurp "repos/$GH_REPO/releases?per_page=100" > releases.json
+          python3 - <<'PY'
+          import json
+          repo=json.load(open("repository.json",encoding="utf-8"))
+          pages=json.load(open("releases.json",encoding="utf-8"))
+          rows=[release for page in pages for release in page] if pages and isinstance(pages[0],list) else pages
+          matches=[release for release in rows if release.get("tag_name")=="F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68"]
+          assert repo.get("full_name")=="agmmltd-arch/agmm-render-public" and repo.get("private") is False and repo.get("visibility")=="public"
+          assert len(matches)==1, "exact package tag must occur once in the release list"
+          release=matches[0]
+          assert release.get("id")==402725212 and release.get("draft") is False
+          assets={a.get("id"):a for a in release.get("assets",[])}
+          expected={608687529:("source.tar.gz",37971326,"sha256:db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68"),
+                    608687530:("source-receipt.json",2081,"sha256:5af6fa61bdb9ef64d0d22826d0439b47edbdbb2146a401caece86064d59a59f0")}
+          for asset_id,(name,size,digest) in expected.items():
+              asset=assets.get(asset_id)
+              assert asset and asset.get("name")==name and asset.get("size")==size and asset.get("digest")==digest and asset.get("state")=="uploaded"
+          open("release-by-list.json","w",encoding="utf-8").write(json.dumps(release,indent=2,sort_keys=True)+"\n")
+          PY
+          gh api "repos/$GH_REPO/releases/$SOURCE_RELEASE_ID" > release.json
+          gh api "repos/$GH_REPO/releases/assets/$SOURCE_ASSET_ID" > source-asset.json
+          gh api "repos/$GH_REPO/releases/assets/$RECEIPT_ASSET_ID" > receipt-asset.json
+          python3 - <<'PY'
+          import json
+          release=json.load(open("release.json",encoding="utf-8")); source=json.load(open("source-asset.json",encoding="utf-8")); receipt=json.load(open("receipt-asset.json",encoding="utf-8"))
+          assert release.get("id")==402725212 and release.get("tag_name")=="F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68" and release.get("draft") is False
+          assert source.get("id")==608687529 and source.get("name")=="source.tar.gz" and source.get("size")==37971326 and source.get("digest")=="sha256:db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68" and source.get("state")=="uploaded"
+          assert receipt.get("id")==608687530 and receipt.get("name")=="source-receipt.json" and receipt.get("size")==2081 and receipt.get("digest")=="sha256:5af6fa61bdb9ef64d0d22826d0439b47edbdbb2146a401caece86064d59a59f0" and receipt.get("state")=="uploaded"
+          release_assets={a.get("id"):(a.get("name"),a.get("size"),a.get("digest"),a.get("state")) for a in release.get("assets",[])}
+          assert release_assets.get(source["id"])==(source["name"],source["size"],source["digest"],"uploaded")
+          assert release_assets.get(receipt["id"])==(receipt["name"],receipt["size"],receipt["digest"],"uploaded")
+          PY
+      - name: Download only the two verified release assets and bind existing capture helpers
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/f02-capture-input"
+          gh release download "$SOURCE_TAG" --repo "$GH_REPO" --pattern source.tar.gz --pattern source-receipt.json --dir "$RUNNER_TEMP/f02-capture-input"
+          test "$(wc -c < "$RUNNER_TEMP/f02-capture-input/source.tar.gz" | tr -d ' ')" = "$SOURCE_BYTES"
+          test "$(sha256sum "$RUNNER_TEMP/f02-capture-input/source.tar.gz" | cut -d ' ' -f1)" = "$SOURCE_SHA256"
+          test "$(wc -c < "$RUNNER_TEMP/f02-capture-input/source-receipt.json" | tr -d ' ')" = "$RECEIPT_BYTES"
+          test "$(sha256sum "$RUNNER_TEMP/f02-capture-input/source-receipt.json" | cut -d ' ' -f1)" = "$RECEIPT_SHA256"
+          python3 F02-hosted-source-overlay-proposal-luna/f02_hosted_overlay.py verify-published \
+            --receipt "$RUNNER_TEMP/f02-capture-input/source-receipt.json" \
+            --release-json release.json --asset-json source-asset.json \
+            --output "$RUNNER_TEMP/f02-source-identity.json"
+          python3 F02-hosted-source-overlay-proposal-luna/f02_hosted_overlay.py bind-plan \
+            --template F02-hosted-source-overlay-proposal-luna/capture-plan.template.json \
+            --receipt "$RUNNER_TEMP/f02-capture-input/source-receipt.json" \
+            --output "$RUNNER_TEMP/f02-capture-plan.json"
+      - name: Verify and safely extract the retained sealed source package on hosted Linux
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/f02-project"
+          python3 - "$RUNNER_TEMP/f02-capture-input/source.tar.gz" "$RUNNER_TEMP/f02-project" <<'PY'
+          import pathlib,sys,tarfile
+          archive=pathlib.Path(sys.argv[1]); root=pathlib.Path(sys.argv[2]).resolve(); seen=set()
+          with tarfile.open(archive,"r:gz") as tf:
+              members=tf.getmembers()
+              assert 0<len(members)<8192 and sum(m.size for m in members)<1024**3
+              for m in members:
+                  name=m.name
+                  if "\\" in name or name.startswith("/"): raise ValueError("unsafe archive path")
+                  parts=name.rstrip("/").split("/")
+                  while parts and parts[0] in ("","."): parts.pop(0)
+                  if any(p in ("",".","..") for p in parts): raise ValueError("unsafe archive path")
+                  normalized="/".join(parts)
+                  if normalized in seen: raise ValueError("duplicate normalized archive path")
+                  seen.add(normalized)
+                  dest=(root/normalized).resolve()
+                  assert dest==root or root in dest.parents
+                  assert m.isfile() or m.isdir(), "links and special members are refused"
+              tf.extractall(root,filter="data")
+          PY
+          (cd "$RUNNER_TEMP/f02-project" && sha256sum -c SHA256SUMS.txt && python3 static_check.py)
+          test "$(sha256sum "$RUNNER_TEMP/f02-project/film/film.js" | cut -d ' ' -f1)" = e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b
+          test "$(sha256sum "$RUNNER_TEMP/f02-project/film/sets_a.js" | cut -d ' ' -f1)" = cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e
+          node --check "$RUNNER_TEMP/f02-project/film/film.js"
+          node --check "$RUNNER_TEMP/f02-project/film/sets_a.js"
+          npm install --no-save playwright@1.55.1
+          npx playwright install --with-deps chromium
+      - name: Capture source composition using the existing F02 Playwright seek producer
+        env:
+          F02_CAPTURE_PLAN: ${{ runner.temp }}/f02-capture-plan.json
+          F02_SNAPSHOT_DIR: ${{ runner.temp }}/f02-captured
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8765 --directory "$RUNNER_TEMP/f02-project" > "$RUNNER_TEMP/f02-http.log" 2>&1 &
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const plan = JSON.parse(fs.readFileSync(process.env.F02_CAPTURE_PLAN, 'utf8'));
+          (async () => {
+            const browser = await chromium.launch({ headless: true, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+            const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            await page.goto('http://127.0.0.1:8765/film/index.html');
+            await page.waitForFunction(() => !!window.__f02Render && !!window.__F02TL && !!window.__f02Set, {}, { timeout: 120000 });
+            await page.evaluate(() => document.fonts.ready);
+            fs.mkdirSync(process.env.F02_SNAPSHOT_DIR, { recursive: false });
+            for (const row of plan.captures) {
+              const t = row.time;
+              await page.evaluate(t => { window.__F02TL.pause(); window.__F02TL.time(t); window.__f02Set(t); window.__f02Set(t); }, t);
+              await page.waitForTimeout(250);
+              await page.screenshot({ path: path.join(process.env.F02_SNAPSHOT_DIR, `frame-${t}.png`), type: 'png' });
+            }
+            await browser.close();
+            if (errors.length) throw new Error(errors.join('\n'));
+          })().catch(error => { console.error(error); process.exit(1); });
+          JS
+          python3 F02-hosted-source-overlay-proposal-luna/f02_hosted_overlay.py collect \
+            --snapshots "$F02_SNAPSHOT_DIR" --plan "$F02_CAPTURE_PLAN" \
+            --source-receipt "$RUNNER_TEMP/f02-capture-input/source-receipt.json" \
+            --source-identity "$RUNNER_TEMP/f02-source-identity.json" \
+            --output "$RUNNER_TEMP/f02-review"
+      - name: Publish only the exact capture set and TEXT receipts on a run-specific review branch
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted source review'
+          git config user.email 'evidence@users.noreply.github.com'
+          BRANCH="review-F02-source-capture-$GITHUB_RUN_ID"
+          git checkout --orphan "$BRANCH"
+          git rm -rf --cached . >/dev/null
+          mkdir -p public-review
+          cp -R "$RUNNER_TEMP/f02-review/frames" public-review/
+          cp "$RUNNER_TEMP/f02-review/CAPTURE-RECEIPT.json" "$RUNNER_TEMP/f02-review/SHA256SUMS.txt" "$RUNNER_TEMP/f02-source-identity.json" public-review/
+          git add public-review
+          python3 - <<'PY'
+          import subprocess
+          names=subprocess.check_output(["git","diff","--cached","--name-only"],text=True).splitlines()
+          stems="printer_rise_1 printer_rise_2 printer_rise_3 printer_label printer_pre_cut printer_cut printer_post_cut floor_700 opening_profit profit_before profit_landing profit_during profit_clear duplicate_before duplicate_edge_1 duplicate_edge_2".split()
+          expected={"public-review/frames/"+name+".png" for name in stems}
+          expected|={"public-review/CAPTURE-RECEIPT.json","public-review/SHA256SUMS.txt","public-review/f02-source-identity.json"}
+          assert set(names)==expected and len(names)==19 and sum(n.endswith(".png") for n in names)==16
+          PY
+          git commit -m 'F02 retained source composition capture; NOT final-master approval'
+          git push origin "HEAD:refs/heads/$BRANCH"
