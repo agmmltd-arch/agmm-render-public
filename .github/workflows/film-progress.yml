@@ -1,0 +1,50 @@
+name: AGMM hosted film progress
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        required: true
+        default: '37114306772'
+  schedule:
+    - cron: '*/5 * * * *'
+permissions:
+  actions: read
+  contents: write
+concurrency:
+  group: agmm-film-progress
+  cancel-in-progress: false
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      RUN_ID: ${{ inputs.run_id || '37114306772' }}
+    steps:
+      - name: Fetch exact hosted metadata only
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$REPO" == agmmltd-arch/agmm-render-public ]]
+          [[ "$RUN_ID" =~ ^[0-9]{8,20}$ ]]
+          gh api "repos/$REPO/actions/runs/$RUN_ID" > run.json
+          gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" > jobs.json
+          gh api "repos/$REPO/contents/status/F02.json" > existing.json 2>/dev/null || printf '{}' > existing.json
+          python3 - <<'PYCODE'
+          import base64, datetime, json, os
+          from pathlib import Path
+          run=json.loads(Path('run.json').read_text()); data=json.loads(Path('jobs.json').read_text())
+          assert run['id']==int(os.environ['RUN_ID']) and run['repository']['full_name']==os.environ['REPO']
+          assert run['path']=='.github/workflows/agmm-film.yml' and run['event']=='workflow_dispatch'
+          assert type(data['total_count']) is int and data['total_count']==len(data['jobs']) and data['jobs']
+          assert all(j['run_id']==run['id'] for j in data['jobs'])
+          data.update(run_id=run['id'],repository=os.environ['REPO'],workflow_commit=run['head_sha'],
+                      observed_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),release_approval='NOT_GRANTED')
+          content=json.dumps(data,separators=(',',':')).encode()
+          payload={'message':'Update F02 hosted job metadata only','content':base64.b64encode(content).decode()}
+          existing=json.loads(Path('existing.json').read_text())
+          if existing.get('sha'): payload['sha']=existing['sha']
+          Path('payload.json').write_text(json.dumps(payload))
+          PYCODE
+          gh api --method PUT "repos/$REPO/contents/status/F02.json" --input payload.json > /dev/null
