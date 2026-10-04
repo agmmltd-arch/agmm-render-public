@@ -51,24 +51,32 @@
     '.s90-punch{position:absolute;width:36px;height:36px;border-radius:50%;background:#efbd58;box-shadow:0 0 0 10px rgba(239,189,88,.18)}',
     '.s90-caption-hero{position:absolute;left:54px;right:54px;top:140px;text-align:center;font-family:"AG Archivo",sans-serif;font-size:106px;line-height:.95;font-weight:900;color:#fff}',
     '.s90-micro{position:absolute;font-size:42px;line-height:1.05;font-weight:800;letter-spacing:.06em;color:#c4dddf}',
-    '.s90-turn{position:absolute;left:0;top:0;width:100%;height:100%;background:linear-gradient(145deg,#0a2131,#102e3c 58%,#081827)}'
+    '.s90-turn{position:absolute;left:0;top:0;width:100%;height:100%;background:linear-gradient(145deg,#0a2131,#102e3c 58%,#081827)}',
+    '.ag-stage .ag2-cap{top:1360px!important;height:280px!important;z-index:60}',
+    '.ag-stage .ag2-card{align-items:center}',
+    '[data-look="softui"] .ag2-card .row{color:#102332!important;background:#f5f1e7;border:4px solid #f2b84b;border-radius:10px;padding:12px 24px 16px;box-shadow:0 12px 0 rgba(0,0,0,.35)}',
+    '[data-look="softui"] .ag2-w.emph{background:#f2b84b!important;color:#102332!important;padding:5px 18px 9px;border-radius:4px}'
   ].join('\n');
   document.head.appendChild(css);
   var A = window.AGK = window.AGK || {}; A.scenes = A.scenes || {};
+  var SOURCE_CROP_DIMS = {
+    'claim-01.png':[1230,418], 'claim-03.png':[1230,262], 'claim-04.png':[1230,106],
+    'claim-05.png':[1230,210], 'claim-06.png':[1230,262], 'claim-07.png':[1230,366],
+    'claim-08.png':[1230,106]
+  };
   function el(tag, cls, parent, html) { return AG.el(tag, cls, parent, html); }
   function pos(e,x,y,w,h) { e.style.left=x+'px'; e.style.top=y+'px'; if(w!=null)e.style.width=w+'px'; if(h!=null)e.style.height=h+'px'; return e; }
   function text(parent, cls, value, x,y,w,h,size) { var e=el('div',cls,parent); e.textContent=value; pos(e,x,y,w,h); if(size)e.style.fontSize=size+'px'; return e; }
   function stage(ctx,S,B) {
-    var L=el('div','s90-stage',S.cam);
-    var first=Math.ceil(B.from*30-1e-6)/30;
-    ctx.tl.set(L,{opacity:0},0);
-    ctx.tl.set(L,{opacity:1},first);
-    if(B.to){ var cut=Math.ceil(B.to*30-1e-6)/30; ctx.tl.set(L,{opacity:0},cut); }
-    return L;
+    // AG.scene owns the beat interval. A second child opacity pair at t=0 blanks the hook on initial seek.
+    return el('div','s90-stage',S.cam);
   }
   function enter(ctx,e,t,from,dur,ease) { ctx.tl.fromTo(e,from,{x:0,y:0,rotation:0,scale:1,opacity:1,duration:dur||0.32,ease:ease||'power3.out',immediateRender:false},t); }
   function sourcePane(ctx,L,crop,at,variant) {
-    var g=Object.assign({x:46,y:204,w:988,h:1120,headY:22,headH:112,titleY:150,titleH:160,dateY:328,dateH:88,excerptY:442,excerptH:570},variant||{});
+    var g=Object.assign({x:24,y:220,w:1032,headY:22,headH:112,titleY:150,titleH:160,dateY:328,dateH:88,excerptY:442},variant||{});
+    var dims=SOURCE_CROP_DIMS[crop]; if(!dims) throw new Error('unbound source crop '+crop);
+    g.excerptH=Math.ceil((g.w-60)*dims[1]/dims[0]);
+    g.h=g.excerptY+g.excerptH+132;
     var pane=el('div','s90-source',L); pos(pane,g.x,g.y,g.w,g.h);
     var head=el('div','s90-head',pane), hi=el('img','',head); hi.src='img/s90-source-pack/header-channel4.png'; pos(head,24,g.headY,g.w-48,g.headH);
     var title=el('div','s90-title',pane), ti=el('img','',title); ti.src='img/s90-source-pack/release-title.png'; pos(title,30,g.titleY,g.w-60,g.titleH);
@@ -89,10 +97,10 @@
   }
   function captionPlate(L,copy,x,y,w,h,size) { var e=el('div','s90-rule',L); e.textContent=copy; pos(e,x,y,w,h); e.style.fontSize=size+'px'; return e; }
   function lightHit(ctx,e,t) { ctx.tl.fromTo(e,{scale:.72,opacity:.35},{scale:1,opacity:1,duration:.18,ease:'power3.out',immediateRender:false},t); }
-  function request(ctx,L,at) {
+  function request(ctx,L,at,state) {
     var r=el('div','s90-request',L); var hd=el('div','s90-request-top',r,'ILLUSTRATION / SUPPLIER CHANGE');
     var a=el('div','s90-request-row',r); a.innerHTML='<span>REQUEST</span><b>Bank details</b>';
-    var b=el('div','s90-request-row',r); pos(b,26,192,782,72); b.innerHTML='<span>STATE</span><b>PENDING</b>'; b.querySelector('b').style.color='#a53e35';
+    var b=el('div','s90-request-row',r); pos(b,26,192,782,72); b.innerHTML='<span>STATE</span><b>'+(state||'PENDING')+'</b>'; b.querySelector('b').style.color='#a53e35';
     // The request and PENDING state are already readable at the incoming cut; only the rail gets a restrained settle.
     ctx.tl.fromTo(r,{rotation:-0.4},{rotation:0,duration:.16,ease:'power2.out',immediateRender:false},at); return r;
   }
@@ -108,8 +116,7 @@
     var L=stage(ctx,S,B); el('div','s90-halo',L);
     var sp=sourcePane(ctx,L,'claim-01.png',B.from,{x:46,y:204,w:988,h:1120});
     var aperture=el('div','s90-aperture',L); pos(aperture,812,10,190,190);
-    var h=hero(L,'CHANNEL 4<br><em>AI PRESENTER</em>',68,1470,124);
-    text(L,'s90-micro','DISPATCHES / THE RELEASE, NOT THE FOOTAGE',68,1740,930,60,42);
+    var h=hero(L,'CHANNEL 4<br><em>AI PRESENTER</em>',68,34,86);
     var mark=el('div','s90-ruler',L); pos(mark,28,210,8,1118);
     ctx.tl.fromTo(mark,{scaleY:.25,transformOrigin:'50% 0%'},{scaleY:1,duration:2.1,ease:'power1.inOut',immediateRender:false},B.from+.22);
     return L;
@@ -118,9 +125,8 @@
   A.scenes['s90-b02']=function(ctx,S,p,B){
     var L=stage(ctx,S,B); el('div','s90-turn',L);
     var s=sourceTarget(ctx,L,'claim-05.png',B.from,{x:46,y:228,w:988,h:1100,excerptY:430,excerptH:520});
-    var a=el('div','s90-aperture',L); pos(a,382,1400,316,316);
+    var a=el('div','s90-aperture',L); pos(a,812,1090,190,190);
     ctx.tl.to(a,{rotation:45,duration:2.4,ease:'sine.inOut'},B.from+.18);
-    text(L,'s90-sub','THE EMPTY FRAME IS THE REVEAL',104,1750,880,72,42);
     return L;
   };
   // 03 · complete evidence below three sequential rails in the reserved top band.
@@ -134,17 +140,16 @@
   // 04 · the constructed strip travels below the unchanged, complete paragraph crop.
   A.scenes['s90-b04']=function(ctx,S,p,B){
     var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-03.png',B.from,{x:46,y:220,w:988,h:1120,excerptY:442,excerptH:520});
-    var strip=el('div','s90-strip',L); pos(strip,-40,1400,1180,110);
+    var strip=el('div','s90-strip',L); pos(strip,-40,1100,1180,92);
     ctx.tl.fromTo(strip,{x:-940},{x:0,duration:2.2,ease:'none',immediateRender:false},B.from+.12);
-    text(L,'s90-micro','CONSTRUCTED EMPTY STRIP / NOT PROGRAMME FOOTAGE',68,1570,944,70,42);
     return L;
   };
   // 05 · the complete quotation crop gets an outer frame; proof line grows in the blank field below.
   A.scenes['s90-b05']=function(ctx,S,p,B){
     var L=stage(ctx,S,B); var s=sourceTarget(ctx,L,'claim-04.png',B.from,{x:56,y:176,w:968,h:1140,excerptY:430,excerptH:596});
     s.window.style.border='8px solid #ecb94f';
-    var index=el('div','s90-paperlabel',L,'SOURCE QUOTE'); pos(index,86,1390,500,68);
-    var line=el('div','s90-ruler',L); pos(line,612,1388,330,6);
+    var index=el('div','s90-paperlabel',L,'SOURCE QUOTE'); pos(index,86,1110,500,68);
+    var line=el('div','s90-ruler',L); pos(line,612,1108,330,6);
     ctx.tl.fromTo(line,{scaleX:.15,transformOrigin:'0% 50%'},{scaleX:1,duration:.45,ease:'power2.out',immediateRender:false},B.from+.62);
     return L;
   };
@@ -153,7 +158,7 @@
     var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-04.png',B.from,{x:46,y:230,w:988,h:1080,excerptY:438,excerptH:520});
     var rows=rails(ctx,L,B.from+.08);
     rows.forEach(function(r,i){ctx.tl.to(r,{x:i===1?1080:-340,opacity:0,duration:.36,ease:'power3.in'},B.from+.56+i*.12);});
-    var gate=el('div','s90-aperture',L); pos(gate,766,1390,222,222);
+    var gate=el('div','s90-aperture',L); pos(gate,820,1088,180,180);
     ctx.tl.to(gate,{rotation:-28,duration:2.1,ease:'sine.inOut'},B.from+.28);
     return L;
   };
@@ -169,42 +174,36 @@
   // 08 · the native speaker-introduction crop is set in a shorter, lower-page reader with a separate role marker below it.
   A.scenes['s90-b08']=function(ctx,S,p,B){
     var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-08.png',B.from,{x:64,y:198,w:952,h:1090,excerptY:438,excerptH:540});
-    var tab=el('div','s90-tag',L,'SPEAKER INTRODUCTION'); pos(tab,68,1418,850,74);
-    ctx.tl.fromTo(tab,{x:-84},{x:0,duration:.36,ease:'power3.out',immediateRender:false},B.from+.16);
-    var tick=el('div','s90-ruler',L); pos(tick,930,1406,7,94);
+    var tick=el('div','s90-ruler',L); pos(tick,28,1088,7,112);
     ctx.tl.fromTo(tick,{scaleY:.15,transformOrigin:'50% 0%'},{scaleY:1,duration:.42,ease:'power2.out',immediateRender:false},B.from+.44);
     return L;
   };
   // 09 · full warning paragraph; aperture and proof marker sit entirely below the source page.
   A.scenes['s90-b09']=function(ctx,S,p,B){
     var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-07.png',B.from,{x:52,y:166,w:976,h:1140,excerptY:438,excerptH:590});
-    var a=el('div','s90-aperture',L); pos(a,374,1360,300,300);
-    ctx.tl.to(a,{rotation:90,duration:2.6,ease:'sine.inOut'},B.from+.1);
-    var proof=el('div','s90-punch',L); pos(proof,954,1396,30,30);
-    ctx.tl.to(proof,{x:-240,duration:2.6,ease:'sine.inOut'},B.from+.18);
+    var proof=el('div','s90-ruler',L); pos(proof,64,1080,952,8);
+    ctx.tl.fromTo(proof,{scaleX:.25,transformOrigin:'0% 50%'},{scaleX:1,duration:.4,ease:'power2.out',immediateRender:false},B.from+.18);
     return L;
   };
   // 10 · documentary source stays full; a blank editorial tray opens below it for the next cut.
   A.scenes['s90-b10']=function(ctx,S,p,B){
     var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-07.png',B.from,{x:46,y:102,w:988,h:1220,excerptY:442,excerptH:620});
-    var tray=el('div','s90-tile',L); pos(tray,118,1450,844,210); tray.style.background='#ded4bf'; tray.style.borderColor='#f2b84b';
-    ctx.tl.fromTo(tray,{y:160,rotation:-1.2},{y:0,rotation:0,duration:.44,ease:'power3.out',immediateRender:false},B.from+.38);
-    var drawer=el('div','s90-ruler',L); pos(drawer,118,1444,844,7); drawer.style.width='844px'; drawer.style.height='7px'; drawer.style.background='#f2b84b';
-    ctx.tl.fromTo(drawer,{scaleX:.12,transformOrigin:'50% 50%'},{scaleX:1,duration:.56,ease:'power2.out',immediateRender:false},B.from+.5);
+    var drawer=el('div','s90-ruler',L); pos(drawer,64,1092,952,8); drawer.style.background='#f2b84b';
+    ctx.tl.fromTo(drawer,{scaleX:.12,transformOrigin:'0% 50%'},{scaleX:1,duration:.56,ease:'power2.out',immediateRender:false},B.from+.5);
     return L;
   };
   // 11 · all publisher marks and credits are gone before the accounts advice begins.
-  A.scenes['s90-b11']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); var tag=text(L,'s90-tag','ILLUSTRATION',72,142,490,72,44); request(ctx,L,B.from+.16); var tile=el('div','s90-tile',L); pos(tile,616,430,376,242); tile.innerHTML='<div class="s90-tile-hd">ACCOUNTS TEAM</div><div class="s90-tile-body">VIDEO CALL<br>SUPPLIER</div>'; ctx.tl.fromTo(tile,{rotation:1.5},{rotation:0,duration:.2,ease:'power2.out',immediateRender:false},B.from); var r=latch(ctx,L,B.from+.62); text(L,'s90-pending','PENDING / NO ACCOUNT VALUES SHOWN',104,1618,870,70,42); return L;};
+  A.scenes['s90-b11']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); var tag=text(L,'s90-tag','ILLUSTRATION',72,142,490,72,44); request(ctx,L,B.from+.16); var tile=el('div','s90-tile',L); pos(tile,616,430,376,242); tile.innerHTML='<div class="s90-tile-hd">ACCOUNTS TEAM</div><div class="s90-tile-body">VIDEO CALL<br>SUPPLIER</div>'; ctx.tl.fromTo(tile,{rotation:1.5},{rotation:0,duration:.2,ease:'power2.out',immediateRender:false},B.from); var r=latch(ctx,L,B.from+.62); return L;};
   // 12 · the principle becomes a physical rule plate beside the still-pending request.
   A.scenes['s90-b12']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.04); latch(ctx,L,B.from+.16); var plate=captionPlate(L,'ONE RULE\nTHIS WEEK',68,276,944,300,82); ctx.tl.fromTo(plate,{rotation:-2},{rotation:0,duration:.24,ease:'power2.out',immediateRender:false},B.from); var rivet=el('div','s90-punch',L); pos(rivet,900,600); lightHit(ctx,rivet,B.from+.55); return L;};
   // 13 · an unapproved change request stays blank of identity, amount, and account data.
   A.scenes['s90-b13']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.05); var x=latch(ctx,L,B.from+.2); var pending=text(L,'s90-pending','PENDING CHANGE',180,628,720,72,48); var slip=el('div','s90-paperlabel',L,'BANK-DETAIL CHANGE'); pos(slip,112,502,850,90); ctx.tl.fromTo(slip,{rotation:-1.5},{rotation:0,duration:.18,ease:'power2.out',immediateRender:false},B.from); var dot=el('div','s90-punch',L); pos(dot,853,826); lightHit(ctx,dot,B.from+.58); return L;};
   // 14 · trusted-number path places an outgoing call; the payment latch explicitly stays shut.
-  A.scenes['s90-b14']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.03); latch(ctx,L,B.from+.1); var saved=el('div','s90-tile',L); pos(saved,76,394,444,230); saved.innerHTML='<div class="s90-tile-hd">SAVED CONTACT</div><div class="s90-tile-body">NUMBER<br>ALREADY HELD</div>'; ctx.tl.fromTo(saved,{rotation:-1},{rotation:0,duration:.18,ease:'power2.out',immediateRender:false},B.from); var ph=el('div','s90-phone',L); pos(ph,742,394); enter(ctx,ph,B.from+.52,{y:420,rotation:8,opacity:0},.3,'power3.out'); var route=el('div','s90-route',L); pos(route,468,700,300,10); ctx.tl.fromTo(route,{scaleX:0},{scaleX:1,duration:.45,ease:'power2.out',immediateRender:false},B.from+.76); var pending=text(L,'s90-pending','CALL STARTED / PAYMENT STILL HELD',72,1510,936,82,44); enter(ctx,pending,B.from+.8,{y:55,opacity:0},.24,'power2.out'); return L;};
+  A.scenes['s90-b14']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.03,'CALL STARTED'); latch(ctx,L,B.from+.1); var saved=el('div','s90-tile',L); pos(saved,76,394,444,230); saved.innerHTML='<div class="s90-tile-hd">SAVED CONTACT</div><div class="s90-tile-body">NUMBER<br>ALREADY HELD</div>'; ctx.tl.fromTo(saved,{rotation:-1},{rotation:0,duration:.18,ease:'power2.out',immediateRender:false},B.from); var ph=el('div','s90-phone',L); pos(ph,742,394); ctx.tl.fromTo(ph,{rotation:8},{rotation:0,duration:.3,ease:'power2.out',immediateRender:false},B.from); var route=el('div','s90-route',L); pos(route,468,700,300,10); ctx.tl.fromTo(route,{scaleX:0},{scaleX:1,duration:.45,ease:'power2.out',immediateRender:false},B.from+.76);  return L;};
   // 15 · the message path is physically disconnected; no successful confirmation is depicted.
-  A.scenes['s90-b15']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.02); latch(ctx,L,B.from+.08); var saved=el('div','s90-tile',L); pos(saved,62,356,410,226); saved.innerHTML='<div class="s90-tile-hd">HELD CONTACT</div><div class="s90-tile-body">KNOWN ROUTE</div>'; var msg=el('div','s90-tile',L); pos(msg,608,356,410,226); msg.innerHTML='<div class="s90-tile-hd">MESSAGE</div><div class="s90-tile-body">NEW NUMBER</div>'; ctx.tl.fromTo(msg,{rotation:1},{rotation:0,duration:.18,ease:'power2.out',immediateRender:false},B.from); var ok=el('div','s90-route',L); pos(ok,454,680,280,9); var bad=el('div','s90-blocked',L); pos(bad,812,582,8,170); bad.style.transform='rotate(34deg)'; text(L,'s90-pending','NO ANSWER / NO CONFIRMATION',110,1514,860,80,46); return L;};
+  A.scenes['s90-b15']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.02,'NO ANSWER'); latch(ctx,L,B.from+.08); var saved=el('div','s90-tile',L); pos(saved,62,356,410,226); saved.innerHTML='<div class="s90-tile-hd">HELD CONTACT</div><div class="s90-tile-body">KNOWN ROUTE</div>'; var msg=el('div','s90-tile',L); pos(msg,608,356,410,226); msg.innerHTML='<div class="s90-tile-hd">MESSAGE</div><div class="s90-tile-body">NEW NUMBER</div>'; ctx.tl.fromTo(msg,{rotation:1},{rotation:0,duration:.18,ease:'power2.out',immediateRender:false},B.from); var ok=el('div','s90-route',L); pos(ok,454,680,280,9); var bad=el('div','s90-blocked',L); pos(bad,812,582,8,170); bad.style.transform='rotate(34deg)'; return L;};
   // 16 · CTA only; no Channel 4 brand, evidence pane, call answer, or latch release.
-  A.scenes['s90-b16']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); var halo=el('div','s90-halo',L); halo.style.borderColor='rgba(242,184,75,.35)'; var tx=el('div','s90-cta',L,'FOLLOW FOR ONE REAL AI STORY A DAY,<br>AND WHAT IT MEANS FOR YOUR BUSINESS'); pos(tx,50,500,980,440); ctx.tl.fromTo(tx,{y:16},{y:0,duration:.22,ease:'power2.out',immediateRender:false},B.from); var pend=text(L,'s90-pending','CHANGE REMAINS PENDING UNTIL CONFIRMED',62,1030,956,82,42); var link=el('div','s90-link',L,'agmm.co.uk/ai-constraint-audit'); enter(ctx,link,B.from+.78,{y:300,rotation:1,opacity:0},.32,'power3.out'); return L;};
+  A.scenes['s90-b16']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); var halo=el('div','s90-halo',L); halo.style.borderColor='rgba(242,184,75,.35)'; var tx=el('div','s90-cta',L,'FOLLOW FOR ONE REAL AI STORY A DAY,<br>AND WHAT IT MEANS FOR YOUR BUSINESS'); pos(tx,50,500,980,440); ctx.tl.fromTo(tx,{y:16},{y:0,duration:.22,ease:'power2.out',immediateRender:false},B.from); var pend=text(L,'s90-pending','CHANGE REMAINS PENDING UNTIL CONFIRMED',62,1030,956,82,42); var link=el('div','s90-link',L,'agmm.co.uk/ai-constraint-audit'); ctx.tl.fromTo(link,{scale:.98},{scale:1,duration:.2,ease:'power2.out',immediateRender:false},B.from+.08); return L;};
   // Native kit3 adapter: scene-only component; the selected S90 scene owns each beat.
   A.C=A.C||{};
   A.C['s90-custom']=function(ctx,S,props,B){
