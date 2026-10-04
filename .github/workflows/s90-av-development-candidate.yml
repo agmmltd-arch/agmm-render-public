@@ -32,9 +32,6 @@ jobs:
       HYPERFRAMES_NO_TELEMETRY: '1'
       EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
       CANDIDATE: ${{ github.workspace }}/S90-candidate
-      WORKROOT: ${{ runner.temp }}/s90
-      PACKAGE: ${{ runner.temp }}/s90/candidate-package
-      SELECTED: ${{ runner.temp }}/s90/selected-voice
       PRIVATE_SFX: ${{ github.workspace }}/private-s90-sfx
 
     steps:
@@ -44,6 +41,13 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 1
+
+      - name: Resolve hosted scratch paths at step scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'WORKROOT=%s/s90\nPACKAGE=%s/s90/candidate-package\nSELECTED=%s/s90/selected-voice\n' \
+            "$RUNNER_TEMP" "$RUNNER_TEMP" "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Verify public repository, main ref and fresh reviewed head
         run: |
