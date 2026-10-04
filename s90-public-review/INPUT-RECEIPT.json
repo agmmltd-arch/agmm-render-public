@@ -1,0 +1,19 @@
+{
+  "archive_members": 67,
+  "binding": {
+    "capture_plan_sha256": "fd03a3e8376bde6fe553eb3d438d97d2bde63d79cdf05dc1e27eeee5cb9c19dd",
+    "media_identity_sha256": "488acca9cd2185715add03763047e1006aa69379770894dd1a61cafb8da7bc15",
+    "parts_sha256": "9c89b9e330c8fd84f357327d640a107eb0a8be4d12b473bea4a9e8cfabd7e598",
+    "source_sha256": "bdd251ac73ad68496999ea2c03155a1c1822b549e72a765dd25893ed3e53a71b"
+  },
+  "capture_count": 32,
+  "capture_plan_bytes": 3213,
+  "editorial_status": "NOT_REVIEWED",
+  "kind": "agmm_short_capture_input_receipt",
+  "media_identity_count": 11,
+  "part_count": 1,
+  "parts_bytes": 206,
+  "publication_status": "NOT_REQUESTED",
+  "source_bytes": 1813216,
+  "technical_status": "INPUT_IDENTITY_PASS"
+}

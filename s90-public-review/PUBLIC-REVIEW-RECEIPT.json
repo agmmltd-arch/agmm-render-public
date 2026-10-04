@@ -1,0 +1,341 @@
+{
+  "branch": "review-S90-silent-preview-37171107006",
+  "capture_count": 32,
+  "capture_evidence_sha256": "e98b545a4b7ab81e855b24575f796e2889bb4625cef328bfbd112e2e0fdf337f",
+  "capture_plan_sha256": "fd03a3e8376bde6fe553eb3d438d97d2bde63d79cdf05dc1e27eeee5cb9c19dd",
+  "captures": [
+    {
+      "bytes": 286965,
+      "file": "frames/01-B01-incoming.png",
+      "global": 0.12,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B01-incoming",
+      "sha256": "a8e109047943d41a9f1b907066316c38d57630071685a0fec42b0c88c786bb7b",
+      "width": 1080
+    },
+    {
+      "bytes": 289661,
+      "file": "frames/02-B01-late.png",
+      "global": 3.633,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B01-late",
+      "sha256": "15cf72721a5e7db373ae3e05f0fa0b6872219e27484a81b160ddf6f18ac14c28",
+      "width": 1080
+    },
+    {
+      "bytes": 549457,
+      "file": "frames/03-B02-incoming.png",
+      "global": 3.833,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B02-incoming",
+      "sha256": "a49cfe719ab47c4436448d510abe99f05d8d8323b49fc7b168b8115d3dbf534a",
+      "width": 1080
+    },
+    {
+      "bytes": 563937,
+      "file": "frames/04-B02-late.png",
+      "global": 8.877,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B02-late",
+      "sha256": "869d50168d15b25ad46814a99098684628746b0088e02cb3bd1c39a4d1afa5b2",
+      "width": 1080
+    },
+    {
+      "bytes": 214809,
+      "file": "frames/05-B03-incoming.png",
+      "global": 9.077,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B03-incoming",
+      "sha256": "e5a6f1d3c1104ca844313955309c9ccd61e441430cfcb9cf2f921d3e5bfc69ea",
+      "width": 1080
+    },
+    {
+      "bytes": 215985,
+      "file": "frames/06-B03-late.png",
+      "global": 14.774,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B03-late",
+      "sha256": "6089afc16796c5860521c6a7b6e6d5665deb029cb4b58cbd17eb88a2f0f98c60",
+      "width": 1080
+    },
+    {
+      "bytes": 177612,
+      "file": "frames/07-B04-incoming.png",
+      "global": 14.974,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B04-incoming",
+      "sha256": "24b7762f845c69b41760c23e71b8640fb139487fa48b85f6ba00accbfcebe69f",
+      "width": 1080
+    },
+    {
+      "bytes": 183469,
+      "file": "frames/08-B04-late.png",
+      "global": 18.268,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B04-late",
+      "sha256": "df8a5d264bcb4a42878417024ce10ef82b53a38e5d09207884e17d6d0fa1a9c6",
+      "width": 1080
+    },
+    {
+      "bytes": 127706,
+      "file": "frames/09-B05-incoming.png",
+      "global": 18.468,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B05-incoming",
+      "sha256": "c79a2a6972342bc086c9717a8c31a2b9122e41ad4da8e0309733d567bcc2ee53",
+      "width": 1080
+    },
+    {
+      "bytes": 139931,
+      "file": "frames/10-B05-late.png",
+      "global": 21.653,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B05-late",
+      "sha256": "619ba69743cf1d425ed69ec89c1ec6f918d04d256cb9cf852f047082a79c184d",
+      "width": 1080
+    },
+    {
+      "bytes": 187065,
+      "file": "frames/11-B06-incoming.png",
+      "global": 21.853,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B06-incoming",
+      "sha256": "56140effa9faaa96c9d5a7443aa28850dc2eb54e041a7e667bb7e06a3ce59e99",
+      "width": 1080
+    },
+    {
+      "bytes": 163013,
+      "file": "frames/12-B06-late.png",
+      "global": 25.915,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B06-late",
+      "sha256": "45efaa62b483202e6837f471a7793bb7a5385d16cd099b87241c7220956b255e",
+      "width": 1080
+    },
+    {
+      "bytes": 161209,
+      "file": "frames/13-B07-incoming.png",
+      "global": 26.115,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B07-incoming",
+      "sha256": "5cf7301a14d64e19dba67f9b0ba5f9a88ffb8cd10a5c4bed758b7d51d1ffc186",
+      "width": 1080
+    },
+    {
+      "bytes": 159964,
+      "file": "frames/14-B07-late.png",
+      "global": 28.755,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B07-late",
+      "sha256": "a5e280a07ead8a3f39e4e1201b839e0af55853cf5c5e66e5b9fdceed571282ad",
+      "width": 1080
+    },
+    {
+      "bytes": 113750,
+      "file": "frames/15-B08-incoming.png",
+      "global": 28.955,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B08-incoming",
+      "sha256": "3b33f77739770c33238dd88d26264eb1df22c5a1d5a624f8dea5e44359d667d1",
+      "width": 1080
+    },
+    {
+      "bytes": 115412,
+      "file": "frames/16-B08-late.png",
+      "global": 31.703,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B08-late",
+      "sha256": "e688fdb2a988a3e22dc9fae5fc69ae9a0a55407fac4a7489025452e63e8e92cd",
+      "width": 1080
+    },
+    {
+      "bytes": 256115,
+      "file": "frames/17-B09-incoming.png",
+      "global": 31.903,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B09-incoming",
+      "sha256": "a0aafb259d0e309a43c30f30636467d42b915064fd3df414073626915385105d",
+      "width": 1080
+    },
+    {
+      "bytes": 260402,
+      "file": "frames/18-B09-late.png",
+      "global": 35.816,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B09-late",
+      "sha256": "4973830e91ec504a8682678eba7e2c2dd16c0e7960679145078a843fa3f401c7",
+      "width": 1080
+    },
+    {
+      "bytes": 260979,
+      "file": "frames/19-B10-incoming.png",
+      "global": 36.016,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B10-incoming",
+      "sha256": "ea1196d4c6abe113ba6f00855f4fa4ca7cd45804f8cd6bc1ea69edde27e6a37a",
+      "width": 1080
+    },
+    {
+      "bytes": 270050,
+      "file": "frames/20-B10-late.png",
+      "global": 38.436,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B10-late",
+      "sha256": "03622f8321754fc750da33f8e6b3af9bc6bed75005d1f7545c0288d7b80da67e",
+      "width": 1080
+    },
+    {
+      "bytes": 447550,
+      "file": "frames/21-B11-incoming.png",
+      "global": 38.636,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B11-incoming",
+      "sha256": "05e362a5870d9de398fa9e4f2b682a43e93266bee8c3f6387c22b86b77877ceb",
+      "width": 1080
+    },
+    {
+      "bytes": 491121,
+      "file": "frames/22-B11-late.png",
+      "global": 43.897,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B11-late",
+      "sha256": "3523dfbd0264e65f3a80e49f0fd402c5b40836cc0d182c067a79ec7b815ccc34",
+      "width": 1080
+    },
+    {
+      "bytes": 462520,
+      "file": "frames/23-B12-incoming.png",
+      "global": 44.097,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B12-incoming",
+      "sha256": "5f855147a5526417d8defb617852876f4d0ef8f5b70e82b157fb49508c930e4c",
+      "width": 1080
+    },
+    {
+      "bytes": 446268,
+      "file": "frames/24-B12-late.png",
+      "global": 45.644,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B12-late",
+      "sha256": "35331d39c7eb53f9e9d4125803ae27f10a1cb3b08734c0e40482acc1d706608f",
+      "width": 1080
+    },
+    {
+      "bytes": 500707,
+      "file": "frames/25-B13-incoming.png",
+      "global": 45.844,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B13-incoming",
+      "sha256": "346e3e47ec4af83f4efbd40f29a9d05d5ddf9466ba882b21221b66ea63c0a384",
+      "width": 1080
+    },
+    {
+      "bytes": 450852,
+      "file": "frames/26-B13-late.png",
+      "global": 47.282,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B13-late",
+      "sha256": "6780b85e367b209c4cf1e09ca6e45239fbe9099845ba3f1c64a0da4e67f4efac",
+      "width": 1080
+    },
+    {
+      "bytes": 466743,
+      "file": "frames/27-B14-incoming.png",
+      "global": 47.482,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B14-incoming",
+      "sha256": "e1ce8defe8952339183d10c282219245fe99f489d1482ab4778183f2f5a96332",
+      "width": 1080
+    },
+    {
+      "bytes": 489914,
+      "file": "frames/28-B14-late.png",
+      "global": 50.776,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B14-late",
+      "sha256": "45ab85696a725f9e09a32e09537f40582c7930f8d911086705c1e376b84532e8",
+      "width": 1080
+    },
+    {
+      "bytes": 477972,
+      "file": "frames/29-B15-incoming.png",
+      "global": 50.976,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B15-incoming",
+      "sha256": "4546c5687b36d335da752380d655e37e251e116b5d2e11804b285c6e050401b2",
+      "width": 1080
+    },
+    {
+      "bytes": 478281,
+      "file": "frames/30-B15-late.png",
+      "global": 52.567,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B15-late",
+      "sha256": "96bef87954a5163cf04f713372bdf1d4c0e2777abba64fbcbe9326f92ea4eb68",
+      "width": 1080
+    },
+    {
+      "bytes": 564320,
+      "file": "frames/31-B16-incoming.png",
+      "global": 52.767,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B16-incoming",
+      "sha256": "933e7c511468a41b8e1c286df2705cc9e956dddd489e7f1f30aadc105ab51a3f",
+      "width": 1080
+    },
+    {
+      "bytes": 585422,
+      "file": "frames/32-B16-late.png",
+      "global": 58.027,
+      "height": 1920,
+      "look": "s90-preview-a",
+      "name": "B16-late",
+      "sha256": "659afc07234abbdf07a4dff54d3d50049947e2b9e50045d935c4bb07ab623f35",
+      "width": 1080
+    }
+  ],
+  "editorial_status": "NOT_REVIEWED",
+  "input_receipt_sha256": "74d5539cf77fd439c4cef40f59abaa6a6b78872e5f13744d244ccbe323a52621",
+  "kind": "S90-public-silent-storyboard-development-review-pack",
+  "media_identity_sha256": "488acca9cd2185715add03763047e1006aa69379770894dd1a61cafb8da7bc15",
+  "parts_sha256": "9c89b9e330c8fd84f357327d640a107eb0a8be4d12b473bea4a9e8cfabd7e598",
+  "production_release": "NOT_AUTHORIZED",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "rights_status": "NOT_ASSESSED",
+  "run_id": 37171107006,
+  "scope": "32 hosted PNG stills and bound text receipts only; no source archive, source PNGs, media identity list, audio, or assembled master",
+  "source_sha256": "bdd251ac73ad68496999ea2c03155a1c1822b549e72a765dd25893ed3e53a71b",
+  "staging_receipt_sha256": "3982222a96fec0bf342fbe083ac6bda7ecf84c8aca774728460d2ec768b9df9d",
+  "storyboard_approval": "NOT_GRANTED"
+}
