@@ -165,6 +165,16 @@ class SourceMetadataTests(unittest.TestCase):
                                      fixture("artifacts.json"), datetime(2026, 10, 8, tzinfo=timezone.utc))
 
 
+class DiagnosticSafetyTests(unittest.TestCase):
+    def test_cli_failure_detail_redacts_credentials_and_is_bounded(self):
+        result = subprocess.CompletedProcess(
+            ["gh"], 1, "", "request failed Authorization: Bearer secret-value gho_sensitive-value")
+        detail = exporter.safe_cli_detail(result)
+        self.assertNotIn("secret-value", detail)
+        self.assertNotIn("gho_sensitive-value", detail)
+        self.assertLessEqual(len(detail), 800)
+
+
 class ArtifactContractTests(unittest.TestCase):
     def test_exact_28_file_contract_and_render_manifest_validate(self):
         self.assertEqual(len(exporter.EXPECTED_ARTIFACT_FILES), 28)
@@ -277,6 +287,235 @@ class ArtifactContractTests(unittest.TestCase):
                 with self.assertRaisesRegex(exporter.Refusal, "non-file"):
                     exporter.publish_export(root / "release")
                 gh.assert_not_called()
+
+
+class PublishFlowTests(unittest.TestCase):
+    def make_export(self, root):
+        source_dir = root / "source"
+        fake_tree(source_dir)
+        export_dir = root / "release"
+        with patch.object(exporter, "require_hosted_runner"):
+            exporter.prepare_export(source_dir, source_receipt(), export_dir)
+        return export_dir
+
+    def asset_record(self, export_dir, name):
+        path = export_dir / name
+        return {"name": name, "size": path.stat().st_size,
+                "digest": "sha256:" + exporter.sha256(path),
+                "browser_download_url": f"https://github.com/{exporter.REPO}/releases/download/preview-F08-W06-development-{exporter.RUN_ID}/{name}"}
+
+    def release_doc(self, export_dir, assets=None, tag=None, draft=False, prerelease=True):
+        return {"tag_name": tag or f"preview-F08-W06-development-{exporter.RUN_ID}",
+                "draft": draft, "prerelease": prerelease,
+                "assets": [self.asset_record(export_dir, name) for name in (assets or [])]}
+
+    @staticmethod
+    def not_found():
+        return subprocess.CompletedProcess(["gh"], 1,
+            '{"message":"Not Found","status":"404"}', "gh: Not Found (HTTP 404)")
+
+    @staticmethod
+    def result(value, code=0, stderr=""):
+        return subprocess.CompletedProcess(["gh"], code, json.dumps(value), stderr)
+
+    def test_end_to_end_metadata_create_and_partial_asset_resume(self):
+        with tempfile.TemporaryDirectory() as temp:
+            export_dir = self.make_export(Path(temp))
+            tag = f"preview-F08-W06-development-{exporter.RUN_ID}"
+            expected_names = set(p.name for p in export_dir.iterdir())
+            already_present = {exporter.TECH_NAME}
+            current_assets = [self.asset_record(export_dir, exporter.TECH_NAME)]
+            uploads = []
+            calls = []
+            lookup_count = [0]
+
+            def gh(args):
+                calls.append(args)
+                if args[:2] == ["api", f"repos/{exporter.REPO}/releases/tags/{tag}"]:
+                    if lookup_count[0] == 0:
+                        lookup_count[0] += 1
+                        return self.not_found()
+                    return self.result(self.release_doc(export_dir, [a["name"] for a in current_assets]))
+                if args[:2] == ["api", "--method"]:
+                    self.assertIn(f"tag_name={tag}", args)
+                    self.assertIn(f"target_commitish={exporter.RUN_HEAD}", args)
+                    self.assertIn("-F", args)
+                    self.assertIn("draft=false", args)
+                    self.assertIn("prerelease=true", args)
+                    return self.result({"tag_name": tag, "draft": False, "prerelease": True})
+                if args[:2] == ["api", f"repos/{exporter.REPO}/commits/{tag}"]:
+                    return self.result({"sha": exporter.RUN_HEAD})
+                if args[:2] == ["release", "upload"]:
+                    name = Path(args[3]).name
+                    uploads.append(name)
+                    if name not in {a["name"] for a in current_assets}:
+                        current_assets.append(self.asset_record(export_dir, name))
+                    return self.result({})
+                self.fail(f"unexpected gh command: {args}")
+
+            with patch.object(exporter, "require_hosted_runner"), patch.object(
+                    exporter, "run_gh", side_effect=gh):
+                result = exporter.publish_export(export_dir)
+
+            self.assertEqual(result["assets_verified"], len(expected_names))
+            self.assertEqual(result["visual_review"], "OPEN")
+            self.assertEqual(result["release_approval"], "NOT_GRANTED")
+            self.assertFalse(result["library_pointer_updated"])
+            self.assertEqual(set(uploads), expected_names - already_present)
+            self.assertEqual(len(uploads), len(expected_names) - 1)
+            self.assertEqual(sum(1 for call in calls if call[:2] == ["api", "--method"]), 1)
+
+    def test_same_prepared_directory_succeeds_twice_without_payload_mutation(self):
+        with tempfile.TemporaryDirectory() as temp:
+            export_dir = self.make_export(Path(temp))
+            tag = f"preview-F08-W06-development-{exporter.RUN_ID}"
+            expected_names = {p.name for p in export_dir.iterdir()}
+            initial_names = set(expected_names)
+            uploaded = []
+            assets = []
+            release_exists = [False]
+            create_calls = []
+
+            def gh(args):
+                if args[:2] == ["api", f"repos/{exporter.REPO}/releases/tags/{tag}"]:
+                    if not release_exists[0]:
+                        return self.not_found()
+                    return self.result(self.release_doc(export_dir, [asset["name"] for asset in assets]))
+                if args[:2] == ["api", "--method"]:
+                    self.assertIn(f"tag_name={tag}", args)
+                    self.assertTrue(any(arg.startswith("body=# F08 Wave06 silent opening diagnostic") for arg in args))
+                    create_calls.append(args)
+                    release_exists[0] = True
+                    return self.result({"tag_name": tag, "draft": False, "prerelease": True})
+                if args[:2] == ["api", f"repos/{exporter.REPO}/commits/{tag}"]:
+                    return self.result({"sha": exporter.RUN_HEAD})
+                if args[:2] == ["release", "upload"]:
+                    name = Path(args[3]).name
+                    uploaded.append(name)
+                    if name not in {asset["name"] for asset in assets}:
+                        assets.append(self.asset_record(export_dir, name))
+                    return self.result({})
+                self.fail(f"unexpected gh command: {args}")
+
+            with patch.object(exporter, "require_hosted_runner"), patch.object(
+                    exporter, "run_gh", side_effect=gh):
+                first = exporter.publish_export(export_dir)
+                after_first = {p.name for p in export_dir.iterdir()}
+                second = exporter.publish_export(export_dir)
+
+            self.assertEqual(after_first, initial_names)
+            self.assertEqual({p.name for p in export_dir.iterdir()}, initial_names)
+            self.assertEqual(first["assets_verified"], len(expected_names))
+            self.assertEqual(second["assets_verified"], len(expected_names))
+            self.assertEqual(set(uploaded), expected_names)
+            self.assertEqual(len(uploaded), len(expected_names))
+            self.assertEqual(len(create_calls), 1)
+
+    def test_wrong_tag_from_metadata_create_is_refused_before_assets(self):
+        with tempfile.TemporaryDirectory() as temp:
+            export_dir = self.make_export(Path(temp))
+            calls = []
+            def gh(args):
+                calls.append(args)
+                if len(calls) == 1:
+                    return self.not_found()
+                return self.result({"tag_name": "wrong-tag", "draft": False, "prerelease": True})
+            with patch.object(exporter, "require_hosted_runner"), patch.object(
+                    exporter, "run_gh", side_effect=gh):
+                with self.assertRaisesRegex(exporter.Refusal, "unexpected tag"):
+                    exporter.publish_export(export_dir)
+            self.assertEqual(len(calls), 2)
+            self.assertTrue(calls[1][0:2] == ["api", "--method"])
+
+    def test_wrong_commit_refused_before_asset_upload(self):
+        with tempfile.TemporaryDirectory() as temp:
+            export_dir = self.make_export(Path(temp))
+            tag = f"preview-F08-W06-development-{exporter.RUN_ID}"
+            calls = []
+            def gh(args):
+                calls.append(args)
+                if args[:2] == ["api", f"repos/{exporter.REPO}/releases/tags/{tag}"]:
+                    return self.result(self.release_doc(export_dir))
+                if args[:2] == ["api", f"repos/{exporter.REPO}/commits/{tag}"]:
+                    return self.result({"sha": "f" * 40})
+                self.fail(f"unexpected gh command: {args}")
+            with patch.object(exporter, "require_hosted_runner"), patch.object(
+                    exporter, "run_gh", side_effect=gh):
+                with self.assertRaisesRegex(exporter.Refusal, "does not resolve"):
+                    exporter.publish_export(export_dir)
+            self.assertEqual(len(calls), 2)
+
+    def test_lookup_403_is_not_treated_as_missing_release(self):
+        with tempfile.TemporaryDirectory() as temp:
+            export_dir = self.make_export(Path(temp))
+            denied = subprocess.CompletedProcess(["gh"], 1, "{\"status\":\"403\"}",
+                                                  "gh: HTTP 403: Resource not accessible by integration")
+            with patch.object(exporter, "require_hosted_runner"), patch.object(
+                    exporter, "run_gh", return_value=denied) as gh:
+                with self.assertRaisesRegex(exporter.Refusal, "confirmed native HTTP 404"):
+                    exporter.publish_export(export_dir)
+            gh.assert_called_once()
+
+    def test_metadata_create_403_is_reported_and_stops_before_upload(self):
+        with tempfile.TemporaryDirectory() as temp:
+            export_dir = self.make_export(Path(temp))
+            tag = f"preview-F08-W06-development-{exporter.RUN_ID}"
+            denied = subprocess.CompletedProcess(["gh"], 1, "{\"status\":\"403\"}",
+                                                  "gh: HTTP 403: Resource not accessible by integration")
+            calls = []
+            def gh(args):
+                calls.append(args)
+                return self.not_found() if len(calls) == 1 else denied
+            with patch.object(exporter, "require_hosted_runner"), patch.object(
+                    exporter, "run_gh", side_effect=gh):
+                with self.assertRaisesRegex(exporter.Refusal, "creation failed:.*HTTP 403"):
+                    exporter.publish_export(export_dir)
+            self.assertEqual(len(calls), 2)
+
+    def test_existing_partial_asset_mismatch_refuses_without_overwrite(self):
+        with tempfile.TemporaryDirectory() as temp:
+            export_dir = self.make_export(Path(temp))
+            tag = f"preview-F08-W06-development-{exporter.RUN_ID}"
+            mismatched = self.asset_record(export_dir, exporter.TECH_NAME)
+            mismatched["digest"] = "sha256:" + "0" * 64
+            calls = []
+            def gh(args):
+                calls.append(args)
+                if args[:2] == ["api", f"repos/{exporter.REPO}/releases/tags/{tag}"]:
+                    doc = self.release_doc(export_dir)
+                    doc["assets"] = [mismatched]
+                    return self.result(doc)
+                if args[:2] == ["api", f"repos/{exporter.REPO}/commits/{tag}"]:
+                    return self.result({"sha": exporter.RUN_HEAD})
+                self.fail(f"unexpected gh command: {args}")
+            with patch.object(exporter, "require_hosted_runner"), patch.object(
+                    exporter, "run_gh", side_effect=gh):
+                with self.assertRaisesRegex(exporter.Refusal, "asset differs; no overwrite"):
+                    exporter.publish_export(export_dir)
+            self.assertEqual(len(calls), 2)
+
+    def test_upload_403_keeps_partial_release_unaccepted_and_reports_detail(self):
+        with tempfile.TemporaryDirectory() as temp:
+            export_dir = self.make_export(Path(temp))
+            tag = f"preview-F08-W06-development-{exporter.RUN_ID}"
+            current_assets = []
+            denied = subprocess.CompletedProcess(["gh"], 1, "",
+                "gh: HTTP 403: Resource not accessible by integration")
+            calls = []
+            def gh(args):
+                calls.append(args)
+                if args[:2] == ["api", f"repos/{exporter.REPO}/releases/tags/{tag}"]:
+                    return self.result(self.release_doc(export_dir, [a["name"] for a in current_assets]))
+                if args[:2] == ["api", f"repos/{exporter.REPO}/commits/{tag}"]:
+                    return self.result({"sha": exporter.RUN_HEAD})
+                if args[:2] == ["release", "upload"]:
+                    return denied
+                self.fail(f"unexpected gh command: {args}")
+            with patch.object(exporter, "require_hosted_runner"), patch.object(
+                    exporter, "run_gh", side_effect=gh):
+                with self.assertRaisesRegex(exporter.Refusal, "release upload failed.*HTTP 403"):
+                    exporter.publish_export(export_dir)
+            self.assertEqual(sum(1 for call in calls if call[:2] == ["release", "upload"]), 1)
 
 
 if __name__ == "__main__":

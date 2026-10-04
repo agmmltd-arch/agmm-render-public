@@ -361,6 +361,13 @@ def run_gh(args: list[str]) -> subprocess.CompletedProcess:
     return subprocess.run(["gh", *args], text=True, capture_output=True, check=False)
 
 
+def safe_cli_detail(result: subprocess.CompletedProcess) -> str:
+    detail = (result.stderr or result.stdout or "no CLI detail").strip()
+    detail = re.sub(r"(?i)(authorization:\s*bearer\s+)\S+", r"\1[redacted]", detail)
+    detail = re.sub(r"\b(?:gh[pousr]_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+)\b", "[redacted]", detail)
+    return detail[:800]
+
+
 def validate_release_assets(expected: dict[str, dict], assets: list[dict], tag: str) -> dict[str, dict]:
     found = {}
     for asset in assets:
@@ -445,13 +452,20 @@ def publish_export(export_dir: Path) -> dict:
     if looked.returncode:
         if not confirmed_not_found(looked):
             raise Refusal("release lookup did not return confirmed native HTTP 404; no create attempted")
-        notes_path = export_dir / "RELEASE-NOTES.md"
-        notes_path.write_text(release_notes(tag) + "\n", encoding="utf-8")
-        created = run_gh(["release", "create", tag, "-R", REPO, "--target", RUN_HEAD,
-                          "--title", f"F08 Wave06 hosted opening diagnostic {RUN_ID}",
-                          "--notes-file", str(notes_path), "--prerelease"])
+        # Keep release metadata outside the exact payload directory so a
+        # successful run can be safely retried against the same prepared tree.
+        notes_text = release_notes(tag) + "\n"
+        created = run_gh(["api", "--method", "POST", f"repos/{REPO}/releases",
+                          "-f", f"tag_name={tag}", "-f", f"target_commitish={RUN_HEAD}",
+                          "-f", f"name=F08 Wave06 hosted opening diagnostic {RUN_ID}",
+                          "-f", f"body={notes_text}",
+                          "-F", "draft=false", "-F", "prerelease=true"])
         if created.returncode:
-            raise Refusal("unique F08 preview release creation failed")
+            raise Refusal(f"metadata-only F08 preview release creation failed: {safe_cli_detail(created)}")
+        created_release = json.loads(created.stdout)
+        if (created_release.get("tag_name") != tag or created_release.get("draft") is not False
+                or created_release.get("prerelease") is not True):
+            raise Refusal("metadata-only release creation returned an unexpected tag or review state")
         looked = run_gh(["api", f"repos/{REPO}/releases/tags/{tag}"])
         if looked.returncode:
             raise Refusal("created F08 preview release could not be verified")
@@ -467,7 +481,7 @@ def publish_export(export_dir: Path) -> dict:
         if name not in present:
             upload = run_gh(["release", "upload", tag, str(path), "-R", REPO])
             if upload.returncode:
-                raise Refusal(f"release upload failed: {name}")
+                raise Refusal(f"release upload failed for {name}: {safe_cli_detail(upload)}")
         current = run_gh(["api", f"repos/{REPO}/releases/tags/{tag}"])
         if current.returncode:
             raise Refusal("preview release could not be read back after upload")
