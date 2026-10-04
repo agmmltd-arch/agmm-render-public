@@ -82,9 +82,72 @@ class ExportTests(unittest.TestCase):
   self.assertLess(workflow.index("verify-range"),workflow.index("finalize "))
   self.assertLess(workflow.index("finalize "),workflow.index("gh release upload"))
   self.assertEqual(workflow.count("validate-release \"$RUNNER_TEMP/s86-export/release-final.json\""),1)
+ def test_native_draft_resolution_and_recovery_branch_precede_typed_publish(self):
+  workflow=Path(__file__).with_name("s86-corrected-master-export.yml").read_text()
+  self.assertIn("existing_release_id: {description:",workflow)
+  self.assertIn("existing_release_run_id: {description:",workflow)
+  self.assertIn("select-draft-release",workflow)
+  self.assertIn("check-release-absence",workflow)
+  self.assertIn('gh api "repos/agmmltd-arch/agmm-render-public/releases/$rid"',workflow)
+  self.assertIn("--target-commitish",workflow)
+  publish=workflow.index("-F draft=false")
+  resolve=workflow.index("name: Create or reuse exact draft and verify native assets")
+  self.assertLess(resolve,publish)
+  before_publish=workflow[:publish]
+  self.assertNotIn('gh api "repos/agmmltd-arch/agmm-render-public/releases/tags/$tag"',before_publish)
+  self.assertIn('gh release create "$tag"',before_publish)
+  self.assertIn('if [[ -n "$EXISTING_RELEASE_ID" ]]; then',before_publish)
+ def test_unique_release_list_selector_requires_exact_tag_target_id_and_draft_state(self):
+  tag="S86-cta-follow-review-77"; target="b"*40
+  row={"id":403166948,"tag_name":tag,"target_commitish":target,"draft":True,"prerelease":True}
+  self.assertEqual(ex.select_unique_draft_release([[row,{"id":2,"tag_name":"other"}]],tag,target,403166948),403166948)
+  ex.require_release_tag_absent([[{"id":2,"tag_name":"other"}]],tag)
+  for pages,expected_tag,expected_target,expected_id in (
+   ([[row,row]],tag,target,403166948),([[row]],"wrong",target,403166948),([[row]],tag,"c"*40,403166948),
+   ([[{**row,"id":"403166948"}]],tag,target,403166948),([[{**row,"draft":False}]],tag,target,403166948),
+   ([[{**row,"prerelease":False}]],tag,target,403166948),([[row]],tag,target,403166949),
+  ):
+   with self.subTest(pages=pages,expected_tag=expected_tag,expected_target=expected_target,expected_id=expected_id),self.assertRaises(ExportError):
+    ex.select_unique_draft_release(pages,expected_tag,expected_target,expected_id)
+  with self.assertRaisesRegex(ExportError,"already exists"):
+   ex.require_release_tag_absent([[row]],tag)
+ def test_recovery_draft_must_match_all_six_native_asset_hashes_sizes_and_target(self):
+  with tempfile.TemporaryDirectory() as td:
+   c=self.setup_case(Path(td)); self.run_prepare(c); output=Path(td)/"out"
+   tag="S86-cta-follow-review-77"; target="2c0d8b383df93d22601ca49a373b4c184c0e5409"
+   inventory={"tag":tag,"assets":ex.asset_inventory(output)}
+   rows=[{"name":name,"state":"uploaded","size":asset["size"],"digest":asset["digest"]} for name,asset in inventory["assets"].items()]
+   draft={"id":403166948,"tag_name":tag,"target_commitish":target,"draft":True,"prerelease":True,"assets":rows}
+   ex.validate_release_assets(draft,403166948,inventory,target_commitish=target)
+   for changed,release_id,expected_target in (
+    ({**draft,"assets":rows[:-1]},403166948,target),
+    ({**draft,"assets":[*rows[:-1],{**rows[-1],"digest":"sha256:"+"0"*64}]},403166948,target),
+    ({**draft,"target_commitish":"f"*40},403166948,target),
+   (draft,403166949,target),
+   ):
+    with self.subTest(changed=changed,release_id=release_id,expected_target=expected_target),self.assertRaises(ExportError):
+     ex.validate_release_assets(changed,release_id,inventory,target_commitish=expected_target)
+ def test_validate_release_cli_json_inventory_roundtrip_and_malformed_refusal(self):
+  tag="S86-cta-follow-review-77"; target="a"*40
+  release={"id":403166948,"tag_name":tag,"target_commitish":target,"draft":True,"prerelease":True,"assets":[{"name":"only.txt","state":"uploaded","size":4,"digest":"sha256:deadbeef"}]}
+  with tempfile.TemporaryDirectory() as td:
+   p=Path(td); (p/"release.json").write_text(json.dumps(release))
+   inventory={"tag":tag,"assets":{"only.txt":{"size":4,"digest":"sha256:deadbeef"}}}
+   inv=p/"inventory.json"; inv.write_text(json.dumps(inventory))
+   args=["export_s86_corrected_master.py","validate-release",str(p/"release.json"),str(inv),"--release-id","403166948","--target-commitish",target]
+   with patch.dict(os.environ,ENV,clear=True),patch.object(ex.platform,"system",return_value="Linux"),patch("sys.argv",args),patch("sys.stdout",io.StringIO()):
+    ex.main()
+   for bad in (
+    {"tag":tag,"assets":{"only.txt":{"size":5,"digest":"sha256:deadbeef"}}},
+    {"tag":tag,"assets":{"only.txt":{"size":4,"digest":"sha256:"+"0"*64}}},
+    {"tag":tag,"assets":{"only.txt":{"size":"4","digest":"sha256:deadbeef"}}},
+   ):
+    inv.write_text(json.dumps(bad))
+    with patch.dict(os.environ,ENV,clear=True),patch.object(ex.platform,"system",return_value="Linux"),patch("sys.argv",args),patch("sys.stdout",io.StringIO()),self.assertRaises(ExportError):
+     ex.main()
  def test_prepare_owns_output_directory_creation_and_refuses_existing_directory(self):
   workflow=Path(__file__).with_name("s86-corrected-master-export.yml").read_text()
-  step=workflow.split("name: Download exact render artifacts on Ubuntu and prepare unchanged master",1)[1].split("name: Require exact release tag",1)[0]
+  step=workflow.split("name: Download exact render artifacts on Ubuntu and prepare unchanged master",1)[1].split("name: Build exact expected release inventory",1)[0]
   self.assertNotIn('mkdir -p "$RUNNER_TEMP/s86-export/out"',step)
   self.assertIn('--out "$RUNNER_TEMP/s86-export/out"',step)
   with tempfile.TemporaryDirectory() as td:
@@ -164,6 +227,9 @@ class ExportTests(unittest.TestCase):
     return Response()
   with self.assertRaises(ExportError): ex.range_probe(url,22,"S86-cta-follow-review-77",Bad())
  def test_release_id_and_asset_binding(self):
-  ex.validate_release_assets({"id":5,"tag_name":"tag","draft":True,"prerelease":True,"assets":[{"name":"x","state":"uploaded","size":1,"digest":"sha256:a"}]},5,{"tag":"tag","assets":{"x":(1,"sha256:a")}})
+  release={"id":5,"tag_name":"tag","target_commitish":"a"*40,"draft":True,"prerelease":True,"assets":[{"name":"x","state":"uploaded","size":1,"digest":"sha256:a"}]}
+  expected={"tag":"tag","assets":{"x":(1,"sha256:a")}}
+  ex.validate_release_assets(release,5,expected,target_commitish="a"*40)
   with self.assertRaises(ExportError): ex.validate_release_assets({"id":"5","tag_name":"tag","draft":True,"prerelease":True,"assets":[]},5,{"tag":"tag","assets":{}})
+  with self.assertRaisesRegex(ExportError,"target commit"): ex.validate_release_assets(release,5,expected,target_commitish="b"*40)
 if __name__=="__main__": unittest.main()

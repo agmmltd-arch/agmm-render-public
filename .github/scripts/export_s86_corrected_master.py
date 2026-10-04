@@ -178,14 +178,36 @@ def prepare(run_id,input_id,master_id,repository,main_ref,run,input_metadata,mas
   d,n=file_sha(f); entries.append(f"{d}  {f.name}")
  (out/"SHA256SUMS.txt").write_text("\n".join(entries)+"\n")
  return {"tag":tag,"master_sha256":digest,"master_bytes":size,"asset_names":sorted(p.name for p in out.iterdir())}
-def validate_release_assets(release,release_id,expected,published=False):
- need(release.get("id")==release_id and release.get("tag_name")==expected["tag"],"release ID/tag mismatch")
+def release_rows(pages):
+ need(isinstance(pages,list),"authenticated release listing malformed")
+ if all(isinstance(page,list) for page in pages): rows=[row for page in pages for row in page]
+ else: rows=pages
+ need(all(isinstance(row,dict) for row in rows),"authenticated release row malformed")
+ return rows
+def require_release_tag_absent(pages,tag):
+ matches=[row for row in release_rows(pages) if row.get("tag_name")==tag]
+ need(not matches,"a release with the intended exact tag already exists")
+def select_unique_draft_release(pages,tag,target_commitish,release_id=None):
+ matches=[row for row in release_rows(pages) if row.get("tag_name")==tag]
+ need(len(matches)==1,"intended release tag does not resolve to exactly one native release")
+ row=matches[0]
+ need(type(row.get("id")) is int and row["id"]>0,"draft release REST ID is not an integer")
+ need(row.get("draft") is True and row.get("prerelease") is True,"matching release is not a draft prerelease")
+ need(row.get("target_commitish")==target_commitish,"matching draft targets a different current-main commit")
+ if release_id is not None: need(row["id"]==release_id,"existing draft ID differs from exact tag listing")
+ return row["id"]
+def validate_release_assets(release,release_id,expected,published=False,target_commitish=None):
+ need(type(release.get("id")) is int and release.get("id")==release_id and release.get("tag_name")==expected["tag"],"release ID/tag mismatch")
  need(release.get("draft") is (not published) and release.get("prerelease") is True,"release state not review prerelease")
+ if target_commitish is not None: need(release.get("target_commitish")==target_commitish,"release target commit mismatch")
  rows=release.get("assets"); need(isinstance(rows,list),"release asset list malformed")
  actual={}
  for x in rows:
   n=x.get("name"); need(n not in actual and x.get("state")=="uploaded","duplicate/unuploaded release asset"); actual[n]=(x.get("size"),x.get("digest"))
- need(actual==expected["assets"],"release native asset list/size/digest mismatch")
+ wanted={}
+ for name,value in expected["assets"].items():
+  wanted[name]=(value.get("size"),value.get("digest")) if isinstance(value,Mapping) else value
+ need(actual==wanted,"release native asset list/size/digest mismatch")
 class _AllowedRedirects(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,req,fp,code,msg,headers,newurl):
   p=urllib.parse.urlsplit(newurl); need(p.scheme=="https" and p.hostname in {"github.com","release-assets.githubusercontent.com","objects.githubusercontent.com"} and p.port in (None,443),"redirect outside GitHub HTTPS host allowlist")
@@ -219,7 +241,9 @@ def main():
  inv=sp.add_parser("inventory"); inv.add_argument("directory",type=Path); inv.add_argument("--tag",required=True); inv.add_argument("--output",type=Path,required=True); inv.add_argument("--finalized",action="store_true")
  vr=sp.add_parser("verify-range"); vr.add_argument("--url",required=True); vr.add_argument("--bytes",type=int,required=True); vr.add_argument("--tag",required=True); vr.add_argument("--output",type=Path,required=True)
  fin=sp.add_parser("finalize"); fin.add_argument("directory",type=Path); fin.add_argument("--tag",required=True); fin.add_argument("range_result",type=Path); fin.add_argument("--output",type=Path,required=True)
- rel=sp.add_parser("validate-release"); rel.add_argument("release",type=Path); rel.add_argument("inventory",type=Path); rel.add_argument("--release-id",type=int,required=True); rel.add_argument("--published",action="store_true")
+ rel=sp.add_parser("validate-release"); rel.add_argument("release",type=Path); rel.add_argument("inventory",type=Path); rel.add_argument("--release-id",type=int,required=True); rel.add_argument("--target-commitish"); rel.add_argument("--published",action="store_true")
+ absent_rel=sp.add_parser("check-release-absence"); absent_rel.add_argument("release_pages",type=Path); absent_rel.add_argument("--tag",required=True)
+ select_rel=sp.add_parser("select-draft-release"); select_rel.add_argument("release_pages",type=Path); select_rel.add_argument("--tag",required=True); select_rel.add_argument("--target-commitish",required=True); select_rel.add_argument("--release-id",type=int)
  q=sp.add_parser("prepare")
  q.add_argument("--run-id",type=int,required=True); q.add_argument("--input-id",type=int,required=True); q.add_argument("--master-id",type=int,required=True)
  for n in ("repository","main-ref","run","input-metadata","master-metadata","input-zip","master-zip","source-receipt","parent-release","source-release","out"): q.add_argument("--"+n,type=Path,required=True)
@@ -233,7 +257,11 @@ def main():
  elif a.cmd=="finalize":
   result={"tag":a.tag,"assets":finalize(a.directory,a.tag,json.loads(a.range_result.read_text()))}; a.output.write_text(json.dumps(result,indent=2)+"\n"); print(json.dumps(result))
  elif a.cmd=="validate-release":
-  validate_release_assets(json.loads(a.release.read_text()),a.release_id,json.loads(a.inventory.read_text()),published=a.published); print("native release ID/state/assets PASS")
+  validate_release_assets(json.loads(a.release.read_text()),a.release_id,json.loads(a.inventory.read_text()),published=a.published,target_commitish=a.target_commitish); print("native release ID/state/target/assets PASS")
+ elif a.cmd=="check-release-absence":
+  require_release_tag_absent(json.loads(a.release_pages.read_text()),a.tag); print("exact release tag absent from authenticated listing PASS")
+ elif a.cmd=="select-draft-release":
+  print(select_unique_draft_release(json.loads(a.release_pages.read_text()),a.tag,a.target_commitish,a.release_id))
  else:
   args=[json.loads(a.repository.read_text()),json.loads(a.main_ref.read_text()),json.loads(a.run.read_text()),json.loads(a.input_metadata.read_text()),json.loads(a.master_metadata.read_text())]
   result=prepare(a.run_id,a.input_id,a.master_id,*args,a.input_zip,a.master_zip,json.loads(a.source_receipt.read_text()),json.loads(a.parent_release.read_text()),json.loads(a.source_release.read_text()),a.out)
