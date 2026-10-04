@@ -1,0 +1,482 @@
+{
+  "approval": "NOT_GRANTED",
+  "composition": "film",
+  "composition_id": "f07",
+  "duration_seconds": 632.43,
+  "editorial_review": "NOT_PERFORMED_BY_SEAL",
+  "expected_total_frames": 18973,
+  "fps": 30,
+  "renderer_contract": {
+    "later_segment_patch_runs": [
+      36771687018,
+      36772600213
+    ],
+    "previous_preview": "6_of_73_artifacts_expired_2026-10-01",
+    "reuse_status": "NOT_ASSESSED_SOURCE_LINEAGE_UNVERIFIED",
+    "segmenter_source": "video-autonomy-2026-10-02/v2/films/tools/render_codespace_film.py::segments (lines 95-102)",
+    "segmenter_source_sha256": "8c5fa848a5845080733a6f9e76c67b54cf799a9941d31f553af0ee3b939a3398",
+    "source_overlay_after_seal": false,
+    "workflow": ".github/workflows/agmm-film.yml",
+    "workflow_inputs": [
+      "release",
+      "package_sha256",
+      "comp",
+      "segvar",
+      "segs",
+      "res",
+      "workers",
+      "tag",
+      "remote_only",
+      "assemble_full",
+      "apply_source_overlay",
+      "fid"
+    ]
+  },
+  "schema": "f07-native-render-part-plan-v1",
+  "segment_count": 73,
+  "segment_seconds": 8.6,
+  "segments": [
+    {
+      "frames": 258,
+      "i": "01",
+      "len": 8.6,
+      "t0": 0.0
+    },
+    {
+      "frames": 258,
+      "i": "02",
+      "len": 8.6,
+      "t0": 8.6
+    },
+    {
+      "frames": 258,
+      "i": "03",
+      "len": 8.6,
+      "t0": 17.2
+    },
+    {
+      "frames": 258,
+      "i": "04",
+      "len": 8.6,
+      "t0": 25.8
+    },
+    {
+      "frames": 258,
+      "i": "05",
+      "len": 8.6,
+      "t0": 34.4
+    },
+    {
+      "frames": 258,
+      "i": "06",
+      "len": 8.6,
+      "t0": 43.0
+    },
+    {
+      "frames": 258,
+      "i": "07",
+      "len": 8.6,
+      "t0": 51.6
+    },
+    {
+      "frames": 258,
+      "i": "08",
+      "len": 8.6,
+      "t0": 60.2
+    },
+    {
+      "frames": 258,
+      "i": "09",
+      "len": 8.6,
+      "t0": 68.8
+    },
+    {
+      "frames": 258,
+      "i": "10",
+      "len": 8.6,
+      "t0": 77.4
+    },
+    {
+      "frames": 258,
+      "i": "11",
+      "len": 8.6,
+      "t0": 86.0
+    },
+    {
+      "frames": 258,
+      "i": "12",
+      "len": 8.6,
+      "t0": 94.6
+    },
+    {
+      "frames": 258,
+      "i": "13",
+      "len": 8.6,
+      "t0": 103.2
+    },
+    {
+      "frames": 258,
+      "i": "14",
+      "len": 8.6,
+      "t0": 111.8
+    },
+    {
+      "frames": 258,
+      "i": "15",
+      "len": 8.6,
+      "t0": 120.4
+    },
+    {
+      "frames": 258,
+      "i": "16",
+      "len": 8.6,
+      "t0": 129.0
+    },
+    {
+      "frames": 258,
+      "i": "17",
+      "len": 8.6,
+      "t0": 137.6
+    },
+    {
+      "frames": 258,
+      "i": "18",
+      "len": 8.6,
+      "t0": 146.2
+    },
+    {
+      "frames": 258,
+      "i": "19",
+      "len": 8.6,
+      "t0": 154.8
+    },
+    {
+      "frames": 258,
+      "i": "20",
+      "len": 8.6,
+      "t0": 163.4
+    },
+    {
+      "frames": 258,
+      "i": "21",
+      "len": 8.6,
+      "t0": 172.0
+    },
+    {
+      "frames": 258,
+      "i": "22",
+      "len": 8.6,
+      "t0": 180.6
+    },
+    {
+      "frames": 258,
+      "i": "23",
+      "len": 8.6,
+      "t0": 189.2
+    },
+    {
+      "frames": 258,
+      "i": "24",
+      "len": 8.6,
+      "t0": 197.8
+    },
+    {
+      "frames": 258,
+      "i": "25",
+      "len": 8.6,
+      "t0": 206.4
+    },
+    {
+      "frames": 258,
+      "i": "26",
+      "len": 8.6,
+      "t0": 215.0
+    },
+    {
+      "frames": 258,
+      "i": "27",
+      "len": 8.6,
+      "t0": 223.6
+    },
+    {
+      "frames": 258,
+      "i": "28",
+      "len": 8.6,
+      "t0": 232.2
+    },
+    {
+      "frames": 258,
+      "i": "29",
+      "len": 8.6,
+      "t0": 240.8
+    },
+    {
+      "frames": 258,
+      "i": "30",
+      "len": 8.6,
+      "t0": 249.4
+    },
+    {
+      "frames": 258,
+      "i": "31",
+      "len": 8.6,
+      "t0": 258.0
+    },
+    {
+      "frames": 258,
+      "i": "32",
+      "len": 8.6,
+      "t0": 266.6
+    },
+    {
+      "frames": 258,
+      "i": "33",
+      "len": 8.6,
+      "t0": 275.2
+    },
+    {
+      "frames": 258,
+      "i": "34",
+      "len": 8.6,
+      "t0": 283.8
+    },
+    {
+      "frames": 258,
+      "i": "35",
+      "len": 8.6,
+      "t0": 292.4
+    },
+    {
+      "frames": 258,
+      "i": "36",
+      "len": 8.6,
+      "t0": 301.0
+    },
+    {
+      "frames": 258,
+      "i": "37",
+      "len": 8.6,
+      "t0": 309.6
+    },
+    {
+      "frames": 258,
+      "i": "38",
+      "len": 8.6,
+      "t0": 318.2
+    },
+    {
+      "frames": 258,
+      "i": "39",
+      "len": 8.6,
+      "t0": 326.8
+    },
+    {
+      "frames": 258,
+      "i": "40",
+      "len": 8.6,
+      "t0": 335.4
+    },
+    {
+      "frames": 258,
+      "i": "41",
+      "len": 8.6,
+      "t0": 344.0
+    },
+    {
+      "frames": 258,
+      "i": "42",
+      "len": 8.6,
+      "t0": 352.6
+    },
+    {
+      "frames": 258,
+      "i": "43",
+      "len": 8.6,
+      "t0": 361.2
+    },
+    {
+      "frames": 258,
+      "i": "44",
+      "len": 8.6,
+      "t0": 369.8
+    },
+    {
+      "frames": 258,
+      "i": "45",
+      "len": 8.6,
+      "t0": 378.4
+    },
+    {
+      "frames": 258,
+      "i": "46",
+      "len": 8.6,
+      "t0": 387.0
+    },
+    {
+      "frames": 258,
+      "i": "47",
+      "len": 8.6,
+      "t0": 395.6
+    },
+    {
+      "frames": 258,
+      "i": "48",
+      "len": 8.6,
+      "t0": 404.2
+    },
+    {
+      "frames": 258,
+      "i": "49",
+      "len": 8.6,
+      "t0": 412.8
+    },
+    {
+      "frames": 258,
+      "i": "50",
+      "len": 8.6,
+      "t0": 421.4
+    },
+    {
+      "frames": 258,
+      "i": "51",
+      "len": 8.6,
+      "t0": 430.0
+    },
+    {
+      "frames": 258,
+      "i": "52",
+      "len": 8.6,
+      "t0": 438.6
+    },
+    {
+      "frames": 258,
+      "i": "53",
+      "len": 8.6,
+      "t0": 447.2
+    },
+    {
+      "frames": 258,
+      "i": "54",
+      "len": 8.6,
+      "t0": 455.8
+    },
+    {
+      "frames": 258,
+      "i": "55",
+      "len": 8.6,
+      "t0": 464.4
+    },
+    {
+      "frames": 258,
+      "i": "56",
+      "len": 8.6,
+      "t0": 473.0
+    },
+    {
+      "frames": 258,
+      "i": "57",
+      "len": 8.6,
+      "t0": 481.6
+    },
+    {
+      "frames": 258,
+      "i": "58",
+      "len": 8.6,
+      "t0": 490.2
+    },
+    {
+      "frames": 258,
+      "i": "59",
+      "len": 8.6,
+      "t0": 498.8
+    },
+    {
+      "frames": 258,
+      "i": "60",
+      "len": 8.6,
+      "t0": 507.4
+    },
+    {
+      "frames": 258,
+      "i": "61",
+      "len": 8.6,
+      "t0": 516.0
+    },
+    {
+      "frames": 258,
+      "i": "62",
+      "len": 8.6,
+      "t0": 524.6
+    },
+    {
+      "frames": 258,
+      "i": "63",
+      "len": 8.6,
+      "t0": 533.2
+    },
+    {
+      "frames": 258,
+      "i": "64",
+      "len": 8.6,
+      "t0": 541.8
+    },
+    {
+      "frames": 258,
+      "i": "65",
+      "len": 8.6,
+      "t0": 550.4
+    },
+    {
+      "frames": 258,
+      "i": "66",
+      "len": 8.6,
+      "t0": 559.0
+    },
+    {
+      "frames": 258,
+      "i": "67",
+      "len": 8.6,
+      "t0": 567.6
+    },
+    {
+      "frames": 258,
+      "i": "68",
+      "len": 8.6,
+      "t0": 576.2
+    },
+    {
+      "frames": 258,
+      "i": "69",
+      "len": 8.6,
+      "t0": 584.8
+    },
+    {
+      "frames": 258,
+      "i": "70",
+      "len": 8.6,
+      "t0": 593.4
+    },
+    {
+      "frames": 258,
+      "i": "71",
+      "len": 8.6,
+      "t0": 602.0
+    },
+    {
+      "frames": 258,
+      "i": "72",
+      "len": 8.6,
+      "t0": 610.6
+    },
+    {
+      "frames": 397,
+      "i": "73",
+      "len": 13.23,
+      "t0": 619.2
+    }
+  ],
+  "segvar": "F07_SEG",
+  "source_index_sha256": "110a1588af73c82f870dbda1e29741123b9ea5c1eacaba798e3f803616d714d5",
+  "source_package_sha256": "9bb0efdd24a3801fa4c29c8f72e6c9cb3f797a36bdfb59d75dcfebed042b8ec2",
+  "status": "PLAN_ONLY_NOT_DISPATCHED"
+}

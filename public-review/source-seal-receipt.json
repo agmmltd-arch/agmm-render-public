@@ -1,0 +1,81 @@
+{
+  "approval": "NOT_GRANTED",
+  "candidate": {
+    "bounded_still_verdict": "ACCEPTED_BOUNDED_SOURCE_STILL_CORRECTIONS_ONLY",
+    "capture_receipt_sha256": "6c9f1fb62f5f2bee47cf18158fad8f8e1311a587815d25033771398b2d199cdc",
+    "capture_review_receipt_sha256": "f7629c2771ecc158d1d348e6708d61875c2fae7f6a36402affd821ac80c38e11",
+    "capture_review_run_id": 37168229518,
+    "composite_sha256": "d2fdaf282e233a9d9691a11b216361b108dff7228a9dcbd0459b29649fb01962",
+    "files": {
+      "film/film.css": {
+        "bytes": 19163,
+        "sha256": "0d17eea12ed4ecac45b5207c35939334549ae970fe047b5e9fb3da9b4435fa07"
+      },
+      "film/film.js": {
+        "bytes": 71690,
+        "sha256": "cf6ddc29bf0e23ca50173773e43ee2d33ef3af8a1400f4ea3b375077adc3c3aa"
+      },
+      "film/sets_studio.js": {
+        "bytes": 12049,
+        "sha256": "988a0d98b5eb71c3bac0777ee5b02a161ef9e744d7c8bb0e3bcff40385ddea2c"
+      }
+    },
+    "owner_adoption": "NOT_PERFORMED",
+    "production_release_approval": "NOT_GRANTED"
+  },
+  "kind": "f07-source-package-candidate",
+  "media_decoded_or_rendered": false,
+  "parent": {
+    "asset_id": 601625680,
+    "asset_name": "source.tar.gz",
+    "bytes": 43650580,
+    "release_id": 400360556,
+    "release_tag": "F07-r4-actions-full-landscape-4k-20260930194517",
+    "repository": "agmmltd-arch/agmm-render-public",
+    "sha256": "10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7"
+  },
+  "part_plan": {
+    "path": "part-plan.json",
+    "reuse_status": "NOT_ASSESSED_SOURCE_LINEAGE_UNVERIFIED",
+    "segment_count": 73,
+    "sha256": "2687e7bb144c8c958df9387db56687df99b41335053eb1fa2b8cc4bf65e6bff4",
+    "status": "PLAN_ONLY_NOT_DISPATCHED"
+  },
+  "preservation": {
+    "audio/mix.flac": {
+      "bytes": 40654427,
+      "sha256": "5dde65a9a4ee8fb22ade88fcba4167fcc0f4a9b976e0ecd7a29645acc142a49a"
+    },
+    "film/img/octopus-logo-white.svg": {
+      "bytes": 6276,
+      "sha256": "22118fc92c6642202c64f49a20a7ac07765f596bf0052ea213a6c0bd0d79cca7"
+    },
+    "film/img/octopus-logo.svg": {
+      "bytes": 6261,
+      "sha256": "75935ef3e9f6cd80d0980c7cf2a2228d2dc1121fd65266dc7db17bea1418c112"
+    },
+    "film/index.html": {
+      "bytes": 2723,
+      "sha256": "110a1588af73c82f870dbda1e29741123b9ea5c1eacaba798e3f803616d714d5"
+    },
+    "film/words.js": {
+      "bytes": 55307,
+      "sha256": "c3477711d1fd765c2e519fb0694b9d2ad1bfd55b1e649eea73012b8d4fe7ec54"
+    }
+  },
+  "release_tag": "F07-source-candidate-9bb0efdd24a3801f",
+  "render_dispatched": false,
+  "schema": "f07-full-source-candidate-seal-v1",
+  "sealed_package": {
+    "asset_name": "source.tar.gz",
+    "bytes": 43645916,
+    "changed_file_paths": [
+      "film/film.css",
+      "film/film.js",
+      "film/sets_studio.js"
+    ],
+    "package_file_count": 28,
+    "sha256": "9bb0efdd24a3801fa4c29c8f72e6c9cb3f797a36bdfb59d75dcfebed042b8ec2"
+  },
+  "status": "SEALED_CANDIDATE_NOT_APPROVED"
+}
