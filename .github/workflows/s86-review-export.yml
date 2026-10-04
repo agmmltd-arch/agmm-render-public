@@ -1,6 +1,6 @@
-name: S86 existing compact review evidence export (proposal only)
+name: S86 exact-run compact review evidence export (isolated proposal)
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
 permissions:
   actions: read
   contents: write
@@ -10,39 +10,78 @@ jobs:
     timeout-minutes: 10
     env:
       GH_TOKEN: ${{ github.token }}
+      RENDER_RUN_ID: "37171852324"
+      COMPACT_ARTIFACT_ID: "11291958626"
+      COMPACT_ARTIFACT_SIZE: "2507756"
+      COMPACT_ARTIFACT_SHA256: "2afd28726b6bd59e69c9b68ddfb2975312d90dbbe7cc69be76eb6c5c4186db69"
+      MASTERS_ARTIFACT_ID: "11292320586"
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - name: Verify public repository and immutable artifact metadata before download
+        with:
+          persist-credentials: true
+      - name: Check runner, ref, and exact dispatch identity before API or artifact reads
         shell: bash
         run: |
           set -euo pipefail
-          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == agmmltd-arch/agmm-render-public ]]
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux ]]
+          [[ "$GITHUB_REPOSITORY" == agmmltd-arch/agmm-render-public ]]
+          [[ "$GITHUB_REF" == refs/heads/main ]]
+          [[ "$COMPACT_ARTIFACT_ID" == 11291958626 ]]
+          [[ "$COMPACT_ARTIFACT_SIZE" == 2507756 ]]
+          [[ "$COMPACT_ARTIFACT_SHA256" == 2afd28726b6bd59e69c9b68ddfb2975312d90dbbe7cc69be76eb6c5c4186db69 ]]
+          [[ "$MASTERS_ARTIFACT_ID" == 11292320586 ]]
+      - name: Read native run, current head, and exact artifact metadata
+        shell: bash
+        run: |
+          set -euo pipefail
           gh api repos/agmmltd-arch/agmm-render-public > repository.json
-          gh api repos/agmmltd-arch/agmm-render-public/actions/artifacts/11142017440 > artifact.json
+          gh api repos/agmmltd-arch/agmm-render-public/git/ref/heads/main > current-main.json
+          gh api repos/agmmltd-arch/agmm-render-public/actions/runs/"$RENDER_RUN_ID" > render-run.json
+          gh api repos/agmmltd-arch/agmm-render-public/actions/artifacts/"$COMPACT_ARTIFACT_ID" > compact-artifact.json
+          gh api repos/agmmltd-arch/agmm-render-public/actions/artifacts/11291104171 > input-artifact.json
+          gh api repos/agmmltd-arch/agmm-render-public/actions/artifacts/"$MASTERS_ARTIFACT_ID" > masters-artifact.json
           python3 - <<'PY'
-          import json
-          r=json.load(open('repository.json')); a=json.load(open('artifact.json'))
-          assert r['full_name']=='agmmltd-arch/agmm-render-public' and r['private'] is False and r['visibility']=='public'
-          w=a['workflow_run']
-          assert a['id']==11142017440 and a['name']=='S86-r2-4k-REVIEW-COMPACT' and a['expired'] is False
-          assert a['size_in_bytes']==2507581 and w['id']==36816767405
-          assert w['head_sha']=='9e34bc8aca7786583c771a2e203232071c8ddf5d'
+          import json, os
+          expected = {
+              "compact_artifact_id": int(os.environ["COMPACT_ARTIFACT_ID"]),
+              "compact_artifact_size": int(os.environ["COMPACT_ARTIFACT_SIZE"]),
+              "compact_artifact_digest": "sha256:" + os.environ["COMPACT_ARTIFACT_SHA256"],
+              "export_head_sha": os.environ["GITHUB_SHA"],
+          }
+          with open("expected.json", "w", encoding="utf-8") as f:
+              json.dump(expected, f, indent=2)
+              f.write("\n")
           PY
-      - name: Download the exact existing artifact on hosted runner
+          python3 .github/scripts/export_s86_review_compact.py validate-metadata \
+            repository.json render-run.json compact-artifact.json input-artifact.json \
+            masters-artifact.json current-main.json expected.json
+      - name: Download only the exact native artifacts on Ubuntu
         shell: bash
-        run: gh api repos/agmmltd-arch/agmm-render-public/actions/artifacts/11142017440/zip > artifact.zip
-      - name: Inspect names and export only allowed JPEG and text evidence
+        run: |
+          set -euo pipefail
+          gh api repos/agmmltd-arch/agmm-render-public/actions/artifacts/11291104171/zip > exact-input.zip
+          gh api repos/agmmltd-arch/agmm-render-public/actions/artifacts/"$COMPACT_ARTIFACT_ID"/zip > compact.zip
+      - name: Export the compact receipt-bound JPEG and TEXT allowlist
         shell: bash
-        run: python3 .github/scripts/export_s86_review_compact.py artifact.zip artifact.json repository.json review-export
-      - name: Publish evidence-only review branch
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/export_s86_review_compact.py export \
+            exact-input.zip compact.zip repository.json render-run.json \
+            compact-artifact.json input-artifact.json masters-artifact.json \
+            current-main.json expected.json review-export
+      - name: Publish only compact review JPEGs and TEXT receipts on an orphan branch
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'AGMM hosted evidence'
           git config user.email 'evidence@users.noreply.github.com'
-          git checkout --orphan "review-S86-r2-compact-$GITHUB_RUN_ID"
+          git checkout --orphan "review-S86-final-compact-$GITHUB_RUN_ID"
           git rm -rf --cached . >/dev/null
-          git add review-export/review/*.jpg review-export/TECHNICAL-EVIDENCE.json review-export/SHA256SUMS.txt review-export/EXPORT-RECEIPT.json
-          git diff --cached --name-only | python3 -c 'import sys; p=[x.strip() for x in sys.stdin if x.strip()]; assert p and all(x.startswith("review-export/") and x.lower().endswith((".jpg",".json",".txt")) for x in p); print("public allowlist PASS")'
-          git commit -m 'S86 r2 existing review JPEGs and text evidence; NOT approval'
-          git push origin "HEAD:refs/heads/review-S86-r2-compact-$GITHUB_RUN_ID"
+          git add review-export/review/*.jpg \
+            review-export/INPUT-RECEIPT.json \
+            review-export/TECHNICAL-EVIDENCE.json \
+            review-export/SHA256SUMS.txt \
+            review-export/EXPORT-RECEIPT.json
+          git diff --cached --name-only | python3 -c 'import sys; p=[x.strip() for x in sys.stdin if x.strip()]; allowed=("review-export/review/", "review-export/INPUT-RECEIPT.json", "review-export/TECHNICAL-EVIDENCE.json", "review-export/SHA256SUMS.txt", "review-export/EXPORT-RECEIPT.json"); assert p and all((x.startswith(allowed[0]) and x.lower().endswith(".jpg")) or x in allowed[1:] for x in p), p; print("exact JPEG/TEXT output allowlist PASS")'
+          git commit -m 'S86 final-run compact JPEG and text evidence; full review open'
+          git push origin "HEAD:refs/heads/review-S86-final-compact-$GITHUB_RUN_ID"
