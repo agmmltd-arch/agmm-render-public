@@ -1,0 +1,71 @@
+{
+  "admission_scope": "One hosted Ubuntu development render for private editorial/audio evaluation. The hosted runner may upload only the synchronized FINAL.mp4 plus TECHNICAL-EVIDENCE.json and SHA256SUMS.txt as the one-day review artifact declared in the separately reviewed workflow. This admission does not authorize a release, publication beyond that bounded review artifact, paid distribution, deployment, social posting, or approval of any final AV state.",
+  "candidate_hashes": {
+    "locked_script_sha256": "a8006145cc4610be0abfd70f6e8355e6f6f64780064afe7a7834b49f33360055",
+    "locked_words_sha256": "a6d08fbb84c55f406457751213df0094561e55de1e1824faf66cd760845f3925",
+    "mix_spec_candidate_sha256": "99921ecd40dc797a76ef9786b75ebfedc6ccc48d8400e0136f89dd47ff7c8a3f",
+    "runtime_parent_proof_sha256": "de28d9725c166286e377cc972b73a344ad763cfd5dd7652800dcfccef17c374f",
+    "scene_sha256": "fe631a9dfed40facb4e04c37618185a48f21e9f9046f33cb19b0c82624406234",
+    "source_manifest_sha256": "1056bc10aa7a6b9d70a46d96d14139abe8e60ef3b7d8b82940c23061505c1e0b",
+    "source_review_sha256": "b0102274086343806a9f4aed0d0d5fae2dedcbeb52c5fc65e18b634990ba0953",
+    "spec_candidate_sha256": "f2147c726d4104c0b4043b71a7fd901bba8ff186ce080da7a44bdec4a0b1200c",
+    "spec_delta_sha256": "a6358970948829a231850f1d77f122de1210863c6f1865251e530c557db96857",
+    "storyboard_candidate_sha256": "c092d1f80b1adb01f15b03f27e6eaa46efb01a4cc1c53cb201b3ff101b1f1b7c",
+    "voice_identity_sha256": "b34e9d45a123e2f6f167a2bc5f63d8bc7d15a5e652df13804083c92634faa33c"
+  },
+  "decision": "ADMITTED_FOR_DEVELOPMENT_RENDER",
+  "documented_synchronized_sound_basis": {
+    "limits": "Sonniss raw or modified sample files remain private and are excluded from public payload; no separate mix WAV or SFX samples may be uploaded. This is a synchronized review render only and not a general rights clearance.",
+    "observed_scope": "19 cues use 16 assets: 13 Sonniss or Sonniss-derived layered assets, two Kenney UI Audio CC0 assets, and one original synthesized printer effect. Native private-manifest IDs/path/blob/size bindings were independently checked 16/16 without reading audio bytes.",
+    "official_terms": "Sonniss #GameAudioGDC license v2, effective 2026-08-27, permits commercial synchronization in finished projects and bars supplying effects as effects; earlier version applies to downloads before that date. Kenney UI Audio page identifies CC0. The review-use basis and asset mapping are recorded in the cited source document.",
+    "source_document": {
+      "path": "ROOT-INTEGRATION/ROOT-DEVELOPMENT-SOUND-USE-BASIS.json",
+      "sha256": "8f2c064177a2bf5e3f6f095e6b2d1f4deeea129f2325c6534d36338b6b66fad6"
+    }
+  },
+  "independent_observations": {
+    "changed_visual_frames_receipt": {
+      "path": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-independent-reveal-timing-review-37202622111/RESULT.json",
+      "sha256": "93e656e8fe42145b3277ddeffdf27761cd725eea3d299259a80a64b1cb3a8dd1"
+    },
+    "decision_basis": "The remaining timing point is expressly retained for render-time AV inspection; it is not hidden or treated as verified.",
+    "observed": "B01 wording/underline and B02 setup-clear/reveal sequence appear corrected in the reviewed stills. The 7.633s still has a faint \u201cI\u2019m\u201d caption 11ms before the declared 7.644s narration onset; that is less than one 30fps frame, but timing remains unverified until hosted audio/video review.",
+    "scope": "Six changed hosted stills only, bound to this exact scene SHA prefix fe631a9d; this is not audio or whole-movie review."
+  },
+  "kind": "s90_development_render_admission_v1",
+  "required_post_render_gates": {
+    "evaluate_source_excerpt_composition_and_credit": true,
+    "final_av_review": "OPEN",
+    "listen_to_entire_final_audio": true,
+    "ready": "NOT_GRANTED",
+    "release_approval": "NOT_GRANTED",
+    "social_posting": "NOT_AUTHORIZED",
+    "source_and_sfx_rights_review": "OPEN beyond the bounded synchronized development preview basis above",
+    "storyboard_approval": "NOT_GRANTED",
+    "verify_technical_evidence_and_final_mux": true,
+    "watch_entire_final_video_and_frame_boundaries": true
+  },
+  "reviewed_at_utc": "2026-10-04T14:03:39+00:00",
+  "reviewer": {
+    "identity": "Codex independent reviewer /root/library_independent_review (GPT-6 Luna)",
+    "role": "independent"
+  },
+  "separately_reviewed_hosted_runtime": {
+    "numpy_runtime_binding": "Workflow installs NumPy into WORKROOT/venv and invokes the builder with that same venv Python; builder subprocesses use sys.executable.",
+    "runtime_files_verified_by_sha256_and_size": 5,
+    "runtime_text_mirror_manifest_path": "ROOT-INTEGRATION/RUNTIME-TEXT-MIRROR-MANIFEST.json",
+    "runtime_text_mirror_manifest_sha256": "b9e4e003ca5c1e485c87027d697a456f3a7e2d585db9bae83786ae0f775a6c4a",
+    "workflow_path": "ROOT-INTEGRATION/s90-av-development-candidate.yml",
+    "workflow_sha256": "4cc5e4ebd7ba5a12427d4cb402ba37c6df6fc7169d49acf8332add1bcbde4386"
+  },
+  "timing": {
+    "duration_s": 58.3,
+    "final_cta_hold": {
+      "from_s": 58.107,
+      "status": "PROPOSED_FOR_DEVELOPMENT_ONLY",
+      "to_s": 58.3
+    },
+    "frame_count": 1749,
+    "frame_rate": 30
+  }
+}

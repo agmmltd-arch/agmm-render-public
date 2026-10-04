@@ -1,0 +1,553 @@
+{
+  "schema": "s90-isolated-storyboard-development-delta-v1",
+  "story_id": "S90",
+  "status": "DEVELOPMENT_CANDIDATE_NEEDS_ROOT_STORYBOARD_EYES",
+  "approval": {
+    "concept_direction": "Concept 2, root-selected development direction only",
+    "storyboard": "NOT_APPROVED",
+    "maker_self_approval": false,
+    "render_authorized": false,
+    "release_authorized": false,
+    "hosted_development_preview": "NOT_READY; revised source-quotation treatment needs a new hosted frame review"
+  },
+  "creative_signature": "The real source warning about unverifiable content transforms into a physical trusted-number route. The outgoing call is initiated; the payment latch remains held until actual confirmation, which this short does not depict.",
+  "source_identity": {
+    "url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+    "publisher": "Channel 4",
+    "document_type": "News Release",
+    "title": "Channel 4 makes TV history with Britain’s first AI presenter",
+    "date": "20 October 2025",
+    "visible_credit": "Source: Channel 4, News Release, 20 October 2025",
+    "manifest_path": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-hosted-source-pack-proposal/ROOT-SUCCESS-manifest.json",
+    "manifest_sha256": "1056bc10aa7a6b9d70a46d96d14139abe8e60ef3b7d8b82940c23061505c1e0b",
+    "source_plan_sha256": "da81ea62eeb36ddfab4b63b748894b567e2268c105d00e82d83638fed4c939d5",
+    "root_review_path": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-hosted-source-pack-proposal/ROOT-SOURCE-ASSET-REVIEW.json",
+    "root_review_run": 37163208994,
+    "root_review_status": "ACCEPTED_FOR_STORYBOARD_DEVELOPMENT_ONLY",
+    "remote_asset_base": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/",
+    "staging_status": "NOT_STAGED_LOCALLY; fetch and hash only on verified hosted Linux producer",
+    "expected_asset_sha256": {
+      "header-channel4.png": "68e0fe034a1d19287860980257ba3198466615ef35461f6c03a621853217c3e1",
+      "release-title.png": "16d620b2751341564993930f399f3c40b159ee9422e01232a12eec876719b040",
+      "release-date.png": "3b9687a05dfff7de55da5c651e7dcad6971157bf098bf8ffd76ffbc83774ed7f",
+      "claim-01.png": "e928774c014db8915e48e084852a79fa21a9e52aa331322389065cea1d98addc",
+      "claim-02.png": "e928774c014db8915e48e084852a79fa21a9e52aa331322389065cea1d98addc",
+      "claim-03.png": "eaec2a1abaa5eb045a3b035adf12e4477425f78d2a94dead249fa258a6d0389c",
+      "claim-04.png": "62be8e54a4dc28c673e0c13dbaa21d4bed17e4756eda7fb32295fd7df530cfc9",
+      "claim-05.png": "bcf2eadb98a481a0e5ae65cc877558a510347eed973893959c733bfa94b819dd",
+      "claim-06.png": "a6b590e8e66a30ffed9b2fc94a204f53b3d78a5813821ca06dea113730fa7034",
+      "claim-07.png": "470a92e078b4f2cc574358b9c3d6505090d235ee1b78187259c7e71bdf96476e",
+      "claim-08.png": "90eb906abea2dbd00ae348d7f80bbf466f89fc099a195a219d1fb97ca3d25523"
+    },
+    "source_words_42px_note": "No source-word pixel size is claimed. Each complete authenticated crop uses object-fit:contain with no zoom or clipped words; hosted Linux must read asset dimensions, then the actual composed preview must establish readability.",
+    "credit_font_design_px": 42,
+    "quote_label_design_px": 42
+  },
+  "locked_inputs": {
+    "script_path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/shorts/scripts-v2/S90.md",
+    "script_sha256": "a8006145cc4610be0abfd70f6e8355e6f6f64780064afe7a7834b49f33360055",
+    "voice_words_path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/shorts/voice/S90/S90.words.json",
+    "voice_words_sha256": "a6d08fbb84c55f406457751213df0094561e55de1e1824faf66cd760845f3925",
+    "duration_seconds": 58.107,
+    "concepts_path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/kit/specs/S90/CONCEPTS.md",
+    "concepts_sha256": "f9dbe134e9824f81dad439ab8ce7e7ccc3a5625ae273507688f91ae401483719"
+  },
+  "source_usage": {
+    "claim_01_and_02_same_paragraph_sha256": "3bb430e3c2f977ccefea65be9ac548154c5343724b731cc4e340ef1ef8e6e967",
+    "claim_02_is_independent_corroboration": false,
+    "claim_02_crop_referenced": false,
+    "claim_08_is_speaker_introduction_not_contact_credits": true,
+    "presenter_photo_or_clip_used": false,
+    "publisher_mark_scope": "native Channel 4 source pane only, beats B01-B10; absent B11-B16",
+    "advice_attribution": "AGMM original practical advice, never attributed to Channel 4",
+    "quote_display": "B02-B10 are typeset exact source-text fragments, not screenshots. Each fragment is matched against the authenticated required phrase and parent paragraph hash. B05→B06 and B09→B10 are continuous verbatim splits.",
+    "source_assets_on_quote_cards": [
+      "authentic Channel 4 header crop",
+      "native release-date crop",
+      "42px source credit"
+    ],
+    "claim_paragraph_crops_displayed_on_quote_cards": false
+  },
+  "signature_invariant": {
+    "call_state": "outgoing_call_started_only",
+    "latch_state_after_call": "PAYMENT_HELD",
+    "confirmation_depicted": false,
+    "answered_call_depicted": false,
+    "payment_release_depicted": false,
+    "message_number_path": "blocked"
+  },
+  "beats": [
+    {
+      "id": "B01",
+      "from": 0.0,
+      "to": 3.713,
+      "anchor_word": "Channel",
+      "scene": "s90-b01",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-01.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain; no guessed magnification, panning, or hidden source words. Hosted asset dimensions and root review of the composed frame determine whether readable.",
+      "event": "At frame zero the authentic Channel 4 mark, release title/date, claim crop and empty viewfinder are all present. The evidence does not pretend to be programme footage.",
+      "sound": {
+        "kind": "paper",
+        "at": 0.24,
+        "pan": -0.45,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B02",
+      "from": 3.713,
+      "to": 8.957,
+      "anchor_word": "on",
+      "scene": "s90-b02",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-date.png"
+      ],
+      "source_window": "Large readable typeset SOURCE QUOTATION, exact contiguous source-text fragment bound to its authenticated paragraph hash; genuine Channel 4 header and native date remain above it, full readable source credit below it. This is editorial typography, not a screenshot or native page crop.",
+      "event": "A single-sentence reveal uses the largest type; the same source claim stays visibly attributed.",
+      "sound": {
+        "kind": "shutter",
+        "at": 3.953,
+        "pan": 0.38,
+        "gain": 0.16
+      },
+      "source_quote": {
+        "type": "SOURCE QUOTATION",
+        "exact_text": "Because I'm not real.",
+        "source_claim_id": 5,
+        "source_paragraph_sha256": "11bf49bf572038e4aa97ad458b0ba6aa5b75aeb955d93f7cae3634093294272d",
+        "authenticated_paragraph_crop_sha256": "bcf2eadb98a481a0e5ae65cc877558a510347eed973893959c733bfa94b819dd",
+        "excerpt_sha256": "f31fa524e51f758fb483dd261788c7055e9e08ba96ae3ea59997e6fa502edd87",
+        "match_basis": "verbatim contiguous substring of authenticated required_source_phrases; exact paragraph hash bound in source manifest"
+      }
+    },
+    {
+      "id": "B03",
+      "from": 8.957,
+      "to": 14.854,
+      "anchor_word": "Channel",
+      "scene": "s90-b03",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-date.png"
+      ],
+      "source_window": "Large readable typeset SOURCE QUOTATION, exact contiguous source-text fragment bound to its authenticated paragraph hash; genuine Channel 4 header and native date remain above it, full readable source credit below it. This is editorial typography, not a screenshot or native page crop.",
+      "event": "The source phrase leads; three small rails name its three linked elements below the source card.",
+      "sound": {
+        "kind": "click",
+        "at": 9.197,
+        "pan": -0.3,
+        "gain": 0.16,
+        "secondary": [
+          {
+            "kind": "click",
+            "at": 9.62,
+            "pan": -0.48,
+            "gain": 0.12
+          },
+          {
+            "kind": "click",
+            "at": 10.04,
+            "pan": 0.02,
+            "gain": 0.12
+          }
+        ]
+      },
+      "source_quote": {
+        "type": "SOURCE QUOTATION",
+        "exact_text": "their face, voice and movements all created through AI technology",
+        "source_claim_id": 3,
+        "source_paragraph_sha256": "939afaebd597678877c8fad0ea012d179c9c89d062b8f0e6bae7428a7278feda",
+        "authenticated_paragraph_crop_sha256": "eaec2a1abaa5eb045a3b035adf12e4477425f78d2a94dead249fa258a6d0389c",
+        "excerpt_sha256": "f1dd5fe12b1c16a541b5ad9395e153e558c4160b15730912b10da429d5dfcb06",
+        "match_basis": "verbatim contiguous substring of authenticated required_source_phrases; exact paragraph hash bound in source manifest"
+      }
+    },
+    {
+      "id": "B04",
+      "from": 14.854,
+      "to": 18.348,
+      "anchor_word": "without",
+      "scene": "s90-b04",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-date.png"
+      ],
+      "source_window": "Large readable typeset SOURCE QUOTATION, exact contiguous source-text fragment bound to its authenticated paragraph hash; genuine Channel 4 header and native date remain above it, full readable source credit below it. This is editorial typography, not a screenshot or native page crop.",
+      "event": "A single verified line gets the full card width; the empty perforation strip sits below it.",
+      "sound": {
+        "kind": "printer",
+        "at": 15.094,
+        "pan": 0.42,
+        "gain": 0.16
+      },
+      "source_quote": {
+        "type": "SOURCE QUOTATION",
+        "exact_text": "without a single frame of real-world filming",
+        "source_claim_id": 3,
+        "source_paragraph_sha256": "939afaebd597678877c8fad0ea012d179c9c89d062b8f0e6bae7428a7278feda",
+        "authenticated_paragraph_crop_sha256": "eaec2a1abaa5eb045a3b035adf12e4477425f78d2a94dead249fa258a6d0389c",
+        "excerpt_sha256": "c60edc68cfdc597f40cb1f4908f4e7ace93a19dd560811be1b8b59d51715b33a",
+        "match_basis": "verbatim contiguous substring of authenticated required_source_phrases; exact paragraph hash bound in source manifest"
+      }
+    },
+    {
+      "id": "B05",
+      "from": 18.348,
+      "to": 21.733,
+      "anchor_word": "Then",
+      "scene": "s90-b05",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-date.png"
+      ],
+      "source_window": "Large readable typeset SOURCE QUOTATION, exact contiguous source-text fragment bound to its authenticated paragraph hash; genuine Channel 4 header and native date remain above it, full readable source credit below it. This is editorial typography, not a screenshot or native page crop.",
+      "event": "The quotation opens with the setup clause only, holding the exact continuation for the next cut.",
+      "sound": {
+        "kind": "paper",
+        "at": 18.588,
+        "pan": -0.42,
+        "gain": 0.16
+      },
+      "source_quote": {
+        "type": "SOURCE QUOTATION",
+        "exact_text": "Some of you might have guessed:",
+        "source_claim_id": 4,
+        "source_paragraph_sha256": "22f84f4464e37b85306be01e76f0f2c43c50e48877d51b7faeede3cfc73f9e06",
+        "authenticated_paragraph_crop_sha256": "62be8e54a4dc28c673e0c13dbaa21d4bed17e4756eda7fb32295fd7df530cfc9",
+        "excerpt_sha256": "3a7e73a788d001303ac05ee14579ad1844b6142995365214919224dd3642b488",
+        "match_basis": "verbatim contiguous substring of authenticated required_source_phrases; exact paragraph hash bound in source manifest"
+      },
+      "continuity_group": "C4-PRESENTER-QUOTE-01",
+      "continuity_role": "opening exact clause"
+    },
+    {
+      "id": "B06",
+      "from": 21.733,
+      "to": 25.995,
+      "anchor_word": "I",
+      "scene": "s90-b06",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-date.png"
+      ],
+      "source_window": "Large readable typeset SOURCE QUOTATION, exact contiguous source-text fragment bound to its authenticated paragraph hash; genuine Channel 4 header and native date remain above it, full readable source credit below it. This is editorial typography, not a screenshot or native page crop.",
+      "event": "The verbatim continuation resolves the quote; no presenter image or reconstructed footage.",
+      "sound": {
+        "kind": "press",
+        "at": 21.973,
+        "pan": 0.32,
+        "gain": 0.16
+      },
+      "source_quote": {
+        "type": "SOURCE QUOTATION",
+        "exact_text": "I don't exist, I wasn't on location reporting this story.",
+        "source_claim_id": 4,
+        "source_paragraph_sha256": "22f84f4464e37b85306be01e76f0f2c43c50e48877d51b7faeede3cfc73f9e06",
+        "authenticated_paragraph_crop_sha256": "62be8e54a4dc28c673e0c13dbaa21d4bed17e4756eda7fb32295fd7df530cfc9",
+        "excerpt_sha256": "146c2b3f06fee62842d555154697fc4d33971697db7925de539c45ecaf8c8a34",
+        "match_basis": "verbatim contiguous substring of authenticated required_source_phrases; exact paragraph hash bound in source manifest"
+      },
+      "continuity_group": "C4-PRESENTER-QUOTE-01",
+      "continuity_role": "verbatim continuation; no intervening quotation or claim"
+    },
+    {
+      "id": "B07",
+      "from": 25.995,
+      "to": 28.835,
+      "anchor_word": "Channel",
+      "scene": "s90-b07",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-date.png"
+      ],
+      "source_window": "Large readable typeset SOURCE QUOTATION, exact contiguous source-text fragment bound to its authenticated paragraph hash; genuine Channel 4 header and native date remain above it, full readable source credit below it. This is editorial typography, not a screenshot or native page crop.",
+      "event": "The exact source description is set as a four-line reading panel rather than compressed into a full-page miniature.",
+      "sound": {
+        "kind": "stamp",
+        "at": 26.235,
+        "pan": 0.42,
+        "gain": 0.16
+      },
+      "source_quote": {
+        "type": "SOURCE QUOTATION",
+        "exact_text": "as part of a deliberate on-screen stunt to show just how convincing artificial intelligence has become",
+        "source_claim_id": 6,
+        "source_paragraph_sha256": "8d2a98bc68fea99b0ba49dcbe4df879c1860fb68162e6ca21911edd224936ed0",
+        "authenticated_paragraph_crop_sha256": "a6b590e8e66a30ffed9b2fc94a204f53b3d78a5813821ca06dea113730fa7034",
+        "excerpt_sha256": "3a815bd401c4729a1b1cbe65c8f2af7ae8caf99a56ede16873438f06c9f3a782",
+        "match_basis": "verbatim contiguous substring of authenticated required_source_phrases; exact paragraph hash bound in source manifest"
+      }
+    },
+    {
+      "id": "B08",
+      "from": 28.835,
+      "to": 31.783,
+      "anchor_word": "Louisa",
+      "scene": "s90-b08",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-date.png"
+      ],
+      "source_window": "Large readable typeset SOURCE QUOTATION, exact contiguous source-text fragment bound to its authenticated paragraph hash; genuine Channel 4 header and native date remain above it, full readable source credit below it. This is editorial typography, not a screenshot or native page crop.",
+      "event": "The full attribution is retained and given its own large speaker-introduction card.",
+      "sound": {
+        "kind": "paper",
+        "at": 29.075,
+        "pan": -0.38,
+        "gain": 0.16
+      },
+      "source_quote": {
+        "type": "SOURCE QUOTATION",
+        "exact_text": "Louisa Compton, Head of News and Current Affairs, Specialist Factual and Sport at Channel 4, said:",
+        "source_claim_id": 8,
+        "source_paragraph_sha256": "ebd9f0454254c609e857ad0470d0d02ea63c4d72de1cec3f12c2b6f7f9d1677f",
+        "authenticated_paragraph_crop_sha256": "90eb906abea2dbd00ae348d7f80bbf466f89fc099a195a219d1fb97ca3d25523",
+        "excerpt_sha256": "d4d21b11074a6706be9d83114a800f2dbfc7c9cf11c0616e08443040c9bec76a",
+        "match_basis": "verbatim contiguous substring of authenticated required_source_phrases; exact paragraph hash bound in source manifest"
+      }
+    },
+    {
+      "id": "B09",
+      "from": 31.783,
+      "to": 35.896,
+      "anchor_word": "hoodwink",
+      "scene": "s90-b09",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-date.png"
+      ],
+      "source_window": "Large readable typeset SOURCE QUOTATION, exact contiguous source-text fragment bound to its authenticated paragraph hash; genuine Channel 4 header and native date remain above it, full readable source credit below it. This is editorial typography, not a screenshot or native page crop.",
+      "event": "The warning begins as a short, high-emphasis phrase; attribution remains visible.",
+      "sound": {
+        "kind": "click",
+        "at": 32.023,
+        "pan": 0.35,
+        "gain": 0.16
+      },
+      "source_quote": {
+        "type": "SOURCE QUOTATION",
+        "exact_text": "how easy it is to hoodwink audiences",
+        "source_claim_id": 7,
+        "source_paragraph_sha256": "4c1e0f1fe9f962a532e506a10f29aafa5ab0c17d06bb869adcbd771e4f7aadb7",
+        "authenticated_paragraph_crop_sha256": "470a92e078b4f2cc574358b9c3d6505090d235ee1b78187259c7e71bdf96476e",
+        "excerpt_sha256": "a3529304259fb47f44324064d07f1868d4d53ded7186a18f6ee003abe3d5774b",
+        "match_basis": "verbatim contiguous substring of authenticated required_source_phrases; exact paragraph hash bound in source manifest"
+      },
+      "continuity_group": "C4-COMPTON-WARNING-01",
+      "continuity_role": "opening exact clause"
+    },
+    {
+      "id": "B10",
+      "from": 35.896,
+      "to": 38.516,
+      "anchor_word": "If",
+      "scene": "s90-b10",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-date.png"
+      ],
+      "source_window": "Large readable typeset SOURCE QUOTATION, exact contiguous source-text fragment bound to its authenticated paragraph hash; genuine Channel 4 header and native date remain above it, full readable source credit below it. This is editorial typography, not a screenshot or native page crop.",
+      "event": "The exact continuation completes the same warning across the beat seam; Channel 4 material ends after this card.",
+      "sound": {
+        "kind": "seam",
+        "at": 36.136,
+        "pan": -0.35,
+        "gain": 0.16
+      },
+      "source_quote": {
+        "type": "SOURCE QUOTATION",
+        "exact_text": "with content they have no way of verifying",
+        "source_claim_id": 7,
+        "source_paragraph_sha256": "4c1e0f1fe9f962a532e506a10f29aafa5ab0c17d06bb869adcbd771e4f7aadb7",
+        "authenticated_paragraph_crop_sha256": "470a92e078b4f2cc574358b9c3d6505090d235ee1b78187259c7e71bdf96476e",
+        "excerpt_sha256": "b0e57ad10bcefe0e50c9a1a21c34ac63987b9a83b8b9d3ae70510cacc8e99803",
+        "match_basis": "verbatim contiguous substring of authenticated required_source_phrases; exact paragraph hash bound in source manifest"
+      },
+      "continuity_group": "C4-COMPTON-WARNING-01",
+      "continuity_role": "verbatim continuation; publisher evidence exits at next cut"
+    },
+    {
+      "id": "B11",
+      "from": 38.516,
+      "to": 43.977,
+      "anchor_word": "picture",
+      "scene": "s90-b11",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "With all Channel 4 material gone, build one generic accounts workstation and a supplier change request. No names, values, account digits, caller image or simulated speech. A physical latch reads PAYMENT HELD.",
+      "sound": {
+        "kind": "paper",
+        "at": 41.72,
+        "pan": 0.44,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B12",
+      "from": 43.977,
+      "to": 45.724,
+      "anchor_word": "Agree",
+      "scene": "s90-b12",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "Rotate a large one-rule plate beside the request. Keep the blank request and held latch in view; no claim of measured security outcome.",
+      "sound": {
+        "kind": "press",
+        "at": 44.217,
+        "pan": -0.4,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B13",
+      "from": 45.724,
+      "to": 47.362,
+      "anchor_word": "Any",
+      "scene": "s90-b13",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "Separate the change slip from the message path; the payment latch remains shut. The form stays free of real or invented account details.",
+      "sound": {
+        "kind": "paper",
+        "at": 45.964,
+        "pan": 0.4,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B14",
+      "from": 47.362,
+      "to": 50.856,
+      "anchor_word": "gets",
+      "scene": "s90-b14",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "Connect the handset only to the saved-contact tile. Lift it and begin an outgoing call, but keep the pending latch closed and label the state CALL STARTED. No answer, confirmation, or automatic release.",
+      "sound": {
+        "kind": "phone",
+        "at": 47.602,
+        "pan": -0.42,
+        "gain": 0.16,
+        "secondary": [
+          {
+            "kind": "phone",
+            "at": 49.22,
+            "pan": 0.36,
+            "gain": 0.12
+          }
+        ]
+      }
+    },
+    {
+      "id": "B15",
+      "from": 50.856,
+      "to": 52.647,
+      "anchor_word": "never",
+      "scene": "s90-b15",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "A message-origin route stops at a red physical barrier. The trusted route remains available, but the call has not been answered and the payment is still pending.",
+      "sound": {
+        "kind": "click",
+        "at": 51.096,
+        "pan": 0.42,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B16",
+      "from": 52.647,
+      "to": 58.107,
+      "anchor_word": "Follow",
+      "scene": "s90-b16",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "Keep the change pending. Remove all Channel 4 evidence and branding. Show the exact spoken follow CTA plus the audit URL; no resolved transaction or call-success sound.",
+      "sound": {
+        "kind": "paper",
+        "at": 52.887,
+        "pan": -0.36,
+        "gain": 0.16
+      }
+    }
+  ],
+  "sound_design": {
+    "total_cues": 19,
+    "rate_per_minute": 19.62,
+    "design_only_not_rendered_or_heard": true,
+    "all_gains_linear_max": 0.16,
+    "all_pan_values_nonzero": true,
+    "no_music_or_noise_bed_selected": true,
+    "no_glitch_or_zap": true,
+    "stereo_pan_must_be_confirmed_in_mix": true
+  },
+  "required_root_review": [
+    "actual asset staging hashes and source crop boundaries",
+    "all 16 scene frames and seams against P1 reference sheet",
+    "no overlap of source-bearing text with rails/highlights",
+    "call stays unanswered and latch visibly held",
+    "CTA wording/link and publisher mark absent after B10",
+    "pilot-level motion, visual density and composition review",
+    "whether complete source excerpts are readable in the actual hosted composition; no pixel-size claim is made",
+    "caption safe-area against source panes and all proposed object/text positions in actual kit-composed frames"
+  ],
+  "unresolved": [
+    "rights review remains required; pack rights status NOT_ASSESSED",
+    "no source assets downloaded or staged locally",
+    "actual storyboard is not submitted or approved",
+    "no rendered frames or audio reviewed",
+    "P1 / assigned reference not viewed in this task",
+    "caption-safe composition has not been established; current build_short defaults captions around y=1290, near the evidence panels"
+  ],
+  "quote_component_guard": {
+    "guard": "Every visible quote card must bind exact_text to a contiguous substring of the source manifest required_source_phrases for source_claim_id, and carry that claim source_paragraph_sha256 plus authenticated_paragraph_crop_sha256. Refuse missing or changed text; do not infer support from similar wording.",
+    "visual": "Keep authentic publisher mark, native date and source credit inside the Channel 4 evidence panel. Keep 42px minimum meaningful source labels, quote text, every other text-bearing object, and the held-payment latch outside the actual hosted caption band (top 1290, height 300); derive that band from the hosted spec builder, not a copied test constant. Do not shrink a whole page to fit.",
+    "causal_story": "Request to change bank details stays PENDING; callback uses a number already held; showing CALL STARTED or NO ANSWER leaves PAYMENT HELD. Do not imply a pickup, verification, or release.",
+    "second_application": "UNPROVEN. Do not reuse this S90 acceptance as evidence for another asset; bind and review a separately authored story and source manifest."
+  },
+  "buzz_production_recipe": [
+    "Select the spoken claim and one exact contiguous source phrase; pin the authenticated source paragraph hash and paragraph crop hash. Count a repeated paragraph once.",
+    "Typeset only the quote fragment needed at that spoken moment; preserve real publisher mark, date and full readable source credit on source beats. Review actual hosted frames for phone readability and caption overlap.",
+    "Make the business mechanism causal: changed-details request → verify using the previously held number → call started; keep payment held until independent confirmation is actually depicted and evidenced.",
+    "Read the native preview helper for its actual caption band and test every text-bearing object against those bounds; do not substitute a CSS override or lower test-only band.",
+    "Run a bounded silent hosted storyboard preview, inspect every frame and seam, then obtain independent eyes. A component test or hosted capture is not editorial approval.",
+    "For the next distinct application, start with fresh source text and a fresh claim binding. S90 does not establish transfer."
+  ],
+  "candidate_revision": {
+    "based_on_review": {
+      "receipt_path": "/Users/samwall/alfred/builds/video-operations-2026-09-30/receipts/S90-20261004-CORRECTED-SILENT-COMPOSITION-SOURCE-REVIEW.json",
+      "run": 37171107006,
+      "receipt_sha256": "d15f949c26b971308912dc11bd7d7fd51de227d221cf818cd0c49aab1adfce84",
+      "reviewed_candidate_scene_sha256": "52982f1897e8520fee6fdb7fbeaf1a5da64ec800a39ac9a0a74349a5415f410c",
+      "verdict": "RETURN"
+    },
+    "observed_defect": "B02, B05, B06 and B08 source quotation/speaker text was too small under repeated full headline/header/date; B01-B10 repeated nearly identical page/card composition.",
+    "candidate_change": "B02-B10 use clearly labelled, exact source-text quotations with claim-specific type scale and beat-to-beat verbatim splits; authentic Channel 4 header, native release date crop and full source credit remain inside each evidence panel. B01 retains the source page treatment. No word clock, narration or callback state changed.",
+    "current_review": "NOT_PERFORMED; previous RETURN is not approval and new hosted frames are required.",
+    "caption_geometry_return": {
+      "returned_by": "independent root frame/geometry review after source quote revision",
+      "defect": "The B03 FACE/VOICE/MOVEMENTS rails occupied y=1292..1348 inside the actual hosted native caption region y=1290..1590; the prior geometry test incorrectly used y=1360..1640.",
+      "change": "Removed the text rails and caption-overlapping decorative accents. Moved the illustration request and PAYMENT HELD latch above captions, moved the CTA link above captions, and bound the geometry test to the actual hosted helper caption bounds. Source quote labels now use a single measured line.",
+      "current_review": "TEXT/geometry checks only; new hosted frames and root review are still required."
+    },
+    "label_geometry_return": {
+      "defect": "The prior longer SOURCE QUOTATION label was reduced to 34px to fit one line, below the 42px craft minimum.",
+      "change": "Use concise contextual single-line labels at 42px: PRESENTER, CLAIM 03/06, ATTRIBUTION, or COMPTON followed by SOURCE QUOTATION. The authenticated header/date/full credit identify Channel 4; B08 quote itself retains Louisa Compton full role.",
+      "test": "Geometry checks font size >=42px and calculated one-line width/height fit for each actual label.",
+      "current_review": "TEXT and geometry only; new hosted frames remain necessary."
+    }
+  },
+  "preview_caption_band": {
+    "x": 0,
+    "y": 1290,
+    "w": 1080,
+    "h": 300,
+    "evidence": "hosted-preview/.github/scripts/build_s90_silent_preview.py build_spec() captions: top=1290,height=300"
+  }
+}

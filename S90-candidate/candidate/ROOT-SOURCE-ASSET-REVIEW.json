@@ -1,0 +1,98 @@
+{
+  "id": "S90",
+  "at": "2026-10-03T23:58:48.974465+00:00",
+  "stage": "root-native-source-crop-review",
+  "run": 37163208994,
+  "head_sha": "6d43cb57cdd8daff9aebf20431dbbb6bdf1089b5",
+  "manifest_sha256": "1056bc10aa7a6b9d70a46d96d14139abe8e60ef3b7d8b82940c23061505c1e0b",
+  "verdict": "ACCEPTED_FOR_STORYBOARD_DEVELOPMENT_ONLY",
+  "asset_views": [
+    {
+      "file": "header-channel4.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/header-channel4.png",
+      "sha256_from_hosted_manifest": "68e0fe034a1d19287860980257ba3198466615ef35461f6c03a621853217c3e1",
+      "actually_viewed_by_root": true
+    },
+    {
+      "file": "release-title.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/release-title.png",
+      "sha256_from_hosted_manifest": "16d620b2751341564993930f399f3c40b159ee9422e01232a12eec876719b040",
+      "actually_viewed_by_root": true
+    },
+    {
+      "file": "release-date.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/release-date.png",
+      "sha256_from_hosted_manifest": "3b9687a05dfff7de55da5c651e7dcad6971157bf098bf8ffd76ffbc83774ed7f",
+      "actually_viewed_by_root": true
+    },
+    {
+      "file": "claim-01.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/claim-01.png",
+      "sha256_from_hosted_manifest": "e928774c014db8915e48e084852a79fa21a9e52aa331322389065cea1d98addc",
+      "actually_viewed_by_root": true
+    },
+    {
+      "file": "claim-02.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/claim-02.png",
+      "sha256_from_hosted_manifest": "e928774c014db8915e48e084852a79fa21a9e52aa331322389065cea1d98addc",
+      "actually_viewed_by_root": true
+    },
+    {
+      "file": "claim-03.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/claim-03.png",
+      "sha256_from_hosted_manifest": "eaec2a1abaa5eb045a3b035adf12e4477425f78d2a94dead249fa258a6d0389c",
+      "actually_viewed_by_root": true
+    },
+    {
+      "file": "claim-04.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/claim-04.png",
+      "sha256_from_hosted_manifest": "62be8e54a4dc28c673e0c13dbaa21d4bed17e4756eda7fb32295fd7df530cfc9",
+      "actually_viewed_by_root": true
+    },
+    {
+      "file": "claim-05.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/claim-05.png",
+      "sha256_from_hosted_manifest": "bcf2eadb98a481a0e5ae65cc877558a510347eed973893959c733bfa94b819dd",
+      "actually_viewed_by_root": true
+    },
+    {
+      "file": "claim-06.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/claim-06.png",
+      "sha256_from_hosted_manifest": "a6b590e8e66a30ffed9b2fc94a204f53b3d78a5813821ca06dea113730fa7034",
+      "actually_viewed_by_root": true
+    },
+    {
+      "file": "claim-07.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/claim-07.png",
+      "sha256_from_hosted_manifest": "470a92e078b4f2cc574358b9c3d6505090d235ee1b78187259c7e71bdf96476e",
+      "actually_viewed_by_root": true
+    },
+    {
+      "file": "claim-08.png",
+      "url": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/claim-08.png",
+      "sha256_from_hosted_manifest": "90eb906abea2dbd00ae348d7f80bbf466f89fc099a195a219d1fb97ca3d25523",
+      "actually_viewed_by_root": true
+    }
+  ],
+  "findings": [
+    "Actual Channel4 mark in native header, correct native headline and publication date visible.",
+    "All eight source claim paragraphs independently read and matched; claim01/02 intentionally show the same paragraph, not independent sources.",
+    "Claim08 is the speaker introduction, not contact/production credits; no private contact crop.",
+    "No presenter photo/clip or invented document was collected."
+  ],
+  "permitted_placement": [
+    "Native source evidence pane only; retain actual source identity and readable Source: Channel 4, News Release, 20 October 2025 credit.",
+    "Show relevant native paragraph excerpt through a camera window or source highlight; do not shrink entire dense paragraphs into unreadable portrait cards.",
+    "Real source mark may be framed from the native header; remove publisher branding before AGMM advice/CTA.",
+    "Trusted-number callback instruction is AGMM practical advice, not attributed to Channel4. Initiating a call must keep payment held pending confirmation."
+  ],
+  "editorial_use_basis": "Limited credited primary-source excerpts substantiate factual reporting and commentary about the programme; no full article, unrelated media or endorsement treatment. Exact composed use and readability must be reviewed in the storyboard.",
+  "storyboard_approval": "NOT_GRANTED",
+  "final_render_approval": "NOT_GRANTED",
+  "release_approval": "NOT_GRANTED",
+  "scope_limits": [
+    "Source assets only, not a composition or final master",
+    "Pilot, motion, audio, hooks/CTA and platform receipts remain OPEN"
+  ],
+  "Mac_media_IO": false
+}

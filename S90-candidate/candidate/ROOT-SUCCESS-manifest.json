@@ -1,0 +1,377 @@
+{
+  "schema": "agmm-source-pack-manifest-v1",
+  "story_id": "S90",
+  "source_plan_sha256": "da81ea62eeb36ddfab4b63b748894b567e2268c105d00e82d83638fed4c939d5",
+  "source": {
+    "url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+    "final_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+    "http_status": 200,
+    "publisher": "Channel 4",
+    "document_type": "News Release",
+    "title": "Channel 4 makes TV history with Britain’s first AI presenter",
+    "date": "20 October 2025",
+    "credit_line": "Source: Channel 4, News Release, 20 October 2025",
+    "credit_display_rule": "at least 42px at 1080px output width for full asset duration"
+  },
+  "claim_bindings": [
+    {
+      "id": 1,
+      "spoken_claim_text": "The programme's own presenter appeared throughout reporting from different locations and was entirely AI-generated.",
+      "asset_file": "claim-01.png",
+      "required_source_phrases": [
+        "programme's own presenter",
+        "appears throughout reporting from different locations",
+        "entirely AI-generated"
+      ],
+      "source_paragraph_index": 1,
+      "source_paragraph_sha256": "3bb430e3c2f977ccefea65be9ac548154c5343724b731cc4e340ef1ef8e6e967"
+    },
+    {
+      "id": 2,
+      "spoken_claim_text": "The programme was Will AI Take My Job?",
+      "asset_file": "claim-02.png",
+      "required_source_phrases": [
+        "Will AI Take My Job?",
+        "Dispatches investigates how AI automation is reshaping the workplace"
+      ],
+      "source_paragraph_index": 1,
+      "source_paragraph_sha256": "3bb430e3c2f977ccefea65be9ac548154c5343724b731cc4e340ef1ef8e6e967"
+    },
+    {
+      "id": 3,
+      "spoken_claim_text": "The presenter's face, voice and movements were made with AI, without a single frame of real-world filming.",
+      "asset_file": "claim-03.png",
+      "required_source_phrases": [
+        "their face, voice and movements all created through AI technology",
+        "without a single frame of real-world filming"
+      ],
+      "source_paragraph_index": 2,
+      "source_paragraph_sha256": "939afaebd597678877c8fad0ea012d179c9c89d062b8f0e6bae7428a7278feda"
+    },
+    {
+      "id": 4,
+      "spoken_claim_text": "The presenter said: Some of you might have guessed: I don't exist, I wasn't on location reporting this story.",
+      "asset_file": "claim-04.png",
+      "required_source_phrases": [
+        "Some of you might have guessed: I don't exist, I wasn't on location reporting this story."
+      ],
+      "source_paragraph_index": 4,
+      "source_paragraph_sha256": "22f84f4464e37b85306be01e76f0f2c43c50e48877d51b7faeede3cfc73f9e06"
+    },
+    {
+      "id": 5,
+      "spoken_claim_text": "The presenter said: Because I'm not real.",
+      "asset_file": "claim-05.png",
+      "required_source_phrases": [
+        "Because I'm not real."
+      ],
+      "source_paragraph_index": 3,
+      "source_paragraph_sha256": "11bf49bf572038e4aa97ad458b0ba6aa5b75aeb955d93f7cae3634093294272d"
+    },
+    {
+      "id": 6,
+      "spoken_claim_text": "Channel 4 did it on purpose as a deliberate stunt.",
+      "asset_file": "claim-06.png",
+      "required_source_phrases": [
+        "as part of a deliberate on-screen stunt to show just how convincing artificial intelligence has become"
+      ],
+      "source_paragraph_index": 0,
+      "source_paragraph_sha256": "8d2a98bc68fea99b0ba49dcbe4df879c1860fb68162e6ca21911edd224936ed0"
+    },
+    {
+      "id": 7,
+      "spoken_claim_text": "Louisa Compton said it showed how easy it is to hoodwink audiences with content they cannot verify.",
+      "asset_file": "claim-07.png",
+      "required_source_phrases": [
+        "how easy it is to hoodwink audiences with content they have no way of verifying"
+      ],
+      "source_paragraph_index": 9,
+      "source_paragraph_sha256": "4c1e0f1fe9f962a532e506a10f29aafa5ab0c17d06bb869adcbd771e4f7aadb7"
+    },
+    {
+      "id": 8,
+      "spoken_claim_text": "Louisa Compton was Channel 4's head of news.",
+      "asset_file": "claim-08.png",
+      "required_source_phrases": [
+        "Louisa Compton, Head of News and Current Affairs, Specialist Factual and Sport at Channel 4, said:"
+      ],
+      "source_paragraph_index": 8,
+      "source_paragraph_sha256": "ebd9f0454254c609e857ad0470d0d02ea63c4d72de1cec3f12c2b6f7f9d1677f"
+    }
+  ],
+  "non_source_advice": {
+    "text": "Confirm bank-detail changes by calling a number already held, never one supplied in a message.",
+    "publisher": "AGMM original practical advice",
+    "included_in_channel4_claims": false
+  },
+  "assets": [
+    {
+      "file": "header-channel4.png",
+      "type": "native_publisher_header",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "68e0fe034a1d19287860980257ba3198466615ef35461f6c03a621853217c3e1",
+      "bytes": 7592,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [],
+      "logo_host": "all4nav.channel4.com",
+      "matched_source_text_sha256": null
+    },
+    {
+      "file": "release-title.png",
+      "type": "native_release_title",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "16d620b2751341564993930f399f3c40b159ee9422e01232a12eec876719b040",
+      "bytes": 30972,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [],
+      "matched_source_text_sha256": "9971b129bb4f67b25ca1b82df5a209af36dae4feb5800b2f65a5560ad3fd9bdc"
+    },
+    {
+      "file": "release-date.png",
+      "type": "native_release_date",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "3b9687a05dfff7de55da5c651e7dcad6971157bf098bf8ffd76ffbc83774ed7f",
+      "bytes": 4048,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [],
+      "matched_source_text_sha256": "7e295a6b6a08ae7469b2ec57540a8a80a0b9e011acbcf42b49d6a320221b7343"
+    },
+    {
+      "file": "claim-01.png",
+      "type": "native_source_claim_paragraph",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "e928774c014db8915e48e084852a79fa21a9e52aa331322389065cea1d98addc",
+      "bytes": 75786,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [
+        1
+      ],
+      "spoken_claim_text": "The programme's own presenter appeared throughout reporting from different locations and was entirely AI-generated.",
+      "required_source_phrases": [
+        "programme's own presenter",
+        "appears throughout reporting from different locations",
+        "entirely AI-generated"
+      ],
+      "matched_source_paragraph_sha256": "3bb430e3c2f977ccefea65be9ac548154c5343724b731cc4e340ef1ef8e6e967",
+      "paragraph_index": 1,
+      "match_method": "all exact frozen phrases present in one visible live-page paragraph after typography/whitespace normalization"
+    },
+    {
+      "file": "claim-02.png",
+      "type": "native_source_claim_paragraph",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "e928774c014db8915e48e084852a79fa21a9e52aa331322389065cea1d98addc",
+      "bytes": 75786,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [
+        2
+      ],
+      "spoken_claim_text": "The programme was Will AI Take My Job?",
+      "required_source_phrases": [
+        "Will AI Take My Job?",
+        "Dispatches investigates how AI automation is reshaping the workplace"
+      ],
+      "matched_source_paragraph_sha256": "3bb430e3c2f977ccefea65be9ac548154c5343724b731cc4e340ef1ef8e6e967",
+      "paragraph_index": 1,
+      "match_method": "all exact frozen phrases present in one visible live-page paragraph after typography/whitespace normalization"
+    },
+    {
+      "file": "claim-03.png",
+      "type": "native_source_claim_paragraph",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "eaec2a1abaa5eb045a3b035adf12e4477425f78d2a94dead249fa258a6d0389c",
+      "bytes": 45124,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [
+        3
+      ],
+      "spoken_claim_text": "The presenter's face, voice and movements were made with AI, without a single frame of real-world filming.",
+      "required_source_phrases": [
+        "their face, voice and movements all created through AI technology",
+        "without a single frame of real-world filming"
+      ],
+      "matched_source_paragraph_sha256": "939afaebd597678877c8fad0ea012d179c9c89d062b8f0e6bae7428a7278feda",
+      "paragraph_index": 2,
+      "match_method": "all exact frozen phrases present in one visible live-page paragraph after typography/whitespace normalization"
+    },
+    {
+      "file": "claim-04.png",
+      "type": "native_source_claim_paragraph",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "62be8e54a4dc28c673e0c13dbaa21d4bed17e4756eda7fb32295fd7df530cfc9",
+      "bytes": 24814,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [
+        4
+      ],
+      "spoken_claim_text": "The presenter said: Some of you might have guessed: I don't exist, I wasn't on location reporting this story.",
+      "required_source_phrases": [
+        "Some of you might have guessed: I don't exist, I wasn't on location reporting this story."
+      ],
+      "matched_source_paragraph_sha256": "22f84f4464e37b85306be01e76f0f2c43c50e48877d51b7faeede3cfc73f9e06",
+      "paragraph_index": 4,
+      "match_method": "all exact frozen phrases present in one visible live-page paragraph after typography/whitespace normalization"
+    },
+    {
+      "file": "claim-05.png",
+      "type": "native_source_claim_paragraph",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "bcf2eadb98a481a0e5ae65cc877558a510347eed973893959c733bfa94b819dd",
+      "bytes": 44977,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [
+        5
+      ],
+      "spoken_claim_text": "The presenter said: Because I'm not real.",
+      "required_source_phrases": [
+        "Because I'm not real."
+      ],
+      "matched_source_paragraph_sha256": "11bf49bf572038e4aa97ad458b0ba6aa5b75aeb955d93f7cae3634093294272d",
+      "paragraph_index": 3,
+      "match_method": "all exact frozen phrases present in one visible live-page paragraph after typography/whitespace normalization"
+    },
+    {
+      "file": "claim-06.png",
+      "type": "native_source_claim_paragraph",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "a6b590e8e66a30ffed9b2fc94a204f53b3d78a5813821ca06dea113730fa7034",
+      "bytes": 38272,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [
+        6
+      ],
+      "spoken_claim_text": "Channel 4 did it on purpose as a deliberate stunt.",
+      "required_source_phrases": [
+        "as part of a deliberate on-screen stunt to show just how convincing artificial intelligence has become"
+      ],
+      "matched_source_paragraph_sha256": "8d2a98bc68fea99b0ba49dcbe4df879c1860fb68162e6ca21911edd224936ed0",
+      "paragraph_index": 0,
+      "match_method": "all exact frozen phrases present in one visible live-page paragraph after typography/whitespace normalization"
+    },
+    {
+      "file": "claim-07.png",
+      "type": "native_source_claim_paragraph",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "470a92e078b4f2cc574358b9c3d6505090d235ee1b78187259c7e71bdf96476e",
+      "bytes": 71153,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [
+        7
+      ],
+      "spoken_claim_text": "Louisa Compton said it showed how easy it is to hoodwink audiences with content they cannot verify.",
+      "required_source_phrases": [
+        "how easy it is to hoodwink audiences with content they have no way of verifying"
+      ],
+      "matched_source_paragraph_sha256": "4c1e0f1fe9f962a532e506a10f29aafa5ab0c17d06bb869adcbd771e4f7aadb7",
+      "paragraph_index": 9,
+      "match_method": "all exact frozen phrases present in one visible live-page paragraph after typography/whitespace normalization"
+    },
+    {
+      "file": "claim-08.png",
+      "type": "native_source_claim_paragraph",
+      "source_url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+      "publisher": "Channel 4",
+      "document_type": "News Release",
+      "document_title": "Channel 4 makes TV history with Britain's first AI presenter",
+      "document_date": "20 October 2025",
+      "credit_line_for_composition": "Source: Channel 4, News Release, 20 October 2025",
+      "placement_scope": "source evidence pane only; remove before AGMM CTA",
+      "sha256": "90eb906abea2dbd00ae348d7f80bbf466f89fc099a195a219d1fb97ca3d25523",
+      "bytes": 17840,
+      "human_rights_review": "REQUIRED",
+      "usable_for_render": false,
+      "claim_ids": [
+        8
+      ],
+      "spoken_claim_text": "Louisa Compton was Channel 4's head of news.",
+      "required_source_phrases": [
+        "Louisa Compton, Head of News and Current Affairs, Specialist Factual and Sport at Channel 4, said:"
+      ],
+      "matched_source_paragraph_sha256": "ebd9f0454254c609e857ad0470d0d02ea63c4d72de1cec3f12c2b6f7f9d1677f",
+      "paragraph_index": 8,
+      "match_method": "all exact frozen phrases present in one visible live-page paragraph after typography/whitespace normalization"
+    }
+  ],
+  "policy": {
+    "photos": false,
+    "clips": false,
+    "followed_links": false,
+    "full_page_capture": false,
+    "media_requests": "blocked",
+    "external_hosts": "blocked except same-publisher header mark if required",
+    "rights_status": "NOT_ASSESSED",
+    "editorial_status": "NEEDS_ROOT_EYES",
+    "release_approval": "NOT_GRANTED",
+    "render_approval": "NOT_GRANTED"
+  }
+}

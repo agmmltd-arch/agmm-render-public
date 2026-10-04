@@ -1,0 +1,453 @@
+{
+  "kind": "s90_sfx_hosted_asset_identity_map_v1",
+  "observed_at_local": "2026-10-04 Europe/London",
+  "candidate_mix_sha256": "99921ecd40dc797a76ef9786b75ebfedc6ccc48d8400e0136f89dd47ff7c8a3f",
+  "sound_library_text_path": "tools/agmm-kit-mirror/sound/library.json",
+  "sound_library_text_sha256": "2744f53024d42208538675f8d27e24e3f06c4135b81e892af29e2f0538c56215",
+  "cue_count": 19,
+  "distinct_asset_count": 16,
+  "distinct_assets": [
+    {
+      "sfx_id": "camera_shutter_04",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 3.9667,
+          "event": "shutter"
+        }
+      ],
+      "canonical_library_entry_path": "library/camera_shutter/camera_shutter_04.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 48084,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": null,
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/camera_shutter/camera_shutter_04.wav",
+      "private_source_git_blob_sha1": "ea09aca66f317282eed787cc532e91ed7da36934",
+      "source_filename_recorded_in_library": "Bart_Kamski_Clicks_Switches__Camera_Flash_Open-001.wav"
+    },
+    {
+      "sfx_id": "foley_click_01",
+      "cue_count": 2,
+      "cue_events": [
+        {
+          "t": 9.2,
+          "event": "click"
+        },
+        {
+          "t": 10.0333,
+          "event": "click"
+        }
+      ],
+      "canonical_library_entry_path": "library/foley_click/foley_click_01.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 29472,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": "2a63dc6bff2514a0de47177788184956094fd80037d66a4876e50751f109253e",
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/foley_click/foley_click_01.wav",
+      "private_source_git_blob_sha1": "c31ec9811e7051b51a85d019c512619698fd0bf2",
+      "source_filename_recorded_in_library": "Bart_Kamski_Clicks_Switches__Button_Press-007.wav"
+    },
+    {
+      "sfx_id": "foley_click_02",
+      "cue_count": 2,
+      "cue_events": [
+        {
+          "t": 9.6333,
+          "event": "click"
+        },
+        {
+          "t": 51.1,
+          "event": "click"
+        }
+      ],
+      "canonical_library_entry_path": "library/foley_click/foley_click_02.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 7014,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": "3b321ace83be2de6ea20bace72003061de5c6475eb40787ed64bdca9edb3a1a7",
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/foley_click/foley_click_02.wav",
+      "private_source_git_blob_sha1": "0b7386f0de62c29ab547129dd65441eadaae0bd8",
+      "source_filename_recorded_in_library": "3maze_Buttons_and_Switches__button_on_off_064.wav"
+    },
+    {
+      "sfx_id": "foley_paper_02",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 0.2333,
+          "event": "paper"
+        }
+      ],
+      "canonical_library_entry_path": "library/foley_paper/foley_paper_02.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 35814,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": "f1e1a0d561a0039e6999944c773f6b6eac321649aff5304c5ead7e682191fa1b",
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/foley_paper/foley_paper_02.wav",
+      "private_source_git_blob_sha1": "a3af4a65c9bef4e9a02bb5058052c56f625540ad",
+      "source_filename_recorded_in_library": "PMSFX_Books_Alive__PM_BA_BOOK_6_14 Book, Paper, Page Turn.wav"
+    },
+    {
+      "sfx_id": "foley_paper_03",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 18.6,
+          "event": "paper"
+        }
+      ],
+      "canonical_library_entry_path": "library/foley_paper/foley_paper_03.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 86502,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": "97966ae2339209e47587ecfefab354a3eaa0b09f620bb054cfa1d9f7a7d04805",
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/foley_paper/foley_paper_03.wav",
+      "private_source_git_blob_sha1": "5c8d101eeb55c0b62633f0d9fe11bd2611099be7",
+      "source_filename_recorded_in_library": "PMSFX_Books_Alive__PM_BA_BOOK_6_14 Book, Paper, Page Turn.wav"
+    },
+    {
+      "sfx_id": "foley_paper_04",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 41.7333,
+          "event": "paper"
+        }
+      ],
+      "canonical_library_entry_path": "library/foley_paper/foley_paper_04.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 32934,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": "71106b8bb738fa8c85936bf808eb79b1e93e07484dfc00f4cfa7836ac78e79ef",
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/foley_paper/foley_paper_04.wav",
+      "private_source_git_blob_sha1": "d31a43b7ef13c4b0ec367dcf4141ede918d69f7a",
+      "source_filename_recorded_in_library": "PMSFX_Books_Alive__PM_BA_BOOK_0_29 Book, Open, Paper.wav"
+    },
+    {
+      "sfx_id": "foley_paper_05",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 29.0667,
+          "event": "paper"
+        }
+      ],
+      "canonical_library_entry_path": "library/foley_paper/foley_paper_05.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 79590,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": "49f23be34ff0ec254703b5fd7e91ccb17ae735bfee9f60efc10b8c9e46cbf21c",
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/foley_paper/foley_paper_05.wav",
+      "private_source_git_blob_sha1": "48a3eff0f37e410bad159a23fc78c8b5b59c19f9",
+      "source_filename_recorded_in_library": "Hear_and_Now_Sound_Office_Equipment_and_Supp__Shuffling Paper 4.wav"
+    },
+    {
+      "sfx_id": "foley_phone_02",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 47.6,
+          "event": "phone"
+        }
+      ],
+      "canonical_library_entry_path": "library/foley_phone/foley_phone_02.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 61734,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": "1d77453e1101ec4c0193ee2d812b79a1bca8ebee72a898f78c3daf9514c8245d",
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/foley_phone/foley_phone_02.wav",
+      "private_source_git_blob_sha1": "0376c144a3d6dc8eacf57a8535015ba9e16b0777",
+      "source_filename_recorded_in_library": "Nikko_Barrera_Amaya_Office_hits__Lyd_SFX_38_Cell Phone Vibrations_7.wav"
+    },
+    {
+      "sfx_id": "foley_phone_03",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 49.2333,
+          "event": "phone"
+        }
+      ],
+      "canonical_library_entry_path": "library/foley_phone/foley_phone_03.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 59430,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": "677ff0927e7aaa46664d26cf1cf989a9520704224b768e830b07a2995d52d824",
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/foley_phone/foley_phone_03.wav",
+      "private_source_git_blob_sha1": "0f34ff21696ea175fadccc7d65c5ca0611fac9fc",
+      "source_filename_recorded_in_library": "Nikko_Barrera_Amaya_Office_hits__Lyd_SFX_38_Cell Phone Vibrations_7.wav"
+    },
+    {
+      "sfx_id": "foley_printer_04",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 15.1,
+          "event": "printer"
+        }
+      ],
+      "canonical_library_entry_path": "library/foley_printer/foley_printer_04.wav",
+      "source_url": null,
+      "stat": {
+        "exists": true,
+        "bytes": 158502,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": "53154c571888571d3eba14b73686c2b8268866964a13c513513d6afc10c133ed",
+      "catalogue_bytes": null,
+      "license_claim": "original / no rights (synthesized, numpy + ffmpeg)",
+      "license_url": null,
+      "distribution_status": "UNRESOLVED_FOR_PUBLIC_RAW_DISTRIBUTION; owner/provenance evidence missing",
+      "license_evidence_status": "CATALOGUE_CLAIM_ONLY",
+      "private_source_path": "source-inputs/S90/library/foley_printer/foley_printer_04.wav",
+      "private_source_git_blob_sha1": "c255f82102df629ecbeef67b6fc441c63ed4f6db"
+    },
+    {
+      "sfx_id": "foley_stamp_04",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 26.2333,
+          "event": "stamp"
+        }
+      ],
+      "canonical_library_entry_path": "library/foley_stamp/foley_stamp_04.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 100902,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": "5e26878732620ba84199c00cc106ecd0d1f86390b6e01414bf133bb02f07cb9f",
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training) + synthesized sub",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/foley_stamp/foley_stamp_04.wav",
+      "private_source_git_blob_sha1": "cc25005256f84604f7fc8ceba00a365aebc6ac13"
+    },
+    {
+      "sfx_id": "mouse_02",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 32.0333,
+          "event": "click"
+        }
+      ],
+      "canonical_library_entry_path": "library/mouse/mouse_02.wav",
+      "source_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "stat": {
+        "exists": true,
+        "bytes": 15182,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": null,
+      "catalogue_bytes": null,
+      "license_claim": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "distribution_status": "LIBRARY_CLAIMS_CC0_PUBLIC_REUSE; no per-asset source/evidence URL in library, so attribution to source still unverified",
+      "license_evidence_status": "CATALOGUE_CLAIM_ONLY",
+      "private_source_path": "source-inputs/S90/library/mouse/mouse_02.wav",
+      "private_source_git_blob_sha1": "c9deba5651e95da789775f79670b3c35f8f558e5",
+      "source_filename_recorded_in_library": "mouserelease1.wav"
+    },
+    {
+      "sfx_id": "paper_page_07",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 52.9,
+          "event": "paper"
+        }
+      ],
+      "canonical_library_entry_path": "library/paper_page/paper_page_07.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 223770,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": null,
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/paper_page/paper_page_07.wav",
+      "private_source_git_blob_sha1": "a64c026a69bfb268294b0db982009b87ea2541b3",
+      "source_filename_recorded_in_library": "SpillAudio_Paper__a4_sheet_page_sliding_001.wav"
+    },
+    {
+      "sfx_id": "paper_page_10",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 45.9667,
+          "event": "paper"
+        }
+      ],
+      "canonical_library_entry_path": "library/paper_page/paper_page_10.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 97128,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": null,
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/paper_page/paper_page_10.wav",
+      "private_source_git_blob_sha1": "818b86ff57cd4439287eca157b305301d97f61b1",
+      "source_filename_recorded_in_library": "Touchdown_Audio_The_White_Stuff__NOTEPAD_Page_Turn_4.wav"
+    },
+    {
+      "sfx_id": "swoosh_transition_05",
+      "cue_count": 1,
+      "cue_events": [
+        {
+          "t": 36.1333,
+          "event": "seam"
+        }
+      ],
+      "canonical_library_entry_path": "library/swoosh_transition/swoosh_transition_05.wav",
+      "source_url": "https://sonniss.com/gdc-bundle-license/",
+      "stat": {
+        "exists": true,
+        "bytes": 361384,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": null,
+      "catalogue_bytes": null,
+      "license_claim": "Sonniss GDC bundle license (commercial sync permitted; no AI training)",
+      "license_url": "https://sonniss.com/gdc-bundle-license/",
+      "distribution_status": "NO_PUBLIC_RAW_ASSET_RELEASE; private sharing only to project team/organisation members per current Sonniss agreement; workflow/private access still must be verified",
+      "license_evidence_status": "LIBRARY_CLAIMS_SONNISS_GDC; official current license reviewed; verify original download-date version separately",
+      "private_source_path": "source-inputs/S90/library/swoosh_transition/swoosh_transition_05.wav",
+      "private_source_git_blob_sha1": "5d4aac472f6e7ca55213b027980ac0c791a4edda",
+      "source_filename_recorded_in_library": "3maze_Cinematic_Swoosh__pang_short_R_to_L_003.wav"
+    },
+    {
+      "sfx_id": "ui_click_04",
+      "cue_count": 2,
+      "cue_events": [
+        {
+          "t": 21.9667,
+          "event": "press"
+        },
+        {
+          "t": 44.2333,
+          "event": "press"
+        }
+      ],
+      "canonical_library_entry_path": "library/ui_click/ui_click_04.wav",
+      "source_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "stat": {
+        "exists": true,
+        "bytes": 69454,
+        "method": "Local path.stat only; bytes recorded, no media bytes opened, decoded, or hashed."
+      },
+      "catalogue_sha256": null,
+      "catalogue_bytes": null,
+      "license_claim": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "distribution_status": "LIBRARY_CLAIMS_CC0_PUBLIC_REUSE; no per-asset source/evidence URL in library, so attribution to source still unverified",
+      "license_evidence_status": "CATALOGUE_CLAIM_ONLY",
+      "private_source_path": "source-inputs/S90/library/ui_click/ui_click_04.wav",
+      "private_source_git_blob_sha1": "9e2e0a04c539f33fed8d4e1f4141b07b15309c8a",
+      "source_filename_recorded_in_library": "switch19.wav"
+    }
+  ],
+  "music_selected": false,
+  "mix_status": "UNAPPROVED_CANDIDATE; no listening or rendered mix verified",
+  "hosted_transfer_status": "ROOT_UPLOADED_UNCHANGED_TO_PINNED_PRIVATE_REPOSITORY; runner must reverify exact commit, Git blob, size, and Ubuntu SHA-256 before mixing",
+  "public_release_policy": "Do not publish raw Sonniss assets; the current official Sonniss license allows synchronized finished projects and team/org sharing, but prohibits supplying the sound effects themselves without written permission. CC0 entries remain catalogue-claimed because per-file source chain is missing; synthesized printer asset source/owner provenance is also absent.",
+  "protected_private_input": {
+    "repository": "agmmltd-arch/agmm-video-render",
+    "pinned_commit": "b2c1ead7c7c55fceaaa3229adfa1b4fdc77f1d2d",
+    "root_native_manifest_sha256": "1f7295498ac8cb9c3c4cb47765c879ff56c5df73c0ddd03354bd2d429345622f",
+    "manifest_commit": "b2c1ead7c7c55fceaaa3229adfa1b4fdc77f1d2d",
+    "selected_assets_only": 16,
+    "private_source_verified_by_root": true,
+    "ubuntu_sha256": "NOT_COMPUTED; required by hosted input helper",
+    "public_raw_asset_upload": "PROHIBITED for Sonniss subset; this private source route is required",
+    "rights_final_review": "OPEN"
+  },
+  "root_private_manifest_path_in_this_report": "See private root receipt retained outside the public candidate."
+}

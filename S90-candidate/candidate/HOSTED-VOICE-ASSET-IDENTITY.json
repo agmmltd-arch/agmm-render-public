@@ -1,0 +1,43 @@
+{
+  "kind": "s90_hosted_selected_voice_asset_identity",
+  "observed_at_utc": "2026-10-04T11:48:10Z",
+  "source_selection": {
+    "status": "FINISHED",
+    "selected_attempt": 1,
+    "selected_label": "pass1",
+    "selected_take_dir": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/shorts/voice/S90/take-pass1",
+    "result_wav_path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/shorts/voice/S90/S90.wav",
+    "result_json_sha256": "48d7e8c16737a97a92367605644873becf945fe0b6968242b58f2d24ca2db4cd",
+    "voice_receipt_json_sha256": "c201ecc4a46eddab67f9b9f1c58405e8fc3f2255e0992b1d6faa732f3c13d00b",
+    "locked_words_sha256": "a6d08fbb84c55f406457751213df0094561e55de1e1824faf66cd760845f3925",
+    "locked_script_sha256": "a8006145cc4610be0abfd70f6e8355e6f6f64780064afe7a7834b49f33360055",
+    "duration_metadata_s": 58.291,
+    "full_asr_match": true
+  },
+  "github_native_public_metadata": {
+    "repository": "agmmltd-arch/agmm-render-public",
+    "visibility": "public",
+    "release_id": 402989473,
+    "release_tag": "S90-selected-voice-hosted-20261004",
+    "draft": false,
+    "prerelease": false,
+    "asset_id": 609728994,
+    "asset_name": "S90.wav",
+    "asset_state": "uploaded",
+    "content_type": "audio/x-wav",
+    "bytes": 2798068,
+    "server_sha256": "5f8ce5a135e0b81ba0623d801bb8047cd6a729f8abc1840d4f266ad5bf05cdd1",
+    "browser_download_url": "https://github.com/agmmltd-arch/agmm-render-public/releases/download/S90-selected-voice-hosted-20261004/S90.wav",
+    "metadata_read_method": "gh api release and release-asset JSON; no asset bytes fetched"
+  },
+  "interpretation": {
+    "selected_take_reuse": "ROOT_REPORTED_NATIVE_UPLOAD_FROM_UNCHANGED_RESULT_WAV_PATH",
+    "asset_identity": "NATIVE_GITHUB_SERVER_DIGEST_AND_BYTE_COUNT_OBSERVED",
+    "hosted_byte_rehash": "PENDING_EXISTING_UBUNTU_ADAPTER",
+    "wav_properties_recheck": "PENDING_EXISTING_UBUNTU_ADAPTER",
+    "audio_visual_review": "NOT_PERFORMED",
+    "storyboard_approval": "MISSING",
+    "render_authorized": false,
+    "release_authorized": false
+  }
+}

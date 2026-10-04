@@ -1,0 +1,271 @@
+{
+  "id": "S90",
+  "candidate_status": "UNAPPROVED_NOT_RENDERABLE",
+  "candidate_note": "Hosted selected-voice input candidate bound to the corrected B01/B02 reveal-timing source. Exact pass1 take retained; 19 sound cue IDs retained. Storyboard and mix remain unapproved; integrity is not AV approval.",
+  "voice": {
+    "src": "../voice/S90.wav",
+    "studio": true,
+    "speech_lufs": -16.0
+  },
+  "music": {},
+  "ducking": {
+    "gap_rise_db": 2.0,
+    "hold_ms": 150,
+    "release_ms": 600,
+    "attack_ms": 120,
+    "head_db": 3.0,
+    "tail_db": 3.0
+  },
+  "swells": [],
+  "drops": [],
+  "sfx": {
+    "library": "../mixer/library.json",
+    "cues": [
+      {
+        "t": 0.2333,
+        "sfx_id": "foley_paper_02",
+        "gain_db": -15.9176,
+        "event": "paper",
+        "pan": -0.45,
+        "event_t": 0.2333,
+        "anchor": "onset",
+        "category": "foley_paper",
+        "source_event_t": 0.24
+      },
+      {
+        "t": 3.9667,
+        "sfx_id": "camera_shutter_04",
+        "gain_db": -15.9176,
+        "event": "shutter",
+        "pan": 0.38,
+        "event_t": 3.9667,
+        "anchor": "onset",
+        "category": "camera_shutter",
+        "source_event_t": 3.953
+      },
+      {
+        "t": 9.2,
+        "sfx_id": "foley_click_01",
+        "gain_db": -15.9176,
+        "event": "click",
+        "pan": -0.3,
+        "event_t": 9.2,
+        "anchor": "onset",
+        "category": "foley_click",
+        "source_event_t": 9.197
+      },
+      {
+        "t": 9.6333,
+        "sfx_id": "foley_click_02",
+        "gain_db": -18.4164,
+        "event": "click",
+        "pan": -0.48,
+        "event_t": 9.6333,
+        "anchor": "onset",
+        "category": "foley_click",
+        "source_event_t": 9.62
+      },
+      {
+        "t": 10.0333,
+        "sfx_id": "foley_click_01",
+        "gain_db": -18.4164,
+        "event": "click",
+        "pan": 0.02,
+        "event_t": 10.0333,
+        "anchor": "onset",
+        "category": "foley_click",
+        "source_event_t": 10.04
+      },
+      {
+        "t": 15.1,
+        "sfx_id": "foley_printer_04",
+        "gain_db": -15.9176,
+        "event": "printer",
+        "pan": 0.42,
+        "event_t": 15.1,
+        "anchor": "onset",
+        "category": "foley_printer",
+        "source_event_t": 15.094
+      },
+      {
+        "t": 18.6,
+        "sfx_id": "foley_paper_03",
+        "gain_db": -15.9176,
+        "event": "paper",
+        "pan": -0.42,
+        "event_t": 18.6,
+        "anchor": "onset",
+        "category": "foley_paper",
+        "source_event_t": 18.588
+      },
+      {
+        "t": 21.9667,
+        "sfx_id": "ui_click_04",
+        "gain_db": -15.9176,
+        "event": "press",
+        "pan": 0.32,
+        "event_t": 21.9667,
+        "anchor": "onset",
+        "category": "ui_click",
+        "source_event_t": 21.973
+      },
+      {
+        "t": 26.2333,
+        "sfx_id": "foley_stamp_04",
+        "gain_db": -15.9176,
+        "event": "stamp",
+        "pan": 0.42,
+        "event_t": 26.2333,
+        "anchor": "onset",
+        "category": "foley_stamp",
+        "source_event_t": 26.235
+      },
+      {
+        "t": 29.0667,
+        "sfx_id": "foley_paper_05",
+        "gain_db": -15.9176,
+        "event": "paper",
+        "pan": -0.38,
+        "event_t": 29.0667,
+        "anchor": "onset",
+        "category": "foley_paper",
+        "source_event_t": 29.075
+      },
+      {
+        "t": 32.0333,
+        "sfx_id": "mouse_02",
+        "gain_db": -15.9176,
+        "event": "click",
+        "pan": 0.35,
+        "event_t": 32.0333,
+        "anchor": "onset",
+        "category": "mouse",
+        "source_event_t": 32.023
+      },
+      {
+        "t": 36.1333,
+        "sfx_id": "swoosh_transition_05",
+        "gain_db": -15.9176,
+        "event": "seam",
+        "pan": -0.35,
+        "event_t": 36.1333,
+        "anchor": "onset",
+        "category": "swoosh_transition",
+        "source_event_t": 36.136
+      },
+      {
+        "t": 41.7333,
+        "sfx_id": "foley_paper_04",
+        "gain_db": -15.9176,
+        "event": "paper",
+        "pan": 0.44,
+        "event_t": 41.7333,
+        "anchor": "onset",
+        "category": "foley_paper",
+        "source_event_t": 41.72
+      },
+      {
+        "t": 44.2333,
+        "sfx_id": "ui_click_04",
+        "gain_db": -15.9176,
+        "event": "press",
+        "pan": -0.4,
+        "event_t": 44.2333,
+        "anchor": "onset",
+        "category": "ui_click",
+        "source_event_t": 44.217
+      },
+      {
+        "t": 45.9667,
+        "sfx_id": "paper_page_10",
+        "gain_db": -15.9176,
+        "event": "paper",
+        "pan": 0.4,
+        "event_t": 45.9667,
+        "anchor": "onset",
+        "category": "paper_page",
+        "source_event_t": 45.964
+      },
+      {
+        "t": 47.6,
+        "sfx_id": "foley_phone_02",
+        "gain_db": -15.9176,
+        "event": "phone",
+        "pan": -0.42,
+        "event_t": 47.6,
+        "anchor": "onset",
+        "category": "foley_phone",
+        "source_event_t": 47.602
+      },
+      {
+        "t": 49.2333,
+        "sfx_id": "foley_phone_03",
+        "gain_db": -18.4164,
+        "event": "phone",
+        "pan": 0.36,
+        "event_t": 49.2333,
+        "anchor": "onset",
+        "category": "foley_phone",
+        "source_event_t": 49.22
+      },
+      {
+        "t": 51.1,
+        "sfx_id": "foley_click_02",
+        "gain_db": -15.9176,
+        "event": "click",
+        "pan": 0.42,
+        "event_t": 51.1,
+        "anchor": "onset",
+        "category": "foley_click",
+        "source_event_t": 51.096
+      },
+      {
+        "t": 52.9,
+        "sfx_id": "paper_page_07",
+        "gain_db": -15.9176,
+        "event": "paper",
+        "pan": -0.36,
+        "event_t": 52.9,
+        "anchor": "onset",
+        "category": "paper_page",
+        "source_event_t": 52.887
+      }
+    ],
+    "protect_words": true
+  },
+  "ambience": {
+    "regions": []
+  },
+  "master": {
+    "integrated_lufs": -14.0,
+    "true_peak_dbtp": -1.0
+  },
+  "words": "S90.words.json",
+  "duration_s": 58.3,
+  "sample_rate": 48000,
+  "candidate_binding": {
+    "spec_candidate_sha256": "f2147c726d4104c0b4043b71a7fd901bba8ff186ce080da7a44bdec4a0b1200c",
+    "storyboard_candidate_sha256": "c092d1f80b1adb01f15b03f27e6eaa46efb01a4cc1c53cb201b3ff101b1f1b7c",
+    "voice_words_sha256": "a6d08fbb84c55f406457751213df0094561e55de1e1824faf66cd760845f3925",
+    "voice_asset_sha256": "5f8ce5a135e0b81ba0623d801bb8047cd6a729f8abc1840d4f266ad5bf05cdd1",
+    "sound_library_sha256_text_only": "2744f53024d42208538675f8d27e24e3f06c4135b81e892af29e2f0538c56215",
+    "voice_duration_s_from_receipt": 58.291,
+    "duration_frame_basis": "1749 frames at 30 fps; proposal only",
+    "scene_sha256": "fe631a9dfed40facb4e04c37618185a48f21e9f9046f33cb19b0c82624406234",
+    "scene_path": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-av-development-candidate-luna-20261004/candidate/scenes.js",
+    "voice_asset_release_id": 402989473,
+    "voice_asset_id": 609728994,
+    "voice_asset_bytes": 2798068,
+    "voice_asset_tag": "S90-selected-voice-hosted-20261004",
+    "voice_selection_result_sha256": "48d7e8c16737a97a92367605644873becf945fe0b6968242b58f2d24ca2db4cd",
+    "voice_selection_receipt_sha256": "c201ecc4a46eddab67f9b9f1c58405e8fc3f2255e0992b1d6faa732f3c13d00b",
+    "spec_delta_sha256": "a6358970948829a231850f1d77f122de1210863c6f1865251e530c557db96857",
+    "source_asset_publication_commit": "3fb9befef4d9cc3c3529945d41edccab8915ef06",
+    "candidate_scene_publication_commit": "509df65306cce047b0c39ef88ab3b192e18255d8"
+  },
+  "approval": {
+    "mix": "NOT_REVIEWED",
+    "render_authorized": false,
+    "release_authorized": false
+  }
+}

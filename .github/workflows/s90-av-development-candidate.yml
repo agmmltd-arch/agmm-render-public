@@ -1,0 +1,264 @@
+name: S90 hosted AV development review candidate
+run-name: S90 AV development review at ${{ inputs.expected_head_sha }}
+
+# This is a one-job route so selected/private SFX and the intermediate mix
+# never cross a public Actions-artifact boundary. Only the finished synchronized
+# review video and text-only technical receipts can be uploaded.
+on:
+  workflow_dispatch:
+    inputs:
+      expected_head_sha:
+        description: Exact reviewed public main commit containing this workflow and frozen S90 inputs
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: s90-av-development-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  render-review-candidate:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      S90_HOSTED_AV_CANDIDATE: '1'
+      S90_HOSTED_REVIEW_BUILD: '1'
+      S90_HOSTED_PREVIEW: '1'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+      CANDIDATE: ${{ github.workspace }}/S90-candidate
+      WORKROOT: ${{ runner.temp }}/s90
+      PACKAGE: ${{ runner.temp }}/s90/candidate-package
+      SELECTED: ${{ runner.temp }}/s90/selected-voice
+      PRIVATE_SFX: ${{ github.workspace }}/private-s90-sfx
+
+    steps:
+      - name: Checkout the exact public candidate commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Verify public repository, main ref and fresh reviewed head
+        run: |
+          set -euo pipefail
+          mkdir -p "$WORKROOT"
+          test "$GITHUB_REF" = "refs/heads/main"
+          [[ "$EXPECTED_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
+          gh api "repos/$GITHUB_REPOSITORY" > "$WORKROOT/repository.json"
+          jq -e '.full_name == "agmmltd-arch/agmm-render-public" and .private == false and .visibility == "public"' "$WORKROOT/repository.json" >/dev/null
+          printf '%s  %s\n' \
+            '2c7db0660522368489697d48220d8832e3f84b070d946e2f83133b4eb4114028' \
+            '.github/scripts/render_short_package.py' \
+            '01551516e51bf49add20c5b6aef5b8a1a420d7a0412b09037c373a88da122777' \
+            '.github/workflows/agmm-short-package.yml' | sha256sum -c -
+
+      - name: Check candidate text and independent development admission before media access
+        run: |
+          set -euo pipefail
+          python3 "$CANDIDATE/candidate-builder/check_candidate_inputs.py" \
+            --candidate "$CANDIDATE/candidate" \
+            --library tools/agmm-kit-mirror/sound/library.json
+          python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+          root = Path("S90-candidate")
+          path = root / "candidate-builder/build_s90_av_development_candidate.py"
+          spec = importlib.util.spec_from_file_location("s90_candidate_builder", path)
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          module.validate_development_admission(
+              candidate=root / "candidate",
+              spec_candidate_path=root / "candidate/S90-spec-candidate.json",
+              storyboard_candidate_path=root / "candidate/S90-storyboard-candidate.json",
+              admission_path=root / "candidate/DEVELOPMENT-RENDER-ADMISSION.json",
+              mix_spec_path=root / "candidate/S90-mix_spec.hosted-candidate.json")
+          print("EXACT_HASH_BOUND_DEVELOPMENT_ADMISSION_PRESENT")
+          PY
+
+      - name: Install pinned render runtime dependencies
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - name: Install Chrome and hosted audio/video dependencies
+        uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+
+      - name: Install FFmpeg and image evidence dependency
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m venv "$WORKROOT/venv"
+          "$WORKROOT/venv/bin/python" -m pip install --quiet Pillow numpy
+
+      - name: Fetch and verify the exact source runtime parent on Ubuntu
+        run: |
+          set -euo pipefail
+          mkdir -p "$WORKROOT/parent"
+          gh api repos/agmmltd-arch/agmm-render-public/releases/400657643 > "$WORKROOT/parent/release.json"
+          gh release download S86-r2-source-202610010547 \
+            --repo agmmltd-arch/agmm-render-public \
+            --pattern source.tar.gz --dir "$WORKROOT/parent"
+          test "$(find "$WORKROOT/parent" -maxdepth 1 -type f | wc -l | tr -d ' ')" = 2
+
+      - name: Checkout only the 16 protected private SFX inputs
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: b2c1ead7c7c55fceaaa3229adfa1b4fdc77f1d2d
+          path: private-s90-sfx
+          sparse-checkout: source-inputs/S90/library
+          sparse-checkout-cone-mode: true
+          persist-credentials: false
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          fetch-depth: 1
+
+      - name: Fetch the already selected voice and stage exact mixer text
+        run: |
+          set -euo pipefail
+          python3 "$CANDIDATE/candidate/prepare_selected_voice.py" \
+            --words-source "$CANDIDATE/candidate/S90.words.json" \
+            --mix-spec-template "$CANDIDATE/candidate/S90-mix_spec.hosted-candidate.json" \
+            --output "$SELECTED"
+          mkdir -p "$SELECTED/mixer/v2"
+          cp tools/agmm-kit-mirror/sound/v2/mix2.py "$SELECTED/mixer/v2/"
+          cp tools/agmm-kit-mirror/sound/v2/audio_core.py "$SELECTED/mixer/v2/"
+          cp tools/agmm-kit-mirror/sound/v2/audio_rules.json "$SELECTED/mixer/v2/"
+          cp tools/agmm-kit-mirror/sound/v2/voice_chain.py "$SELECTED/mixer/v2/"
+          cp tools/agmm-kit-mirror/sound/library.json "$SELECTED/mixer/library.json"
+          mkdir -p "$WORKROOT/private-receipts"
+          python3 "$CANDIDATE/candidate-builder/prepare_private_sfx_inputs.py" \
+            --asset-map "$CANDIDATE/S90-SFX-HOSTED-ASSET-MAP.json" \
+            --mix-spec "$SELECTED/mix/mix_spec.json" \
+            --library tools/agmm-kit-mirror/sound/library.json \
+            --private-root "$PRIVATE_SFX" \
+            --private-commit b2c1ead7c7c55fceaaa3229adfa1b4fdc77f1d2d \
+            --library-root "$SELECTED/mixer" \
+            --receipt "$WORKROOT/private-receipts/SFX-VERIFICATION.json"
+          python3 "$CANDIDATE/candidate-builder/check_candidate_inputs.py" \
+            --candidate "$CANDIDATE/candidate" \
+            --library "$SELECTED/mixer/library.json" --check-assets
+
+      - name: Build the exact private-input mix and sealed source package
+        run: |
+          set -euo pipefail
+          "$WORKROOT/venv/bin/python" "$CANDIDATE/candidate-builder/build_s90_av_development_candidate.py" \
+            --spec-candidate "$CANDIDATE/candidate/S90-spec-candidate.json" \
+            --storyboard-candidate "$CANDIDATE/candidate/S90-storyboard-candidate.json" \
+            --development-admission "$CANDIDATE/candidate/DEVELOPMENT-RENDER-ADMISSION.json" \
+            --candidate "$CANDIDATE/candidate" \
+            --voice "$SELECTED/voice/S90.wav" \
+            --voice-receipt "$SELECTED/selected-voice-receipt.json" \
+            --expected-voice-sha256 5f8ce5a135e0b81ba0623d801bb8047cd6a729f8abc1840d4f266ad5bf05cdd1 \
+            --mix-spec "$SELECTED/mix/mix_spec.json" \
+            --mixer-dir "$SELECTED/mixer/v2" \
+            --source-builder "$CANDIDATE/candidate-builder/s90_grid_packager_development.py" \
+            --parent-release-metadata "$WORKROOT/parent/release.json" \
+            --parent-archive "$WORKROOT/parent/source.tar.gz" \
+            --dispatcher "$CANDIDATE/candidate-builder/short_cloud_dispatch_contract.py" \
+            --output "$PACKAGE"
+
+      - name: Remove private raw SFX and selected voice after synchronized mix creation
+        run: |
+          set -euo pipefail
+          rm -rf "$PRIVATE_SFX" "$SELECTED"
+
+      - name: Validate exact source, mix and standard renderer inputs
+        id: input-hashes
+        run: |
+          set -euo pipefail
+          SOURCE_SHA256=$(sha256sum "$PACKAGE/build/source.tar.gz" | cut -d ' ' -f1)
+          PARTS_SHA256=$(sha256sum "$PACKAGE/build/parts.json" | cut -d ' ' -f1)
+          MIX_SHA256=$(sha256sum "$PACKAGE/audio/mix.wav" | cut -d ' ' -f1)
+          printf 'source_sha256=%s\nparts_sha256=%s\nmix_sha256=%s\n' "$SOURCE_SHA256" "$PARTS_SHA256" "$MIX_SHA256" >> "$GITHUB_OUTPUT"
+          mkdir -p "$WORKROOT/preflight"
+          "$WORKROOT/venv/bin/python" .github/scripts/render_short_package.py prepare \
+            --source "$PACKAGE/build/source.tar.gz" --parts "$PACKAGE/build/parts.json" --mix "$PACKAGE/audio/mix.wav" \
+            --source-sha256 "$SOURCE_SHA256" --parts-sha256 "$PARTS_SHA256" --mix-sha256 "$MIX_SHA256" \
+            --output "$WORKROOT/preflight"
+
+      - name: Render the approved development candidate, without changing canonical state
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib, sys
+          sys.path.insert(0, ".github/scripts")
+          import render_short_package as short
+          short.safe_extract(pathlib.Path("${{ runner.temp }}/s90/candidate-package/build/source.tar.gz"),
+                             pathlib.Path("${{ runner.temp }}/s90/project"))
+          PY
+          cd "$WORKROOT/project/s90-preview-a"
+          sha256sum -c SHA256SUMS.txt >/dev/null
+          python3 static_check.py
+          mkdir -p "$WORKROOT/render-output"
+          npx --yes hyperframes@0.8.71 render -c index.html --fps 30 --workers 2 \
+            --quality high --player-ready-timeout 180000 --protocol-timeout 600000 \
+            --output "$WORKROOT/render-output/S90-main.raw.mp4" \
+            > "$WORKROOT/render-output/S90-main.render.log" 2>&1 || {
+              tail -60 "$WORKROOT/render-output/S90-main.render.log"
+              exit 1
+            }
+          cd "$GITHUB_WORKSPACE"
+          "$WORKROOT/venv/bin/python" .github/scripts/render_short_package.py cap-part \
+            --input "$WORKROOT/render-output/S90-main.raw.mp4" \
+            --output "$WORKROOT/render-output/S90-main.mp4" --resolution 1080 \
+            --receipt "$WORKROOT/render-output/S90-main.cap.json"
+          "$WORKROOT/venv/bin/python" .github/scripts/render_short_package.py verify-part \
+            --video "$WORKROOT/render-output/S90-main.mp4" --resolution 1080 --duration 58.3 \
+            --output "$WORKROOT/render-output/S90-main.verify.json"
+          rm "$WORKROOT/render-output/S90-main.raw.mp4"
+          mkdir -p "$WORKROOT/remote-final"
+          "$WORKROOT/venv/bin/python" .github/scripts/render_short_package.py assemble \
+            --parts "$PACKAGE/build/parts.json" --mix "$PACKAGE/audio/mix.wav" \
+            --parts-sha256 "${{ steps.input-hashes.outputs.parts_sha256 }}" \
+            --mix-sha256 "${{ steps.input-hashes.outputs.mix_sha256 }}" \
+            --renders "$WORKROOT/render-output" --output "$WORKROOT/remote-final"
+
+      - name: Remove intermediate waveform and assert only AV/text review outputs remain
+        run: |
+          set -euo pipefail
+          rm -f "$PACKAGE/audio/mix.wav" "$SELECTED/selected-voice-receipt.json" \
+            "$SELECTED/mix/mix_spec.json"
+          if find "$WORKROOT/remote-final" -type f -iname '*.wav' -print -quit | grep -q .; then
+            echo "Refusing review output that contains an isolated waveform" >&2
+            exit 2
+          fi
+          test -f "$WORKROOT/remote-final/FINAL.mp4"
+          test -f "$WORKROOT/remote-final/TECHNICAL-EVIDENCE.json"
+          test -f "$WORKROOT/remote-final/SHA256SUMS.txt"
+
+      - name: Exclude raw licensed SFX from public review payload
+        run: |
+          set -euo pipefail
+          python3 "$CANDIDATE/candidate-builder/guard_public_payload.py" \
+            --private-sfx-receipt "$WORKROOT/private-receipts/SFX-VERIFICATION.json" \
+            --payload-root "$WORKROOT/remote-final" \
+            --manifest "$WORKROOT/public-payload-check.json" \
+            FINAL.mp4 TECHNICAL-EVIDENCE.json SHA256SUMS.txt
+
+      - name: Remove private SFX identity receipt from the ephemeral runner
+        if: always()
+        run: rm -f "$WORKROOT/private-receipts/SFX-VERIFICATION.json"
+
+      - name: Upload finished synchronized review video
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: S90-HOSTED-AV-DEVELOPMENT-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/s90/remote-final/FINAL.mp4
+            ${{ runner.temp }}/s90/remote-final/TECHNICAL-EVIDENCE.json
+            ${{ runner.temp }}/s90/remote-final/SHA256SUMS.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
