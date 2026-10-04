@@ -107,6 +107,25 @@ jobs:
             --snapshots "raw-snapshots/$look" --output "captured/$look" \
             --log "captured/$look.snapshot.log"
           cp "captured/$look.static-check.log" "captured/$look/static-check.log"
+      - name: Show bounded text diagnostics after a failed capture
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          limit = 12288
+          for name in ("captured/s90-preview-a.static-check.log", "captured/s90-preview-a.snapshot.log"):
+              path = Path(name)
+              print(f"=== {name} (last at most {limit} bytes) ===")
+              if not path.is_file():
+                  print("log absent; failure occurred before this command produced it")
+                  continue
+              with path.open("rb") as stream:
+                  stream.seek(max(0, path.stat().st_size - limit))
+                  data = stream.read(limit)
+              if path.stat().st_size > limit:
+                  print("[earlier log bytes omitted]")
+              print(data.decode("utf-8", errors="replace"))
+          PY
       - name: Bind a compact still-only development evidence pack
         run: |
           set -euo pipefail

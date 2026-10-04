@@ -37,6 +37,9 @@ SOURCE_REVIEW_SHA256 = "b0102274086343806a9f4aed0d0d5fae2dedcbeb52c5fc65e18b6349
 WORDS_SHA256 = "a6d08fbb84c55f406457751213df0094561e55de1e1824faf66cd760845f3925"
 SCENES_SHA256 = "f4063b0f8767039c3b6db18f80a4cc8b8bcf34a6d04a82295baeb319b76a9732"
 DELTA_SHA256 = "901c7bc6a97425df1727077a333ca97f49721ad62dabbd734cd97b20c6bc22ee"
+PINNED_KIT3_SHA256 = "e0505dd3deca92e3a54c4473f7a37124e706d0a6647297eb87f149aef2e80762"
+PINNED_KIT3_CSS_SHA256 = "2182674e7c361aa73d5e92e8fe05ef3c1f0ae2fa20ce2c2eb26b20521d7d0bb6"
+PINNED_DS_CSS_SHA256 = "181eb68d13ee571ae8a9129abbd14dda51d939aefebaf20f0173ac16c35d7135"
 SOURCE_BASE = "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/"
 PNG_SIG = b"\x89PNG\r\n\x1a\n"
 HASH_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -243,6 +246,52 @@ def write_json(path: Path, value: object) -> bytes:
     return data
 
 
+def derive_inactive_optional_css(look: Path, spec: dict, scene_source: str) -> list[dict]:
+    """Remove only two absent URLs proven inactive for this exact silent softui candidate.
+
+    Parent CSS is first verified byte-for-byte by the 50-member archive allowlist. This
+    creates candidate-derived copies; the sealed source retains before/after hashes.
+    The native static checker remains strict for every other CSS reference.
+    """
+    if spec.get("look") != "softui":
+        raise Refusal("optional CSS derivation is approved only for the pinned softui preview")
+    beats = spec.get("beats")
+    if not isinstance(beats, list) or not beats or any(b.get("field") != "none" for b in beats):
+        raise Refusal("optional CSS derivation requires every native beat field to be none")
+    if re.search(r"\b(?:AG\.grain\s*\(|\.k3-f-cork\b|\.ag-grain\b|field\s*:\s*['\"]cork['\"])", scene_source):
+        raise Refusal("S90 scenes activate a texture/field whose CSS asset would be removed")
+    kit3 = (look / "kit3.js").read_bytes()
+    if sha_bytes(kit3) != PINNED_KIT3_SHA256:
+        raise Refusal("pinned kit3 runtime changed before optional CSS derivation")
+    kit3_text = kit3.decode("utf-8")
+    if not re.search(r"softui\s*:\s*\{[^}]*field:\s*['\"]soft['\"][^}]*grain:\s*0", kit3_text):
+        raise Refusal("pinned softui runtime no longer proves soft field and zero grain")
+
+    rules = (
+        ("ds/kit.css", PINNED_DS_CSS_SHA256,
+         'background-image: url("img/grain.png");', "background-image: none;",
+         "softui look has grain=0; no scene requests AG.grain"),
+        ("kit3.css", PINNED_KIT3_CSS_SHA256,
+         ".k3-f-cork { background: #6b4a2b url(ds2/img/eb-cork-tile.jpg);",
+         ".k3-f-cork { background: #6b4a2b;",
+         "softui field is soft and every native beat has field=none"),
+    )
+    derivations = []
+    for rel, expected_parent, old, new, reason in rules:
+        path = look / rel
+        before = path.read_bytes()
+        if sha_bytes(before) != expected_parent:
+            raise Refusal(f"pinned runtime CSS changed before derivation: {rel}")
+        text = before.decode("utf-8")
+        if text.count(old) != 1:
+            raise Refusal(f"expected exactly one pinned optional CSS declaration in {rel}")
+        after = text.replace(old, new, 1).encode("utf-8")
+        path.write_bytes(after)
+        derivations.append({"path": rel, "parent_sha256": sha_bytes(before), "derived_sha256": sha_bytes(after),
+                            "single_declaration_replacement": {"before": old, "after": new}, "inactivity_basis": reason})
+    return derivations
+
+
 def build_spec(words_obj: dict, delta: dict) -> dict:
     words = []
     for row in words_obj["words"]:
@@ -299,6 +348,7 @@ def stage(args: argparse.Namespace) -> None:
     spec = build_spec(words_obj, json.loads((candidate / "spec-delta.json").read_text()))
     write_json(look / "spec.json", spec)
     (look / "spec.js").write_text("window.AGK_SPEC=" + json.dumps(spec, ensure_ascii=False, separators=(",", ":")) + ";\n")
+    css_derivations = derive_inactive_optional_css(look, spec, (candidate / "scenes.js").read_text())
     (look / "index.html").write_text(make_html())
     (look / "static_check.py").write_text(static_check_source())
     media_rows, dimensions = fetch_assets(project, manifest)
@@ -340,6 +390,7 @@ def stage(args: argparse.Namespace) -> None:
         "runtime_parent_release": PARENT_TAG, "runtime_parent_release_id": PARENT_RELEASE,
         "runtime_parent_asset_id": PARENT_ASSET, "runtime_parent_sha256": PARENT_ASSET_SHA256,
         "runtime_parent_members_used": len(member_hashes),
+        "runtime_css_derivations": css_derivations,
         "source_assets": dimensions,
         "composition": "SILENT SOURCE COMPOSITION DEVELOPMENT PREVIEW; narration and music intentionally absent",
         "caption_layer": "PRESERVED; overlap remains open for visual review",
