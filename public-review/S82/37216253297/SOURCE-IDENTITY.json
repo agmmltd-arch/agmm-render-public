@@ -1,0 +1,31 @@
+{
+  "schema": "agmm-s82-source-identities-v1",
+  "story_id": "S82",
+  "plan_sha256": "0fe325104557169140b7b7ca1643acbbcbac92c2c57a8f6075845b24055ca661",
+  "sources": [
+    {
+      "key": "primary",
+      "source_url": "https://www.santander.com/en/stories/santander-turns-its-ai-first-strategy-into-measurable-impact-and-extends-ai-access-to-all-185000-employees",
+      "tagged_url": "https://www.santander.com/en/stories/santander-turns-its-ai-first-strategy-into-measurable-impact-and-extends-ai-access-to-all-185000-employees?utm_source=qa&utm_campaign=qa_release_audit",
+      "publisher": "Santander",
+      "title_expected": "Santander turns its AI-first strategy into measurable impact and extends AI access to all 185,000 employees",
+      "date_expected": "22 June 2026",
+      "http_status": 200,
+      "final_url": "https://www.santander.com/en/stories/santander-turns-its-ai-first-strategy-into-measurable-impact-and-extends-ai-access-to-all-185000-employees?utm_source=qa&utm_campaign=qa_release_audit",
+      "title_verified": false,
+      "byline_date_verified": false,
+      "logo_verified": true,
+      "photos_or_clips_requested": false,
+      "source_review": "NOT_REVIEWED",
+      "header_logo": {
+        "accessible_label": "Santander Bank",
+        "tag": "img",
+        "host": "www.santander.com"
+      },
+      "capture_stage": "title-date-binding",
+      "error": "expected one exact visible article title; found 0"
+    }
+  ],
+  "status": "SOURCE_CAPTURE_FAILED",
+  "sources_count": 1
+}
