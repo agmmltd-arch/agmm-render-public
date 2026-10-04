@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "short_id": "S86",
+  "source_sha256": "8a9a09aadbb5502640e01f14059936d84b53d3d61be9a3f1cea0a81d0d7681c1",
+  "parts_sha256": "e443a9bb32b1ba5bdf0f785296a2484e8480904f13a3a64748ac04ece7e65790",
+  "media_identity_sha256": "6f9464e534981c16d6e6a451d0759799347b553df468fe5ee6f74812dcbfe32c",
+  "include_part_seams": true,
+  "captures": [
+    {
+      "name": "hook-credit-0p400",
+      "kind": "beat",
+      "global": 0.4,
+      "local": 0.4,
+      "look": "s86-a"
+    },
+    {
+      "name": "ico-entry-23p05",
+      "kind": "beat",
+      "global": 23.05,
+      "local": 7.883333,
+      "look": "s86-b"
+    },
+    {
+      "name": "ico-mid-25p70",
+      "kind": "beat",
+      "global": 25.7,
+      "local": 10.533333,
+      "look": "s86-b"
+    },
+    {
+      "name": "ico-exit-28p35",
+      "kind": "beat",
+      "global": 28.35,
+      "local": 13.183333,
+      "look": "s86-b"
+    },
+    {
+      "name": "scope-entry-49p841",
+      "kind": "beat",
+      "global": 49.841,
+      "local": 4.341,
+      "look": "s86-d"
+    },
+    {
+      "name": "scope-mid-52p188",
+      "kind": "beat",
+      "global": 52.188,
+      "local": 6.688,
+      "look": "s86-d"
+    },
+    {
+      "name": "scope-exit-54p545",
+      "kind": "beat",
+      "global": 54.545,
+      "local": 9.045,
+      "look": "s86-d"
+    }
+  ]
+}
