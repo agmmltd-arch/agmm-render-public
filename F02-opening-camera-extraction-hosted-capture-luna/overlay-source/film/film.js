@@ -33,7 +33,8 @@
     [5.3, "release", C([0.25, 1.70, -0.39], [0.25, 0.90, -0.44], 9), C([0.25, 1.66, -0.39], [0.25, 0.90, -0.44], 9), { id: "S03" }],
     [7.8, "release", C([0.25, 1.70, -0.39], [0.25, 0.90, -0.44], 9), C([0.25, 1.68, -0.39], [0.25, 0.90, -0.44], 9), { ease: "io", id: "S04" }],
     [10.3, "release", C([0.25, 1.72, -0.26], [0.25, 0.90, -0.31], 9), C([0.25, 1.70, -0.26], [0.25, 0.90, -0.31], 9), { id: "S05" }],
-    [12.34, "release", C([0.25, 1.70, -0.26], [0.25, 0.90, -0.31], 9), C([0.25, 1.65, 0.40], [0.25, 1.10, -0.31], 30), { id: "S06" }],
+    // Hold the same source-page close-up through the complete spoken 700 phrase.
+    [12.34, "release", C([0.25, 1.72, -0.26], [0.25, 0.90, -0.31], 9), C([0.25, 1.72, -0.26], [0.25, 0.90, -0.31], 9), { id: "S06" }],
     [13.2666666667, "floor", C([0, 58, 44], [0, 0, 2], 42), C([0, 52, 36], [0, 0, 0], 42), { ss: 40, id: "S07" }],
     [16.2, "floor", C([-14, 11, 38], [0, 1, 10], 40), C([-24, 19, 52], [0, 1, 6], 40), { ss: 40 }],
     [18.2, "black", null, null, { id: "LOGO" }],
@@ -247,9 +248,9 @@
   var r2 = function (v) { return Math.round(v * 100) / 100; };
 
   function release(T) {
-    if (T < 2.4) return { out: 1, lift: 0 };
-    if (T < 5.3) return { out: r2(eio(prog(T, 2.5, 2.6))), lift: 0 };
-    return { out: 1, lift: prog(T, 12.566, 0.44) };
+    if (T < 2.4) return { out: 1 };
+    if (T < 5.3) return { out: r2(eio(prog(T, 2.5, 2.6))) };
+    return { out: 1 };
   }
   // the support floor (the recurring set)
   var ROWS = 25;
@@ -475,7 +476,7 @@
 
   // ================================================================== COLD OPEN
   // Date and source type remain printed on the page; avoid duplicating them as overlays.
-  (function () { // the typed number over the floor as the rows rise: 700, then the words
+  (function () { // The floor's 700 appears only after the source-page phrase and the 13.2667s shot cut.
     var f = el("div", "fig", LY, '<div class="num">700</div><div class="lab">full-time agents’ work</div>'); f.style.top = "250px";
     slam(f.querySelector(".num"), 13.2666666667); slam(f.querySelector(".lab"), 13.801); full.to(f, { opacity: 0, filter: "blur(8px)", duration: 0.3 }, 15.9);
   })();

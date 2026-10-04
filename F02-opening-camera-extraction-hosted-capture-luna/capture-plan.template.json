@@ -1,12 +1,17 @@
 {
-  "schema": "f02-isolated-source-candidate-capture-plan-v1",
-  "parent_release": "F02-profit-qualifier-20261003",
-  "parent_release_id": 402632642,
-  "parent_asset_id": 608285956,
-  "parent_source_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
-  "film_js_sha256": "44bca8f20b1d8ed554ec2398c73eb4f8f66fda4ec4266951247f5407594487ef",
-  "sets_a_sha256": "5db00f65342618bccd19c3bf405aca26f462381e2ed7e7f88ad38fc8384727f3",
+  "candidate_builder_owner_source": {
+    "film/film.js": {
+      "sha256": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b"
+    },
+    "film/sets_a.js": {
+      "sha256": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e"
+    }
+  },
+  "candidate_class": "isolated_source_candidate",
   "capture_class": "isolated_source_candidate_composition_only",
+  "capture_count": 74,
+  "capture_plan_sha256": "c37d8d1cb14fabeef5bfe1e30021a048c5e58b414950d12ab49668d6ba08f64d",
+  "capture_rate_fps": 30,
   "captures": [
     {
       "name": "opening_source_headline_frame0",
@@ -137,23 +142,23 @@
       "time": 12.1
     },
     {
-      "name": "camera_tilt_early",
+      "name": "camera_hold_early",
       "time": 12.1333333333
     },
     {
-      "name": "camera_tilt_after_early",
+      "name": "camera_hold_mid",
       "time": 12.1666666667
     },
     {
-      "name": "camera_tilt_pre_pivot",
+      "name": "camera_hold_late",
       "time": 12.3
     },
     {
-      "name": "camera_tilt_before_release",
+      "name": "source_hold_pre_stress",
       "time": 12.3333333333
     },
     {
-      "name": "camera_tilt_post_frame",
+      "name": "source_hold_post_frame",
       "time": 12.3666666667
     },
     {
@@ -161,35 +166,35 @@
       "time": 12.5333333333
     },
     {
-      "name": "stressed_700_first_frame",
+      "name": "printed_700_first_stress",
       "time": 12.5666666667
     },
     {
-      "name": "stressed_700_next_frame",
+      "name": "printed_700_next_frame",
       "time": 12.6
     },
     {
-      "name": "lift_early",
+      "name": "printed_700_hold_early",
       "time": 12.7
     },
     {
-      "name": "lift_mid",
+      "name": "printed_700_hold_mid",
       "time": 12.8
     },
     {
-      "name": "lift_late",
+      "name": "printed_700_hold_late",
       "time": 12.9
     },
     {
-      "name": "lift_last_frame_pre_cut",
+      "name": "printed_700_last_frame_pre_cut",
       "time": 13.0
     },
     {
-      "name": "number_hold_13_033",
+      "name": "printed_700_hold_13_033",
       "time": 13.0333333333
     },
     {
-      "name": "number_hold_13_067",
+      "name": "printed_700_hold_13_067",
       "time": 13.0666666667
     },
     {
@@ -306,29 +311,24 @@
     }
   ],
   "editorial_status": "NOT_REVIEWED",
-  "release_approval": "NOT_GRANTED",
-  "candidate_class": "isolated_source_candidate",
+  "film_js_sha256": "0507c2c652c9723e1478268db6a60b1244824782a694ba938c77cea9a1a43f63",
   "owner_adoption": "NOT_ADOPTED",
-  "candidate_builder_owner_source": {
-    "film/film.js": {
-      "sha256": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b"
-    },
-    "film/sets_a.js": {
-      "sha256": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e"
-    }
-  },
+  "parent_asset_id": 608285956,
+  "parent_release": "F02-profit-qualifier-20261003",
+  "parent_release_id": 402632642,
+  "parent_source_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
   "prior_db1e_source": {
-    "release_id": 402725212,
     "asset_id": 608687529,
-    "tag_name": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+    "release_id": 402725212,
+    "role": "diagnostic_only_not_candidate_input",
     "sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
     "status": "REJECTED_BY_ROOT_SOURCE_CAPTURE_REVIEW",
-    "role": "diagnostic_only_not_candidate_input"
+    "tag_name": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68"
   },
+  "release_approval": "NOT_GRANTED",
+  "schema": "f02-isolated-source-candidate-capture-plan-v1",
+  "sets_a_sha256": "a95e9df7557ab62b9708556cbddc8a586118ad03441b9a69b9104e7f4ff5fbd5",
+  "source_proposal_result": "NEEDS_ACTUAL_HOSTED_FRAME_REVIEW; DEVELOPMENT_PROJECTION_ONLY",
   "source_text_check_status": "PASS_TEXT_AND_PROJECTION_ONLY",
-  "text_checker_sha256": "dd16cf763b60669eb746f8c3af591d034b5e4a15094720c574f1622a6cab137e",
-  "capture_count": 74,
-  "capture_rate_fps": 30,
-  "capture_plan_sha256": "c37d8d1cb14fabeef5bfe1e30021a048c5e58b414950d12ab49668d6ba08f64d",
-  "source_proposal_result": "NEEDS_ACTUAL_HOSTED_FRAME_REVIEW; DEVELOPMENT_PROJECTION_ONLY"
+  "text_checker_sha256": "dd16cf763b60669eb746f8c3af591d034b5e4a15094720c574f1622a6cab137e"
 }

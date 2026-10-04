@@ -1,41 +1,51 @@
 {
-  "kind": "f02-isolated-source-candidate-manifest",
-  "candidate_class": "isolated_source_candidate",
-  "owner_adoption": "NOT_ADOPTED",
-  "candidate_builder_owner_source": {
-    "film/film.js": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b",
-    "film/sets_a.js": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e"
-  },
-  "candidate": {
-    "film/film.js": "44bca8f20b1d8ed554ec2398c73eb4f8f66fda4ec4266951247f5407594487ef",
-    "film/sets_a.js": "5db00f65342618bccd19c3bf405aca26f462381e2ed7e7f88ad38fc8384727f3"
-  },
-  "parent_source_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
-  "capture_count": 74,
-  "capture_rate_fps": 30,
   "affected_segments": [
     1,
     2
   ],
+  "candidate": {
+    "film/film.js": "0507c2c652c9723e1478268db6a60b1244824782a694ba938c77cea9a1a43f63",
+    "film/sets_a.js": "a95e9df7557ab62b9708556cbddc8a586118ad03441b9a69b9104e7f4ff5fbd5"
+  },
+  "candidate_builder_owner_source": {
+    "film/film.js": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b",
+    "film/sets_a.js": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e"
+  },
+  "candidate_class": "isolated_source_candidate",
+  "capture_count": 74,
+  "capture_plan_sha256": "bfbdf627dcb5a365e5dcae50b23537a8d0bbd98d4e40ee0a12495883080714ac",
+  "capture_rate_fps": 30,
+  "editorial_status": "NOT_REVIEWED",
+  "hosted_capture_order": "chronological",
+  "independent_source_review": {
+    "diagnosed": "masthead/headline overlap near 7.833s; printed headline crossed by detached 700 at 12.6-12.9s",
+    "proposed_change": "remove duplicate printed sheets and detached 700; hold source-facing page through the 700 phrase, then retain existing floor handoff after the phrase",
+    "receipt": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/F02-independent-opening-review-luna-chat/RESULT.json",
+    "run_id": 37170744275,
+    "source_sha256": "54df760764ec340fc9a526f2d6df09bcbae632b7f802f28387d204df5ec81f74",
+    "verdict": "RETURN"
+  },
+  "kind": "f02-isolated-source-candidate-manifest",
+  "owner_adoption": "NOT_ADOPTED",
+  "parent_source_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
+  "prior_db1e_source": {
+    "asset_id": 608687529,
+    "release_id": 402725212,
+    "role": "diagnostic_only_not_candidate_input",
+    "sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+    "status": "REJECTED_BY_ROOT_SOURCE_CAPTURE_REVIEW",
+    "tag_name": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68"
+  },
+  "projection_is_not_visual_review": true,
+  "publication_or_dispatch_authorized": false,
+  "release_approval": "NOT_GRANTED",
+  "render_authorization": "NOT_REQUESTED",
+  "requires_new_hosted_capture": true,
+  "source_proposal_result": "NEEDS_ACTUAL_HOSTED_FRAME_REVIEW; DEVELOPMENT_PROJECTION_ONLY",
+  "source_text_check_status": "PASS_TEXT_AND_PROJECTION_ONLY",
+  "text_checker_sha256": "616a8d87f62255a69f5370d820c03a904c39ab14d314a919684f0f59c0226dc1",
   "unchanged_review_segments": [
     51,
     52
-  ],
-  "editorial_status": "NOT_REVIEWED",
-  "release_approval": "NOT_GRANTED",
-  "render_authorization": "NOT_REQUESTED",
-  "prior_db1e_source": {
-    "release_id": 402725212,
-    "asset_id": 608687529,
-    "tag_name": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
-    "sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
-    "status": "REJECTED_BY_ROOT_SOURCE_CAPTURE_REVIEW",
-    "role": "diagnostic_only_not_candidate_input"
-  },
-  "text_checker_sha256": "dd16cf763b60669eb746f8c3af591d034b5e4a15094720c574f1622a6cab137e",
-  "source_text_check_status": "PASS_TEXT_AND_PROJECTION_ONLY",
-  "projection_is_not_visual_review": true,
-  "capture_plan_sha256": "c37d8d1cb14fabeef5bfe1e30021a048c5e58b414950d12ab49668d6ba08f64d",
-  "source_proposal_result": "NEEDS_ACTUAL_HOSTED_FRAME_REVIEW; DEVELOPMENT_PROJECTION_ONLY",
-  "hosted_capture_order": "chronological"
+  ]
 }

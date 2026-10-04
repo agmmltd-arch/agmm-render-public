@@ -57,16 +57,7 @@ export function createSetsA(K) {
     const pageMat = new THREE.MeshLambertMaterial({ map: pageTex, side: THREE.DoubleSide });
     const pgGeo = new THREE.PlaneGeometry(0.21, 0.297, 1, 30); const pgBase = pgGeo.attributes.position.array.slice();
     const page = new THREE.Mesh(pgGeo, pageMat); page.castShadow = true; page.receiveShadow = true; pr.add(page);
-    // earlier copies on the tray (same page), so a close-up can open on a printed sheet
-    const stackTex = pageTex;
-    for (let k = 0; k < 3; k++) { const s = new THREE.Mesh(new THREE.PlaneGeometry(0.21, 0.297), new THREE.MeshLambertMaterial({ map: stackTex }));
-      s.rotation.x = -Math.PI / 2; s.rotation.z = (hash(k, 4) - 0.5) * 0.08; s.position.set((hash(k, 2) - 0.5) * 0.01, 0.112 + k * 0.0015, 0.29); s.receiveShadow = true; pr.add(s); }
-    // the number lifts off the page (a cut-out of the printed digits, drawn separately so it stays sharp when big)
-    const numTex = canvasTex(1200, 560, (g, w, h) => { g.fillStyle = "#14171c"; g.font = "800 470px " + FONT; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("700", w / 2, h / 2 + 20); });
-    const num = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.14), new THREE.MeshBasicMaterial({ map: numTex, transparent: true, depthWrite: false, side: THREE.DoubleSide }));
-    num.visible = false; sc.add(num);
-    const numShadow = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.14), new THREE.MeshBasicMaterial({ map: numTex, transparent: true, opacity: 0.18, depthWrite: false, color: 0x000000 }));
-    numShadow.rotation.x = -Math.PI / 2; numShadow.visible = false; sc.add(numShadow);
+    // Keep one printed page in the scene; duplicate printed sheets caused overlapping text at the close view.
     // props: a mug, a closed laptop, a pen, a plant, a lamp
     const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.04, 0.1, 10), flat(0xf4f5f6)); mug.position.set(-0.45, 0.83, -0.45); mug.castShadow = true; sc.add(mug);
     const hdl = new THREE.Mesh(new THREE.TorusGeometry(0.028, 0.008, 5, 10), flat(0xf4f5f6)); hdl.position.set(-0.5, 0.835, -0.45); hdl.rotation.y = Math.PI / 2; sc.add(hdl);
@@ -74,9 +65,8 @@ export function createSetsA(K) {
     const pen = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.14, 6), dark); pen.rotation.set(0, 0.6, Math.PI / 2); pen.position.set(-0.2, 0.781, -0.35); sc.add(pen);
     const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.055, 0.12, 8), flat(0xd8dcdf)); pot.position.set(0.95, 0.84, -0.85); sc.add(pot);
     for (let k = 0; k < 7; k++) { const lf = new THREE.Mesh(new THREE.IcosahedronGeometry(0.06, 0), flat(0xa9b8a6)); lf.scale.set(0.5, 1.4, 0.3); lf.position.set(0.95 + Math.sin(k * 2.4) * 0.05, 0.98 + hash(k, 3) * 0.06, -0.85 + Math.cos(k * 2.4) * 0.05); lf.rotation.set(Math.sin(k) * 0.5, k, Math.cos(k * 1.3) * 0.5); sc.add(lf); }
-    const tmp = new THREE.Vector3();
     out.release = { scene: sc, anim(T, shot) {
-      const s = st("release", T);   // {out: 0..1 page travel, lift: 0..1 number lift, glow}
+      const s = st("release", T);   // {out: 0..1 page travel}
       const o = s.out === undefined ? 1 : s.out;
       // page path: leaves the slot heading +z and slightly up, then drops onto the tray; the leading edge curls down
       const arr = pgGeo.attributes.position.array;
@@ -94,20 +84,6 @@ export function createSetsA(K) {
       pgGeo.attributes.position.needsUpdate = true; pgGeo.computeVertexNormals();
       page.visible = o > 0;
       led.material.color.setHex(o > 0 && o < 1 ? (Math.floor(T * 6) % 2 ? COL.green : 0x0e5a33) : COL.green);
-      // the number lifting
-      const lf = s.lift || 0;
-      // The printed 700 stays still until its spoken emphasis; then it lifts normal to the sheet.
-      num.visible = numShadow.visible = T >= 12.566 && T < 13.2666666667;
-      if (T >= 12.566 && T < 13.2666666667) {
-        // The cut-out uses the same font and source anchor as the printed heading (page row 1290).
-        pr.localToWorld(tmp.set(-0.012, 0.1152, 0.2 + 0.018 + (1290 / 2339) * 0.297 * 0.92));
-        const p = clamp((T - 12.566) / 0.44, 0, 1);
-        const e = EASE.out(p);
-        num.position.set(tmp.x, tmp.y + e * 0.22 + 0.002, tmp.z);
-        num.rotation.set(-Math.PI / 2 * (1 - e), 0, 0);
-        num.scale.setScalar(lerp(0.10, 0.38, e));
-        numShadow.position.set(tmp.x, tmp.y + 0.001, tmp.z); numShadow.scale.setScalar(0.10); numShadow.material.opacity = 0.18 * (1 - e);
-      }
     }, anchors: {} };
   }
 
