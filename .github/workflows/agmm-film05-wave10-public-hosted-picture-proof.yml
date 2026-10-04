@@ -1,0 +1,263 @@
+name: AGMM Film05 Wave10 guarded hosted picture proof
+run-name: Film05 Wave10 picture proof at ${{ inputs.expected_head_sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_head_sha:
+        description: Exact reviewed agmm-render-public main commit containing this workflow and text-only Film05 patch
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agmm-film05-wave10-hosted-picture-proof
+  cancel-in-progress: false
+
+jobs:
+  public-picture-review:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+      PATCH: ${{ github.workspace }}/film05-wave10-public-source-patch
+      PATCH_SHA_MANIFEST: ${{ github.workspace }}/FILM05-WAVE10-PATCH-SHA256SUMS.txt
+      PATCH_MANIFEST_SHA256: dc99d23b72a522510de37520e55f70c200b486d967822cbf03fac5bac0b7f383
+      SUPPORT: ${{ github.workspace }}/film05-wave10-public-hosted-support
+      BASE_SHA: 1899af7ed53fd2f6e432966150b9db1b56ef74b0
+      BASE_PACKAGE: video-program/longform/film05-wave08-first-act/source.tar.gz
+      BASE_PACKAGE_SHA256: 8bdbf047f74a6ce0de4d860df5174ca765ebc49da44f300e38910a500323461f
+      AT: 0,0.05,0.85,1.6,2.35,3.2,3.7,4.3,4.85,5.5,6.2,6.35,6.85,8.4,10.15,11.8,14.35,15.8,16,18.35,18.8,19.3,20.5,21.9,22.95,23.4,24.2,25.2,26,27,27.8
+      FILM: FILM05-WAVE10-27S9-SILENT-PICTURE-PROOF.mp4
+    steps:
+      - name: Initialize runner-local paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/private-scratch" "$RUNNER_TEMP/public-payload"
+          printf 'PRIVATE_SCRATCH=%s/private-scratch\nPUBLIC_PAYLOAD=%s/public-payload\n' \
+            "$RUNNER_TEMP" "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout the exact public-main candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Guard public repository, main ref and reviewed source files
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
+          gh api "repos/$GITHUB_REPOSITORY" > "$RUNNER_TEMP/repository.json"
+          jq -e '.full_name == "agmmltd-arch/agmm-render-public" and .private == false and .visibility == "public"' "$RUNNER_TEMP/repository.json" >/dev/null
+          test -f "$PATCH/index.html"
+          test -f "$PATCH/static_check.py"
+          test -f "$PATCH/SOURCE-MANIFEST.json"
+          test -f "$PATCH/BRIEF.md"
+          test -f "$PATCH/STORYBOARD.md"
+          test -f "$PATCH/CUT-MAP.md"
+          test -f "$PATCH/ASSET-LEDGER.md"
+          test -f "$PATCH/PREIMAGE-GATE.md"
+          test "$(find "$PATCH" -type f | wc -l | tr -d ' ')" = 10
+          test -f "$PATCH_SHA_MANIFEST"
+          test -f "$SUPPORT/verify_text_patch.py"
+          test -f "$SUPPORT/public_payload_guard.py"
+          test -f "$SUPPORT/build_public_payload.py"
+          test -f "$SUPPORT/test_public_payload_guard.py"
+          ! find "$PATCH" -type f | grep -E '\.(mp4|mov|wav|mp3|png|jpg|jpeg)$'
+
+      - name: Verify all ten text patch files and run payload negative tests
+        run: |
+          set -euo pipefail
+          python3 "$SUPPORT/verify_text_patch.py" "$PATCH" "$PATCH_SHA_MANIFEST" "$PATCH_MANIFEST_SHA256"
+          python3 "$SUPPORT/validate_runner_context.py" "$GITHUB_WORKSPACE/.github/workflows/agmm-film05-wave10-public-hosted-picture-proof.yml"
+          PYTHONPATH="$SUPPORT" python3 "$SUPPORT/test_public_payload_guard.py"
+          PYTHONPATH="$SUPPORT" python3 "$SUPPORT/test_runner_context.py"
+
+      - name: Checkout the exact protected Wave08 private input
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 1899af7ed53fd2f6e432966150b9db1b56ef74b0
+          path: private-wave08
+          sparse-checkout: video-program/longform/film05-wave08-first-act/source.tar.gz
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          fetch-depth: 1
+
+      - name: Verify and safely extract the sealed Wave08 source on Ubuntu
+        run: |
+          set -euo pipefail
+          test "$(git -C private-wave08 rev-parse HEAD)" = "$BASE_SHA"
+          test "$(sha256sum "private-wave08/$BASE_PACKAGE" | cut -d ' ' -f1)" = "$BASE_PACKAGE_SHA256"
+          mkdir -p "$RUNNER_TEMP/project" "$PRIVATE_SCRATCH"
+          python3 - "$PWD/private-wave08/$BASE_PACKAGE" "$RUNNER_TEMP/project" <<'PY'
+          import pathlib,sys,tarfile
+          archive=pathlib.Path(sys.argv[1]); root=pathlib.Path(sys.argv[2]).resolve(); seen=set()
+          with tarfile.open(archive,'r:gz') as tf:
+              members=tf.getmembers()
+              assert 0<len(members)<8192 and sum(m.size for m in members)<1024**3
+              for m in members:
+                  if "\\" in m.name or m.name.startswith("/"): raise ValueError("unsafe archive path")
+                  parts=m.name.rstrip("/").split("/")
+                  while parts and parts[0] in ("","."): parts.pop(0)
+                  if any(p in ("",".","..") for p in parts): raise ValueError("unsafe archive path")
+                  name="/".join(parts)
+                  if name in seen: raise ValueError("duplicate archive path")
+                  seen.add(name)
+                  dest=(root/name).resolve()
+                  assert dest==root or root in dest.parents
+                  assert m.isfile() or m.isdir(), "links and special archive members refused"
+              tf.extractall(root,filter="data")
+          PY
+          test -d "$RUNNER_TEMP/project/first-act-wave08-physical-decision-source"
+          cd "$RUNNER_TEMP/project/first-act-wave08-physical-decision-source"
+          sha256sum -c SHA256SUMS.txt
+          cp SHA256SUMS.txt "$RUNNER_TEMP/WAVE08-BASE-SHA256SUMS.txt"
+          python3 static_check.py
+          test "$(find . \( -name '*.wav' -o -name '*.mp3' -o -name '*.mp4' \) | wc -l | tr -d ' ')" = 0
+          cp "$PATCH/index.html" index.html
+          cp "$PATCH/static_check.py" static_check.py
+          cp "$PATCH/SOURCE-MANIFEST.json" SOURCE-MANIFEST.json
+          cp "$PATCH/STORYBOARD.md" STORYBOARD.md
+          cp "$PATCH/CUT-MAP.md" CUT-MAP.md
+          cp "$PATCH/BRIEF.md" BRIEF.md
+          cp "$PATCH/ASSET-LEDGER.md" ASSET-LEDGER.md
+          cp "$PATCH/PREIMAGE-GATE.md" PREIMAGE-GATE.md
+          cp "$PATCH/package.json" package.json
+          python3 static_check.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(); blocks=re.findall(r'<script>(.*?)</script>',s,re.S)
+          assert len(blocks)==1
+          Path('/tmp/film05-wave10-timeline-check.js').write_text('\n'.join(blocks))
+          PY
+          node --check /tmp/film05-wave10-timeline-check.js
+
+      - name: Install pinned Node and Chrome runtimes
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.23.3'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+
+      - name: Install hosted FFmpeg and pinned HyperFrames CLI
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg=7:6.1.1-3ubuntu5
+          npx --yes hyperframes@0.8.62 --version
+
+      - name: Acquire the two licensed illustrative sources on the Ubuntu runner
+        working-directory: ${{ runner.temp }}/project/first-act-wave08-physical-decision-source
+        run: |
+          set -euo pipefail
+          mkdir -p assets remote-evidence
+          curl --fail --location --retry 3 --silent --show-error --output assets/pexels-writing.mp4 'https://videos.pexels.com/video-files/9655665/9655665-uhd_4096_2160_25fps.mp4'
+          curl --fail --location --retry 3 --silent --show-error --output assets/pexels-paperwork.mp4 'https://videos.pexels.com/video-files/7710497/7710497-uhd_4096_2160_25fps.mp4'
+          printf '%s  %s\n%s  %s\n' \
+            fd6794301d75c022bd5ac32c94d5a2019ec8e450f06daa735e9428d460d118a4 assets/pexels-writing.mp4 \
+            2818f79b43d9c4121ece9003a65976b8cb817d88c85af40ba58c56bb88b3b887 assets/pexels-paperwork.mp4 \
+            | sha256sum -c - | tee "$PRIVATE_SCRATCH/PRE-SCREEN-HASH-VERIFICATION.txt"
+          ffprobe -v error -show_format -show_streams -of json assets/pexels-writing.mp4 > "$PRIVATE_SCRATCH/pexels-writing-ffprobe.json"
+          ffprobe -v error -show_format -show_streams -of json assets/pexels-paperwork.mp4 > "$PRIVATE_SCRATCH/pexels-paperwork-ffprobe.json"
+          sha256sum assets/pexels-writing.mp4 assets/pexels-paperwork.mp4 > "$PRIVATE_SCRATCH/SOURCE-SHA256SUMS.txt"
+          printf 'Pexels sources acquired, verified, probed and hashed only on hosted Ubuntu.\n' > "$PRIVATE_SCRATCH/HOSTED-ACQUISITION-RECEIPT.txt"
+          cp "$RUNNER_TEMP/WAVE08-BASE-SHA256SUMS.txt" "$PRIVATE_SCRATCH/"
+
+      - name: Run hosted source check and the native still gate
+        working-directory: ${{ runner.temp }}/project/first-act-wave08-physical-decision-source
+        run: |
+          set -euo pipefail
+          mkdir -p remote-evidence/stills remote-evidence/motion
+          npx --yes hyperframes@0.8.62 check --json --at "$AT" > remote-evidence/check.json
+          npx --yes hyperframes@0.8.62 snapshot --at "$AT" --no-end -o remote-evidence/stills
+          python3 - <<'PY'
+          from pathlib import Path
+          files=sorted(Path('remote-evidence/stills').glob('*.png'))
+          assert len(files)==31,len(files)
+          for p in files:
+              h=p.open('rb').read(24)
+              assert h[:8]==b'\x89PNG\r\n\x1a\n' and h[12:16]==b'IHDR'
+              assert (int.from_bytes(h[16:20],'big'),int.from_bytes(h[20:24],'big'))==(1920,1080),p
+          print(f'{len(files)} native 1920x1080 hosted stills verified')
+          PY
+
+      - name: Render the silent picture and fully decode on Ubuntu
+        working-directory: ${{ runner.temp }}/project/first-act-wave08-physical-decision-source
+        run: |
+          set -euo pipefail
+          npx --yes hyperframes@0.8.62 render --quality draft --fps 30 --workers 1 --output "remote-evidence/motion/$FILM"
+          ffprobe -v error -show_format -show_streams -of json "remote-evidence/motion/$FILM" > "$PRIVATE_SCRATCH/final-ffprobe.json"
+          ffmpeg -hide_banner -loglevel error -i "remote-evidence/motion/$FILM" -map 0:v:0 -an -sn -dn -f framemd5 "$PRIVATE_SCRATCH/video-frames.framemd5"
+          ffmpeg -hide_banner -nostats -i "remote-evidence/motion/$FILM" -vf 'blackdetect=d=0.10:pix_th=0.10,freezedetect=n=-60dB:d=1.0' -an -f null - 2> "$PRIVATE_SCRATCH/black-freeze-scan.txt"
+          sha256sum "remote-evidence/motion/$FILM" > "$PRIVATE_SCRATCH/final-video.sha256"
+          ffmpeg -version | head -1 > "$PRIVATE_SCRATCH/ffmpeg-version.txt"
+
+      - name: Index every decoded frame in ordered review sheets
+        working-directory: ${{ runner.temp }}/project/first-act-wave08-physical-decision-source
+        run: |
+          set -euo pipefail
+          mkdir -p remote-evidence/motion/full-sheets
+          ffmpeg -hide_banner -loglevel error -i "remote-evidence/motion/$FILM" -vf 'scale=320:180:flags=lanczos,tile=6x8' -fps_mode vfr -q:v 3 remote-evidence/motion/full-sheets/sheet-%03d.jpg
+          python3 - <<'PY'
+          import csv,json,math,os
+          from pathlib import Path
+          out=Path('remote-evidence/motion'); scratch=Path(os.environ['PRIVATE_SCRATCH']); probe=json.loads((scratch/'final-ffprobe.json').read_text())
+          v=[x for x in probe['streams'] if x['codec_type']=='video']; a=[x for x in probe['streams'] if x['codec_type']=='audio']
+          assert len(v)==1 and len(a)==0,(len(v),len(a))
+          assert (v[0]['width'],v[0]['height'],v[0]['r_frame_rate'])==(1920,1080,'30/1'),v[0]
+          frames=sum(bool(x.strip()) and not x.startswith('#') for x in (scratch/'video-frames.framemd5').open())
+          assert frames==837,frames
+          assert abs(float(probe['format']['duration'])-27.9)<0.06,probe['format']['duration']
+          sheets=math.ceil(frames/48)
+          assert len(list((out/'full-sheets').glob('*.jpg')))==sheets,(sheets,list((out/'full-sheets').glob('*.jpg')))
+          with (out/'FRAME-REVIEW-INDEX.csv').open('w',newline='') as f:
+              w=csv.writer(f);w.writerow(['frame','time_seconds','full_sheet','tile_1_based','scene'])
+              for n in range(frames):
+                  scene='opening' if n<204 else 'customer-room' if n<303 else 'field-bench' if n<429 else 'supplier-files' if n<549 else 'operations-table' if n<687 else 'proposal-tray'
+                  w.writerow([n,f'{n/30:.6f}',f'sheet-{n//48+1:03d}.jpg',n%48+1,scene])
+          (out/'FRAME-COUNT.txt').write_text(f'{frames} fully decoded frames; {sheets} ordered full sheets; silent 27.9-second private development picture proof only.\n')
+          print((out/'FRAME-COUNT.txt').read_text())
+          PY
+
+      - name: Sanitize, stage and validate the explicit public review allowlist
+        working-directory: ${{ runner.temp }}/project/first-act-wave08-physical-decision-source
+        run: |
+          set -euo pipefail
+          mkdir -p "$PUBLIC_PAYLOAD"
+          python3 "$SUPPORT/build_public_payload.py" \
+            --evidence "$PWD/remote-evidence" --scratch "$PRIVATE_SCRATCH" --project "$PWD" \
+            --source-manifest "$PATCH/SOURCE-MANIFEST.json" --output "$PUBLIC_PAYLOAD"
+
+      - name: Upload only the synchronized picture, bounded review images and sanitized text receipts
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agmm-film05-wave10-synchronized-picture-review
+          path: |
+            ${{ runner.temp }}/public-payload/${{ env.FILM }}
+            ${{ runner.temp }}/public-payload/stills/*.png
+            ${{ runner.temp }}/public-payload/contact-sheets/sheet-*.jpg
+            ${{ runner.temp }}/public-payload/receipts/SOURCE-RECEIPT.json
+            ${{ runner.temp }}/public-payload/receipts/FINAL-VIDEO-RECEIPT.json
+            ${{ runner.temp }}/public-payload/receipts/HYPERFRAMES-CHECK-SUMMARY.json
+            ${{ runner.temp }}/public-payload/receipts/FRAME-COUNT.txt
+            ${{ runner.temp }}/public-payload/receipts/FRAME-REVIEW-INDEX.csv
+            ${{ runner.temp }}/public-payload/receipts/BLACK-FREEZE-SCAN.txt
+            ${{ runner.temp }}/public-payload/receipts/PREIMAGE-GATE.md
+            ${{ runner.temp }}/public-payload/receipts/PUBLIC-PAYLOAD-GUARD-RECEIPT.txt
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0

@@ -1,0 +1,7 @@
+# Film05 Wave10 asset ledger
+
+- **Inherited Wave08 plates:** original fictional picture assets only; no actual customers, suppliers, quotation data or model outputs. Existing filenames are validated against the sealed Wave08 `SHA256SUMS.txt` before any overlay replacement on the Ubuntu runner. Original source credits remain in the inherited Wave08 asset ledger and creator receipts.
+- **Pexels source 9655665:** [asset page](https://www.pexels.com/video/a-person-drawing-on-a-paper-using-pencil-9655665/), cottonbro studio, [Pexels license](https://www.pexels.com/license/). The page describes hands writing on paperwork. The exact UHD 4096×2160, 25fps MP4 URL and byte hash observed in hosted screen run 35962208899 are pinned in `SOURCE-MANIFEST.json`.
+- **Pexels source 7710497:** [asset page](https://www.pexels.com/video/people-organizing-paperwork-7710497/), Kaboompics / Kaboompics.com, [Pexels license](https://www.pexels.com/license/). The page describes people organizing paperwork. The exact UHD 4096×2160, 25fps MP4 URL and byte hash observed in hosted screen run 35962208899 are pinned in `SOURCE-MANIFEST.json`.
+
+The official Pexels license permits free commercial use and modification without attribution. The composition adds no endorsement, identity or factual customer claim. A permanent on-picture `ILLUSTRATIVE FOOTAGE · FICTIONAL EXAMPLE` disclosure separates the stock pictures from the invented story. Footage is acquired, hashed, probed and decoded only on the Ubuntu hosted worker; no MP4 is included in this text-only source patch.

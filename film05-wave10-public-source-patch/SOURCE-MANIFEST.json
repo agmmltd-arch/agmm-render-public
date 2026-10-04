@@ -1,0 +1,41 @@
+{
+  "film": "Film 05",
+  "wave": "Wave10 table-tray continuity",
+  "base_source": "Wave08 first-act-physical-decision-source",
+  "duration_seconds": 27.9,
+  "status": "development picture proof candidate; no AV approval",
+  "hosted_only_media_acquisition": true,
+  "assets": [
+    {
+      "id": "pexels-writing",
+      "page": "https://www.pexels.com/video/a-person-drawing-on-a-paper-using-pencil-9655665/",
+      "download_url": "https://videos.pexels.com/video-files/9655665/9655665-uhd_4096_2160_25fps.mp4",
+      "creator": "cottonbro studio",
+      "license": "https://www.pexels.com/license/",
+      "rights_note": "Pexels license permits free commercial use and editing; no attribution required. No implied endorsement.",
+      "hosted_screen_run": 35962208899,
+      "hosted_sha256": "fd6794301d75c022bd5ac32c94d5a2019ec8e450f06daa735e9428d460d118a4",
+      "composition_path": "assets/pexels-writing.mp4",
+      "used_interval_seconds": [
+        18.3,
+        22.9
+      ]
+    },
+    {
+      "id": "pexels-paperwork",
+      "page": "https://www.pexels.com/video/people-organizing-paperwork-7710497/",
+      "download_url": "https://videos.pexels.com/video-files/7710497/7710497-uhd_4096_2160_25fps.mp4",
+      "creator": "Kaboompics / Kaboompics.com",
+      "license": "https://www.pexels.com/license/",
+      "rights_note": "Pexels license permits free commercial use and editing; no attribution required. No implied endorsement.",
+      "hosted_screen_run": 35962208899,
+      "hosted_sha256": "2818f79b43d9c4121ece9003a65976b8cb817d88c85af40ba58c56bb88b3b887",
+      "composition_path": "assets/pexels-paperwork.mp4",
+      "used_interval_seconds": [
+        22.9,
+        27.9
+      ]
+    }
+  ],
+  "presentation_guard": "Persistent ILLUSTRATIVE FOOTAGE · FICTIONAL EXAMPLE label over both clips; overlay props and events are fictional; no real customer, quotation, outcome, model test or endorsement."
+}

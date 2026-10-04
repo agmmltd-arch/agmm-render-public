@@ -1,0 +1,1 @@
+{"name":"film05-first-act-wave10","private":true,"version":"0.0.1","scripts":{"check":"hyperframes check","snapshot":"hyperframes snapshot"},"devDependencies":{"hyperframes":"0.8.62"}}
