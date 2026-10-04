@@ -44,6 +44,9 @@ SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 EXPECTED_SOURCE_SUM_NAMES = {VIDEO_NAME, SOURCE_TECH_NAME, "review/CONTACT-SHEET.jpg"}
 EXPECTED_ARTIFACT_FILES = {VIDEO_NAME, SOURCE_TECH_NAME, SOURCE_SUMS_NAME}
 MAX_UNZIPPED_BYTES = 210_000_000
+EXPECTED_WIDTH = 1080
+EXPECTED_HEIGHT = 1920
+EXPECTED_FRAME_RATE = "30/1"
 
 
 class Refusal(ValueError):
@@ -275,16 +278,30 @@ def validate_technical_evidence(evidence: dict, *, video_sha: str, video_bytes: 
     if len(videos) != 1 or len(audios) != 1:
         raise Refusal("S90 review video must retain exactly one video and one mixed audio stream")
     v = videos[0]
-    if (v.get("width") != 1920 or v.get("height") != 1080
-            or v.get("r_frame_rate") != "30/1"):
-        raise Refusal("S90 technical evidence dimensions or frame rate mismatch")
+    width = v.get("width")
+    height = v.get("height")
+    frame_rate = v.get("r_frame_rate")
+    safe_width = str(width) if type(width) is int and 0 < width <= 20_000 else "invalid"
+    safe_height = str(height) if type(height) is int and 0 < height <= 20_000 else "invalid"
+    safe_frame_rate = "invalid"
+    if isinstance(frame_rate, str) and re.fullmatch(r"[0-9]{1,8}/[0-9]{1,8}", frame_rate):
+        numerator, denominator = (int(part) for part in frame_rate.split("/", 1))
+        if numerator > 0 and denominator > 0:
+            safe_frame_rate = f"{numerator}/{denominator}"
+    if (width != EXPECTED_WIDTH or height != EXPECTED_HEIGHT
+            or frame_rate != EXPECTED_FRAME_RATE):
+        raise Refusal(
+            "S90 technical evidence geometry mismatch: "
+            f"observed {safe_width}x{safe_height}@{safe_frame_rate}; "
+            f"expected {EXPECTED_WIDTH}x{EXPECTED_HEIGHT}@{EXPECTED_FRAME_RATE}"
+        )
     return {
         "kind": "s90_development_preview_technical_summary_v1",
         "source_technical_status": "PASS",
         "video_sha256": video_sha,
         "video_bytes": video_bytes,
-        "resolution": "1920x1080",
-        "frame_rate": "30/1",
+        "resolution": f"{EXPECTED_WIDTH}x{EXPECTED_HEIGHT}",
+        "frame_rate": EXPECTED_FRAME_RATE,
         "declared_frames": 1749,
         "declared_duration_seconds": 58.3,
         "source_full_decode": "PASS_REPORTED_BY_PINNED_RUN",
