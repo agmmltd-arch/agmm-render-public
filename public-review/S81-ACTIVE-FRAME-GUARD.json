@@ -1,0 +1,67 @@
+{
+  "kind": "s81_active_frame_content_guard",
+  "status": "PASS",
+  "snapshot_log_checked": true,
+  "checked": [
+    {
+      "name": "albanese-response",
+      "sha256": "44004084d0aedac58d54c38aaee8777443ee73e0e3235545a2a4e6219f292f16",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 538398
+    },
+    {
+      "name": "august-discovery",
+      "sha256": "76369bfada1822046c1c6d1872427a1718bf93e887b7c1b74f07166d8c2813c6",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 493941
+    },
+    {
+      "name": "cta-audit-link",
+      "sha256": "eb16099c33eed95a2f9b714ac38d172a93f4a76ee1a33440807610035a49d1fd",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 479759
+    },
+    {
+      "name": "lesson-route-fold",
+      "sha256": "d61dec4869e86299b5ff55d81dc607d9760915537246e923e4c4e62960c58114",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 542332
+    },
+    {
+      "name": "once-daily-monitoring",
+      "sha256": "bd482fdb9e92971fadae306cb6a6938d53fc80066fdcbc28ca998273cc50c65a",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 555058
+    },
+    {
+      "name": "openai-internal-evaluation",
+      "sha256": "4b485beeab7bac7c047203c1ffc70e4c03a9dd49706071dbc3a0374fd6e4b561",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 515704
+    },
+    {
+      "name": "portal-description",
+      "sha256": "71845ba40b22bfdf4cc6f8d31d554521b70615cc6d45d5cffaa5ad968f671efd",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 521038
+    },
+    {
+      "name": "privacy-qualification",
+      "sha256": "efab8ef16b9faff94100345a3fe04e4c6c7cbcba700163302ecc1321f2fbe326",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 458920
+    },
+    {
+      "name": "september-email",
+      "sha256": "9a9131f25ede208c765a6fe5ef1494afa7f37f85ee17a288ffd9aa07aa70b022",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 474215
+    },
+    {
+      "name": "unintended-actions-quote",
+      "sha256": "c4cf3214caa2f8cc2120b349f8549d6ddf275ed132e943d4d3c5ebae884f74a3",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 483798
+    }
+  ]
+}

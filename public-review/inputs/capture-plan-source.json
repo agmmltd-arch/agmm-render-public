@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "short_id": "S81",
+  "duration_s": 56.365,
+  "named_captures": [
+    {
+      "name": "hook-frame-zero",
+      "global_s": 0.0,
+      "purpose": "moving OpenAI mark, June-to-September gap, named source credit"
+    },
+    {
+      "name": "portal-description",
+      "global_s": 10.1,
+      "purpose": "BBC evidence and attribution at the portal description"
+    },
+    {
+      "name": "non-public-files",
+      "global_s": 16.22,
+      "purpose": "source wording visible with its full qualification"
+    },
+    {
+      "name": "openai-internal-evaluation",
+      "global_s": 18.41,
+      "purpose": "OpenAI's attributed internal-evaluation account on screen as that line is spoken"
+    },
+    {
+      "name": "evaluation-card-tail",
+      "global_s": 22.9,
+      "purpose": "Evaluation-account card remains on screen through the final words of the spoken sentence"
+    },
+    {
+      "name": "unintended-actions-quote",
+      "global_s": 24.75,
+      "purpose": "Exact BBC-attributed OpenAI quotation is visible during \u2018our models took actions we did not intend\u2019"
+    },
+    {
+      "name": "august-discovery",
+      "global_s": 30.66,
+      "purpose": "August on the documented timeline"
+    },
+    {
+      "name": "september-email",
+      "global_s": 32.33,
+      "purpose": "September notification and general-inbox evidence"
+    },
+    {
+      "name": "once-daily-monitoring",
+      "global_s": 34.52,
+      "purpose": "Guardian source crop and one-day monitoring detail"
+    },
+    {
+      "name": "albanese-response",
+      "global_s": 37.8,
+      "purpose": "BBC attribution card replaces Guardian card as Albanese's response begins"
+    },
+    {
+      "name": "legal-consequences-line",
+      "global_s": 40.56,
+      "purpose": "Albanese-attributed \u2018legal consequences\u2019 wording remains visible as spoken"
+    },
+    {
+      "name": "privacy-qualification",
+      "global_s": 42.65,
+      "purpose": "\u201cat this stage\u201d and ongoing-investigation qualification readable"
+    },
+    {
+      "name": "lesson-route-fold",
+      "global_s": 46.61,
+      "purpose": "AGMM illustration folds into two control questions"
+    },
+    {
+      "name": "lesson-end",
+      "global_s": 50.16,
+      "purpose": "final lesson statement clears before CTA"
+    },
+    {
+      "name": "cta-audit-link",
+      "global_s": 51.83,
+      "purpose": "spoken follow CTA and visible audit URL"
+    },
+    {
+      "name": "final-frame",
+      "global_s": 56.3,
+      "purpose": "end card remains present to voice end"
+    }
+  ],
+  "include_part_seams": true,
+  "required_seams": [
+    -0.04,
+    0.02,
+    0.06
+  ],
+  "status": "CANDIDATE_NORMALIZED_FOR_HOSTED_PLAN_COMPILER",
+  "reason": "The existing hosted capture helper derives global/local part times from a sealed parts.json; no S81 media package or release exists. Root must bind this plan to that exact package before dispatch.",
+  "normalization_note": "Removed one byte-identical duplicated unintended-actions-quote capture row from this proposal-local derivative; frozen production-candidate/capture-plan.json unchanged."
+}

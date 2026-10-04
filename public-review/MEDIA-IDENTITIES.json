@@ -1,0 +1,11 @@
+{
+  "files": [
+    {
+      "bytes": 2969,
+      "path": "s81-evidence-route/media/openai-mark.svg",
+      "sha256": "7be72f1fea831d3ba81a545cee79b7e0ae69449d5d7837c9571ccbfb4aa1e00b"
+    }
+  ],
+  "kind": "agmm_short_media_identities",
+  "sha256": "458c6c43ea7283541418808b76db8f40956c4b0710406e5b3cc730590f63644e"
+}
