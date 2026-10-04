@@ -1,0 +1,149 @@
+name: S82 tagged source captures only
+run-name: S82 source pack ${{ github.run_id }}
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: s82-source-pack-capture
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_REPO: agmmltd-arch/agmm-render-public
+      S82_PARENT_SHA: 0e24eb4e932d54fee571e37338d3c9807edac922
+      S82_PLAN_SHA256: 0fe325104557169140b7b7ca1643acbbcbac92c2c57a8f6075845b24055ca661
+      S82_HELPER_SHA256: f98601c5d3237fe7a7486d6431a7e02515efbeaf1a551eac50bb34eb0f89c992
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+          fetch-depth: 2
+      - name: Initialize the capture path for later steps
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'S82_CAPTURE_DIR=%s/s82-source-capture\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Guard public Ubuntu target, exact preimage and text-only inputs
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux ]]
+          [[ "$GITHUB_REPOSITORY" == "$GH_REPO" && "$GITHUB_REF" == refs/heads/main ]]
+          [[ "$GITHUB_SHA" == "$(git rev-parse HEAD)" && "$(git rev-parse HEAD^)" == "$S82_PARENT_SHA" ]]
+          gh api "repos/$GH_REPO" > "$RUNNER_TEMP/s82-repository.json"
+          python3 .github/scripts/s82-source-pack-guard.py
+      - name: Install the pinned Playwright source-capture runtime on Ubuntu
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.1
+          npx playwright install --with-deps chromium
+          node -e "import('playwright').then(({chromium})=>console.log('Playwright source runtime present:',typeof chromium.launch==='function'))"
+      - name: Capture the exact tagged source DOM crops
+        id: capture
+        continue-on-error: true
+        run: node .github/scripts/s82-source-pack.mjs
+      - name: Prepare an exact allowlisted public review payload, including failure receipts
+        if: always()
+        env:
+          CAPTURE_OUTCOME: ${{ steps.capture.outcome }}
+        run: |
+          set -euo pipefail
+          SRC="$S82_CAPTURE_DIR"
+          OUT="$RUNNER_TEMP/s82-source-review"
+          mkdir -p "$SRC" "$OUT"
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib
+          src=pathlib.Path(os.environ['S82_CAPTURE_DIR']); out=pathlib.Path(os.environ['RUNNER_TEMP'])/'s82-source-review'
+          plan_path=pathlib.Path('.github/scripts/s82-source-pack-plan.json')
+          plan=json.loads(plan_path.read_text())
+          receipt_path=src/'CAPTURE-RECEIPT.json'
+          identity_path=src/'SOURCE-IDENTITY.json'
+          if not receipt_path.exists():
+            receipt_path.write_text(json.dumps({'schema':'agmm-s82-source-pack-receipt-v1','story_id':'S82',
+              'status':'SOURCE_CAPTURE_NOT_RUN','failure_stage':'workflow-runtime',
+              'failure':'Capture helper did not produce a receipt; inspect this run log.',
+              'capture_step_outcome':os.environ.get('CAPTURE_OUTCOME'),'assets_published':False,
+              'editorial_status':'NOT_REVIEWED','render_approval':'NOT_GRANTED','release_approval':'NOT_GRANTED'},indent=2)+'\n')
+          if not identity_path.exists():
+            identity_path.write_text(json.dumps({'schema':'agmm-s82-source-identities-v1','story_id':'S82',
+              'status':'SOURCE_CAPTURE_NOT_RUN','plan_sha256':os.environ['S82_PLAN_SHA256'],
+              'capture_step_outcome':os.environ.get('CAPTURE_OUTCOME')},indent=2)+'\n')
+          receipt=json.loads(receipt_path.read_text())
+          success=receipt.get('status')=='SOURCE_CROPS_CAPTURED_NEEDS_ROOT_EYES'
+          names=['SOURCE-PLAN.json','CAPTURE-RECEIPT.json','SOURCE-IDENTITY.json']
+          (out/'SOURCE-PLAN.json').write_bytes(plan_path.read_bytes())
+          (out/'CAPTURE-RECEIPT.json').write_bytes(receipt_path.read_bytes())
+          (out/'SOURCE-IDENTITY.json').write_bytes(identity_path.read_bytes())
+          if success:
+            expected=sorted(plan['collection_policy']['exact_capture_files'])
+            assert receipt.get('asset_count')==len(expected)==18
+            assert sorted(x.get('file') for x in receipt.get('assets',[]))==expected
+            assert receipt.get('plan_sha256')==os.environ['S82_PLAN_SHA256']
+            manifest=src/'manifest.json'
+            assert manifest.is_file()
+            obj=json.loads(manifest.read_text())
+            assert obj.get('plan_sha256')==os.environ['S82_PLAN_SHA256'] and obj.get('asset_count')==18
+            (out/'manifest.json').write_bytes(manifest.read_bytes()); names.append('manifest.json')
+            by_key={source['key']:source for source in plan['sources']}
+            expected_pairs={(source['key'], row['file']) for source in plan['sources'] for row in source['files']}
+            allowed_root={'CAPTURE-RECEIPT.json','SOURCE-IDENTITY.json','manifest.json'}|set(by_key)
+            root_entries=list(src.iterdir())
+            assert all(not entry.is_symlink() for entry in root_entries) and {entry.name for entry in root_entries}==allowed_root, 'capture root differs from exact source directory and receipt allowlist'
+            actual_pairs=set()
+            for source_dir in (src/key for key in by_key):
+              entries=list(source_dir.iterdir())
+              assert all(entry.is_file() and not entry.is_symlink() for entry in entries), f'non-file or symlink under {source_dir.name}'
+              actual_pairs|={(source_dir.name,entry.name) for entry in entries}
+            assert actual_pairs==expected_pairs, 'nested capture files differ from the exact source/file map'
+            for source_key, name in sorted(expected_pairs):
+              item=src/source_key/name
+              assert item.is_file() and not item.is_symlink() and 100 <= item.stat().st_size <= 2_000_000, (source_key,name)
+              (out/name).write_bytes(item.read_bytes()); names.append(name)
+          actual={p.name for p in out.iterdir() if p.is_file()}
+          assert actual==set(names), f'public source payload is not the exact allowlist: {sorted(actual)}'
+          if not success:
+            assert not any(p.suffix.lower()=='.png' for p in out.iterdir()), 'failed source capture may publish TEXT receipts only'
+          rows=[]
+          for name in sorted(actual):
+            rows.append(f"{hashlib.sha256((out/name).read_bytes()).hexdigest()}  {name}")
+          (out/'SHA256SUMS.txt').write_text('\n'.join(rows)+'\n')
+          PY
+      - name: Publish only this run's source crops and TEXT receipts to a review branch
+        if: always()
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted source review'
+          git config user.email 'evidence@users.noreply.github.com'
+          BRANCH="review-S82-source-pack-$GITHUB_RUN_ID"
+          git switch --orphan "$BRANCH"
+          git read-tree --empty
+          TARGET="public-review/S82/$GITHUB_RUN_ID"
+          mkdir -p "$TARGET"
+          cp "$RUNNER_TEMP/s82-source-review/"* "$TARGET/"
+          git add --all "$TARGET"
+          python3 - "$TARGET" <<'PY'
+          import json,pathlib,subprocess,sys
+          target=pathlib.Path(sys.argv[1]); receipt=json.loads((target/'CAPTURE-RECEIPT.json').read_text())
+          names={p.name for p in target.iterdir() if p.is_file()}
+          required={'SOURCE-PLAN.json','CAPTURE-RECEIPT.json','SOURCE-IDENTITY.json','SHA256SUMS.txt'}
+          if receipt.get('status')=='SOURCE_CROPS_CAPTURED_NEEDS_ROOT_EYES':
+            required|={'manifest.json'}|set(json.loads((target/'SOURCE-PLAN.json').read_text())['collection_policy']['exact_capture_files'])
+          assert names==required, f'run branch payload has unexpected/incomplete files: {sorted(names)}'
+          staged=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert len(staged)==len(names) and all(p.startswith(str(target)+'/') for p in staged)
+          PY
+          git commit -m 'S82 source-only captures; review required, not release approval'
+          git push origin "HEAD:refs/heads/$BRANCH"
+      - name: Preserve failure as a failed workflow status
+        if: always()
+        env:
+          CAPTURE_OUTCOME: ${{ steps.capture.outcome }}
+        run: |
+          if [[ "$CAPTURE_OUTCOME" != success ]]; then
+            echo 'S82 source capture did not complete; only failure receipts were preserved.'
+            exit 1
+          fi
