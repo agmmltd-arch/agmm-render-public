@@ -478,7 +478,7 @@
   // Date and source type remain printed on the page; avoid duplicating them as overlays.
   (function () { // The floor's 700 appears only after the source-page phrase and the 13.2667s shot cut.
     var f = el("div", "fig", LY, '<div class="num">700</div><div class="lab">full-time agents’ work</div>'); f.style.top = "250px";
-    slam(f.querySelector(".num"), 13.2666666667); slam(f.querySelector(".lab"), 13.801); full.to(f, { opacity: 0, filter: "blur(8px)", duration: 0.3 }, 15.9);
+    slam(f.querySelector(".num"), 13.2666666667); var lab = f.querySelector(".lab"); hide(lab); full.set(lab, { opacity: 1, scale: 1.04, filter: "blur(0px)" }, 13.801); full.to(lab, { scale: 1, duration: 0.18, ease: "power3.out" }, 13.801); full.to(f, { opacity: 0, filter: "blur(8px)", duration: 0.3 }, 15.9);
   })();
   anchor("floor", "bubble", "pink:AI assistant", 15.9, 18.2);
   (function () { var w = el("div", "wordmark", LY, '<img src="img/klarna-badge.svg" alt=""><div class="cap">Klarna press material</div>'); cut(w, 18.2, 19.3);
