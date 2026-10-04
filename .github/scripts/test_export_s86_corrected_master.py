@@ -1,4 +1,4 @@
-import hashlib, io, json, tempfile, unittest, zipfile
+import hashlib, io, json, os, subprocess, tempfile, unittest, zipfile
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
 from unittest.mock import patch
@@ -82,6 +82,23 @@ class ExportTests(unittest.TestCase):
   self.assertLess(workflow.index("verify-range"),workflow.index("finalize "))
   self.assertLess(workflow.index("finalize "),workflow.index("gh release upload"))
   self.assertEqual(workflow.count("validate-release \"$RUNNER_TEMP/s86-export/release-final.json\""),1)
+ def test_prepare_owns_output_directory_creation_and_refuses_existing_directory(self):
+  workflow=Path(__file__).with_name("s86-corrected-master-export.yml").read_text()
+  step=workflow.split("name: Download exact render artifacts on Ubuntu and prepare unchanged master",1)[1].split("name: Require exact release tag",1)[0]
+  self.assertNotIn('mkdir -p "$RUNNER_TEMP/s86-export/out"',step)
+  self.assertIn('--out "$RUNNER_TEMP/s86-export/out"',step)
+  with tempfile.TemporaryDirectory() as td:
+   c=self.setup_case(Path(td)); output=Path(td)/"runner"/"s86-export"/"out"
+   output.parent.mkdir(parents=True)
+   self.assertFalse(output.exists())
+   self.run_prepare(c,out=output)
+   self.assertTrue(output.is_dir())
+  with tempfile.TemporaryDirectory() as td:
+   c=self.setup_case(Path(td)); runner_temp=Path(td)/"runner"; output=runner_temp/"s86-export"/"out"
+   (runner_temp/"s86-export").mkdir(parents=True)
+   # Execute the exact removed workflow command to prove it recreates the hosted failure.
+   subprocess.run(["bash","-eu","-c",'mkdir -p "$RUNNER_TEMP/s86-export/out"'],env={**os.environ,"RUNNER_TEMP":str(runner_temp)},check=True)
+   with self.assertRaises(FileExistsError): self.run_prepare(c,out=output)
  def test_tag_absence_only_exact_404(self):
   ex.validate_absence(404,{"message":"Not Found"})
   for status in (0,200,401,403,500):

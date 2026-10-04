@@ -76,7 +76,6 @@ jobs:
         env: {GH_TOKEN: '${{ github.token }}'}
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/s86-export/out"
           gh api "repos/agmmltd-arch/agmm-render-public/actions/artifacts/${{ inputs.input_artifact_id }}/zip" > "$RUNNER_TEMP/s86-export/input.zip"
           gh api "repos/agmmltd-arch/agmm-render-public/actions/artifacts/${{ inputs.master_artifact_id }}/zip" > "$RUNNER_TEMP/s86-export/master.zip"
           python3 .github/scripts/export_s86_corrected_master.py prepare \
