@@ -1,9 +1,14 @@
 import json
 import os
 import re
+import struct
 import subprocess
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+
+from tools import source_capture
 
 ROOT = Path(__file__).resolve().parents[1]
 BOARD = json.loads((ROOT / "inputs/storyboard-wave03.json").read_text())
@@ -94,6 +99,41 @@ class StoryboardContractTests(unittest.TestCase):
         self.assertNotIn("approval-lock.json", workflow)
         self.assertNotIn("hyperframes render", workflow)
         self.assertNotIn("voice_path", workflow)
+
+    def test_native_png_validator_matches_hyperframes_zero_padded_names(self):
+        plan = source_capture.source_points()
+        def run_fixture(*, rename_first=False, omit_last=False, extra=False, bad_dimensions=False):
+            temporary = tempfile.TemporaryDirectory()
+            self.addCleanup(temporary.cleanup)
+            root = Path(temporary.name)
+            captures = root / "captures"
+            captures.mkdir()
+            for index, point in enumerate(plan["points"]):
+                if omit_last and index == len(plan["points"]) - 1:
+                    continue
+                timestamp = f"{point['at_s']:.3f}".rstrip("0").rstrip(".") + "s"
+                name = f"frame-{index:02d}-at-{timestamp}.png"
+                if rename_first and index == 0:
+                    name = f"frame-{index}-at-{timestamp}.png"
+                width, height = (3840, 1080) if bad_dimensions and index == 3 else (3840, 2160)
+                header = b"\x89PNG\r\n\x1a\n" + b"\x00\x00\x00\x0dIHDR"
+                (captures / name).write_bytes(header + struct.pack(">II", width, height))
+            if extra:
+                timestamp = f"{plan['points'][-1]['at_s']:.3f}s"
+                header = b"\x89PNG\r\n\x1a\n" + b"\x00\x00\x00\x0dIHDR"
+                (captures / f"frame-99-at-{timestamp}.png").write_bytes(header + struct.pack(">II", 3840, 2160))
+            with patch.object(source_capture, "ROOT", root):
+                source_capture.check_pngs(plan)
+
+        run_fixture()
+        with self.assertRaisesRegex(SystemExit, "missing frame-00-at-12.372s.png"):
+            run_fixture(rename_first=True)
+        with self.assertRaisesRegex(SystemExit, "found 9"):
+            run_fixture(extra=True)
+        with self.assertRaisesRegex(SystemExit, "missing frame-07-at-258.286s.png"):
+            run_fixture(omit_last=True)
+        with self.assertRaisesRegex(SystemExit, "frame-03-at-111.019s.png: expected 3840x2160, got 3840x1080"):
+            run_fixture(bad_dimensions=True)
 
     def test_sound_density_is_ten_to_twenty_cues_per_estimated_minute(self):
         cue_count = sum(len(s["sound_cues"]) for s in BOARD["scenes"])

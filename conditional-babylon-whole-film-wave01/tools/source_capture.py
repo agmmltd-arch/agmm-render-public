@@ -37,7 +37,8 @@ def check_pngs(plan):
     expected_names = []
     for index, point in enumerate(plan["points"]):
         timestamp = f"{point['at_s']:.3f}".rstrip("0").rstrip(".") + "s"
-        expected_names.append(f"frame-{index}-at-{timestamp}.png")
+        # HyperFrames snapshot numbers every frame with a two-digit index.
+        expected_names.append(f"frame-{index:02d}-at-{timestamp}.png")
         path = ROOT / "captures" / expected_names[-1]
         if not path.is_file():
             failures.append(f"missing {path.name}")
@@ -58,17 +59,22 @@ def check_pngs(plan):
     print(f"PASS: {len(plan['points'])} bounded native PNG stills are 3840x2160")
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--times", action="store_true", help="print comma-separated estimated timestamps for HyperFrames snapshot")
-parser.add_argument("--write-plan", type=Path, help="write the source-capture plan JSON")
-parser.add_argument("--check-pngs", action="store_true", help="verify all expected PNG names and native dimensions")
-args = parser.parse_args()
-plan = source_points()
-if args.times:
-    print(",".join(str(point["at_s"]) for point in plan["points"]))
-if args.write_plan:
-    args.write_plan.write_text(json.dumps(plan, indent=2) + "\n")
-if args.check_pngs:
-    check_pngs(plan)
-if not (args.times or args.write_plan or args.check_pngs):
-    print(json.dumps(plan, indent=2))
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--times", action="store_true", help="print comma-separated estimated timestamps for HyperFrames snapshot")
+    parser.add_argument("--write-plan", type=Path, help="write the source-capture plan JSON")
+    parser.add_argument("--check-pngs", action="store_true", help="verify all expected PNG names and native dimensions")
+    args = parser.parse_args(argv)
+    plan = source_points()
+    if args.times:
+        print(",".join(str(point["at_s"]) for point in plan["points"]))
+    if args.write_plan:
+        args.write_plan.write_text(json.dumps(plan, indent=2) + "\n")
+    if args.check_pngs:
+        check_pngs(plan)
+    if not (args.times or args.write_plan or args.check_pngs):
+        print(json.dumps(plan, indent=2))
+
+
+if __name__ == "__main__":
+    main()

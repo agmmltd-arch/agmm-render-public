@@ -66,10 +66,10 @@
     {
       "source_path": "tools/source_capture.py",
       "target_path": "conditional-babylon-whole-film-wave01/tools/source_capture.py",
-      "bytes": 3803,
-      "sha256": "3be80e6f17ede8bbe402e416a705b5691106ccadec7c88eadb3855ac6cc3c9fd",
-      "git_blob_sha1": "3abb41338cbe5d65ba59082ec6ba132954451757",
-      "purpose": "eight timestamp plan and native PNG validation"
+      "bytes": 4003,
+      "sha256": "e7174dd713d48db0990d6022aed21dce68658e402c30892be5cae287fc58bb07",
+      "git_blob_sha1": "2d090bbc11a6ae17553781761981a0c2639afe10",
+      "purpose": "eight timestamp plan and HyperFrames zero-padded native PNG validation"
     },
     {
       "source_path": "tools/verify_source_manifest.py",
@@ -82,10 +82,10 @@
     {
       "source_path": "tools/test_storyboard_contract.py",
       "target_path": "conditional-babylon-whole-film-wave01/tools/test_storyboard_contract.py",
-      "bytes": 6425,
-      "sha256": "57e42d9ecd8c0a22eea952f7733ec0808a999864bf89bde025700e3124b427f7",
-      "git_blob_sha1": "56c0487256eddc1f79c43df63eb0e2a4131d4d9d",
-      "purpose": "source/storyboard/capture contract tests"
+      "bytes": 8535,
+      "sha256": "efcf817017657b7c8294ccebf0797dc54878ed73bae8649ef7e3ca9b2478d9bd",
+      "git_blob_sha1": "026c2a1764d91b43c864b74602b2f1a18f8b7727",
+      "purpose": "source/storyboard/imported workflow and positive/negative native PNG capture contract tests"
     },
     {
       "source_path": "tools/test_rebind_clock.py",
