@@ -4,7 +4,10 @@ from pathlib import Path
 import unittest
 from validate_runner_context import validate
 
-WORKFLOW=Path(__file__).parents[1]/"film05-wave10-public-hosted-picture-proof.yml"
+ROOT = Path(__file__).resolve().parents[1]
+WORKFLOW = ROOT / ".github/workflows/agmm-film05-wave10-public-hosted-picture-proof.yml"
+if not WORKFLOW.is_file():
+    WORKFLOW = ROOT / "film05-wave10-public-hosted-picture-proof.yml"
 
 class RunnerContextTests(unittest.TestCase):
     def test_step_scope_runner_paths_are_accepted(self):
