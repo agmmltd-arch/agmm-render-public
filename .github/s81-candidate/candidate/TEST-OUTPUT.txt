@@ -1,0 +1,11 @@
+test_all_sfx_are_catalogued_licensed_and_clear_of_emphasis_windows (test_s81_story_sound.StoryAndSoundTests) ... ok
+test_candidate_contains_no_media_payload (test_s81_story_sound.StoryAndSoundTests) ... ok
+test_mix_is_bound_to_selected_voice_and_56_365_clock (test_s81_story_sound.StoryAndSoundTests) ... ok
+test_music_rights_and_actual_audition_remain_explicit (test_s81_story_sound.StoryAndSoundTests) ... ok
+test_original_source_mismatch_is_reproduced_and_candidate_corrects_it (test_s81_story_sound.StoryAndSoundTests) ... ok
+test_voice_clock_binds_card_starts_and_review_captures (test_s81_story_sound.StoryAndSoundTests) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.004s
+
+OK

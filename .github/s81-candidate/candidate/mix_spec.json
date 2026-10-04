@@ -1,0 +1,52 @@
+{
+  "id": "S81-evidence-route-candidate-v1",
+  "voice": {
+    "src": "../media/voice/S81.wav",
+    "offset_s": 0.0,
+    "studio": true
+  },
+  "words": "../media/voice/S81.words.json",
+  "music": {
+    "src": "../media/music/neon-noir.mp3",
+    "under_voice_lu": 17.0,
+    "level_bed": true,
+    "envelope_db": []
+  },
+  "ducking": {
+    "gap_rise_db": 2.0,
+    "hold_ms": 150,
+    "release_ms": 600,
+    "attack_ms": 120,
+    "head_db": 1.0,
+    "tail_db": 1.0
+  },
+  "swells": [
+    {
+      "t0": 51.31,
+      "t1": 56.365,
+      "gain_db": 1.2,
+      "fade_s": 0.4,
+      "label": "CTA"
+    }
+  ],
+  "drops": [],
+  "sfx": {
+    "library": "../media/sfx/library-selected.json",
+    "protect_words": true,
+    "duck_db": 3.0,
+    "cues": [
+      {"t": 6.22, "sfx_id": "foley_phone_02", "gain_db": -17.0, "designed_hit": false, "event": "single vibration as the September envelope arrives"},
+      {"t": 8.60, "sfx_id": "foley_paper_03", "gain_db": -15.0, "designed_hit": false, "event": "BBC source card enters"},
+      {"t": 17.50, "sfx_id": "foley_paper_05", "gain_db": -17.0, "designed_hit": false, "event": "paper turn after the portal-file evidence statement"},
+      {"t": 26.65, "sfx_id": "foley_keyboard_02", "gain_db": -18.0, "designed_hit": false, "event": "single key on the actions underline; omit if text motion is not used"},
+      {"t": 28.75, "sfx_id": "foley_paper_02", "gain_db": -18.0, "designed_hit": false, "event": "quotation card releases after intend"},
+      {"t": 31.30, "sfx_id": "foley_paper_06", "gain_db": -18.0, "designed_hit": false, "event": "calendar leaf turns before the September date"},
+      {"t": 32.50, "sfx_id": "foley_paper_02", "gain_db": -19.0, "designed_hit": false, "event": "September leaf settles after 10th"},
+      {"t": 34.00, "sfx_id": "foley_phone_03", "gain_db": -18.0, "designed_hit": false, "event": "single vibration for the government-address email"},
+      {"t": 37.15, "sfx_id": "foley_click_02", "gain_db": -18.0, "designed_hit": false, "event": "single daily-check marker after once a day"},
+      {"t": 46.60, "sfx_id": "foley_paper_08", "gain_db": -17.0, "designed_hit": false, "event": "evidence route folds into the labelled lesson"}
+    ]
+  },
+  "ambience": {"regions": []},
+  "master": {"integrated_lufs": -14.0, "true_peak_dbtp": -1.0}
+}

@@ -1,0 +1,109 @@
+{
+  "attempts": [
+    {
+      "attempt": 1,
+      "clears_bar": true,
+      "emphasis": 8.67,
+      "flow": 8.67,
+      "full_asr_match": false,
+      "label": "pass1",
+      "lufs_i_post": "-18.12",
+      "naturalness": 8.0,
+      "pace": 9.0,
+      "robotic_votes": [
+        false,
+        false,
+        false
+      ],
+      "selected": true,
+      "take_dir": "PRIVATE_LOCAL_GENERATION_PATH_OMITTED",
+      "wpm_speaking_final": 172.0
+    }
+  ],
+  "final": {
+    "attempt": 1,
+    "clears_bar": true,
+    "emphasis": 8.67,
+    "flow": 8.67,
+    "full_asr_match": false,
+    "label": "pass1",
+    "lufs_i_post": "-18.12",
+    "naturalness": 8.0,
+    "pace": 9.0,
+    "robotic_votes": [
+      false,
+      false,
+      false
+    ],
+    "selected": true,
+    "take_dir": "PRIVATE_LOCAL_GENERATION_PATH_OMITTED",
+    "wpm_speaking_final": 172.0
+  },
+  "full_asr_match": false,
+  "id": "S81",
+  "lufs_final": "-18.12",
+  "n_attempts": 1,
+  "namecheck_summary": {
+    "expected": [
+      "OpenAI",
+      "Anthony Albanese",
+      "Medicare",
+      "Albanese",
+      "Guardian",
+      "Australia"
+    ],
+    "found_in_audio": [
+      "OpenAI",
+      "Anthony Albanese",
+      "Albanese",
+      "Guardian",
+      "Australia"
+    ],
+    "missing_from_audio": [
+      "Medicare"
+    ],
+    "verdicts": [
+      {
+        "clip": 1,
+        "correct": true,
+        "expected": "OpenAI",
+        "heard": "OpenAI",
+        "note": ""
+      },
+      {
+        "clip": 2,
+        "correct": true,
+        "expected": "Anthony Albanese",
+        "heard": "Anthony Albanese",
+        "note": ""
+      },
+      {
+        "clip": 3,
+        "correct": true,
+        "expected": "Albanese",
+        "heard": "Albanese",
+        "note": ""
+      },
+      {
+        "clip": 4,
+        "correct": false,
+        "expected": "Guardian",
+        "heard": "Albanese",
+        "note": "Mismatch: audio says 'Albanese' instead of 'Guardian'"
+      },
+      {
+        "clip": 5,
+        "correct": true,
+        "expected": "Australia",
+        "heard": "Australia",
+        "note": ""
+      }
+    ]
+  },
+  "receipt_path": "voice-text/S81.receipt.json",
+  "spotcheck_words_ok": true,
+  "status": "FINISHED",
+  "wav_path": "protected-inputs/S81/selected-voice.wav",
+  "words_json_path": "voice-text/S81.words.json",
+  "wpm_final": 172.0
+}

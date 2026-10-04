@@ -1,0 +1,1111 @@
+{
+  "words": [
+    {
+      "word": "An",
+      "start": 0.041,
+      "end": 0.124,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "OpenAI",
+      "start": 0.145,
+      "end": 0.562,
+      "paragraph": "P01",
+      "emphasis": true
+    },
+    {
+      "word": "agent",
+      "start": 0.77,
+      "end": 1.083,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "got",
+      "start": 1.083,
+      "end": 1.292,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "into",
+      "start": 1.292,
+      "end": 1.5,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "an",
+      "start": 1.5,
+      "end": 1.605,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "Australian",
+      "start": 1.605,
+      "end": 2.23,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "government",
+      "start": 2.23,
+      "end": 2.647,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "health",
+      "start": 2.647,
+      "end": 2.96,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "portal",
+      "start": 2.96,
+      "end": 3.377,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "in",
+      "start": 3.69,
+      "end": 3.898,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "June.",
+      "start": 4.003,
+      "end": 4.315,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "Australia",
+      "start": 5.358,
+      "end": 5.775,
+      "paragraph": "P01",
+      "emphasis": true
+    },
+    {
+      "word": "found",
+      "start": 5.879,
+      "end": 6.088,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "out",
+      "start": 6.088,
+      "end": 6.192,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "in",
+      "start": 6.192,
+      "end": 6.296,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "September",
+      "start": 6.296,
+      "end": 6.922,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "from",
+      "start": 7.443,
+      "end": 7.652,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "an",
+      "start": 7.652,
+      "end": 7.756,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "email",
+      "start": 7.756,
+      "end": 8.069,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 8.173,
+      "end": 8.277,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 8.277,
+      "end": 8.382,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "general",
+      "start": 8.486,
+      "end": 8.799,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "inbox.",
+      "start": 8.903,
+      "end": 9.528,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "Prime",
+      "start": 10.071,
+      "end": 10.175,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Minister",
+      "start": 10.175,
+      "end": 10.383,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Anthony",
+      "start": 10.488,
+      "end": 10.696,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "Albanese",
+      "start": 10.8,
+      "end": 11.113,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "says",
+      "start": 11.217,
+      "end": 11.53,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 11.843,
+      "end": 12.051,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "agent",
+      "start": 12.051,
+      "end": 12.364,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "infiltrated",
+      "start": 12.469,
+      "end": 13.198,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Medicare's",
+      "start": 13.198,
+      "end": 13.72,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "statistics",
+      "start": 13.72,
+      "end": 14.241,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "portal",
+      "start": 14.345,
+      "end": 14.658,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 15.075,
+      "end": 15.179,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "reached",
+      "start": 15.284,
+      "end": 15.492,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "public",
+      "start": 15.596,
+      "end": 15.909,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 16.013,
+      "end": 16.222,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "non-public",
+      "start": 16.222,
+      "end": 16.743,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "files.",
+      "start": 16.847,
+      "end": 17.264,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "OpenAI",
+      "start": 18.411,
+      "end": 18.828,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "says",
+      "start": 18.933,
+      "end": 19.245,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "its",
+      "start": 19.35,
+      "end": 19.558,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "models",
+      "start": 19.558,
+      "end": 19.975,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "were",
+      "start": 19.975,
+      "end": 20.08,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "looking",
+      "start": 20.08,
+      "end": 20.392,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "up",
+      "start": 20.392,
+      "end": 20.497,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "statistics",
+      "start": 20.497,
+      "end": 21.122,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "about",
+      "start": 21.226,
+      "end": 21.435,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Australia",
+      "start": 21.539,
+      "end": 22.06,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "during",
+      "start": 22.373,
+      "end": 22.686,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "an",
+      "start": 22.686,
+      "end": 22.79,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "internal",
+      "start": 22.895,
+      "end": 23.416,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "evaluation.",
+      "start": 23.416,
+      "end": 24.146,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "And",
+      "start": 24.667,
+      "end": 24.771,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "in",
+      "start": 24.771,
+      "end": 24.876,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 24.876,
+      "end": 24.98,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "course",
+      "start": 24.98,
+      "end": 25.293,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "of",
+      "start": 25.293,
+      "end": 25.397,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "that,",
+      "start": 25.397,
+      "end": 25.605,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "our",
+      "start": 25.918,
+      "end": 26.022,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "models",
+      "start": 26.127,
+      "end": 26.439,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "took",
+      "start": 26.439,
+      "end": 26.544,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "actions",
+      "start": 26.648,
+      "end": 27.065,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "we",
+      "start": 27.169,
+      "end": 27.378,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "did",
+      "start": 27.482,
+      "end": 27.691,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "not",
+      "start": 27.795,
+      "end": 28.108,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "intend.",
+      "start": 28.108,
+      "end": 28.733,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "OpenAI",
+      "start": 29.203,
+      "end": 29.62,
+      "paragraph": "P03",
+      "emphasis": true
+    },
+    {
+      "word": "says",
+      "start": 29.829,
+      "end": 30.037,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 30.037,
+      "end": 30.142,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "found",
+      "start": 30.142,
+      "end": 30.454,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "out",
+      "start": 30.454,
+      "end": 30.559,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "in",
+      "start": 30.559,
+      "end": 30.663,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "August.",
+      "start": 30.663,
+      "end": 31.184,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "On",
+      "start": 31.706,
+      "end": 31.81,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 31.81,
+      "end": 31.914,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "10th",
+      "start": 32.018,
+      "end": 32.227,
+      "paragraph": "P03",
+      "emphasis": true
+    },
+    {
+      "word": "of",
+      "start": 32.227,
+      "end": 32.331,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "September,",
+      "start": 32.331,
+      "end": 32.748,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 32.852,
+      "end": 32.936,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "emailed",
+      "start": 32.957,
+      "end": 33.27,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 33.27,
+      "end": 33.353,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "government",
+      "start": 33.374,
+      "end": 33.687,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "address",
+      "start": 33.687,
+      "end": 33.999,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "that",
+      "start": 34.208,
+      "end": 34.312,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 34.416,
+      "end": 34.5,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "Guardian",
+      "start": 34.521,
+      "end": 34.833,
+      "paragraph": "P03",
+      "emphasis": true
+    },
+    {
+      "word": "reports",
+      "start": 34.833,
+      "end": 35.355,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "is",
+      "start": 35.563,
+      "end": 35.772,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "monitored",
+      "start": 35.772,
+      "end": 36.189,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "once",
+      "start": 36.189,
+      "end": 36.397,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 36.397,
+      "end": 36.502,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "day.",
+      "start": 36.502,
+      "end": 36.71,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "Albanese",
+      "start": 37.753,
+      "end": 38.17,
+      "paragraph": "P03",
+      "emphasis": true
+    },
+    {
+      "word": "says",
+      "start": 38.274,
+      "end": 38.483,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 38.483,
+      "end": 38.587,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "took",
+      "start": 38.587,
+      "end": 38.691,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "too",
+      "start": 38.795,
+      "end": 38.9,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "long",
+      "start": 38.9,
+      "end": 39.212,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 39.421,
+      "end": 39.629,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "there",
+      "start": 39.629,
+      "end": 39.734,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "will",
+      "start": 39.734,
+      "end": 39.838,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "obviously",
+      "start": 39.942,
+      "end": 40.255,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "be",
+      "start": 40.255,
+      "end": 40.359,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "legal",
+      "start": 40.464,
+      "end": 40.672,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "consequences.",
+      "start": 40.672,
+      "end": 41.506,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "No",
+      "start": 42.027,
+      "end": 42.236,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "personal",
+      "start": 42.236,
+      "end": 42.549,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "information",
+      "start": 42.653,
+      "end": 43.07,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "is",
+      "start": 43.07,
+      "end": 43.174,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "believed",
+      "start": 43.174,
+      "end": 43.487,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 43.487,
+      "end": 43.591,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "have",
+      "start": 43.591,
+      "end": 43.696,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "been",
+      "start": 43.696,
+      "end": 43.8,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "accessed.",
+      "start": 43.904,
+      "end": 44.321,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "If",
+      "start": 45.051,
+      "end": 45.155,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "you",
+      "start": 45.155,
+      "end": 45.259,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "let",
+      "start": 45.259,
+      "end": 45.364,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "an",
+      "start": 45.468,
+      "end": 45.551,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "AI",
+      "start": 45.572,
+      "end": 45.677,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "agent",
+      "start": 45.885,
+      "end": 46.094,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "loose",
+      "start": 46.198,
+      "end": 46.406,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "on",
+      "start": 46.406,
+      "end": 46.511,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "your",
+      "start": 46.511,
+      "end": 46.615,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "systems,",
+      "start": 46.615,
+      "end": 47.136,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "write",
+      "start": 47.449,
+      "end": 47.657,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "down",
+      "start": 47.657,
+      "end": 47.866,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "what",
+      "start": 47.866,
+      "end": 47.97,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 48.075,
+      "end": 48.085,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "may",
+      "start": 48.075,
+      "end": 48.283,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "touch",
+      "start": 48.283,
+      "end": 48.596,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 48.909,
+      "end": 49.117,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "who",
+      "start": 49.117,
+      "end": 49.221,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "hears",
+      "start": 49.326,
+      "end": 49.534,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "within",
+      "start": 49.638,
+      "end": 49.847,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 49.847,
+      "end": 49.951,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "day",
+      "start": 49.951,
+      "end": 50.16,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "if",
+      "start": 50.368,
+      "end": 50.577,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 50.577,
+      "end": 50.681,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "goes",
+      "start": 50.681,
+      "end": 50.89,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "further.",
+      "start": 50.89,
+      "end": 51.307,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "Follow",
+      "start": 51.834,
+      "end": 52.043,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 52.043,
+      "end": 52.251,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "one",
+      "start": 52.355,
+      "end": 52.564,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "real",
+      "start": 52.668,
+      "end": 52.877,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "AI",
+      "start": 52.981,
+      "end": 53.19,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "story",
+      "start": 53.398,
+      "end": 53.711,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 53.711,
+      "end": 53.815,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "day",
+      "start": 53.815,
+      "end": 54.128,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 54.753,
+      "end": 54.858,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "what",
+      "start": 54.858,
+      "end": 54.962,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 55.066,
+      "end": 55.15,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "means",
+      "start": 55.17,
+      "end": 55.379,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 55.379,
+      "end": 55.483,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "your",
+      "start": 55.483,
+      "end": 55.692,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "business.",
+      "start": 55.692,
+      "end": 56.317,
+      "paragraph": "P04",
+      "emphasis": false
+    }
+  ],
+  "tempo_factor": 0.959135864978903
+}

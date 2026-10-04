@@ -1,0 +1,56 @@
+{
+  "hyperframes": "0.8.71",
+  "kind": "s81_hosted_capture_runtime_lock",
+  "observed_head": "92920348c59cc61e30587fe8c586d6d79417c426",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "required_remote_files": {
+    ".github/scripts/capture_short_package.py": {
+      "bytes": 21567,
+      "git_blob_sha": "65f9b89f126c6113a91061a2f1f361954c96a0ae",
+      "sha256": "01331a3a396618e6347db5df69a3ac9052d2053d76a89117beb75b8dfe7f859f"
+    },
+    ".github/scripts/render_short_package.py": {
+      "bytes": 44932,
+      "git_blob_sha": "754099346a84c5bd305f5684ef24399a53bd9697",
+      "sha256": "2c7db0660522368489697d48220d8832e3f84b070d946e2f83133b4eb4114028"
+    },
+    ".github/workflows/agmm-short-capture.yml": {
+      "bytes": 6027,
+      "git_blob_sha": "3cb41404efec5fed821510b8d8717b8188221891",
+      "sha256": "f4ee6eedc251a1c22492b8ee4081e041c23afd35955c2f970302b5741d7e28f6"
+    },
+    ".github/workflows/agmm-short-package.yml": {
+      "bytes": 11455,
+      "git_blob_sha": "2e8c6e21409e0bdaaf80356d8b02b71bd4c5491b",
+      "sha256": "01551516e51bf49add20c5b6aef5b8a1a420d7a0412b09037c373a88da122777"
+    },
+    "tools/agmm-kit-mirror/sound/library.json": {
+      "bytes": 223658,
+      "git_blob_sha": "ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05",
+      "sha256": "2744f53024d42208538675f8d27e24e3f06c4135b81e892af29e2f0538c56215"
+    },
+    "tools/agmm-kit-mirror/sound/v2/audio_core.py": {
+      "bytes": 18604,
+      "git_blob_sha": "9a0aaee6f0676677efff34d25fdcf79d9537cb16",
+      "sha256": "dec742a1db2732e112e3734e245357b0ef6d73415cd458030645fa6e5154f2fa"
+    },
+    "tools/agmm-kit-mirror/sound/v2/audio_rules.json": {
+      "bytes": 10231,
+      "git_blob_sha": "e00afb1410d4ae9278be24ccb3811972a62e7b17",
+      "sha256": "9aa2a571a34aa8f50b28d995227b581d788fd36d5d6b7c4db3e10866e7bbbb68"
+    },
+    "tools/agmm-kit-mirror/sound/v2/mix2.py": {
+      "bytes": 42400,
+      "git_blob_sha": "623521fb087ce296fe3895f6c23205c49976b837",
+      "sha256": "20607f3a9975a99883c5c87ee8b6ba6d0146fc7be24a0c1ffcacef1d63e4dbd4"
+    },
+    "tools/agmm-kit-mirror/sound/v2/voice_chain.py": {
+      "bytes": 10389,
+      "git_blob_sha": "ea817bb829f4ffd68b2abdaacb1a8128731d4b21",
+      "sha256": "64d1ada82e18536228dd111979a5e80e886985513f1d56a8f8fbc66f1753dcb9"
+    }
+  },
+  "runner": "ubuntu-24.04",
+  "runtime_caveat": "These capture/mixer files are pinned from the public tree; this is not proof that an S81 source package exists or that the source archive contains the required engine/font/media files.",
+  "visibility": "public"
+}

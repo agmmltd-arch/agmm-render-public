@@ -1,0 +1,18 @@
+{
+  "approval": "NOT_GRANTED",
+  "assets_or_media_changed": false,
+  "base_sources_sha256": "9c90c9d650486a0be75da9b3b8682598a510c7a5e70bae53e3730a977b142466",
+  "base_spec_sha256": "02fc9522e7e46800c2254ad4eeefa240c08e5033a686e98a7411e7225c4ba3e2",
+  "candidate_scene_sha256": "ab824b1c60f35c32cf47c1511793eff536aa3e1f9124603c8b454d2d9c5e209a",
+  "candidate_sources_sha256": "9c90c9d650486a0be75da9b3b8682598a510c7a5e70bae53e3730a977b142466",
+  "candidate_spec_sha256": "02fc9522e7e46800c2254ad4eeefa240c08e5033a686e98a7411e7225c4ba3e2",
+  "canonical_scene_sha256": "7400b9321cd13f5dea7f29f6b54fac55266e103a54fba8316369b93635125298",
+  "capture_plan_schema": "source global timestamps; converted on Ubuntu after parts.json is validated",
+  "change_summary": [
+    "candidate scene timing aligns OpenAI evaluation/account and statement cards to narration",
+    "Guardian card ends and Albanese response card begins at authenticated word boundary"
+  ],
+  "kind": "s81_candidate_spec_delta",
+  "spec_changes": [],
+  "status": "TEXT_ONLY_CANDIDATE_NOT_RENDER_READY"
+}

@@ -1,0 +1,44 @@
+{
+  "id": "S81",
+  "title": "OpenAI's agent reached Australia's Medicare statistics portal. Australia heard in September.",
+  "slug": "openai-australia-medicare-notification",
+  "look": "investigative-paper-timeline",
+  "platform": "youtube-shorts",
+  "platform_label": "YouTube Shorts + LinkedIn",
+  "format": "Headline-as-Proof timeline",
+  "script": {
+    "id": "S81",
+    "file": "shorts/scripts-v2/S81.md",
+    "locked": true,
+    "words": 158
+  },
+  "voice": {
+    "source_receipt": "shorts/voice/S81/S81.receipt.json",
+    "words": "shorts/voice/S81/S81.words.json",
+    "duration_s": 56.365,
+    "locked": true,
+    "needs_listening_review": true
+  },
+  "world": "s81-evidence-route",
+  "signature_concept": "The evidence route from the June portal event to the September general-inbox notification folds into a two-step alert-control card, marked as an AGMM illustration.",
+  "reference_url": "https://www.youtube.com/shorts/KsLRqi3PwpY",
+  "reference_title_claimed": "El Salvador Just Made BITCOIN Its National Currency? #shorts | Economics Explained",
+  "transitions": [
+    "calendar leaf turns and red evidence route draws from frame zero",
+    "source page becomes a printed evidence card with masthead retained",
+    "June and September leaves separate around the real OpenAI statement",
+    "Guardian notification paragraph lands beside a single daily inbox marker",
+    "the route folds into a clearly labelled AGMM lesson card"
+  ],
+  "sources": "sources.js",
+  "capture_plan": "capture-plan.json",
+  "caption_contract": {
+    "words_source": "shorts/voice/S81/S81.words.json",
+    "locked": true,
+    "reserved_vertical_band_px": [1280, 1680],
+    "caption_end_url": "https://agmm.co.uk/ai-constraint-audit?utm_source=qa&utm_campaign=qa_release_audit"
+  },
+  "editorial_status": "NOT_REVIEWED",
+  "media_status": "NOT_STAGED",
+  "publication_status": "NOT_REQUESTED"
+}

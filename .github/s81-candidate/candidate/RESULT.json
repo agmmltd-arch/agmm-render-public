@@ -1,0 +1,49 @@
+{
+  "kind": "s81_production_candidate_result",
+  "status": "TEXT_AND_SOUND_PLAN_READY_FOR_ROOT_REVIEW; MEDIA_AND_AUDIO_GATES_OPEN",
+  "finding": "The pre-existing candidate showed the exact OpenAI statement before the narrated statement and left the Guardian card over Albanese’s response. Isolated candidate aligns the source cards to the current S81.words.json clock.",
+  "changed": [
+    {
+      "path": "production-candidate/scenes.js",
+      "sha256": "ab824b1c60f35c32cf47c1511793eff536aa3e1f9124603c8b454d2d9c5e209a",
+      "change": "Only source-card copy/timing updates: evaluation account 18.40–24.667; exact statement 24.667–29.20; Guardian 34.50–37.753; Albanese 37.753–42.64."
+    },
+    {
+      "path": "production-candidate/capture-plan.json",
+      "sha256": "753d67981b2a961e0b80412ba7c34c4046f43a1f03ca7204e09009511567a80e",
+      "change": "Capture points rebound to matching spoken beats."
+    },
+    {
+      "path": "production-candidate/mix_spec.json",
+      "sha256": "157ab9ad2ddf4fee977c28642a7a2763416a2c172021ed0ae9b2db4a9554fa3d",
+      "change": "Conditional mix2 spec using locked voice/word clock, one CC BY 4.0 bed, 10 story-tied SFX, no ambience."
+    },
+    {
+      "path": "production-candidate/selected-sound-assets.json",
+      "sha256": "a6999c2a3d8bd5c3d5538e86acc4c1b63677e19654a3876ee243c4e1d4d00bb7",
+      "change": "Catalogue-only sound asset/licence map with staged-byte digest requirements."
+    },
+    {
+      "path": "production-candidate/S81-STORYBOARD-AND-SOUND.md",
+      "sha256": "8a4060dfb882351ec239bf699f519696c10bc825aa6b2f52e52f0e3d88384e21",
+      "change": "Timed picture/sound plan and hosted-only production/review route."
+    },
+    {
+      "path": "production-candidate/scenes-overlay.patch",
+      "sha256": "14849a824f8ea646d47d653c38ec61cdb1a84fd0c709edd6ddcd991fec895d2c",
+      "change": "Exact isolated source diff against the frozen maker source."
+    }
+  ],
+  "checks": {
+    "node_syntax": true,
+    "json_parse": true,
+    "unit_tests": true
+  },
+  "evidence_limitations": [
+    "The selected WAV was not opened/listened to and was not copied or hashed.",
+    "The existing voice receipt reports full_asr_match=false, Medicare missing, Guardian/Albanese clip mismatch, and voicelead warnings; all remain open.",
+    "Music selection is based only on existing catalogue metadata and remains unauditioned; selected sound files have not been hosted or byte-verified.",
+    "No S81 media release/parts/source archive/mix exists in this candidate; no rendering/capture/full AV review or approval is claimed."
+  ],
+  "next_action": "Root review the exact source overlay and provisional mix plan. If accepted, use the existing S90 direct-stream path for the unchanged selected WAV and reviewed hosted-only asset staging, then audition/mix on the pinned Ubuntu runtime before any capture/render dispatch."
+}

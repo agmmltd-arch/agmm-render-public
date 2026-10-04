@@ -1,0 +1,178 @@
+name: S81 hosted source-package build and still capture
+run-name: S81 source stills ${{ github.run_id }}
+
+# This builds the package and captures source stills on public Ubuntu Actions.
+# It never adds the selected WAV, mixes audio, renders a master, or grants approval.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: s81-source-capture-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  source-capture:
+    if: github.repository == 'agmmltd-arch/agmm-render-public' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_RUN_ID: ${{ github.run_id }}
+      S81_HOSTED_SOURCE_CAPTURE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Guard exact main checkout before any network or publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = agmmltd-arch/agmm-render-public
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git show -s --format=%H HEAD)" = "$GITHUB_SHA"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+      - name: Guard public hosted route and verify exact current helpers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$RUNNER_OS" = Linux
+          test "$GITHUB_REPOSITORY" = agmmltd-arch/agmm-render-public
+          gh api "repos/$GITHUB_REPOSITORY" > repository.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('repository.json'))
+          assert r.get('full_name')=='agmmltd-arch/agmm-render-public' and r.get('private') is False and r.get('visibility')=='public'
+          PY
+          python3 .github/scripts/verify_s81_payload.py runtime --repo . --lock .github/s81-runtime-lock.json
+          python3 .github/scripts/verify_s81_payload.py payload --root .github/s81-candidate --manifest .github/s81-candidate/S81-CANDIDATE-MANIFEST.json
+          test "$(node --version | cut -c1-3)" = 'v22'
+      - name: Authenticate the pinned public generic runtime parent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/releases/400657643" > runtime-release.json
+          mkdir -p runtime-parent
+          gh release download S86-r2-source-202610010547 -R "$GITHUB_REPOSITORY" -p source.tar.gz -D runtime-parent
+          # gh release download creates the directory when needed; keep exact asset basename.
+          test -f runtime-parent/source.tar.gz
+      - name: Fetch official brand package on Ubuntu and build the sealed S81 package
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from urllib.request import Request, urlopen
+          from urllib.parse import urlparse
+          url='https://cdn.openai.com/brand/OpenAI-Logos-2025.zip'
+          req=Request(url,headers={'User-Agent':'AGMM-S81-source-capture/1.0'})
+          with urlopen(req,timeout=45) as response:
+            if response.status!=200 or urlparse(response.geturl()).hostname!='cdn.openai.com': raise SystemExit('official brand package response host/status mismatch')
+            data=response.read(25_000_001)
+          if not data or len(data)>25_000_000: raise SystemExit('official brand package is empty or over 25 MB')
+          open('openai-brand-package.zip','wb').write(data)
+          PY
+          python3 .github/scripts/discover_openai_logo.py \
+            --archive openai-brand-package.zip --output openai-logo-discovery.json
+          python3 .github/scripts/build_s81_source_package.py \
+            --payload .github/s81-candidate \
+            --runtime-proof .github/s81-runtime-parent-proof.json \
+            --release-metadata runtime-release.json --repository-metadata repository.json \
+            --runtime-archive runtime-parent/source.tar.gz --brand-zip openai-brand-package.zip \
+            --logo-discovery openai-logo-discovery.json \
+            --capture-helper .github/scripts/capture_short_package.py \
+            --output source-package > S81-SOURCE-STAGING-RECEIPT.json
+      - name: Bind source package and capture plan with the existing capture helper
+        id: prepare
+        run: |
+          set -euo pipefail
+          SOURCE_SHA=$(python3 -c 'import json;print(json.load(open("S81-SOURCE-STAGING-RECEIPT.json"))["source_sha256"])')
+          PARTS_SHA=$(python3 -c 'import json;print(json.load(open("S81-SOURCE-STAGING-RECEIPT.json"))["parts_sha256"])')
+          PLAN_SHA=$(sha256sum source-package/capture-plan.json | cut -d' ' -f1)
+          MEDIA_SHA=$(python3 -c 'import json;print(json.load(open("source-package/MEDIA-IDENTITIES.json"))["sha256"])')
+          python3 .github/scripts/capture_short_package.py prepare \
+            --source source-package/source.tar.gz --parts source-package/parts.json \
+            --plan source-package/capture-plan.json --output prepared \
+            --source-sha256 "$SOURCE_SHA" --parts-sha256 "$PARTS_SHA" \
+            --capture-plan-sha256 "$PLAN_SHA" --media-identity-sha256 "$MEDIA_SHA"
+          echo "source_sha256=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+      - name: Capture exact source-clock points with pinned HyperFrames
+        run: |
+          set -euo pipefail
+          mkdir -p raw-snapshots captured
+          python3 - <<'PY' > capture-times.txt
+          import json
+          manifest=json.load(open('prepared/CAPTURE-MANIFEST.json'))
+          assert len(manifest['by_look'])==1 and manifest['by_look'][0]['look']=='s81-evidence-route'
+          print(manifest['by_look'][0]['times_csv'])
+          PY
+          (cd prepared/project/s81-evidence-route && python3 static_check.py) > captured/s81.static-check.log 2>&1
+          npx --yes hyperframes@0.8.71 snapshot prepared/project/s81-evidence-route \
+            --at "$(cat capture-times.txt)" --no-end --describe false --no-browser-gpu --timeout 180000 \
+            --output "$GITHUB_WORKSPACE/raw-snapshots/s81-evidence-route" > captured/s81.snapshot.log 2>&1
+          python3 .github/scripts/capture_short_package.py collect \
+            --manifest prepared/CAPTURE-MANIFEST.json --look s81-evidence-route \
+            --snapshots raw-snapshots/s81-evidence-route --output captured/s81-evidence-route \
+            --log captured/s81.snapshot.log
+          cp captured/s81.static-check.log captured/s81-evidence-route/static-check.log
+      - name: Bundle stills and exact source receipts only
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/capture_short_package.py bundle \
+            --manifest prepared/CAPTURE-MANIFEST.json --media-identities prepared/MEDIA-IDENTITIES.json \
+            --captured captured --output capture-pack
+          cp prepared/INPUT-RECEIPT.json capture-pack/
+          cp S81-SOURCE-STAGING-RECEIPT.json capture-pack/
+          cp openai-logo-discovery.json capture-pack/S81-LOGO-DISCOVERY.json
+          cp captured/s81.static-check.log capture-pack/static-check.txt
+          mkdir -p capture-pack/inputs
+          cp .github/s81-candidate/S81-CANDIDATE-MANIFEST.json capture-pack/inputs/
+          cp .github/s81-candidate/candidate/capture-plan-source.json capture-pack/inputs/
+          test "$(find capture-pack -type f \( -name '*.wav' -o -name '*.mp3' -o -name '*.mp4' -o -name '*.mov' -o -name '*.webm' -o -name '*.zip' -o -name '*.tar.gz' \) | wc -l | tr -d ' ')" = 0
+      - name: Publish run-scoped source-review branch with exact allowlist only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          git config user.name 'AGMM hosted source review'
+          git config user.email 'evidence@users.noreply.github.com'
+          BRANCH="review-S81-source-capture-$GITHUB_RUN_ID"
+          git checkout --orphan "$BRANCH"
+          git rm -rf --cached . >/dev/null
+          mkdir -p public-review
+          cp -R capture-pack/. public-review/
+          git add public-review
+          python3 - <<'PY'
+          import json,subprocess
+          evidence=json.load(open('public-review/CAPTURE-EVIDENCE.json'))
+          names=set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          expected={'public-review/'+row['file'] for row in evidence['captures']}
+          expected.update({'public-review/CAPTURE-EVIDENCE.json','public-review/MEDIA-IDENTITIES.json','public-review/SHA256SUMS.txt','public-review/INPUT-RECEIPT.json','public-review/S81-SOURCE-STAGING-RECEIPT.json','public-review/S81-LOGO-DISCOVERY.json','public-review/inputs/S81-CANDIDATE-MANIFEST.json','public-review/inputs/capture-plan-source.json'})
+          expected.update('public-review/receipts/'+row['look']+'.json' for row in evidence['captures'])
+          expected.add('public-review/static-check.txt')
+          assert len(evidence['captures'])==16, f"expected the 16 named source points for this single-part composition; got {len(evidence['captures'])}"
+          assert names==expected, {'extra':sorted(names-expected),'missing':sorted(expected-names)}
+          assert all(p.lower().endswith(('.png','.json','.txt')) for p in names)
+          assert not any(p.lower().endswith(('.wav','.mp3','.mp4','.mov','.webm','.zip','.gz')) for p in names)
+          receipt=json.load(open('public-review/S81-SOURCE-STAGING-RECEIPT.json'))
+          logo=json.load(open('public-review/S81-LOGO-DISCOVERY.json'))
+          import hashlib
+          assert logo.get('status')=='UNIQUE_SQUARE_SVG_DISCOVERED' and len(logo.get('eligible_members',[]))==1
+          assert receipt['logo']['member']==logo['selected_member']
+          assert receipt['logo']['package_sha256']==logo['package_sha256']
+          assert receipt['logo']['discovery_receipt_sha256']==hashlib.sha256(open('public-review/S81-LOGO-DISCOVERY.json','rb').read()).hexdigest()
+          assert receipt['logo']['rights_review'].startswith('OPEN') and receipt['logo']['human_visual_review']=='OPEN'
+          assert evidence.get('editorial_status')=='NOT_REVIEWED' and evidence.get('publication_status')=='NOT_REQUESTED'
+          PY
+          git commit -m 'S81 hosted source captures; stills only and not final AV approval'
+          git push origin "HEAD:refs/heads/$BRANCH"

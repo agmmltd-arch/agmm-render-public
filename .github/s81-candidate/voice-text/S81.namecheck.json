@@ -1,0 +1,59 @@
+{
+  "names_expected": [
+    "OpenAI",
+    "Anthony Albanese",
+    "Medicare",
+    "Albanese",
+    "Guardian",
+    "Australia"
+  ],
+  "names_found_in_audio": [
+    "OpenAI",
+    "Anthony Albanese",
+    "Albanese",
+    "Guardian",
+    "Australia"
+  ],
+  "names_missing_from_audio": [
+    "Medicare"
+  ],
+  "n_clips": 5,
+  "batch_duration_s": 6.59,
+  "gemini_verdicts": [
+    {
+      "clip": 1,
+      "expected": "OpenAI",
+      "heard": "OpenAI",
+      "correct": true,
+      "note": ""
+    },
+    {
+      "clip": 2,
+      "expected": "Anthony Albanese",
+      "heard": "Anthony Albanese",
+      "correct": true,
+      "note": ""
+    },
+    {
+      "clip": 3,
+      "expected": "Albanese",
+      "heard": "Albanese",
+      "correct": true,
+      "note": ""
+    },
+    {
+      "clip": 4,
+      "expected": "Guardian",
+      "heard": "Albanese",
+      "correct": false,
+      "note": "Mismatch: audio says 'Albanese' instead of 'Guardian'"
+    },
+    {
+      "clip": 5,
+      "expected": "Australia",
+      "heard": "Australia",
+      "correct": true,
+      "note": ""
+    }
+  ]
+}
