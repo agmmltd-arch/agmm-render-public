@@ -1,0 +1,135 @@
+name: S86-D FOLLOW CTA source seal
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: s86-cta-follow-source-seal
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      REPO: agmmltd-arch/agmm-render-public
+      PARENT_RELEASE: S86-source-quote-37171207319
+      PARENT_RELEASE_ID: "402788582"
+      PARENT_NODE_ID: RE_kwDOU05Rms4YAhDm
+      PARENT_SOURCE_SHA256: 666a90579d57f2bd5c2abed41e55b5dad3fff790f93707d79b2929bddf1c93b6
+      PARENT_PARTS_SHA256: e995d9d0354b808714bf89e2a082a98200a8ef92733d1896181635dfecffbb88
+      PARENT_MIX_SHA256: 0c252cdf6e412fc2ccadcdb29b940d6a23b7c527276ebf79da468b7f633df436
+    steps:
+      - name: Guard Actions Ubuntu and confirm public current main before network input access
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$(uname -s)" == Linux ]]
+          [[ "$GITHUB_REPOSITORY" == "$REPO" ]]
+          [[ "$GITHUB_REF" == refs/heads/main && "$GITHUB_EVENT_NAME" == workflow_dispatch ]]
+          [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]
+          mkdir -p "$RUNNER_TEMP/s86-seal"
+          gh api "repos/$REPO" > "$RUNNER_TEMP/s86-seal/repository.json"
+          gh api "repos/$REPO/git/ref/heads/main" > "$RUNNER_TEMP/s86-seal/main-ref.json"
+          python3 - "$RUNNER_TEMP/s86-seal/repository.json" "$RUNNER_TEMP/s86-seal/main-ref.json" "$GITHUB_SHA" <<'PY'
+          import json,sys
+          repo=json.load(open(sys.argv[1])); ref=json.load(open(sys.argv[2]))
+          assert repo.get('full_name')=='agmmltd-arch/agmm-render-public' and repo.get('private') is False and repo.get('visibility')=='public'
+          assert ref.get('object',{}).get('sha')==sys.argv[3], 'workflow commit is not exact current main'
+          print('Actions/Linux/public-repository/exact-current-main PASS')
+          PY
+      - name: Check out exact guarded workflow commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate parent release by correct REST ID and node ID
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$REPO/releases/tags/$PARENT_RELEASE" > "$RUNNER_TEMP/s86-seal/parent-release.json"
+          python3 .github/scripts/seal_s86_cta.py validate-parent "$RUNNER_TEMP/s86-seal/parent-release.json"
+      - name: Require exact HTTP 404 for both new release and git tag absence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="S86-cta-follow-${GITHUB_RUN_ID}"
+          for endpoint in "releases/tags/$tag" "git/ref/tags/$tag"; do
+            body="$RUNNER_TEMP/s86-seal/absence-$(printf '%s' "$endpoint" | tr '/' '_').json"
+            status=$(curl --silent --show-error --max-time 20 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -o "$body" -w '%{http_code}' "https://api.github.com/repos/$REPO/$endpoint")
+            python3 .github/scripts/seal_s86_cta.py check-tag-absence --http-status "$status" "$body"
+          done
+      - name: Download exact parent text/media inputs only on Ubuntu
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/s86-parent" "$RUNNER_TEMP/s86-sealed"
+          gh release download "$PARENT_RELEASE" --repo "$REPO" -p source.tar.gz -p parts.json -p mix.wav -D "$RUNNER_TEMP/s86-parent"
+          printf '%s  %s\n' "$PARENT_SOURCE_SHA256" "$RUNNER_TEMP/s86-parent/source.tar.gz" | sha256sum -c -
+          printf '%s  %s\n' "$PARENT_PARTS_SHA256" "$RUNNER_TEMP/s86-parent/parts.json" | sha256sum -c -
+          printf '%s  %s\n' "$PARENT_MIX_SHA256" "$RUNNER_TEMP/s86-parent/mix.wav" | sha256sum -c -
+      - name: Apply exact one-field CTA patch and rebind parts provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/seal_s86_cta.py seal \
+            --source "$RUNNER_TEMP/s86-parent/source.tar.gz" \
+            --parts "$RUNNER_TEMP/s86-parent/parts.json" \
+            --mix "$RUNNER_TEMP/s86-parent/mix.wav" \
+            --parts-output "$RUNNER_TEMP/s86-sealed/parts.json" \
+            --output "$RUNNER_TEMP/s86-sealed/source.tar.gz" \
+            --receipt "$RUNNER_TEMP/s86-sealed/source-receipt.json" \
+            --parent-tag "$PARENT_RELEASE" --parent-release-id "$PARENT_RELEASE_ID" \
+            --parent-source-sha "$PARENT_SOURCE_SHA256" --parent-parts-sha "$PARENT_PARTS_SHA256" \
+            --parent-mix-sha "$PARENT_MIX_SHA256"
+          cp "$RUNNER_TEMP/s86-parent/mix.wav" "$RUNNER_TEMP/s86-sealed/mix.wav"
+      - name: Validate corrected source with current exact renderer helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet Pillow
+          source_sha=$(sha256sum "$RUNNER_TEMP/s86-sealed/source.tar.gz" | cut -d ' ' -f1)
+          parts_sha=$(sha256sum "$RUNNER_TEMP/s86-sealed/parts.json" | cut -d ' ' -f1)
+          mix_sha=$(sha256sum "$RUNNER_TEMP/s86-sealed/mix.wav" | cut -d ' ' -f1)
+          .venv/bin/python .github/scripts/render_short_package.py prepare \
+            --source "$RUNNER_TEMP/s86-sealed/source.tar.gz" --parts "$RUNNER_TEMP/s86-sealed/parts.json" \
+            --mix "$RUNNER_TEMP/s86-sealed/mix.wav" --source-sha256 "$source_sha" \
+            --parts-sha256 "$parts_sha" --mix-sha256 "$mix_sha" --output "$RUNNER_TEMP/s86-validation"
+      - name: Publish one verified source-only candidate release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="S86-cta-follow-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/s86-sealed/source.tar.gz" "$RUNNER_TEMP/s86-sealed/source-receipt.json" \
+            "$RUNNER_TEMP/s86-sealed/parts.json" "$RUNNER_TEMP/s86-sealed/mix.wav" \
+            --repo "$REPO" --target "$GITHUB_SHA" --title "S86 FOLLOW CTA one-field source correction" \
+            --notes "Candidate source only. One S86-D pressed-label field changed from implicit FOLLOWING to FOLLOW. No render or approval."
+          gh api "repos/$REPO/releases/tags/$tag" > "$RUNNER_TEMP/s86-sealed/published-release.json"
+          python3 - "$RUNNER_TEMP/s86-sealed/published-release.json" "$RUNNER_TEMP/s86-sealed/source.tar.gz" "$RUNNER_TEMP/s86-sealed/source-receipt.json" "$RUNNER_TEMP/s86-sealed/parts.json" "$RUNNER_TEMP/s86-sealed/mix.wav" <<'PY'
+          import hashlib,json,pathlib,sys
+          r=json.load(open(sys.argv[1])); assert r.get('tag_name')==f"S86-cta-follow-{__import__('os').environ['GITHUB_RUN_ID']}" and isinstance(r.get('id'),int) and r['id']>0
+          exp={pathlib.Path(p).name:(pathlib.Path(p).stat().st_size,hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()) for p in sys.argv[2:]}
+          got={a['name']:(a['size'],a.get('digest','').removeprefix('sha256:')) for a in r.get('assets',[])}
+          assert got==exp,(got,exp)
+          print('published native release ID and exact asset size/digests PASS')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: S86-CTA-SOURCE-SEAL-${{ github.run_id }}
+          path: ${{ runner.temp }}/s86-sealed/*.json
+          retention-days: 3
+          if-no-files-found: warn
