@@ -1,45 +1,69 @@
 {
   "kind": "s81_production_candidate_result",
-  "status": "PICTURE_CRAFT_CORRECTION_READY_FOR_ROOT_REVIEW; MEDIA_AND_AUDIO_GATES_OPEN",
-  "finding": "Root rejected picture craft from the 16-still hosted run before render. This isolated source uses linked portal, file-boundary, evaluation, calendar, inbox, qualification, control and CTA objects. The word clock places the privacy line at 42.027s and prior legal-consequences wording ends at 41.506s. Qualification text is readable by 41.90s; the shield scales until 42.207s. The CTA title settles before Follow at 51.834s, and the URL is visible after its 52.02–52.37s entrance; captures separately check both moments.",
+  "status": "SOURCE_CORRECTION_DRAFT_ROOT_19_STILL_REVIEW_REQUIRED",
+  "finding": "Run 37233356865 failed root picture review. This candidate addresses the exact header, phrase caption, scene-entry subject, and date-card findings from the 19 viewed actual captures.",
+  "duration_s": 56.365,
+  "capture_count": 19,
+  "capture_plan_sha256": "33e553d9a831278ef3f1137397f8864ef744839aca0cdef825b6b16d4339210d",
+  "locked_word_clock_sha256": "0310ac0df4fca1f82d3da2f2413d536c85acedf6e30ed104df2412e9bd3d3b0f",
   "changed": [
     {
       "path": "candidate/scenes.js",
-      "sha256": "c7d6349b0871d03919eb1166399df8b96a94abba626dfb9408c4855f802bad6d",
-      "change": "Cohesive illustrated narrative route; preserves locked script, source quotations/credits, official mark, and provisional sound plan; corrects privacy and CTA handoffs."
+      "sha256": "9ab6a399032313bc0223bddcd8a90a7bae2806799d6862b453705a8f13611375",
+      "change": "Separated source header and credit bands; 42px authored type floor; high-contrast visible phrase cards; subject-visible scene entries; safe lower band; reflowed date cards."
     },
     {
-      "path": "candidate/capture-plan-source.json",
-      "sha256": "cea967d96bebe1f8158c001123366c80cf01bb1cd082c2c5698ac045f5fe24eb",
-      "change": "19 unique named captures: privacy copy at 42.027s, shield settled at 42.65s and 43.5s; first Follow at 51.834s; audit URL settled at 52.4s."
+      "path": "repo-overlay/.github/scripts/build_s81_source_package.py",
+      "change": "Fixes source caption band at y=1280/360px with four-word grouping and refuses source/static-gate drift."
     },
     {
-      "path": "candidate/storyboard-and-sound.md",
-      "sha256": "dfbd45ee037bcec24b24efed35c4cb7581e034aedd3f455f37914e8af6748a1d",
-      "change": "Picture direction and private review gates aligned to revised source; sound plan remains unchanged and provisional."
+      "path": "verify_s81_active_frames.py",
+      "change": "Binds active-frame verification to exact candidate scene and rejects picture-source regressions."
     },
     {
-      "path": "candidate/spec-delta.json",
-      "sha256": "8c510dc30fb1302636d8f5eeb5ff710395178e701b7be5f0d4d894744bd795a4",
-      "change": "Records source-picture and word-clock correction; no claim/script/voice/mix changes."
-    },
-    {
-      "path": "candidate/tests/test_s81_story_sound.py",
-      "sha256": "7b64daa64198821410dd1c6bf88b3d2602eac436533279d8d1f4c39108031b03",
-      "change": "Tests spoken timing, retained source wording/credits, named physical objects, CTA lead-in, and unchanged provisional sound selection."
+      "path": "candidate/PICTURE-CORRECTION-CARD.md",
+      "change": "Maps each observed root finding to the source response and keeps review boundaries explicit."
     }
   ],
-  "checks": {
-    "node_syntax": true,
-    "json_parse": true,
-    "unit_tests": true,
-    "capture_count": 19
-  },
-  "evidence_limitations": [
-    "The selected WAV was not opened/listened to and was not copied or hashed.",
-    "The existing voice receipt reports full_asr_match=false, Medicare missing, Guardian/Albanese clip mismatch, and voicelead warnings; all remain open.",
-    "Music selection is based only on existing catalogue metadata and remains unauditioned; selected sound files have not been hosted or byte-verified.",
-    "No S81 media release/parts/source archive/mix exists in this candidate; no rendering/capture/full AV review or approval is claimed."
+  "locked_unchanged": [
+    "56.365s duration",
+    "19 capture names/times",
+    "word clock",
+    "narration",
+    "claims",
+    "privacy qualification",
+    "CTA URL",
+    "source credits",
+    "official mark identity"
   ],
-  "next_action": "Root reviews the exact isolated scene and 19-point capture plan. If accepted, root may publish the source correction and dispatch one still-only capture. Do not render a full master before root passes picture craft."
+  "checks": {
+    "picture_source_guard": "PASS",
+    "unittests": "PASS; 13 source/active-frame tests and 4 payload story/sound tests",
+    "node_check": "PASS",
+    "payload_manifest": "PASS; final digest bound below"
+  },
+  "review_gates": {
+    "actual_capture": "NOT_RUN",
+    "root_picture_review": "PENDING",
+    "motion_audio_review": "NOT_PERFORMED",
+    "approval": "NOT_GRANTED",
+    "publication": "NOT_REQUESTED"
+  },
+  "media_operations": {
+    "read": false,
+    "copy": false,
+    "hash": false,
+    "decode": false,
+    "archive": false,
+    "render": false,
+    "listen": false,
+    "upload": false
+  },
+  "next_action": "Root reviews the exact corrected source and 19-point plan, then decides whether to dispatch one private still-only capture. No full render, audio processing, readiness claim, or release follows from static PASS.",
+  "opening_provenance": {
+    "native_main": "41bf913ffeadc9f54d8e5b90d0be42c59af0a430",
+    "actual_source_commit": "c8e11bb0ce89e692aafe428df2b46ec917ed27b0",
+    "native_scene_sha256": "045a9f74d976055573057a9833eebd6d6a8a54030b9fb5ca7f787bef2273645b",
+    "frame_zero_parent_title_portal_mark_visible_and_moving": true
+  }
 }

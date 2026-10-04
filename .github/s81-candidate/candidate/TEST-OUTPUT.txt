@@ -1,9 +1,13 @@
-test_distinct_story_objects_and_labeled_controls_replace_repeat_card (test_s81_story_sound.StoryAndSoundTests) ... ok
-test_existing_provisional_mix_and_rights_are_unchanged (test_s81_story_sound.StoryAndSoundTests) ... ok
-test_scene_transitions_bind_to_voice_and_privacy_card_leads_narration (test_s81_story_sound.StoryAndSoundTests) ... ok
-test_source_copy_and_attribution_are_retained (test_s81_story_sound.StoryAndSoundTests) ... ok
-
-----------------------------------------------------------------------
-Ran 4 tests in 0.001s
-
+python3 -m unittest discover -s frame0-hook-correction-candidate/tests -v
+Ran 13 tests in 60.820s
 OK
+
+python3 -m unittest discover -s frame0-hook-correction-candidate/payload/candidate/tests -v
+Ran 4 tests in 0.001s
+OK
+
+node --check candidate/scenes.js: PASS
+picture source guard: PASS
+payload manifest: PASS; 18 UTF-8 text files
+builder-generated silent spec: PASS; 158 locked words; 56.365s; 19 capture plan preserved
+Scope: source/text and synthetic PNG guard tests only. No candidate media rendered, decoded, copied, hashed, archived, or listened to.

@@ -5,7 +5,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCENE = (ROOT / "scenes.js").read_text()
 PLAN = json.loads((ROOT / "capture-plan-source.json").read_text())
-WORDS = json.loads((ROOT.parent / "voice-text/S81.words.json").read_text())["words"]
+WORD_CLOCK = ROOT.parent / "voice-text/S81.words.json"
+if not WORD_CLOCK.is_file():
+    WORD_CLOCK = ROOT.parent / "payload/voice-text/S81.words.json"
+WORDS = json.loads(WORD_CLOCK.read_text())["words"]
 MIX = json.loads((ROOT / "mix_spec.json").read_text())
 ASSETS = json.loads((ROOT / "selected-sound-assets.json").read_text())
 

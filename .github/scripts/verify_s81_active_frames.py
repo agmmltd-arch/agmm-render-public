@@ -95,28 +95,63 @@ def validate_hook_source_text(source: str) -> None:
         raise ValueError("frame-zero hook parent is hidden by a delayed entrance")
     if re.search(r"tl\.set\(hook,\s*\{\s*autoAlpha:\s*0\s*\},\s*0\)", opening):
         raise ValueError("frame-zero hook parent is hidden at time zero")
+    if 'tl.set(hook, { autoAlpha: 1 }, 0);' not in opening:
+        raise ValueError("frame-zero hook parent must be explicitly visible at time zero")
     required = (
         'bar(hook, "s81-title", "OPENAI AGENT\\nIN PORTAL");',
-        'tl.set(hook, { autoAlpha: 1 }, 0);',
         'tl.fromTo(portal, { scaleY: .86, transformOrigin: "50% 100%" }',
         'tl.fromTo(hook.querySelector(".s81-title"), { y: 22, autoAlpha: 1 }',
         'tl.fromTo(hook.querySelector(".s81-mark"), { rotation: -7, scale: .92 }',
+        'tl.to(hook, { autoAlpha: 0, duration: .22, ease: "power1.in" }, 8.38);',
     )
     missing = [snippet for snippet in required if snippet not in opening]
     if missing:
         raise ValueError(f"actual S81 opening timeline lacks visible-at-zero content or motion: {missing}")
-    # Explicitly require a time-zero start for every intentional opening move.
+    # Keep the approved opening visually present while its title, mark and portal move.
     for selector in ("portal", 'hook.querySelector(".s81-title")', 'hook.querySelector(".s81-mark")'):
         line = next((row for row in opening.splitlines() if f"tl.fromTo({selector}," in row), "")
         if not re.search(r",\s*0\);\s*$", line):
-            raise ValueError(f"opening motion for {selector} does not begin at timeline zero")
+            raise ValueError(f"opening motion for {selector} must begin at timeline zero")
     title_rule = re.search(r"\.s81-title\{[^}]*font:700 (\d+)px", source)
     if not title_rule or int(title_rule.group(1)) < 120:
         raise ValueError("frame-zero hook title must use at least 120px type")
 
 
+def validate_picture_source_text(source: str) -> None:
+    """Static design gates for the exact S81 correction candidate source."""
+    required = (
+        ".s81-illustration-note{position:absolute;left:64px;right:64px;top:108px;",
+        ".s81-credit{position:absolute;left:64px;right:64px;bottom:20px;height:220px;",
+        ".ag2-card .row{background:",
+        ".ag2-card .row .ag2-w{opacity:1!important;",
+        'enter(tl, context, 18.40, 24.667',
+        'enter(tl, guardian, 34.50, 37.753',
+        'enter(tl, lesson, 46.60, 51.60',
+        'tl.fromTo(control1, { x: -80, autoAlpha: 1 }',
+        'tl.fromTo(node, { autoAlpha: 1, x: x || 0, y: y || 0 }',
+        'bottom:760px',
+    )
+    missing = [snippet for snippet in required if snippet not in source]
+    if missing:
+        raise ValueError(f"S81 source misses caption/header/subject-safe-zone correction: {missing}")
+    if 'background:"+C.paper+"!important;color:"+C.ink+"!important' not in source:
+        raise ValueError("S81 phrase captions must use the fixed high-contrast paper/ink palette")
+    # All authored readable CSS text is 42px or larger, excluding the 124px hero rule.
+    sizes = [int(value) for value in re.findall(r"font:700\s+(\d+)px", source)]
+    if not sizes or min(sizes) < 42:
+        raise ValueError(f"S81 text falls below the 42px floor: {min(sizes) if sizes else 'no text rules'}")
+    # Story objects must end above the caption band; fixed y positions in this CSS
+    # are guarded separately for the two known exceptions (opening route / CTA).
+    for selector in ("s81-evidence", "s81-evaluation", "s81-statement", "s81-calendar", "s81-response", "s81-privacy", "s81-controls"):
+        rule = re.search(rf"\.{selector}\{{[^}}]*bottom:(\d+)px", source)
+        if not rule or int(rule.group(1)) < 700:
+            raise ValueError(f"{selector} does not reserve the caption-safe lower band")
+
+
 def verify_hook_source(path: Path) -> None:
-    validate_hook_source_text(path.read_text())
+    source = path.read_text()
+    validate_hook_source_text(source)
+    validate_picture_source_text(source)
 
 
 def verify(evidence_path: Path, snapshot_log: Optional[Path] = None, scene_source: Optional[Path] = None) -> dict:

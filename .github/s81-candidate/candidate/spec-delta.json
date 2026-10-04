@@ -3,7 +3,7 @@
   "assets_or_media_changed": false,
   "base_sources_sha256": "9c90c9d650486a0be75da9b3b8682598a510c7a5e70bae53e3730a977b142466",
   "base_spec_sha256": "02fc9522e7e46800c2254ad4eeefa240c08e5033a686e98a7411e7225c4ba3e2",
-  "candidate_scene_sha256": "c7d6349b0871d03919eb1166399df8b96a94abba626dfb9408c4855f802bad6d",
+  "candidate_scene_sha256": "9ab6a399032313bc0223bddcd8a90a7bae2806799d6862b453705a8f13611375",
   "candidate_sources_sha256": "9c90c9d650486a0be75da9b3b8682598a510c7a5e70bae53e3730a977b142466",
   "candidate_spec_sha256": "02fc9522e7e46800c2254ad4eeefa240c08e5033a686e98a7411e7225c4ba3e2",
   "canonical_scene_sha256": "7400b9321cd13f5dea7f29f6b54fac55266e103a54fba8316369b93635125298",
@@ -12,9 +12,11 @@
     "candidate preserves existing voice, factual claims, attributed quotations and source credits while replacing sparse repeated cards with a drawn portal, split file boundary, evaluation monitor, calendar route, monitored inbox, qualified status boundary, labelled two-step controls and distinct CTA",
     "privacy copy is readable by 41.90s and the background card is in place by 41.927s; the AT THIS STAGE shield scales until 42.207s while the spoken qualification starts at 42.027s; captures check motion at line start and the settled marker at 42.65s",
     "existing provisional mix specification, sound selections and official mark use remain unchanged and unauditioned",
-    "CTA title is settled before Follow at 51.834s; audit URL entrance starts at 52.02s and finishes by 52.37s, with a separate settled 52.4s capture"
+    "CTA title is settled before Follow at 51.834s; audit URL entrance starts at 52.02s and finishes by 52.37s, with a separate settled 52.4s capture",
+    "second root-eye correction: 42px minimum authored type, separated header/source bands, high-contrast four-word phrase captions, subject-visible scene starts, caption-safe lower band, and reflowed calendar headings/rule; no word-clock, capture-time, narration, claim, privacy, or CTA changes",
+    "restores the exact native-approved frame-zero parent/title/portal/mark visibility and motion semantics verified at main 41bf and source commit c8e11; adds negative regressions for hidden parent/title and delayed motion"
   ],
   "kind": "s81_candidate_spec_delta",
   "spec_changes": [],
-  "status": "TEXT_ONLY_CANDIDATE_NOT_RENDER_READY"
+  "status": "SOURCE_ONLY_CORRECTION_DRAFT_ROOT_STILLS_REQUIRED"
 }

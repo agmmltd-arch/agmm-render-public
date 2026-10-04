@@ -24,7 +24,7 @@ from pathlib import Path, PurePosixPath
 from xml.etree import ElementTree
 
 PROOF_SHA256 = "de28d9725c166286e377cc972b73a344ad763cfd5dd7652800dcfccef17c374f"
-PAYLOAD_MANIFEST_SHA256 = "27e0728e9ef567beeda4f75ba2a573b4ec9dddc8a59695bdf5a9eaa83e94e52a"
+PAYLOAD_MANIFEST_SHA256 = "ba4aa34d63754692271aaf03deec89eecb57db3fcff817145730ee13c15691a4"
 PARENT_RELEASE_ID = 400657643
 PARENT_TAG = "S86-r2-source-202610010547"
 PARENT_ASSET_ID = 602456631
@@ -270,7 +270,7 @@ def make_spec(payload: Path) -> dict:
     return {
         "schema": "agmm-kit3-short-candidate-v1", "id": "S81", "look": "softui",
         "dur": DURATION, "fps": 30, "width": 1080, "height": 1920,
-        "captions": [{"from": 0, "to": DURATION, "top": 1280, "height": 400}],
+        "captions": [{"from": 0, "to": DURATION, "top": 1280, "height": 360, "maxWords": 4}],
         "words": words, "narration_binding": {"attached_audio": False, "reason": "source-still capture only; exact selected voice remains a separate protected hosted input"},
         "voice": None, "music": None, "images": {},
         "beats": [{"id": "s81-evidence-route", "from": 0.0, "to": DURATION,
@@ -302,9 +302,22 @@ def static_check(look: Path) -> None:
     scenes = (look / "scenes.js").read_text()
     if 'A.scenes["s81-evidence-route"]' not in scenes or 'media/openai-mark.svg' not in scenes:
         raise Refusal("exact S81 scene or official-mark path is missing")
+    guard_path = Path(__file__).with_name("verify_s81_active_frames.py")
+    guard_spec = importlib.util.spec_from_file_location("s81_picture_static_guard", guard_path)
+    if guard_spec is None or guard_spec.loader is None:
+        raise Refusal("S81 picture static guard is unavailable")
+    guard = importlib.util.module_from_spec(guard_spec)
+    guard_spec.loader.exec_module(guard)
+    try:
+        guard.validate_hook_source_text(scenes)
+        guard.validate_picture_source_text(scenes)
+    except ValueError as exc:
+        raise Refusal(f"S81 picture source failed static design gate: {exc}") from None
     spec = json.loads((look / "spec.json").read_text())
     if spec.get("id") != "S81" or spec.get("dur") != DURATION or spec.get("voice") is not None or spec.get("music") is not None:
         raise Refusal("S81 source-capture spec must preserve duration and remain silent")
+    if spec.get("captions") != [{"from": 0, "to": DURATION, "top": 1280, "height": 360, "maxWords": 4}]:
+        raise Refusal("S81 captions must remain in the fixed phrase-safe band with four-word grouping")
     beats = spec.get("beats")
     if (not isinstance(beats, list) or len(beats) != 1
             or beats[0].get("comp") != "custom"
