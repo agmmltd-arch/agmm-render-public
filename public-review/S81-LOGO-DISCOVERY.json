@@ -1,0 +1,229 @@
+{
+  "candidate_rule": {
+    "human_visual_review": "OPEN",
+    "reason": "S81 candidate uses an OpenAI company-identification mark in a square image slot",
+    "required_root": "svg",
+    "source": "official OpenAI Logos 2025 ZIP",
+    "view_box_aspect_ratio": [
+      0.98,
+      1.02
+    ]
+  },
+  "eligible_members": [
+    "OpenAI-logos(new)/SVGs/OpenAI-white-monoblossom.svg",
+    "OpenAI-logos(new)/SVGs/OpenAI-black-monoblossom.svg"
+  ],
+  "kind": "s81_official_logo_zip_metadata_discovery",
+  "members": [
+    {
+      "bytes": 0,
+      "kind": "directory",
+      "name": "OpenAI-logos(new)/"
+    },
+    {
+      "bytes": 349,
+      "kind": "file",
+      "name": "__MACOSX/._OpenAI-logos(new)"
+    },
+    {
+      "bytes": 6148,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/.DS_Store"
+    },
+    {
+      "bytes": 120,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/._.DS_Store"
+    },
+    {
+      "bytes": 0,
+      "kind": "directory",
+      "name": "OpenAI-logos(new)/PNGs/"
+    },
+    {
+      "bytes": 249,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/._PNGs"
+    },
+    {
+      "bytes": 0,
+      "kind": "directory",
+      "name": "OpenAI-logos(new)/SVGs/"
+    },
+    {
+      "bytes": 249,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/._SVGs"
+    },
+    {
+      "bytes": 6148,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/PNGs/.DS_Store"
+    },
+    {
+      "bytes": 120,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/PNGs/._.DS_Store"
+    },
+    {
+      "bytes": 18721,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/PNGs/OpenAI-white-monoblossom.png"
+    },
+    {
+      "bytes": 292,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/PNGs/._OpenAI-white-monoblossom.png"
+    },
+    {
+      "bytes": 18095,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/PNGs/OpenAI-white-wordmark.png"
+    },
+    {
+      "bytes": 292,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/PNGs/._OpenAI-white-wordmark.png"
+    },
+    {
+      "bytes": 16664,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/PNGs/OpenAI-black-monoblossom.png"
+    },
+    {
+      "bytes": 292,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/PNGs/._OpenAI-black-monoblossom.png"
+    },
+    {
+      "bytes": 17682,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/PNGs/OpenAI-black-wordmark.png"
+    },
+    {
+      "bytes": 292,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/PNGs/._OpenAI-black-wordmark.png"
+    },
+    {
+      "bytes": 2189,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/SVGs/OpenAI-white-wordmark.svg",
+      "svg_candidate": "not_eligible",
+      "svg_metadata": {
+        "aspect_ratio": 2.230876,
+        "reason": "not_square_viewbox",
+        "view_box": [
+          0.0,
+          0.0,
+          1604.0,
+          719.0
+        ]
+      }
+    },
+    {
+      "bytes": 292,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/SVGs/._OpenAI-white-wordmark.svg",
+      "svg_candidate": "not_eligible",
+      "svg_metadata": {
+        "reason": "invalid_xml"
+      }
+    },
+    {
+      "bytes": 6148,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/SVGs/.DS_Store"
+    },
+    {
+      "bytes": 120,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/SVGs/._.DS_Store"
+    },
+    {
+      "bytes": 2961,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/SVGs/OpenAI-white-monoblossom.svg",
+      "svg_candidate": "square_svg",
+      "svg_metadata": {
+        "aspect_ratio": 1.0,
+        "reason": "square_viewbox",
+        "view_box": [
+          0.0,
+          0.0,
+          721.0,
+          721.0
+        ]
+      }
+    },
+    {
+      "bytes": 292,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/SVGs/._OpenAI-white-monoblossom.svg",
+      "svg_candidate": "not_eligible",
+      "svg_metadata": {
+        "reason": "invalid_xml"
+      }
+    },
+    {
+      "bytes": 2188,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/SVGs/OpenAI-black-wordmark.svg",
+      "svg_candidate": "not_eligible",
+      "svg_metadata": {
+        "aspect_ratio": 2.233983,
+        "reason": "not_square_viewbox",
+        "view_box": [
+          0.0,
+          0.0,
+          1604.0,
+          718.0
+        ]
+      }
+    },
+    {
+      "bytes": 292,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/SVGs/._OpenAI-black-wordmark.svg",
+      "svg_candidate": "not_eligible",
+      "svg_metadata": {
+        "reason": "invalid_xml"
+      }
+    },
+    {
+      "bytes": 2969,
+      "kind": "file",
+      "name": "OpenAI-logos(new)/SVGs/OpenAI-black-monoblossom.svg",
+      "svg_candidate": "square_svg",
+      "svg_metadata": {
+        "aspect_ratio": 1.0,
+        "reason": "square_viewbox",
+        "view_box": [
+          0.0,
+          0.0,
+          721.0,
+          721.0
+        ]
+      }
+    },
+    {
+      "bytes": 292,
+      "kind": "file",
+      "name": "__MACOSX/OpenAI-logos(new)/SVGs/._OpenAI-black-monoblossom.svg",
+      "svg_candidate": "not_eligible",
+      "svg_metadata": {
+        "reason": "invalid_xml"
+      }
+    }
+  ],
+  "package_bytes": 76633,
+  "package_sha256": "b2c4cd1e86bbe76bdc4946a72d014efa455240c177f4878fd68cc9b88c71d2ec",
+  "rights": {
+    "guidelines_url": "https://openai.com/brand/",
+    "review": "OPEN",
+    "use": "unmodified company identification only; no endorsement or permission claim"
+  },
+  "selected_member": "OpenAI-logos(new)/SVGs/OpenAI-black-monoblossom.svg",
+  "selection_method": "exact_package_sha256_member_allowlist",
+  "status": "EXPLICIT_APPROVED_SQUARE_SVG_SELECTED"
+}
