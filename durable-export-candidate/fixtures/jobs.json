@@ -1,0 +1,161 @@
+{
+  "jobs": [
+    {
+      "check_run_url": "https://api.github.com/repos/agmmltd-arch/agmm-render-public/check-runs/111465371595",
+      "completed_at": "2026-10-04T15:14:28Z",
+      "conclusion": "success",
+      "created_at": "2026-10-04T15:12:55Z",
+      "head_branch": "main",
+      "head_sha": "ecdd898910b725c326472f3b5adc6ca98f51a138",
+      "html_url": "https://github.com/agmmltd-arch/agmm-render-public/actions/runs/37212158991/job/111465371595",
+      "id": 111465371595,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "capture",
+      "node_id": "CR_kwDOU05Rms8AAAAZ89qXyw",
+      "run_attempt": 1,
+      "run_id": 37212158991,
+      "run_url": "https://api.github.com/repos/agmmltd-arch/agmm-render-public/actions/runs/37212158991",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000002997,
+      "runner_name": "GitHub Actions 1000002997",
+      "started_at": "2026-10-04T15:12:57Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-04T15:12:58Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-10-04T15:12:57Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:12:59Z",
+          "conclusion": "success",
+          "name": "Checkout exact public text candidate",
+          "number": 2,
+          "started_at": "2026-10-04T15:12:58Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:12:59Z",
+          "conclusion": "success",
+          "name": "Initialize hosted paths",
+          "number": 3,
+          "started_at": "2026-10-04T15:12:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:13:00Z",
+          "conclusion": "success",
+          "name": "Verify public source, run pins and input locations",
+          "number": 4,
+          "started_at": "2026-10-04T15:12:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:13:01Z",
+          "conclusion": "success",
+          "name": "Checkout only the pinned private F06 source archive and added picture input",
+          "number": 5,
+          "started_at": "2026-10-04T15:13:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:13:02Z",
+          "conclusion": "success",
+          "name": "Verify exact private commit, allowlisted paths and unchanged base archive",
+          "number": 6,
+          "started_at": "2026-10-04T15:13:01Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:13:02Z",
+          "conclusion": "success",
+          "name": "Install pinned hosted browser and decode tools",
+          "number": 7,
+          "started_at": "2026-10-04T15:13:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:13:12Z",
+          "conclusion": "success",
+          "name": "Run browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce",
+          "number": 8,
+          "started_at": "2026-10-04T15:13:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:13:33Z",
+          "conclusion": "success",
+          "name": "Install FFmpeg on hosted Ubuntu",
+          "number": 9,
+          "started_at": "2026-10-04T15:13:12Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:14:23Z",
+          "conclusion": "success",
+          "name": "Run source check, render and decode on hosted Ubuntu only",
+          "number": 10,
+          "started_at": "2026-10-04T15:13:33Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:14:26Z",
+          "conclusion": "success",
+          "name": "Upload allowlisted motion review and capture evidence",
+          "number": 11,
+          "started_at": "2026-10-04T15:14:23Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:14:26Z",
+          "conclusion": "success",
+          "name": "Remove protected source and intermediates",
+          "number": 12,
+          "started_at": "2026-10-04T15:14:26Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:14:26Z",
+          "conclusion": "success",
+          "name": "Post Install pinned hosted browser and decode tools",
+          "number": 22,
+          "started_at": "2026-10-04T15:14:26Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:14:26Z",
+          "conclusion": "success",
+          "name": "Post Checkout only the pinned private F06 source archive and added picture input",
+          "number": 23,
+          "started_at": "2026-10-04T15:14:26Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:14:27Z",
+          "conclusion": "success",
+          "name": "Post Checkout exact public text candidate",
+          "number": 24,
+          "started_at": "2026-10-04T15:14:26Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-10-04T15:14:27Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 25,
+          "started_at": "2026-10-04T15:14:27Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/agmmltd-arch/agmm-render-public/actions/jobs/111465371595",
+      "workflow_name": "F06 Wave05 picture capture ecdd898910b725c326472f3b5adc6ca98f51a138"
+    }
+  ],
+  "total_count": 1
+}
