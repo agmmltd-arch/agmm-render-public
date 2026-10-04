@@ -219,7 +219,7 @@ def seal_archive_bytes(
         if sha(branch) != "5edae81941dcbba1225279cc45d49b6aba79d8f9f722387460dcd50cfc35d08b":
             raise ValueError("Source quotation handler identity mismatch")
         after_b = candidate
-        scene_path = "s86-b/scenes.js"
+        scene_path = "s86-b/sig/scenes.js"
         scene_before = before[scene_path]
         marker = b"  IT.clip = function (ctx, S, it, B) {\n"
         if scene_before.count(marker) != 1 or b"if (it.quoteText)" in scene_before:
@@ -241,10 +241,10 @@ def seal_archive_bytes(
             raise ValueError("Proposed B source hash differs from reviewed exact patch.")
         b_sum_path = "s86-b/SHA256SUMS.txt"
         after_sums = _checksum_patch(before[b_sum_path], old_b, new_b)
-        scene_row = sha(scene_before).encode() + b"  ./scenes.js"
+        scene_row = sha(scene_before).encode() + b"  ./sig/scenes.js"
         if after_sums.count(scene_row) != 1:
             raise ValueError("Native scene checksum row absent or ambiguous")
-        after_sums = after_sums.replace(scene_row, sha(scene_after).encode() + b"  ./scenes.js", 1)
+        after_sums = after_sums.replace(scene_row, sha(scene_after).encode() + b"  ./sig/scenes.js", 1)
 
         with tempfile.TemporaryDirectory(prefix="s86-b-seal-") as temp_name:
             root = Path(temp_name)
