@@ -11,6 +11,11 @@ on:
         required: true
       fid:
         required: true
+      ocr_policy:
+        description: "Default requires native OCR. Review-only is limited to the pinned F07 run with macos-ocr explicitly skipped."
+        type: choice
+        options: [require, needs_ocr_review_only]
+        default: require
 permissions:
   actions: read
   contents: write
@@ -28,7 +33,12 @@ jobs:
       RUN_ID: ${{ inputs.run_id || github.event.workflow_run.id }}
       TAG: ${{ inputs.tag || 'F02-craft-repaired-full-20261003-1420' }}
       FID: ${{ inputs.fid || 'F02' }}
+      OCR_POLICY: ${{ inputs.ocr_policy || 'require' }}
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Verify source workflow before any artifact download
         shell: bash
         run: |
@@ -37,25 +47,9 @@ jobs:
           [[ "$RUN_ID" =~ ^[0-9]{8,20}$ && "$FID" =~ ^F[0-9]{2}$ && "$TAG" =~ ^[A-Za-z0-9._-]{1,120}$ ]]
           gh api "repos/$REPO/actions/runs/$RUN_ID" > source-run.json
           gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" > source-jobs.json
-          python3 - <<'PYCODE'
-          import json,os,sys
-          from pathlib import Path
-          assert sys.platform.startswith('linux') and os.environ.get('GITHUB_ACTIONS')=='true'
-          assert os.environ['TAG'].startswith(os.environ['FID']+'-')
-          d=json.loads(Path('source-run.json').read_text())
-          assert d['id']==int(os.environ['RUN_ID']) and d['repository']['full_name']==os.environ['REPO']
-          assert d['path']=='.github/workflows/agmm-film.yml' and d['event']=='workflow_dispatch'
-          assert d['status']=='completed' and d['conclusion'] in ('success','failure')
-          if d['conclusion']=='failure':
-              assert Path('source-jobs.json').is_file(), 'Source job provenance missing'
-              jobs=json.loads(Path('source-jobs.json').read_text())
-              assert jobs['total_count']==len(jobs['jobs']) and jobs['jobs']
-              assert all(j['run_id']==d['id'] and j['status']=='completed' for j in jobs['jobs'])
-              assert any(j['name']=='assemble' and j['conclusion']=='success' for j in jobs['jobs'])
-              assert all(j['conclusion']=='success' for j in jobs['jobs'] if j['name']!='macos-ocr')
-              assert any(j['name']=='macos-ocr' and j['conclusion']=='failure' for j in jobs['jobs'])
-          assert d['display_title']=='AGMM film '+os.environ['TAG']
-          PYCODE
+          gh api "repos/$REPO/actions/runs/$RUN_ID/artifacts?per_page=100" > source-artifacts.json
+          echo "3a87fc3d0f05f7c4d34ce95bc5dd00ab72879997b205029309bec678a4b18421  .github/scripts/validate_preview_source.py" | sha256sum -c -
+          python3 .github/scripts/validate_preview_source.py
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: ${{ inputs.tag || 'F02-craft-repaired-full-20261003-1420' }}-MASTER-4K
@@ -68,7 +62,8 @@ jobs:
           path: review
           run-id: ${{ inputs.run_id || github.event.workflow_run.id }}
           github-token: ${{ github.token }}
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      - if: ${{ inputs.ocr_policy != 'needs_ocr_review_only' }}
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: ${{ inputs.tag || 'F02-craft-repaired-full-20261003-1420' }}-MACOS-VISION-OCR
           path: ocr
@@ -81,16 +76,32 @@ jobs:
           python3 - <<'PYCODE'
           import hashlib,json,os,re,subprocess,sys
           from pathlib import Path
+          from importlib.util import module_from_spec,spec_from_file_location
           assert sys.platform.startswith('linux') and os.environ.get('GITHUB_ACTIONS')=='true'
           fid=os.environ['FID'];repo=os.environ['REPO'];rid=os.environ['RUN_ID'];tag='preview-'+fid+'-'+rid
+          helper_spec=spec_from_file_location('preview_source','.github/scripts/validate_preview_source.py')
+          helper=module_from_spec(helper_spec);helper_spec.loader.exec_module(helper)
           report=json.loads(Path('master/REMOTE-INTEGRITY.json').read_text())
           assert report==json.loads(Path('review/REMOTE-INTEGRITY.json').read_text())
           assert report['kind']=='mechanical_integrity_only' and report['editorial_gate']=='NOT_RUN' and report['release_approval']=='NOT_GRANTED'
           required={'segment_decode','segment_flicker','master_full_decode','derived_full_decode','encoded_audio_loudness_and_true_peak'}
           assert required<=set(report['checks']) and all(report['checks'][k]=='PASS' for k in required)
-          ocr=json.loads(Path('ocr/OCR-CHECK-2.json').read_text())
-          assert ocr.get('kind')=='existing_gate_check_only' and ocr.get('release_approval')=='NOT_GRANTED'
-          assert ocr['check']['status'] in ('PASS','FAIL')
+          if os.environ.get('OCR_POLICY','require')=='needs_ocr_review_only':
+              source_run=json.loads(Path('source-run.json').read_text())
+              source_jobs=json.loads(Path('source-jobs.json').read_text())['jobs']
+              assert source_run['id']==37189588628 and source_run['head_sha']=='513381b0defd09775cdd4abc17933ffe3d9b3760'
+              assert source_run['conclusion']=='success' and source_run['run_attempt']==1
+              assert {j['name']:j['conclusion'] for j in source_jobs}=={'assemble':'success','render':'skipped','macos-ocr':'skipped'}
+              ocr={'kind':'native_job_status_only','status':'SKIPPED','source_job':'macos-ocr',
+                   'source_run_id':int(rid),'source_conclusion':'skipped','release_approval':'NOT_GRANTED'}
+              review_status='NEEDS_OCR_AV_REVIEW'
+              preview_status='NEEDS_OCR_AV_REVIEW'
+          else:
+              ocr=json.loads(Path('ocr/OCR-CHECK-2.json').read_text())
+              assert ocr.get('kind')=='existing_gate_check_only' and ocr.get('release_approval')=='NOT_GRANTED'
+              assert ocr['check']['status'] in ('PASS','FAIL')
+              review_status='NOT_RUN'
+              preview_status='REVIEW_PENDING' if ocr['check']['status']=='PASS' else 'REPAIRS_REQUIRED'
           sums={}
           for line in Path('master/SHA256SUMS.txt').read_text().splitlines():
               sha,name=line.split('  ',1)
@@ -137,12 +148,13 @@ jobs:
               files=parts+[files[1]]
           exists=subprocess.run(['gh','release','view',tag,'-R',repo],capture_output=True)
           if exists.returncode:
-              subprocess.run(['gh','release','create',tag,'-R',repo,'--target',json.loads(Path('source-run.json').read_text())['head_sha'],'--title',fid+' review preview','--notes','Hosted mechanical verification complete. Independent audiovisual, editorial and thumbnail review pending. NOT RELEASE APPROVED.'],check=True)
+              note=('OCR was natively skipped. Status: NEEDS_OCR_AV_REVIEW. This preview is not ready for posting. NOT RELEASE APPROVED.' if review_status=='NEEDS_OCR_AV_REVIEW' else 'Hosted mechanical verification complete. Independent audiovisual, editorial and thumbnail review pending. NOT RELEASE APPROVED.')
+              subprocess.run(['gh','release','create',tag,'-R',repo,'--target',json.loads(Path('source-run.json').read_text())['head_sha'],'--title',fid+' review preview','--notes',note],check=True)
           release=json.loads(subprocess.check_output(['gh','api','repos/'+repo+'/releases/tags/'+tag]))
           assets={a['name']:a for a in release['assets']}
           for f in files:
               if f['name'] in assets:
-                  a=assets[f['name']];assert a['size']==f['size'] and a.get('digest')=='sha256:'+f['sha256'],'existing asset differs; no overwrite'
+                  helper.validate_existing_asset(assets[f['name']],expected_size=f['size'],expected_sha256=f['sha256'])
               else:subprocess.run(['gh','release','upload',tag,f['path'],'-R',repo],check=True)
               f.pop('path')
           published=json.loads(subprocess.check_output(['gh','api','repos/'+repo+'/releases/tags/'+tag]))
@@ -153,9 +165,10 @@ jobs:
               f['url']=a['browser_download_url']
               assert f['url']=='https://github.com/'+repo+'/releases/download/'+tag+'/'+f['name']
           Path('receipts').mkdir()
-          receipt={'source_run_id':int(rid),'repository':repo,'source_workflow_commit':json.loads(Path('source-run.json').read_text())['head_sha'],'files':files,'integrity':report,'ocr':json.loads(Path('ocr/OCR-CHECK-2.json').read_text()),'review_status':'NOT_RUN','release_approval':'NOT_GRANTED'}
-          receipt.update(source_conclusion=json.loads(Path('source-run.json').read_text())['conclusion'],
-                         preview_status='REVIEW_PENDING' if ocr['check']['status']=='PASS' else 'REPAIRS_REQUIRED')
+          source_artifacts=json.loads(Path('source-artifacts.json').read_text())['artifacts']
+          artifact_receipts=[{k:a[k] for k in ('id','name','size_in_bytes','digest','expires_at','expired')} for a in source_artifacts]
+          receipt={'source_run_id':int(rid),'repository':repo,'source_workflow_commit':json.loads(Path('source-run.json').read_text())['head_sha'],'source_job_conclusions':{j['name']:j['conclusion'] for j in json.loads(Path('source-jobs.json').read_text())['jobs']},'source_artifacts':artifact_receipts,'files':files,'integrity':report,'ocr':ocr,'review_status':review_status,'av_review_status':'NOT_RUN','release_approval':'NOT_GRANTED','ready_to_post':False}
+          receipt.update(source_conclusion=json.loads(Path('source-run.json').read_text())['conclusion'],preview_status=preview_status)
           if master_parts is not None:
               receipt.update(schema_version=2,master=master_parts)
           Path('receipts/HOSTED-PREVIEW.json').write_text(json.dumps(receipt,indent=2))
