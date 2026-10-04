@@ -1,0 +1,90 @@
+name: F08 Wave03 source stills public review export
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_public_review:
+        description: Confirm creation of run-scoped public review assets containing only eight PNGs and text receipts
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: f08-wave03-source-review-export-37234526723
+  cancel-in-progress: false
+
+jobs:
+  export:
+    if: ${{ github.repository == 'agmmltd-arch/agmm-render-public' && inputs.confirm_public_review == true }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: '37234526723'
+      SOURCE_COMMIT: 650a184b76f2e5bbd9541a5eb03b500a376d26be
+      SOURCE_MANIFEST_SHA256: 257fbef54f2274919901fbc08b7ea01a8e06724296e7ab72c5b0e931620a7297
+    steps:
+      - name: Check out the reviewed exporter revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Validate target and exact requested source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = agmmltd-arch/agmm-render-public
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_ACTIONS" = true
+          test "${{ inputs.confirm_public_review }}" = true
+          test "$SOURCE_RUN_ID" = '37234526723'
+          test "$SOURCE_COMMIT" = '650a184b76f2e5bbd9541a5eb03b500a376d26be'
+          test "$SOURCE_MANIFEST_SHA256" = '257fbef54f2274919901fbc08b7ea01a8e06724296e7ab72c5b0e931620a7297'
+          mkdir -p "$RUNNER_TEMP/f08-wave03-source-review"
+          printf 'WORKROOT=%s/f08-wave03-source-review\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Bind exact public source run, artifact and source manifest before transfer
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY" > "$WORKROOT/repository.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" > "$WORKROOT/run.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/jobs?per_page=100" > "$WORKROOT/jobs.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/artifacts?per_page=100" > "$WORKROOT/artifacts.json"
+          gh api "repos/$GITHUB_REPOSITORY/contents/conditional-babylon-whole-film-wave01/SOURCE-CAPTURE-PUBLICATION-MANIFEST-WAVE03.json?ref=$SOURCE_COMMIT" --jq .content | base64 --decode > "$WORKROOT/source-manifest.json"
+          python3 .github/scripts/f08_source_stills_export.py validate-source \
+            --repository "$WORKROOT/repository.json" --run "$WORKROOT/run.json" \
+            --jobs "$WORKROOT/jobs.json" --artifacts "$WORKROOT/artifacts.json" \
+            --manifest "$WORKROOT/source-manifest.json" --source-run-id "$SOURCE_RUN_ID" \
+            --source-commit "$SOURCE_COMMIT" --manifest-sha256 "$SOURCE_MANIFEST_SHA256" \
+            --out "$WORKROOT/validated-source.json"
+
+      - name: Check hosted runner storage headroom
+        run: python3 .github/scripts/f08_source_stills_export.py check-capacity
+
+      - name: Download exact native artifact ZIP on hosted Ubuntu and verify digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARTIFACT_ID="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["artifact"]["id"])' "$WORKROOT/validated-source.json")"
+          [[ "$ARTIFACT_ID" =~ ^[0-9]{1,20}$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > "$WORKROOT/source-artifact.zip"
+          python3 .github/scripts/f08_source_stills_export.py extract \
+            --archive "$WORKROOT/source-artifact.zip" --source "$WORKROOT/validated-source.json" \
+            --out-dir "$WORKROOT/source-artifact"
+
+      - name: Verify native source receipts and stage only eight PNGs plus safe text
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/f08_source_stills_export.py prepare \
+            --download-dir "$WORKROOT/source-artifact" --source "$WORKROOT/validated-source.json" \
+            --out-dir "$WORKROOT/release-payload"
+
+      - name: Create or verify immutable run-scoped public review assets
+        run: python3 .github/scripts/f08_source_stills_export.py publish --export-dir "$WORKROOT/release-payload"
