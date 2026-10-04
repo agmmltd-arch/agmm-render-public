@@ -1,0 +1,195 @@
+{
+  "candidate_builder_owner_source": {
+    "film/film.js": {
+      "sha256": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b"
+    },
+    "film/sets_a.js": {
+      "sha256": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e"
+    }
+  },
+  "candidate_class": "isolated_source_candidate",
+  "capture_class": "isolated_source_candidate_composition_only",
+  "editorial_status": "NOT_REVIEWED",
+  "frames": [
+    {
+      "bytes": 1648608,
+      "name": "printer_rise_1",
+      "path": "frames/printer_rise_1.png",
+      "sha256": "1c15b9be80fd8832e0d26a582f768b4adaa125aac05aa4865c2d07a1ece7b990",
+      "time": 8.533
+    },
+    {
+      "bytes": 1644902,
+      "name": "printer_rise_2",
+      "path": "frames/printer_rise_2.png",
+      "sha256": "43be8ce1a53d4d7fd5fd894cac9a23987fc423a3014408120ab7224069442faa",
+      "time": 8.6
+    },
+    {
+      "bytes": 1644117,
+      "name": "printer_rise_3",
+      "path": "frames/printer_rise_3.png",
+      "sha256": "0709d29b71749b6ea5db0af50461312058decd28971cf94614e837f580e49641",
+      "time": 8.667
+    },
+    {
+      "bytes": 1643668,
+      "name": "printer_lift_start",
+      "path": "frames/printer_lift_start.png",
+      "sha256": "8a9d917e73646b456d1b63384a636d180cc9144ae3dcf415d599cd5e0d838569",
+      "time": 8.752
+    },
+    {
+      "bytes": 1641911,
+      "name": "printer_lift_8800",
+      "path": "frames/printer_lift_8800.png",
+      "sha256": "557be325b1e2f947b9bc13bc7140aa83b01d99f0a6160e8d6315673ce82c6fc6",
+      "time": 8.8
+    },
+    {
+      "bytes": 1641126,
+      "name": "printer_assistant_start",
+      "path": "frames/printer_assistant_start.png",
+      "sha256": "74359a35a3d2d71d0fef111750e16dc173231ff0c04909c3ceea7904ecec9ca7",
+      "time": 8.864
+    },
+    {
+      "bytes": 1637638,
+      "name": "printer_reveal_mid",
+      "path": "frames/printer_reveal_mid.png",
+      "sha256": "9a7f8608cc18bb724e858562c1132261334604b2d73392648191fd2de8b6f5c7",
+      "time": 9.0
+    },
+    {
+      "bytes": 1659635,
+      "name": "printer_reveal_late",
+      "path": "frames/printer_reveal_late.png",
+      "sha256": "37d899b8bafdd91a5d0a66de3c849a34df995abfa5efbe7d31542341945ab975",
+      "time": 9.3
+    },
+    {
+      "bytes": 1662399,
+      "name": "printer_assistant_end",
+      "path": "frames/printer_assistant_end.png",
+      "sha256": "54913fca56a11b16e34858b0183d5d32b29c5e8def6c30065ffb6b61289fae5a",
+      "time": 9.425
+    },
+    {
+      "bytes": 1662264,
+      "name": "printer_label",
+      "path": "frames/printer_label.png",
+      "sha256": "dc9e702a0f8c0593224bd15d7237a7506aadc21eb88176d01785a76105170b32",
+      "time": 9.5
+    },
+    {
+      "bytes": 1661259,
+      "name": "printer_pre_cut",
+      "path": "frames/printer_pre_cut.png",
+      "sha256": "e55be281e0dca1f752cd2ca060c3ca3eeaabd743054d327fecc846342a44f70a",
+      "time": 10.28
+    },
+    {
+      "bytes": 1327562,
+      "name": "printer_cut",
+      "path": "frames/printer_cut.png",
+      "sha256": "5a59ce0d8cd7792e9d9e89c53336383a3f5fa154bc971a889dc7ebbd127c557e",
+      "time": 10.3
+    },
+    {
+      "bytes": 1327319,
+      "name": "printer_post_cut",
+      "path": "frames/printer_post_cut.png",
+      "sha256": "7d93458c27f85c3d94111e684e11b45bba0f6b82e4729fc9461f25f98fa2dd64",
+      "time": 10.32
+    },
+    {
+      "bytes": 2325174,
+      "name": "floor_700",
+      "path": "frames/floor_700.png",
+      "sha256": "d7ea2c9fbcb687aa563577a91dc814a971c166a7f96003e0665229841f131564",
+      "time": 12.57
+    },
+    {
+      "bytes": 1575211,
+      "name": "opening_profit",
+      "path": "frames/opening_profit.png",
+      "sha256": "136b65b7dc0f08bdc33aa71e4b0929e15e1df94e2f289e62914e4a0b3dc73e73",
+      "time": 76.2
+    },
+    {
+      "bytes": 2000527,
+      "name": "profit_before",
+      "path": "frames/profit_before.png",
+      "sha256": "3a83c2575a72863e406f2ee78bedfacb9d1de95fa8fa55c5c5c5a3c38cb7c86e",
+      "time": 108.1
+    },
+    {
+      "bytes": 1995306,
+      "name": "profit_landing",
+      "path": "frames/profit_landing.png",
+      "sha256": "fdcf2fbc6cfc297aa1bb6c301edc067ddabe65d78005930ee86bda7152b8ae55",
+      "time": 108.2
+    },
+    {
+      "bytes": 1992775,
+      "name": "profit_during",
+      "path": "frames/profit_during.png",
+      "sha256": "46fce3cb317793e69bb838e7472ecfc2180e590dc54ffed00f6f0a0e72d07441",
+      "time": 108.3
+    },
+    {
+      "bytes": 2121192,
+      "name": "profit_clear",
+      "path": "frames/profit_clear.png",
+      "sha256": "f6fc73c3d4b8d7363492def306bf29525b4a97867f893468a526ebc717e45dbc",
+      "time": 108.7
+    },
+    {
+      "bytes": 2321736,
+      "name": "duplicate_before",
+      "path": "frames/duplicate_before.png",
+      "sha256": "70f67149141eab2847bda469e72bf9ea3ac142c7906094fe0ae4b5a5e1f48c9d",
+      "time": 439.5
+    },
+    {
+      "bytes": 2320538,
+      "name": "duplicate_edge_1",
+      "path": "frames/duplicate_edge_1.png",
+      "sha256": "72d3f360405acdbf29cfdbe305ff884fa86e7e7c0db4c9025ba4564151a772eb",
+      "time": 439.75
+    },
+    {
+      "bytes": 1562296,
+      "name": "duplicate_edge_2",
+      "path": "frames/duplicate_edge_2.png",
+      "sha256": "b18188118d7c02e857eeb087962ee78b0a3c73491afae097a84884f97199d3d7",
+      "time": 439.8
+    }
+  ],
+  "kind": "f02-isolated-source-candidate-capture",
+  "overlay_files": {
+    "film/film.js": {
+      "bytes": 80184,
+      "sha256": "df5ce541596154dca09a8037bf5a465474967c354db062f075f056953781a48f"
+    },
+    "film/sets_a.js": {
+      "bytes": 42047,
+      "sha256": "e80cd9920ceb5e48074b66fb110b2f5595d936c3d54068b6b0753e37e2ece7d1"
+    }
+  },
+  "owner_adoption": "NOT_ADOPTED",
+  "parent_source_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
+  "prior_db1e_source": {
+    "asset_id": 608687529,
+    "release_id": 402725212,
+    "role": "diagnostic_only_not_candidate_input",
+    "sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+    "status": "REJECTED_BY_ROOT_SOURCE_CAPTURE_REVIEW",
+    "tag_name": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68"
+  },
+  "release_approval": "NOT_GRANTED",
+  "source_asset_id": 608785210,
+  "source_asset_sha256": "da2887deb66ceec81900c0f89fc2ca1531e152f47f503c32b34c478e8da50f9b",
+  "source_release": "F02-isolated-source-candidate-da2887deb66ceec81900c0f89fc2ca1531e152f47f503c32b34c478e8da50f9b",
+  "source_release_id": 402746245
+}
