@@ -8,6 +8,15 @@
     '.s90-halo{position:absolute;left:50%;top:47%;width:1220px;height:1220px;margin:-610px 0 0 -610px;border:2px solid rgba(92,198,206,.24);border-radius:50%;box-shadow:0 0 0 42px rgba(92,198,206,.04),0 0 0 120px rgba(92,198,206,.025)}',
     '.s90-ruler{position:absolute;width:9px;background:#f2b84b;box-shadow:0 0 24px rgba(242,184,75,.28);transform-origin:50% 0}',
     '.s90-source{position:absolute;left:46px;top:204px;width:988px;height:1120px;box-sizing:border-box;background:#fbfaf6;color:#14212c;border:8px solid #e4e2da;box-shadow:0 36px 80px rgba(0,0,0,.48);overflow:hidden}',
+    '.s90-source-quote{position:absolute;left:54px;top:188px;width:972px;height:1080px;box-sizing:border-box;background:#fbfaf6;color:#14212c;border:8px solid #e4e2da;box-shadow:0 36px 80px rgba(0,0,0,.48);overflow:hidden}',
+    '.s90-source-quote-head{position:absolute;left:28px;right:28px;top:22px;height:112px;display:flex;align-items:center;justify-content:center;background:#fff;border-bottom:3px solid #1b2934}',
+    '.s90-source-quote-head img{width:100%;height:100%;object-fit:contain}',
+    '.s90-source-quote-date{position:absolute;left:34px;top:152px;width:360px;height:64px;object-fit:contain;object-position:left center;background:#fff}',
+    '.s90-source-quote-label{position:absolute;left:42px;right:42px;top:248px;height:70px;color:#234452;font:800 42px/1.05 "AG Plex Mono",monospace;letter-spacing:.015em;white-space:nowrap;overflow:hidden;border-top:4px solid #d8d2c3;padding-top:16px;box-sizing:border-box}',
+    '.s90-source-quote-copy{position:absolute;left:62px;right:62px;top:356px;height:560px;display:flex;align-items:center;justify-content:center;text-align:left;font-family:"AG Archivo",sans-serif;font-weight:800;line-height:1.02;letter-spacing:-.035em;color:#14212c;white-space:normal}',
+    '.s90-source-quote-copy.center{text-align:center}',
+    '.s90-source-quote-copy.short{font-weight:900;letter-spacing:-.045em}',
+    '.s90-source-quote-credit{position:absolute;left:0;right:0;bottom:0;min-height:132px;display:flex;align-items:center;padding:14px 22px;box-sizing:border-box;background:#14212c;color:#fff;font:800 42px/1.08 "AG Plex Mono",monospace;z-index:8}',
     '.s90-head{position:absolute;left:24px;right:24px;top:22px;height:112px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff;border-bottom:3px solid #1b2934}',
     '.s90-head img{max-width:100%;max-height:100%;object-fit:contain}',
     '.s90-title{position:absolute;left:30px;right:30px;top:150px;height:160px;overflow:hidden;background:#fff}',
@@ -30,10 +39,10 @@
     '.s90-tile{position:absolute;width:390px;height:280px;border:5px solid #b8dfe0;background:#f5f1e7;color:#172431;box-shadow:14px 18px 0 rgba(0,0,0,.33);box-sizing:border-box}',
     '.s90-tile-hd{position:absolute;left:0;right:0;top:0;height:66px;background:#163044;color:#fff;padding:12px 18px;font-size:42px;font-weight:800;box-sizing:border-box}',
     '.s90-tile-body{position:absolute;left:22px;right:22px;top:92px;font-size:44px;line-height:1.1;font-weight:700}',
-    '.s90-request{position:absolute;left:74px;top:730px;width:850px;height:324px;background:#f5f1e7;border:8px solid #d9d4c8;box-shadow:22px 26px 0 rgba(0,0,0,.32);color:#172431;box-sizing:border-box}',
+    '.s90-request{position:absolute;left:74px;top:690px;width:850px;height:324px;background:#f5f1e7;border:8px solid #d9d4c8;box-shadow:22px 26px 0 rgba(0,0,0,.32);color:#172431;box-sizing:border-box}',
     '.s90-request-top{position:absolute;left:0;right:0;top:0;height:68px;padding:12px 24px;background:#19394a;color:#fff;font-size:42px;font-weight:800;box-sizing:border-box}',
     '.s90-request-row{position:absolute;left:26px;right:26px;top:110px;height:72px;border-bottom:3px solid #c8c1b4;font-size:42px;display:flex;align-items:center;justify-content:space-between}',
-    '.s90-latch{position:absolute;left:332px;top:1130px;width:416px;height:220px;border:10px solid #e1b34c;border-radius:24px;background:#172b38;box-shadow:0 0 0 16px rgba(225,179,76,.12),18px 22px 0 rgba(0,0,0,.35)}',
+    '.s90-latch{position:absolute;left:332px;top:1040px;width:416px;height:220px;border:10px solid #e1b34c;border-radius:24px;background:#172b38;box-shadow:0 0 0 16px rgba(225,179,76,.12),18px 22px 0 rgba(0,0,0,.35)}',
     '.s90-latch:before{content:"";position:absolute;left:122px;top:-124px;width:150px;height:154px;border:18px solid #e1b34c;border-bottom:0;border-radius:100px 100px 0 0}',
     '.s90-latch-mark{position:absolute;left:0;right:0;top:74px;text-align:center;font-size:48px;font-weight:900;color:#f5e4ba}',
     '.s90-route{position:absolute;height:10px;background:#55c6be;transform-origin:left center;box-shadow:0 0 18px rgba(85,198,190,.4)}',
@@ -95,17 +104,31 @@
   function sourceTarget(ctx,L,crop,at,layout) {
     return sourcePane(ctx,L,crop,at,layout||{});
   }
+  function sourceQuote(ctx,L,copy,variant) {
+    var g=Object.assign({x:54,y:188,w:972,h:980,size:76,align:'left',label:'SOURCE QUOTATION'},variant||{});
+    var pane=el('div','s90-source-quote',L); pos(pane,g.x,g.y,g.w,g.h);
+    var head=el('div','s90-source-quote-head',pane), logo=el('img','',head); pos(head,28,22,g.w-56,112); logo.src='img/s90-source-pack/header-channel4.png';
+    var date=el('img','s90-source-quote-date',pane); pos(date,34,152,g.w-68,64); date.src='img/s90-source-pack/release-date.png';
+    text(pane,'s90-source-quote-label',g.label,42,248,g.w-84,70,42);
+    var body=text(pane,'s90-source-quote-copy '+(g.align==='center'?'center ':'')+(g.size>=88?'short':''),copy,62,356,g.w-124,480,g.size);
+    var credit=el('div','s90-source-quote-credit',pane,'Source: Channel 4, News Release, 20 October 2025');
+    pos(credit,0,g.h-132,g.w,132);
+    return {pane:pane,body:body,header:head,date:date,credit:credit};
+  }
   function captionPlate(L,copy,x,y,w,h,size) { var e=el('div','s90-rule',L); e.textContent=copy; pos(e,x,y,w,h); e.style.fontSize=size+'px'; return e; }
   function lightHit(ctx,e,t) { ctx.tl.fromTo(e,{scale:.72,opacity:.35},{scale:1,opacity:1,duration:.18,ease:'power3.out',immediateRender:false},t); }
   function request(ctx,L,at,state) {
     var r=el('div','s90-request',L); var hd=el('div','s90-request-top',r,'ILLUSTRATION / SUPPLIER CHANGE');
+    pos(r,74,690,850,324); pos(hd,0,0,850,68);
     var a=el('div','s90-request-row',r); a.innerHTML='<span>REQUEST</span><b>Bank details</b>';
-    var b=el('div','s90-request-row',r); pos(b,26,192,782,72); b.innerHTML='<span>STATE</span><b>'+(state||'PENDING')+'</b>'; b.querySelector('b').style.color='#a53e35';
+    pos(a,26,110,798,72);
+    var b=el('div','s90-request-row',r); pos(b,26,192,798,72); b.innerHTML='<span>STATE</span><b>'+(state||'PENDING')+'</b>'; b.querySelector('b').style.color='#a53e35';
     // The request and PENDING state are already readable at the incoming cut; only the rail gets a restrained settle.
     ctx.tl.fromTo(r,{rotation:-0.4},{rotation:0,duration:.16,ease:'power2.out',immediateRender:false},at); return r;
   }
   function latch(ctx,L,at) {
     var x=el('div','s90-latch',L), m=el('div','s90-latch-mark',x,'PAYMENT HELD');
+    pos(x,332,1040,416,220); pos(m,0,74,416,68);
     // Keep the latch and PAYMENT HELD legible from the cut; animate only the lock mark.
     ctx.tl.fromTo(m,{scale:.96,opacity:.8},{scale:1,opacity:1,duration:.2,ease:'power2.out',immediateRender:false},at);
     return x;
@@ -121,75 +144,50 @@
     ctx.tl.fromTo(mark,{scaleY:.25,transformOrigin:'50% 0%'},{scaleY:1,duration:2.1,ease:'power1.inOut',immediateRender:false},B.from+.22);
     return L;
   };
-  // 02 · the complete native “Because I’m not real” excerpt; the empty gate stays in a separate lower field.
+  // 02 · a large exact source quotation replaces the repeated full-page headline; attribution stays visible.
   A.scenes['s90-b02']=function(ctx,S,p,B){
     var L=stage(ctx,S,B); el('div','s90-turn',L);
-    var s=sourceTarget(ctx,L,'claim-05.png',B.from,{x:46,y:228,w:988,h:1100,excerptY:430,excerptH:520});
-    var a=el('div','s90-aperture',L); pos(a,812,1090,190,190);
-    ctx.tl.to(a,{rotation:45,duration:2.4,ease:'sine.inOut'},B.from+.18);
+    sourceQuote(ctx,L,"Because I'm not real.",{size:112,align:'center',label:'PRESENTER · SOURCE QUOTATION'});
     return L;
   };
-  // 03 · complete evidence below three sequential rails in the reserved top band.
+  // 03 · the source's exact face/voice/movements wording becomes the evidence hierarchy.
   A.scenes['s90-b03']=function(ctx,S,p,B){
-    var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-03.png',B.from,{x:74,y:220,w:932,h:1084,excerptY:442,excerptH:532});
-    rails(ctx,L,B.from+.15);
-    var cursor=el('div','s90-punch',L); pos(cursor,1026,1020,34,34);
-    ctx.tl.to(cursor,{y:-122,duration:2.8,ease:'sine.inOut'},B.from+.3);
+    var L=stage(ctx,S,B); sourceQuote(ctx,L,'their face, voice and movements all created through AI technology',{size:72,label:'SOURCE QUOTATION · CLAIM 03'});
     return L;
   };
-  // 04 · the constructed strip travels below the unchanged, complete paragraph crop.
+  // 04 · the exact “without a single frame” proof line takes the full reading field.
   A.scenes['s90-b04']=function(ctx,S,p,B){
-    var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-03.png',B.from,{x:46,y:220,w:988,h:1120,excerptY:442,excerptH:520});
-    var strip=el('div','s90-strip',L); pos(strip,-40,1100,1180,92);
-    ctx.tl.fromTo(strip,{x:-940},{x:0,duration:2.2,ease:'none',immediateRender:false},B.from+.12);
+    var L=stage(ctx,S,B); sourceQuote(ctx,L,'without a single frame of real-world filming',{size:88,align:'center',label:'SOURCE QUOTATION · CLAIM 03'});
     return L;
   };
-  // 05 · the complete quotation crop gets an outer frame; proof line grows in the blank field below.
+  // 05 · reveal only the first exact clause; B06 carries the exact continuation.
   A.scenes['s90-b05']=function(ctx,S,p,B){
-    var L=stage(ctx,S,B); var s=sourceTarget(ctx,L,'claim-04.png',B.from,{x:56,y:176,w:968,h:1140,excerptY:430,excerptH:596});
-    s.window.style.border='8px solid #ecb94f';
-    var index=el('div','s90-paperlabel',L,'SOURCE QUOTE'); pos(index,86,1110,500,68);
-    var line=el('div','s90-ruler',L); pos(line,612,1108,330,6);
-    ctx.tl.fromTo(line,{scaleX:.15,transformOrigin:'0% 50%'},{scaleX:1,duration:.45,ease:'power2.out',immediateRender:false},B.from+.62);
+    var L=stage(ctx,S,B); sourceQuote(ctx,L,'Some of you might have guessed:',{size:90,label:'PRESENTER · SOURCE QUOTATION'});
     return L;
   };
-  // 06 · the actual quote stays settled; labelled rails leave through the empty header band.
+  // 06 · the verbatim continuation answers the setup; no presenter image or reconstructed footage.
   A.scenes['s90-b06']=function(ctx,S,p,B){
-    var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-04.png',B.from,{x:46,y:230,w:988,h:1080,excerptY:438,excerptH:520});
-    var rows=rails(ctx,L,B.from+.08);
-    rows.forEach(function(r,i){ctx.tl.to(r,{x:i===1?1080:-340,opacity:0,duration:.36,ease:'power3.in'},B.from+.56+i*.12);});
-    var gate=el('div','s90-aperture',L); pos(gate,820,1088,180,180);
-    ctx.tl.to(gate,{rotation:-28,duration:2.1,ease:'sine.inOut'},B.from+.28);
+    var L=stage(ctx,S,B); sourceQuote(ctx,L,"I don't exist, I wasn't on location reporting this story.",{size:76,label:'PRESENTER · SOURCE QUOTATION'});
     return L;
   };
-  // 07 · the source date and full paragraph stay visible; proof ruler moves in the gutter outside the document frame.
+  // 07 · show the source's exact stunt description as a legible quotation.
   A.scenes['s90-b07']=function(ctx,S,p,B){
-    var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-06.png',B.from,{x:78,y:190,w:924,h:1140,excerptY:438,excerptH:580});
-    var ruler=el('div','s90-ruler',L); pos(ruler,28,470,8,650);
-    ctx.tl.fromTo(ruler,{y:-235},{y:0,duration:.72,ease:'power2.out',immediateRender:false},B.from+.18);
-    var witness=el('div','s90-punch',L); pos(witness,32,1130,28,28);
-    ctx.tl.to(witness,{y:-300,duration:2.5,ease:'sine.inOut'},B.from+.3);
+    var L=stage(ctx,S,B); sourceQuote(ctx,L,'as part of a deliberate on-screen stunt to show just how convincing artificial intelligence has become',{size:62,label:'SOURCE QUOTATION · CLAIM 06'});
     return L;
   };
-  // 08 · the native speaker-introduction crop is set in a shorter, lower-page reader with a separate role marker below it.
+  // 08 · the exact speaker introduction is typeset as a quotation, not compressed beneath the repeated headline.
   A.scenes['s90-b08']=function(ctx,S,p,B){
-    var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-08.png',B.from,{x:64,y:198,w:952,h:1090,excerptY:438,excerptH:540});
-    var tick=el('div','s90-ruler',L); pos(tick,28,1088,7,112);
-    ctx.tl.fromTo(tick,{scaleY:.15,transformOrigin:'50% 0%'},{scaleY:1,duration:.42,ease:'power2.out',immediateRender:false},B.from+.44);
+    var L=stage(ctx,S,B); sourceQuote(ctx,L,'Louisa Compton, Head of News and Current Affairs, Specialist Factual and Sport at Channel 4, said:',{size:54,label:'SOURCE QUOTATION · ATTRIBUTION'});
     return L;
   };
-  // 09 · full warning paragraph; aperture and proof marker sit entirely below the source page.
+  // 09 · Compton's first exact warning fragment becomes the new claim hierarchy.
   A.scenes['s90-b09']=function(ctx,S,p,B){
-    var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-07.png',B.from,{x:52,y:166,w:976,h:1140,excerptY:438,excerptH:590});
-    var proof=el('div','s90-ruler',L); pos(proof,64,1080,952,8);
-    ctx.tl.fromTo(proof,{scaleX:.25,transformOrigin:'0% 50%'},{scaleX:1,duration:.4,ease:'power2.out',immediateRender:false},B.from+.18);
+    var L=stage(ctx,S,B); sourceQuote(ctx,L,'how easy it is to hoodwink audiences',{size:82,label:'COMPTON · SOURCE QUOTATION'});
     return L;
   };
-  // 10 · documentary source stays full; a blank editorial tray opens below it for the next cut.
+  // 10 · the exact continuation completes the warning, then the publisher material exits at the next cut.
   A.scenes['s90-b10']=function(ctx,S,p,B){
-    var L=stage(ctx,S,B); sourceTarget(ctx,L,'claim-07.png',B.from,{x:46,y:102,w:988,h:1220,excerptY:442,excerptH:620});
-    var drawer=el('div','s90-ruler',L); pos(drawer,64,1092,952,8); drawer.style.background='#f2b84b';
-    ctx.tl.fromTo(drawer,{scaleX:.12,transformOrigin:'0% 50%'},{scaleX:1,duration:.56,ease:'power2.out',immediateRender:false},B.from+.5);
+    var L=stage(ctx,S,B); sourceQuote(ctx,L,'with content they have no way of verifying',{size:78,label:'COMPTON · SOURCE QUOTATION'});
     return L;
   };
   // 11 · all publisher marks and credits are gone before the accounts advice begins.
@@ -197,13 +195,13 @@
   // 12 · the principle becomes a physical rule plate beside the still-pending request.
   A.scenes['s90-b12']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.04); latch(ctx,L,B.from+.16); var plate=captionPlate(L,'ONE RULE\nTHIS WEEK',68,276,944,300,82); ctx.tl.fromTo(plate,{rotation:-2},{rotation:0,duration:.24,ease:'power2.out',immediateRender:false},B.from); var rivet=el('div','s90-punch',L); pos(rivet,900,600); lightHit(ctx,rivet,B.from+.55); return L;};
   // 13 · an unapproved change request stays blank of identity, amount, and account data.
-  A.scenes['s90-b13']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.05); var x=latch(ctx,L,B.from+.2); var pending=text(L,'s90-pending','PENDING CHANGE',180,628,720,72,48); var slip=el('div','s90-paperlabel',L,'BANK-DETAIL CHANGE'); pos(slip,112,502,850,90); ctx.tl.fromTo(slip,{rotation:-1.5},{rotation:0,duration:.18,ease:'power2.out',immediateRender:false},B.from); var dot=el('div','s90-punch',L); pos(dot,853,826); lightHit(ctx,dot,B.from+.58); return L;};
+  A.scenes['s90-b13']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.05); var x=latch(ctx,L,B.from+.2); var pending=text(L,'s90-pending','PENDING CHANGE',180,610,720,72,48); var slip=el('div','s90-paperlabel',L,'BANK-DETAIL CHANGE'); pos(slip,112,502,850,90); ctx.tl.fromTo(slip,{rotation:-1.5},{rotation:0,duration:.18,ease:'power2.out',immediateRender:false},B.from); var dot=el('div','s90-punch',L); pos(dot,853,826); lightHit(ctx,dot,B.from+.58); return L;};
   // 14 · trusted-number path places an outgoing call; the payment latch explicitly stays shut.
   A.scenes['s90-b14']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.03,'CALL STARTED'); latch(ctx,L,B.from+.1); var saved=el('div','s90-tile',L); pos(saved,76,394,444,230); saved.innerHTML='<div class="s90-tile-hd">SAVED CONTACT</div><div class="s90-tile-body">NUMBER<br>ALREADY HELD</div>'; ctx.tl.fromTo(saved,{rotation:-1},{rotation:0,duration:.18,ease:'power2.out',immediateRender:false},B.from); var ph=el('div','s90-phone',L); pos(ph,742,394); ctx.tl.fromTo(ph,{rotation:8},{rotation:0,duration:.3,ease:'power2.out',immediateRender:false},B.from); var route=el('div','s90-route',L); pos(route,468,700,300,10); ctx.tl.fromTo(route,{scaleX:0},{scaleX:1,duration:.45,ease:'power2.out',immediateRender:false},B.from+.76);  return L;};
   // 15 · the message path is physically disconnected; no successful confirmation is depicted.
   A.scenes['s90-b15']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); request(ctx,L,B.from+.02,'NO ANSWER'); latch(ctx,L,B.from+.08); var saved=el('div','s90-tile',L); pos(saved,62,356,410,226); saved.innerHTML='<div class="s90-tile-hd">HELD CONTACT</div><div class="s90-tile-body">KNOWN ROUTE</div>'; var msg=el('div','s90-tile',L); pos(msg,608,356,410,226); msg.innerHTML='<div class="s90-tile-hd">MESSAGE</div><div class="s90-tile-body">NEW NUMBER</div>'; ctx.tl.fromTo(msg,{rotation:1},{rotation:0,duration:.18,ease:'power2.out',immediateRender:false},B.from); var ok=el('div','s90-route',L); pos(ok,454,680,280,9); var bad=el('div','s90-blocked',L); pos(bad,812,582,8,170); bad.style.transform='rotate(34deg)'; return L;};
   // 16 · CTA only; no Channel 4 brand, evidence pane, call answer, or latch release.
-  A.scenes['s90-b16']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); var halo=el('div','s90-halo',L); halo.style.borderColor='rgba(242,184,75,.35)'; var tx=el('div','s90-cta',L,'FOLLOW FOR ONE REAL AI STORY A DAY,<br>AND WHAT IT MEANS FOR YOUR BUSINESS'); pos(tx,50,500,980,440); ctx.tl.fromTo(tx,{y:16},{y:0,duration:.22,ease:'power2.out',immediateRender:false},B.from); var pend=text(L,'s90-pending','CHANGE REMAINS PENDING UNTIL CONFIRMED',62,1030,956,82,42); var link=el('div','s90-link',L,'agmm.co.uk/ai-constraint-audit'); ctx.tl.fromTo(link,{scale:.98},{scale:1,duration:.2,ease:'power2.out',immediateRender:false},B.from+.08); return L;};
+  A.scenes['s90-b16']=function(ctx,S,p,B){var L=stage(ctx,S,B); el('div','s90-turn',L); var halo=el('div','s90-halo',L); halo.style.borderColor='rgba(242,184,75,.35)'; var tx=el('div','s90-cta',L,'FOLLOW FOR ONE REAL AI STORY A DAY,<br>AND WHAT IT MEANS FOR YOUR BUSINESS'); pos(tx,50,500,980,440); ctx.tl.fromTo(tx,{y:16},{y:0,duration:.22,ease:'power2.out',immediateRender:false},B.from); var pend=text(L,'s90-pending','CHANGE REMAINS PENDING UNTIL CONFIRMED',62,1030,956,82,42); var link=el('div','s90-link',L,'agmm.co.uk/ai-constraint-audit');pos(link,46,1114,988,152);ctx.tl.fromTo(link,{scale:.98},{scale:1,duration:.2,ease:'power2.out',immediateRender:false},B.from+.08); return L;};
   // Native kit3 adapter: scene-only component; the selected S90 scene owns each beat.
   A.C=A.C||{};
   A.C['s90-custom']=function(ctx,S,props,B){
