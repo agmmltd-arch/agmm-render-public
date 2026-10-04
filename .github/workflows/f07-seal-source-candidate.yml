@@ -1,0 +1,127 @@
+name: F07 seal isolated source candidate
+run-name: F07 source candidate seal ${{ github.run_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_candidate_release:
+        description: Publish the checked source candidate as a public release asset (not production approval)
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Authenticate public repo and exact parent metadata before archive download
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: agmmltd-arch/agmm-render-public
+          PARENT_TAG: F07-r4-actions-full-landscape-4k-20260930194517
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTIONS" = true
+          test "$RUNNER_OS" = Linux
+          test "$GITHUB_REPOSITORY" = "$REPO"
+          test "$GITHUB_REF" = refs/heads/main
+          gh api "repos/$REPO" > repository.json
+          gh api "repos/$REPO/releases/tags/$PARENT_TAG" > parent-release.json
+          python3 .github/scripts/f07_source_seal.py check-metadata \
+            --repo-json repository.json --release-json parent-release.json
+      - name: Validate exact candidate text and independent bounded review before archive download
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/f07_source_seal.py check-candidate \
+            --candidate-dir candidate-overlay \
+            --capture-receipt inputs/F07-HOSTED-CAPTURE-RECEIPT.json \
+            --review-json inputs/F07-SOURCE-STILL-REVIEW.json
+      - name: Download exact parent only after public/asset guard passes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: agmmltd-arch/agmm-render-public
+          PARENT_TAG: F07-r4-actions-full-landscape-4k-20260930194517
+        run: |
+          set -euo pipefail
+          mkdir -p input
+          gh release download "$PARENT_TAG" -R "$REPO" -p source.tar.gz -D input
+          test "$(wc -c < input/source.tar.gz | tr -d ' ')" = 43650580
+          test "$(sha256sum input/source.tar.gz | cut -d ' ' -f1)" = 10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7
+      - name: Build source candidate and exact native render part plan
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/f07_source_seal.py prepare \
+            --parent-archive input/source.tar.gz \
+            --repo-json repository.json \
+            --release-json parent-release.json \
+            --candidate-dir candidate-overlay \
+            --capture-receipt inputs/F07-HOSTED-CAPTURE-RECEIPT.json \
+            --review-json inputs/F07-SOURCE-STILL-REVIEW.json \
+            --out-dir sealed
+          python3 - <<'PY'
+          import json
+          p=json.load(open('sealed/part-plan.json'))
+          assert p['status']=='PLAN_ONLY_NOT_DISPATCHED'
+          assert p['segment_count']==73 and p['duration_seconds']==632.43
+          assert p['segments'][-1]['len']==13.23
+          r=json.load(open('sealed/source-seal-receipt.json'))
+          assert r['approval']=='NOT_GRANTED' and r['render_dispatched'] is False
+          PY
+      - name: Publish text-only source identity and part-plan review branch
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted source seal'
+          git config user.email 'evidence@users.noreply.github.com'
+          BRANCH="review/f07-source-seal-$GITHUB_RUN_ID"
+          git checkout --orphan "$BRANCH"
+          git rm -rf --cached . >/dev/null
+          mkdir -p public-review
+          cp sealed/source-seal-receipt.json sealed/part-plan.json public-review/
+          git add public-review/source-seal-receipt.json public-review/part-plan.json
+          python3 - <<'PY'
+          import subprocess
+          files=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert files == ['public-review/part-plan.json','public-review/source-seal-receipt.json'], files
+          PY
+          git commit -m 'F07 source candidate seal metadata; no render or approval'
+          git push origin "HEAD:refs/heads/$BRANCH"
+      - name: Publish immutable candidate source release, if explicitly requested
+        if: ${{ inputs.publish_candidate_release }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: agmmltd-arch/agmm-render-public
+        run: |
+          set -euo pipefail
+          TAG="$(python3 -c 'import json; print(json.load(open("sealed/source-seal-receipt.json"))["release_tag"])')"
+          python3 -c 'import re,sys; assert re.fullmatch(r"F07-source-candidate-[0-9a-f]{16}", sys.argv[1])' "$TAG"
+          if status="$(curl --silent --show-error --write-out '%{http_code}' --output tag-response.json \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            "https://api.github.com/repos/$REPO/releases/tags/$TAG")"; then
+            curl_rc=0
+          else
+            curl_rc=$?
+          fi
+          test "$curl_rc" -eq 0 || { echo "Release-tag lookup transport failed" >&2; exit 1; }
+          case "$status" in
+            404) ;;
+            200) echo "Refusing to overwrite existing source candidate tag: $TAG" >&2; exit 1 ;;
+            *) echo "Unexpected release-tag HTTP status: $status" >&2; exit 1 ;;
+          esac
+          gh release create "$TAG" \
+            sealed/source.tar.gz \
+            sealed/source-seal-receipt.json \
+            sealed/part-plan.json \
+            -R "$REPO" \
+            --title "$TAG" \
+            --notes "Isolated F07 source candidate derived from the pinned parent and three verified text files. This is not owner adoption, final-master review, editorial approval, or production release approval. No render was dispatched by this workflow."
