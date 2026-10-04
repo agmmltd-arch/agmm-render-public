@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "name": "F08 Babylon Wave03 source-only still capture",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "package_path": "conditional-babylon-whole-film-wave01",
+  "manifest_integrity_note": "Control document excluded from its own entries to avoid recursive hashing; its content is bound by the exact 40-character source commit required by the workflow and by the local package SHA-256 manifests.",
+  "runtime": {
+    "runner": "ubuntu-24.04",
+    "node": "22.23.3",
+    "node_versions_manifest_url": "https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json",
+    "node_release": "https://github.com/actions/node-versions/releases/tag/22.23.3-35947643734",
+    "node_actions_artifact": "node-22.23.3-linux-x64.tar.gz",
+    "node_version_verified_on": "2026-10-04",
+    "local_text_smoke_node": "v22.23.3 darwin-x64; archive SHA-256 verified against https://nodejs.org/dist/v22.23.3/SHASUMS256.txt",
+    "python": "3.x from ubuntu-24.04 runner; Python standard library only",
+    "hyperframes": "0.8.124 via package-lock.json",
+    "gsap": "3.14.2 via package-lock.json",
+    "canvas": "3840x2160 at 30fps"
+  },
+  "actions": {
+    "checkout": "11bd71901bbe5b1630ceea73d27597364c9af683",
+    "setup_node": "49933ea5288caeca8642d1e84afbd3f7d6820020",
+    "upload_artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02"
+  },
+  "workflow_scope": {
+    "confirmation_required": true,
+    "contents_permission": "read",
+    "production_lock_read": false,
+    "mp4_render": false,
+    "voice_or_audio_materialization": false,
+    "capture_points": 8
+  },
+  "entries": [
+    {
+      "source_path": "package.json",
+      "target_path": "conditional-babylon-whole-film-wave01/package.json",
+      "bytes": 579,
+      "sha256": "3a0bf4eae3c28223a92e3b61ea4fd869ae9c20ae1a650645a39a7ae9a0c66753",
+      "git_blob_sha1": "2ec3cb8ac397bf21eaac38efea798346df26e552",
+      "purpose": "npm project config; build:draft entry"
+    },
+    {
+      "source_path": "package-lock.json",
+      "target_path": "conditional-babylon-whole-film-wave01/package-lock.json",
+      "bytes": 64202,
+      "sha256": "4eb6ec610444fa454c2d81b7fe9c0e0aabca9c3ae804fee84d6b78c77910ec78",
+      "git_blob_sha1": "b00284b1feb80cf20dfbcf4a124ad027cc7db93e",
+      "purpose": "npm ci dependency resolution"
+    },
+    {
+      "source_path": "tools/build-draft.mjs",
+      "target_path": "conditional-babylon-whole-film-wave01/tools/build-draft.mjs",
+      "bytes": 14035,
+      "sha256": "a9863ff38bff833f5ed7093fa2c903e5e052dd1df55d5f087bdd045171fcbd4f",
+      "git_blob_sha1": "763247bdc932614ab95018bb22e2b7c6bd5d067a",
+      "purpose": "conditional HTML and scene builder"
+    },
+    {
+      "source_path": "inputs/storyboard-wave03.json",
+      "target_path": "conditional-babylon-whole-film-wave01/inputs/storyboard-wave03.json",
+      "bytes": 38604,
+      "sha256": "7e8fb8f638742ed0c7b7cf6d7defc4f452f733e38481e9cbf6217682ba4413a4",
+      "git_blob_sha1": "1d3e6d9a219601277e6c7f20f6ca68408af11b00",
+      "purpose": "697-word script payload, estimated 155 wpm timing, source labels and motion plan"
+    },
+    {
+      "source_path": "tools/source_capture.py",
+      "target_path": "conditional-babylon-whole-film-wave01/tools/source_capture.py",
+      "bytes": 3803,
+      "sha256": "3be80e6f17ede8bbe402e416a705b5691106ccadec7c88eadb3855ac6cc3c9fd",
+      "git_blob_sha1": "3abb41338cbe5d65ba59082ec6ba132954451757",
+      "purpose": "eight timestamp plan and native PNG validation"
+    },
+    {
+      "source_path": "tools/verify_source_manifest.py",
+      "target_path": "conditional-babylon-whole-film-wave01/tools/verify_source_manifest.py",
+      "bytes": 2569,
+      "sha256": "97f47da23a5b991b41a1a53fc18a36c0bb521461d3cfec328dbc8237de9a88e0",
+      "git_blob_sha1": "c7d9d974c2bf06e72db42ef1c1882072659e8e6c",
+      "purpose": "published source identity and presence validation"
+    },
+    {
+      "source_path": "tools/test_storyboard_contract.py",
+      "target_path": "conditional-babylon-whole-film-wave01/tools/test_storyboard_contract.py",
+      "bytes": 6425,
+      "sha256": "57e42d9ecd8c0a22eea952f7733ec0808a999864bf89bde025700e3124b427f7",
+      "git_blob_sha1": "56c0487256eddc1f79c43df63eb0e2a4131d4d9d",
+      "purpose": "source/storyboard/capture contract tests"
+    },
+    {
+      "source_path": "tools/test_rebind_clock.py",
+      "target_path": "conditional-babylon-whole-film-wave01/tools/test_rebind_clock.py",
+      "bytes": 2429,
+      "sha256": "e1b7561e750045f483f92406219bd1b30e29fd8e94e6a9ae9d50bea20cce6f70",
+      "git_blob_sha1": "54a2b29bdc395dd3e0c393c3a67359cf54214474",
+      "purpose": "clock contract test explicitly invoked by unittest"
+    },
+    {
+      "source_path": "tools/rebind-clock.py",
+      "target_path": "conditional-babylon-whole-film-wave01/tools/rebind-clock.py",
+      "bytes": 4967,
+      "sha256": "021681500c5fd581ac9e06e2e0fd0427eff8bf385470d90605fcf5dbef661808",
+      "git_blob_sha1": "d27cfc6defb097a9bdf710a93f898b0d625c79aa",
+      "purpose": "implementation imported by clock tests"
+    },
+    {
+      "source_path": "SCRIPT-AND-SCENE-INPUTS-WAVE03.md",
+      "target_path": "conditional-babylon-whole-film-wave01/SCRIPT-AND-SCENE-INPUTS-WAVE03.md",
+      "bytes": 9073,
+      "sha256": "edd39fa64f2030ad755a5c86b7371c73ea4b50710e04221228d5b415c1a6312c",
+      "git_blob_sha1": "0a526714768395a107f341c54d2d5b974cc8480d",
+      "purpose": "narration source imported and reconciled by storyboard test"
+    },
+    {
+      "source_path": "inputs/sound-manifest-wave03.json",
+      "target_path": "conditional-babylon-whole-film-wave01/inputs/sound-manifest-wave03.json",
+      "bytes": 3351,
+      "sha256": "80cb7099b17320a270220b4b63789f4f4967ac6e177f09197faba5d40f06a292",
+      "git_blob_sha1": "21dbbc67167f46d2a9f373f15aab81e47b5c340a",
+      "purpose": "sound asset metadata imported and checked by storyboard test; no sound bytes"
+    },
+    {
+      "source_path": ".github/workflows/f08-babylon-wave03-source-capture.yml",
+      "target_path": ".github/workflows/f08-babylon-wave03-source-capture.yml",
+      "bytes": 5593,
+      "sha256": "f04e342b538c0fdc815d20606863263f3c7d001090896fb39cbfad0692f7f76c",
+      "git_blob_sha1": "cf79959b4772f754678089c0e1fd4fa02086f203",
+      "purpose": "manually confirmed workflow; published at repository root"
+    }
+  ]
+}

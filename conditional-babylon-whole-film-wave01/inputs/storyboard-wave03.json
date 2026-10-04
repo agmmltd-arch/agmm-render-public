@@ -1,0 +1,1057 @@
+{
+  "status": "conditional-estimated",
+  "title": "What Did Babylon's 81% AI Score Actually Test?",
+  "clock_basis": {
+    "status": "ESTIMATED_155_WPM",
+    "words_per_minute": 155,
+    "scene_holds": 0,
+    "duration_rule": "scene_word_count / words_per_minute * 60; cumulative boundaries rounded to 0.1s",
+    "measured_clock_required_for_production": true
+  },
+  "canvas_basis": {
+    "status": "conditional-source-target",
+    "width": 3840,
+    "height": 2160,
+    "fps": 30,
+    "production_profile_must_be_owner_approved": true,
+    "review_downscale": "1920x1080"
+  },
+  "scenes": [
+    {
+      "id": "scene-01-number",
+      "visual_type": "selection_aperture",
+      "heading": "What does 81 per cent actually mean?",
+      "body": "Babylon-reported · June 2018",
+      "source_id": "L08,L09",
+      "source_label": "Babylon Health release, 27 June 2018",
+      "script": "What does 81 per cent actually mean? In June 2018, Babylon announced that its AI had scored 81 per cent on a set of diagnostic questions. That sounds like a pass. But the first thing to ask is smaller and more useful: what was in the set?",
+      "visual_actions": [
+        "question field moves toward the aperture",
+        "one strip crosses the aperture",
+        "81% lands inside the bounded sample"
+      ],
+      "sound_cues": [
+        {
+          "event_id": "scene-01-number-move-01",
+          "asset": "paper-slide",
+          "offset_s": 3.639,
+          "pan": -0.4,
+          "pan_object": "81% on diagnostic questions",
+          "cause": "81% on diagnostic questions moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-01-number-move-02",
+          "asset": "paper-tap",
+          "offset_s": 7.277,
+          "pan": 0.4,
+          "pan_object": "June 2018 Babylon announcement",
+          "cause": "June 2018 Babylon announcement moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-01-number-move-03",
+          "asset": "paper-settle",
+          "offset_s": 10.916,
+          "pan": -0.46,
+          "pan_object": "Selected questions define the result",
+          "cause": "Selected questions define the result moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-01-number-move-04",
+          "asset": "paper-slide",
+          "offset_s": 14.555,
+          "pan": 0.48,
+          "pan_object": "First attempt, as reported",
+          "cause": "First attempt, as reported moves onto the labelled evidence track"
+        }
+      ],
+      "motion_events": [
+        {
+          "id": "scene-01-number-move-01",
+          "label": "81% on diagnostic questions",
+          "kind": "measure",
+          "at_s": 3.639,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 60,
+          "pan": -0.4
+        },
+        {
+          "id": "scene-01-number-move-02",
+          "label": "June 2018 Babylon announcement",
+          "kind": "marker",
+          "at_s": 7.277,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 102,
+          "pan": 0.4
+        },
+        {
+          "id": "scene-01-number-move-03",
+          "label": "Selected questions define the result",
+          "kind": "marker",
+          "at_s": 10.916,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 144,
+          "pan": -0.46
+        },
+        {
+          "id": "scene-01-number-move-04",
+          "label": "First attempt, as reported",
+          "kind": "marker",
+          "at_s": 14.555,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 186,
+          "pan": 0.48
+        }
+      ]
+    },
+    {
+      "id": "scene-02-sample",
+      "visual_type": "sample_boundary",
+      "heading": "A selected question sample",
+      "body": "Public RCGP material + independent preparation sources",
+      "source_id": "L13",
+      "source_label": "Babylon Health release; method attributed to the company",
+      "script": "Babylon's own release says the Royal College of General Practitioners did not publish past exam papers. So the company assembled what it called a representative sample from public RCGP material and independent exam-preparation sources. Babylon said its AI scored 81 per cent on that sample, on its first attempt. The boundary matters. This was a selected question sample, not a sitting of the complete MRCGP examination. Keep the unselected field visible around it: the score describes what entered the sample, not every question that could have been asked.",
+      "visual_actions": [
+        "source strips converge into a transparent bounded frame",
+        "outer question field remains visible beyond the frame",
+        "selected/unselected contrast holds"
+      ],
+      "sound_cues": [
+        {
+          "event_id": "scene-02-sample-move-01",
+          "asset": "paper-tap",
+          "offset_s": 4.866,
+          "pan": 0.4,
+          "pan_object": "RCGP did not publish past papers",
+          "cause": "RCGP did not publish past papers moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-02-sample-move-02",
+          "asset": "paper-settle",
+          "offset_s": 9.733,
+          "pan": -0.46,
+          "pan_object": "Public RCGP material",
+          "cause": "Public RCGP material moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-02-sample-move-03",
+          "asset": "paper-slide",
+          "offset_s": 14.599,
+          "pan": 0.48,
+          "pan_object": "Independent exam-preparation sources",
+          "cause": "Independent exam-preparation sources moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-02-sample-move-04",
+          "asset": "paper-tap",
+          "offset_s": 19.465,
+          "pan": -0.32,
+          "pan_object": "Selected question sample",
+          "cause": "Selected question sample moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-02-sample-move-05",
+          "asset": "paper-settle",
+          "offset_s": 24.332,
+          "pan": 0.3,
+          "pan_object": "Full MRCGP sitting outside sample",
+          "cause": "Full MRCGP sitting outside sample moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-02-sample-move-06",
+          "asset": "paper-slide",
+          "offset_s": 29.198,
+          "pan": -0.33,
+          "pan_object": "Babylon described sample as representative",
+          "cause": "Babylon described sample as representative moves onto the labelled evidence track"
+        }
+      ],
+      "motion_events": [
+        {
+          "id": "scene-02-sample-move-01",
+          "label": "RCGP did not publish past papers",
+          "kind": "marker",
+          "at_s": 4.866,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 60,
+          "pan": 0.4
+        },
+        {
+          "id": "scene-02-sample-move-02",
+          "label": "Public RCGP material",
+          "kind": "marker",
+          "at_s": 9.733,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 102,
+          "pan": -0.46
+        },
+        {
+          "id": "scene-02-sample-move-03",
+          "label": "Independent exam-preparation sources",
+          "kind": "marker",
+          "at_s": 14.599,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 144,
+          "pan": 0.48
+        },
+        {
+          "id": "scene-02-sample-move-04",
+          "label": "Selected question sample",
+          "kind": "marker",
+          "at_s": 19.465,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 186,
+          "pan": -0.32
+        },
+        {
+          "id": "scene-02-sample-move-05",
+          "label": "Full MRCGP sitting outside sample",
+          "kind": "boundary",
+          "at_s": 24.332,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 228,
+          "pan": 0.3
+        },
+        {
+          "id": "scene-02-sample-move-06",
+          "label": "Babylon described sample as representative",
+          "kind": "marker",
+          "at_s": 29.198,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 270,
+          "pan": -0.33
+        }
+      ]
+    },
+    {
+      "id": "scene-03-comparator",
+      "visual_type": "separate_measure_tracks",
+      "heading": "81 and 72 measure different things",
+      "body": "2012–2017 average pass mark",
+      "source_id": "L10,L13",
+      "source_label": "Babylon Health release; comparator period shown as reported",
+      "script": "Babylon set 81 per cent beside a 72 per cent average pass mark drawn from RCGP data covering 2012 to 2017. One number is the company's result on its sample. The other is a historical pass-mark average. The announcement does not describe a matched test where candidates and software answered the same full paper under the same conditions. So the useful comparison is not a race between two bars. It is a check on the denominator: what questions counted, how was the sample assembled, and what can that older pass-mark figure tell us?",
+      "visual_actions": [
+        "81 track ends at sample boundary",
+        "dated 72 pass-mark strip travels on its own rail",
+        "rails never share an axis or merge"
+      ],
+      "sound_cues": [
+        {
+          "event_id": "scene-03-comparator-move-01",
+          "asset": "paper-settle",
+          "offset_s": 5.143,
+          "pan": -0.46,
+          "pan_object": "Babylon result on its sample: 81%",
+          "cause": "Babylon result on its sample: 81% moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-03-comparator-move-02",
+          "asset": "paper-slide",
+          "offset_s": 10.286,
+          "pan": 0.48,
+          "pan_object": "Historical average pass mark: 72%",
+          "cause": "Historical average pass mark: 72% moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-03-comparator-move-03",
+          "asset": "paper-tap",
+          "offset_s": 15.429,
+          "pan": -0.32,
+          "pan_object": "Pass-mark period starts 2012",
+          "cause": "Pass-mark period starts 2012 moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-03-comparator-move-04",
+          "asset": "paper-settle",
+          "offset_s": 20.571,
+          "pan": 0.3,
+          "pan_object": "Pass-mark period ends 2017",
+          "cause": "Pass-mark period ends 2017 moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-03-comparator-move-05",
+          "asset": "paper-slide",
+          "offset_s": 25.714,
+          "pan": -0.33,
+          "pan_object": "Different measures stay on separate rails",
+          "cause": "Different measures stay on separate rails moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-03-comparator-move-06",
+          "asset": "paper-tap",
+          "offset_s": 30.857,
+          "pan": 0.38,
+          "pan_object": "No matched full-paper test described",
+          "cause": "No matched full-paper test described moves onto the labelled evidence track"
+        }
+      ],
+      "motion_events": [
+        {
+          "id": "scene-03-comparator-move-01",
+          "label": "Babylon result on its sample: 81%",
+          "kind": "measure",
+          "at_s": 5.143,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 60,
+          "pan": -0.46
+        },
+        {
+          "id": "scene-03-comparator-move-02",
+          "label": "Historical average pass mark: 72%",
+          "kind": "measure",
+          "at_s": 10.286,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 102,
+          "pan": 0.48
+        },
+        {
+          "id": "scene-03-comparator-move-03",
+          "label": "Pass-mark period starts 2012",
+          "kind": "date",
+          "at_s": 15.429,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 144,
+          "pan": -0.32
+        },
+        {
+          "id": "scene-03-comparator-move-04",
+          "label": "Pass-mark period ends 2017",
+          "kind": "date",
+          "at_s": 20.571,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 186,
+          "pan": 0.3
+        },
+        {
+          "id": "scene-03-comparator-move-05",
+          "label": "Different measures stay on separate rails",
+          "kind": "boundary",
+          "at_s": 25.714,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 228,
+          "pan": -0.33
+        },
+        {
+          "id": "scene-03-comparator-move-06",
+          "label": "No matched full-paper test described",
+          "kind": "boundary",
+          "at_s": 30.857,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 270,
+          "pan": 0.38
+        }
+      ]
+    },
+    {
+      "id": "scene-04-separate-study",
+      "visual_type": "branching_studies",
+      "heading": "Another task, another study",
+      "body": "100 company-reported vignettes · separate prospective paper",
+      "source_id": "L09,L13",
+      "source_label": "Babylon Health release; Razzaki et al., arXiv:1806.10698",
+      "script": "The announcement also reports a different comparison: 100 clinical vignettes, with Babylon's AI at 80 per cent and seven doctors between 64 and 94 per cent. Those vignettes are a separate task from the sample behind 81 per cent. A paper submitted on the same day describes a prospective comparison of an AI triage-and-diagnosis system with doctors on identical cases, with a judge blind to which answer came from whom. It also discusses benchmark vignettes. The paper does not report an independent repeat of the 81 per cent sample-question result. Keep those three things on separate tracks: sample questions, company-reported vignettes, and the prospective study.",
+      "visual_actions": [
+        "100-vignette branch leaves the sample instrument",
+        "separate study rail reveals paired case markers",
+        "blind-judge shutter closes across study outputs"
+      ],
+      "sound_cues": [
+        {
+          "event_id": "scene-04-separate-study-move-01",
+          "asset": "paper-slide",
+          "offset_s": 5.081,
+          "pan": 0.48,
+          "pan_object": "Company-reported set: 100 vignettes",
+          "cause": "Company-reported set: 100 vignettes moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-04-separate-study-move-02",
+          "asset": "paper-tap",
+          "offset_s": 10.161,
+          "pan": -0.32,
+          "pan_object": "AI score on vignettes: 80%",
+          "cause": "AI score on vignettes: 80% moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-04-separate-study-move-03",
+          "asset": "paper-settle",
+          "offset_s": 15.242,
+          "pan": 0.3,
+          "pan_object": "Seven doctors: 64–94%",
+          "cause": "Seven doctors: 64–94% moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-04-separate-study-move-04",
+          "asset": "paper-slide",
+          "offset_s": 20.323,
+          "pan": -0.33,
+          "pan_object": "AI and doctors answered identical cases",
+          "cause": "AI and doctors answered identical cases moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-04-separate-study-move-05",
+          "asset": "paper-tap",
+          "offset_s": 25.403,
+          "pan": 0.38,
+          "pan_object": "Judge blind to answer source",
+          "cause": "Judge blind to answer source moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-04-separate-study-move-06",
+          "asset": "paper-settle",
+          "offset_s": 30.484,
+          "pan": -0.42,
+          "pan_object": "Benchmark vignettes are separate evidence",
+          "cause": "Benchmark vignettes are separate evidence moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-04-separate-study-move-07",
+          "asset": "paper-slide",
+          "offset_s": 35.565,
+          "pan": -0.4,
+          "pan_object": "No independent repeat of the 81% result",
+          "cause": "No independent repeat of the 81% result moves onto the labelled evidence track"
+        }
+      ],
+      "motion_events": [
+        {
+          "id": "scene-04-separate-study-move-01",
+          "label": "Company-reported set: 100 vignettes",
+          "kind": "study",
+          "at_s": 5.081,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 60,
+          "pan": 0.48
+        },
+        {
+          "id": "scene-04-separate-study-move-02",
+          "label": "AI score on vignettes: 80%",
+          "kind": "study",
+          "at_s": 10.161,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 102,
+          "pan": -0.32
+        },
+        {
+          "id": "scene-04-separate-study-move-03",
+          "label": "Seven doctors: 64–94%",
+          "kind": "study",
+          "at_s": 15.242,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 144,
+          "pan": 0.3
+        },
+        {
+          "id": "scene-04-separate-study-move-04",
+          "label": "AI and doctors answered identical cases",
+          "kind": "study",
+          "at_s": 20.323,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 186,
+          "pan": -0.33
+        },
+        {
+          "id": "scene-04-separate-study-move-05",
+          "label": "Judge blind to answer source",
+          "kind": "study",
+          "at_s": 25.403,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 228,
+          "pan": 0.38
+        },
+        {
+          "id": "scene-04-separate-study-move-06",
+          "label": "Benchmark vignettes are separate evidence",
+          "kind": "study",
+          "at_s": 30.484,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 270,
+          "pan": -0.42
+        },
+        {
+          "id": "scene-04-separate-study-move-07",
+          "label": "No independent repeat of the 81% result",
+          "kind": "study",
+          "at_s": 35.565,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 312,
+          "pan": -0.4
+        }
+      ]
+    },
+    {
+      "id": "scene-05-gp-at-hand",
+      "visual_type": "service_profile",
+      "heading": "GP at Hand: service context",
+      "body": "2017 · Lillie Road practice · selected patient population",
+      "source_id": "L03,L05,L06,L24",
+      "source_label": "Babylon 2017 source; NHS England digital-first primary-care paper",
+      "script": "Babylon launched GP at Hand through the Lillie Road NHS practice in 2017, combining digital access with GP consultations. NHS England later described its patient profile using age- and sex-adjusted QOF prevalence: slightly below Hammersmith and Fulham averages, except asthma, which was broadly as expected. The paper also says people with long-term conditions needing regular face-to-face care were encouraged to seek advice before registering while the model was assessed. That describes a service population and a selection policy. It does not turn an exam-question score into a measure of care for every patient.",
+      "visual_actions": [
+        "Lillie Road practice location label seats on a clean service plan",
+        "QOF comparator appears as a labelled interval, not patient icons",
+        "registration-selection gate becomes visible"
+      ],
+      "sound_cues": [
+        {
+          "event_id": "scene-05-gp-at-hand-move-01",
+          "asset": "paper-tap",
+          "offset_s": 5.143,
+          "pan": -0.32,
+          "pan_object": "Lillie Road NHS practice · 2017",
+          "cause": "Lillie Road NHS practice · 2017 moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-05-gp-at-hand-move-02",
+          "asset": "paper-settle",
+          "offset_s": 10.286,
+          "pan": 0.3,
+          "pan_object": "Digital access plus GP consultations",
+          "cause": "Digital access plus GP consultations moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-05-gp-at-hand-move-03",
+          "asset": "paper-slide",
+          "offset_s": 15.429,
+          "pan": -0.33,
+          "pan_object": "QOF: slightly below local average",
+          "cause": "QOF: slightly below local average moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-05-gp-at-hand-move-04",
+          "asset": "paper-tap",
+          "offset_s": 20.571,
+          "pan": 0.38,
+          "pan_object": "Asthma: broadly as expected",
+          "cause": "Asthma: broadly as expected moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-05-gp-at-hand-move-05",
+          "asset": "paper-settle",
+          "offset_s": 25.714,
+          "pan": -0.42,
+          "pan_object": "Some long-term care stayed face to face",
+          "cause": "Some long-term care stayed face to face moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-05-gp-at-hand-move-06",
+          "asset": "paper-slide",
+          "offset_s": 30.857,
+          "pan": -0.4,
+          "pan_object": "Registration policy shaped the population",
+          "cause": "Registration policy shaped the population moves onto the labelled evidence track"
+        }
+      ],
+      "motion_events": [
+        {
+          "id": "scene-05-gp-at-hand-move-01",
+          "label": "Lillie Road NHS practice · 2017",
+          "kind": "date",
+          "at_s": 5.143,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 60,
+          "pan": -0.32
+        },
+        {
+          "id": "scene-05-gp-at-hand-move-02",
+          "label": "Digital access plus GP consultations",
+          "kind": "marker",
+          "at_s": 10.286,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 102,
+          "pan": 0.3
+        },
+        {
+          "id": "scene-05-gp-at-hand-move-03",
+          "label": "QOF: slightly below local average",
+          "kind": "marker",
+          "at_s": 15.429,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 144,
+          "pan": -0.33
+        },
+        {
+          "id": "scene-05-gp-at-hand-move-04",
+          "label": "Asthma: broadly as expected",
+          "kind": "marker",
+          "at_s": 20.571,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 186,
+          "pan": 0.38
+        },
+        {
+          "id": "scene-05-gp-at-hand-move-05",
+          "label": "Some long-term care stayed face to face",
+          "kind": "marker",
+          "at_s": 25.714,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 228,
+          "pan": -0.42
+        },
+        {
+          "id": "scene-05-gp-at-hand-move-06",
+          "label": "Registration policy shaped the population",
+          "kind": "marker",
+          "at_s": 30.857,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 270,
+          "pan": -0.4
+        }
+      ]
+    },
+    {
+      "id": "scene-06-service-count",
+      "visual_type": "dated_service_count",
+      "heading": "A later service snapshot",
+      "body": "100,000+ London residents served · September 2023 statement",
+      "source_id": "L07,L23",
+      "source_label": "NHS North East London ICB board paper, 27 September 2023",
+      "script": "In a September 2023 board paper, NHS North East London described GP at Hand as serving more than 100,000 London residents. Put the date beside the count. It is a later service snapshot, not another measurement of the 2018 AI test.",
+      "visual_actions": [
+        "September 2023 date plate arrives first",
+        "100,000+ count resolves within a distinct dated frame"
+      ],
+      "sound_cues": [
+        {
+          "event_id": "scene-06-service-count-move-01",
+          "asset": "paper-settle",
+          "offset_s": 3.968,
+          "pan": 0.3,
+          "pan_object": "Board paper · September 2023",
+          "cause": "Board paper · September 2023 moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-06-service-count-move-02",
+          "asset": "paper-slide",
+          "offset_s": 7.935,
+          "pan": -0.33,
+          "pan_object": "More than 100,000 London residents",
+          "cause": "More than 100,000 London residents moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-06-service-count-move-03",
+          "asset": "paper-tap",
+          "offset_s": 11.903,
+          "pan": 0.38,
+          "pan_object": "Later service count, not AI-test result",
+          "cause": "Later service count, not AI-test result moves onto the labelled evidence track"
+        }
+      ],
+      "motion_events": [
+        {
+          "id": "scene-06-service-count-move-01",
+          "label": "Board paper · September 2023",
+          "kind": "date",
+          "at_s": 3.968,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 60,
+          "pan": 0.3
+        },
+        {
+          "id": "scene-06-service-count-move-02",
+          "label": "More than 100,000 London residents",
+          "kind": "measure",
+          "at_s": 7.935,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 102,
+          "pan": -0.33
+        },
+        {
+          "id": "scene-06-service-count-move-03",
+          "label": "Later service count, not AI-test result",
+          "kind": "boundary",
+          "at_s": 11.903,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 144,
+          "pan": 0.38
+        }
+      ]
+    },
+    {
+      "id": "scene-07-company-chronology",
+      "visual_type": "disconnected_timeline",
+      "heading": "Company events, in date order",
+      "body": "2019 financing · 2021 proposed value and trading · 2023 transfer and asset events",
+      "source_id": "L14,L17,L19,L20,L22",
+      "source_label": "Babylon/SEC filings; London Gazette; dates and entities shown in notes",
+      "script": "The company timeline has its own dates. In 2019 Babylon announced a 550-million-dollar fundraise, saying more than 450 million was committed and the remainder expected. In 2021, Babylon and Alkuri announced a proposed merger with an initial pro forma equity value of about 4.2 billion dollars. The merger later completed, and BBLN trading began on the New York Stock Exchange on 22 October. In 2023, a proposed transfer of core operating subsidiaries to MindMaze did not proceed. Babylon then reported its exit from the core US business and the acquisition of its UK business assets by eMed; it said GP at Hand would continue. The London Gazette separately records administration for named Babylon entities beginning on 1 September. These dates make a chronology. They do not explain one another, and they do not measure the 2018 score.",
+      "visual_actions": [
+        "2019, 2021 and 2023 rails reveal with visible gaps",
+        "proposed value and later trading occupy distinct 2021 markers",
+        "2023 proposed transfer stops before a separate asset-acquisition marker",
+        "no line returns to the 2018 score"
+      ],
+      "sound_cues": [
+        {
+          "event_id": "scene-07-company-chronology-move-01",
+          "asset": "paper-slide",
+          "offset_s": 5.303,
+          "pan": -0.33,
+          "pan_object": "2019 · $550m fundraise announced",
+          "cause": "2019 · $550m fundraise announced moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-07-company-chronology-move-02",
+          "asset": "paper-tap",
+          "offset_s": 10.606,
+          "pan": 0.38,
+          "pan_object": "Over $450m committed; remainder expected",
+          "cause": "Over $450m committed; remainder expected moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-07-company-chronology-move-03",
+          "asset": "paper-settle",
+          "offset_s": 15.91,
+          "pan": -0.42,
+          "pan_object": "2021 · proposed ~$4.2bn equity value",
+          "cause": "2021 · proposed ~$4.2bn equity value moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-07-company-chronology-move-04",
+          "asset": "paper-slide",
+          "offset_s": 21.213,
+          "pan": -0.4,
+          "pan_object": "NYSE trading began 22 October",
+          "cause": "NYSE trading began 22 October moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-07-company-chronology-move-05",
+          "asset": "paper-tap",
+          "offset_s": 26.516,
+          "pan": 0.4,
+          "pan_object": "2023 · MindMaze transfer did not proceed",
+          "cause": "2023 · MindMaze transfer did not proceed moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-07-company-chronology-move-06",
+          "asset": "paper-settle",
+          "offset_s": 31.819,
+          "pan": -0.46,
+          "pan_object": "Babylon reported exit from core US business",
+          "cause": "Babylon reported exit from core US business moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-07-company-chronology-move-07",
+          "asset": "paper-slide",
+          "offset_s": 37.123,
+          "pan": 0.48,
+          "pan_object": "eMed acquired UK business assets",
+          "cause": "eMed acquired UK business assets moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-07-company-chronology-move-08",
+          "asset": "paper-tap",
+          "offset_s": 42.426,
+          "pan": -0.32,
+          "pan_object": "GP at Hand continuation reported",
+          "cause": "GP at Hand continuation reported moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-07-company-chronology-move-09",
+          "asset": "paper-settle",
+          "offset_s": 47.729,
+          "pan": 0.3,
+          "pan_object": "Administration began 1 September for named entities",
+          "cause": "Administration began 1 September for named entities moves onto the labelled evidence track"
+        }
+      ],
+      "motion_events": [
+        {
+          "id": "scene-07-company-chronology-move-01",
+          "label": "2019 · $550m fundraise announced",
+          "kind": "date",
+          "at_s": 5.303,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 60,
+          "pan": -0.33
+        },
+        {
+          "id": "scene-07-company-chronology-move-02",
+          "label": "Over $450m committed; remainder expected",
+          "kind": "marker",
+          "at_s": 10.606,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 102,
+          "pan": 0.38
+        },
+        {
+          "id": "scene-07-company-chronology-move-03",
+          "label": "2021 · proposed ~$4.2bn equity value",
+          "kind": "date",
+          "at_s": 15.91,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 144,
+          "pan": -0.42
+        },
+        {
+          "id": "scene-07-company-chronology-move-04",
+          "label": "NYSE trading began 22 October",
+          "kind": "date",
+          "at_s": 21.213,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 186,
+          "pan": -0.4
+        },
+        {
+          "id": "scene-07-company-chronology-move-05",
+          "label": "2023 · MindMaze transfer did not proceed",
+          "kind": "date",
+          "at_s": 26.516,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 228,
+          "pan": 0.4
+        },
+        {
+          "id": "scene-07-company-chronology-move-06",
+          "label": "Babylon reported exit from core US business",
+          "kind": "marker",
+          "at_s": 31.819,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 270,
+          "pan": -0.46
+        },
+        {
+          "id": "scene-07-company-chronology-move-07",
+          "label": "eMed acquired UK business assets",
+          "kind": "marker",
+          "at_s": 37.123,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 312,
+          "pan": 0.48
+        },
+        {
+          "id": "scene-07-company-chronology-move-08",
+          "label": "GP at Hand continuation reported",
+          "kind": "marker",
+          "at_s": 42.426,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 354,
+          "pan": -0.32
+        },
+        {
+          "id": "scene-07-company-chronology-move-09",
+          "label": "Administration began 1 September for named entities",
+          "kind": "date",
+          "at_s": 47.729,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 396,
+          "pan": 0.3
+        }
+      ]
+    },
+    {
+      "id": "scene-08-takeaway",
+      "visual_type": "four_question_tabs",
+      "heading": "Four questions before you trust a benchmark",
+      "body": "Task? Sample? Comparator? Independent repeat?",
+      "source_id": "EDITORIAL-SYNTHESIS",
+      "source_label": "Editorial synthesis; AI Constraint Audit route",
+      "script": "So what did 81 per cent prove? It records what Babylon said its AI achieved on a representative sample of diagnostic questions. The public description does not make that a pass of the full GP examination. When an AI benchmark informs a business decision, ask four things: what task was tested, how was the sample chosen, what did the comparator measure, and has the result been independently repeated on the job you care about? If you are assessing a constraint in your own AI workflow, start with the AI Constraint Audit at agmm.co.uk/ai-constraint-audit.",
+      "visual_actions": [
+        "three evidence tracks fold into four question tabs",
+        "CTA plate arrives after the four tabs are spoken"
+      ],
+      "sound_cues": [
+        {
+          "event_id": "scene-08-takeaway-move-01",
+          "asset": "paper-tap",
+          "offset_s": 5.143,
+          "pan": 0.38,
+          "pan_object": "Task tested",
+          "cause": "Task tested moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-08-takeaway-move-02",
+          "asset": "paper-settle",
+          "offset_s": 10.286,
+          "pan": -0.42,
+          "pan_object": "How the sample was chosen",
+          "cause": "How the sample was chosen moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-08-takeaway-move-03",
+          "asset": "paper-slide",
+          "offset_s": 15.429,
+          "pan": -0.4,
+          "pan_object": "What the comparator measured",
+          "cause": "What the comparator measured moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-08-takeaway-move-04",
+          "asset": "paper-tap",
+          "offset_s": 20.571,
+          "pan": 0.4,
+          "pan_object": "Independent repeat on the job",
+          "cause": "Independent repeat on the job moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-08-takeaway-move-05",
+          "asset": "paper-settle",
+          "offset_s": 25.714,
+          "pan": -0.46,
+          "pan_object": "Four questions before using a benchmark",
+          "cause": "Four questions before using a benchmark moves onto the labelled evidence track"
+        },
+        {
+          "event_id": "scene-08-takeaway-move-06",
+          "asset": "paper-slide",
+          "offset_s": 30.857,
+          "pan": 0.48,
+          "pan_object": "AI Constraint Audit · agmm.co.uk/ai-constraint-audit",
+          "cause": "AI Constraint Audit · agmm.co.uk/ai-constraint-audit moves onto the labelled evidence track"
+        }
+      ],
+      "motion_events": [
+        {
+          "id": "scene-08-takeaway-move-01",
+          "label": "Task tested",
+          "kind": "marker",
+          "at_s": 5.143,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 60,
+          "pan": 0.38
+        },
+        {
+          "id": "scene-08-takeaway-move-02",
+          "label": "How the sample was chosen",
+          "kind": "marker",
+          "at_s": 10.286,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 102,
+          "pan": -0.42
+        },
+        {
+          "id": "scene-08-takeaway-move-03",
+          "label": "What the comparator measured",
+          "kind": "marker",
+          "at_s": 15.429,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 144,
+          "pan": -0.4
+        },
+        {
+          "id": "scene-08-takeaway-move-04",
+          "label": "Independent repeat on the job",
+          "kind": "marker",
+          "at_s": 20.571,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 186,
+          "pan": 0.4
+        },
+        {
+          "id": "scene-08-takeaway-move-05",
+          "label": "Four questions before using a benchmark",
+          "kind": "marker",
+          "at_s": 25.714,
+          "duration_s": 0.52,
+          "from_x": 64,
+          "to_x": 0,
+          "y": 228,
+          "pan": -0.46
+        },
+        {
+          "id": "scene-08-takeaway-move-06",
+          "label": "AI Constraint Audit · agmm.co.uk/ai-constraint-audit",
+          "kind": "marker",
+          "at_s": 30.857,
+          "duration_s": 0.52,
+          "from_x": -64,
+          "to_x": 0,
+          "y": 270,
+          "pan": 0.48
+        }
+      ]
+    }
+  ]
+}

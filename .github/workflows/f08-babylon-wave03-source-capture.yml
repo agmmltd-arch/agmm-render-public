@@ -1,0 +1,122 @@
+name: F08 Babylon Wave03 bounded source stills
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_commit:
+        description: Exact 40-character source commit containing this package
+        required: true
+        type: string
+      confirm_source_capture:
+        description: Confirm this is a source-only still capture and request eight named review frames
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  source-stills:
+    if: ${{ inputs.confirm_source_capture == true }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Validate repository and requested commit
+        env:
+          EXPECTED_REPOSITORY: agmmltd-arch/agmm-render-public
+          REQUESTED_SHA: ${{ inputs.source_commit }}
+          ACTUAL_REPOSITORY: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          [[ "$EVENT_NAME" == "workflow_dispatch" ]]
+          [[ "$ACTUAL_REPOSITORY" == "$EXPECTED_REPOSITORY" ]]
+          [[ "$REQUESTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ inputs.source_commit }}
+          persist-credentials: false
+      - name: Verify checked-out identity
+        env:
+          REQUESTED_SHA: ${{ inputs.source_commit }}
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$REQUESTED_SHA" ]]
+      - name: Verify exact source publication manifest
+        working-directory: conditional-babylon-whole-film-wave01
+        run: |
+          set -euo pipefail
+          python3 tools/verify_source_manifest.py
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.23.3
+          cache: npm
+          cache-dependency-path: conditional-babylon-whole-film-wave01/package-lock.json
+      - name: Install pinned composition dependencies
+        working-directory: conditional-babylon-whole-film-wave01
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
+          [[ "$(node --version)" == "v22.23.3" ]]
+          npm ci
+      - name: Build conditional source and run static HyperFrames lint
+        working-directory: conditional-babylon-whole-film-wave01
+        env:
+          F08_SOURCE_CAPTURE_WORKFLOW: ../.github/workflows/f08-babylon-wave03-source-capture.yml
+        run: |
+          set -euo pipefail
+          npm run build:draft
+          npx hyperframes lint .
+          python3 -m unittest tools.test_storyboard_contract tools.test_rebind_clock
+          python3 tools/source_capture.py --write-plan source-capture-plan.json
+      - name: Capture only the eight named native stills
+        working-directory: conditional-babylon-whole-film-wave01
+        run: |
+          set -euo pipefail
+          TIMES="$(python3 tools/source_capture.py --times)"
+          mkdir -p captures
+          npx hyperframes snapshot . --at "$TIMES" --output captures --no-end --describe false
+          python3 tools/source_capture.py --check-pngs
+      - name: Write run and exact-input receipts
+        working-directory: conditional-babylon-whole-film-wave01
+        env:
+          SOURCE_SHA: ${{ inputs.source_commit }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib
+          root=pathlib.Path('.')
+          checkout=root.resolve().parent
+          plan=json.loads((root/'source-capture-plan.json').read_text())
+          manifest=json.loads((root/'SOURCE-CAPTURE-PUBLICATION-MANIFEST-WAVE03.json').read_text())
+          receipt={
+            'status':'SOURCE_STILLS_CAPTURED',
+            'source_commit':os.environ['SOURCE_SHA'],
+            'workflow_run_id':os.environ['RUN_ID'],
+            'workflow_run_attempt':os.environ['RUN_ATTEMPT'],
+            'event':os.environ['EVENT_NAME'],
+            'runtime':{'runner':'ubuntu-24.04','node':'22.23.3','hyperframes':'0.8.124','gsap':'3.14.2','fps':30,'source_canvas':'3840x2160'},
+            'capture_mode':'HyperFrames source snapshot only; no MP4, narration, audio materialisation, or production approval-lock read',
+            'plan':plan,
+            'publication_manifest_sha256':hashlib.sha256((root/'SOURCE-CAPTURE-PUBLICATION-MANIFEST-WAVE03.json').read_bytes()).hexdigest(),
+            'inputs':{item['target_path']:hashlib.sha256((checkout/item['target_path']).read_bytes()).hexdigest() for item in manifest['entries']},
+            'stills':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((root/'captures').glob('frame-*.png'))},
+            'contact_sheets':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((root/'captures').glob('contact-sheet*.jpg'))}
+          }
+          (root/'source-capture-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: F08-Babylon-Wave03-source-stills-${{ github.run_id }}
+          path: |
+            conditional-babylon-whole-film-wave01/captures/*.png
+            conditional-babylon-whole-film-wave01/captures/contact-sheet*.jpg
+            conditional-babylon-whole-film-wave01/source-capture-plan.json
+            conditional-babylon-whole-film-wave01/source-capture-receipt.json
+          if-no-files-found: error
+          retention-days: 3

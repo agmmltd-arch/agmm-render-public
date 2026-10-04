@@ -1,0 +1,57 @@
+{
+  "status": "selected-rights-cleared-source-assets; hosted-materialisation-pending",
+  "music": null,
+  "mix_policy": {
+    "voice_target_lufs_i": -16,
+    "voice_true_peak_dbtp_max": -3,
+    "sound_effect_gain_is_linear": true,
+    "cue_density_target_per_minute": "10–20; Wave03 planned 47 object-specific arrivals over 269.8s (10.45/min estimated)",
+    "panning": "Each cue is noncentral and follows the visible object's landing x-position; pan is baked on GitHub-hosted Ubuntu with FFmpeg stereotools balance_out in [-0.78,+0.78].",
+    "ducking": "none; no music bed is selected. Effects stay at catalog gains and actual narration masking requires root review after hosted voice exists.",
+    "music_policy": "none; preserve clean narration and source-led visual rhythm",
+    "final_loudness_measurement_required": true,
+    "continuous_listen_required": true
+  },
+  "licence_evidence": {
+    "source_catalog": "/Users/samwall/.codex/skills/agmm-shortform-studio/assets/sfx-palette/manifest.json",
+    "catalog_readme": "/Users/samwall/.codex/skills/agmm-shortform-studio/assets/sfx-palette/README.md",
+    "catalog_policy": "Kenney Interface Sounds; CC0 1.0; attribution not required",
+    "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "catalog_output_format": "48 kHz stereo PCM24, onset-trimmed, 3 ms fade-in, -1 dBTP",
+    "bytes_copied_or_opened_on_mac": false,
+    "hosted_materialisation": "Root-reviewed workflow step must materialise exact catalog outputs, verify each source SHA-256, produce cue-specific panned PCM outputs on the pinned Ubuntu runner, and record each derivative SHA-256 before production build. Never resolve another candidate by name alone."
+  },
+  "assets": [
+    {
+      "id": "paper-slide",
+      "expected_path": "inputs/audio/paper/paper-slide.wav",
+      "sha256": "0fb059a3b95335a7eb3c9d1aa2d284f3ffaa21edfb05a8f8a777a056f450aba7",
+      "duration_s": 0.3,
+      "recommended_linear_gain": 0.035,
+      "visible_move": "paper sheet travels across or into a bounded frame",
+      "licence": "CC0 1.0",
+      "licence_receipt": "Kenney Interface Sounds source catalog record; no attribution required"
+    },
+    {
+      "id": "paper-tap",
+      "expected_path": "inputs/audio/paper/paper-tap.wav",
+      "sha256": "f7eeb162d74b655b140e0b6abf61d4081abac5feccc7ed5852a45a74df5ec887",
+      "duration_s": 0.139,
+      "recommended_linear_gain": 0.03,
+      "visible_move": "sheet or small paper marker contacts its frame",
+      "licence": "CC0 1.0",
+      "licence_receipt": "Kenney Interface Sounds source catalog record; no attribution required"
+    },
+    {
+      "id": "paper-settle",
+      "expected_path": "inputs/audio/paper/paper-settle.wav",
+      "sha256": "e9fb7f9d1a406dac775ac4daedbab016c6d3fdfe20db9b1dcc8652aeb1879ae2",
+      "duration_s": 0.3,
+      "recommended_linear_gain": 0.03,
+      "visible_move": "small paper stack shifts into a stable bounded position",
+      "licence": "CC0 1.0",
+      "licence_receipt": "Kenney Interface Sounds source catalog record; no attribution required"
+    }
+  ],
+  "cue_policy": "Use storyboard-wave03.json cue offsets; all 47 cues map one-to-one to a moving visible evidence object, carry a noncentral pan and never fire on caption changes. Actual levels and narration masking require root review after hosted voice exists."
+}
