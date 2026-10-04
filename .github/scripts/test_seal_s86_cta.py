@@ -52,6 +52,29 @@ class SealTests(unittest.TestCase):
             self.assertEqual(result["parent"]["release_id"],PARENT_RELEASE_ID)
             self.assertEqual(result["corrected"]["parts_sha256"],h((root/"parts-out.json").read_bytes()))
             self.assertEqual(result["only_changed_members"], ["pkg/s86-d/spec.js","pkg/s86-d/SHA256SUMS.txt"])
+    def test_native_root_directory_and_unprefixed_parts(self):
+        for prefix in ("", "./"):
+            with self.subTest(prefix=prefix), tempfile.TemporaryDirectory() as td:
+                root=Path(td); src=self.archive(root)
+                with tarfile.open(src,"r:gz") as tf:
+                    rows=[(m,tf.extractfile(m).read()) for m in tf.getmembers()]
+                with tarfile.open(src,"w:gz") as tf:
+                    directory=tarfile.TarInfo("."); directory.type=tarfile.DIRTYPE;tf.addfile(directory)
+                    for m,data in rows:
+                        m.name=prefix+m.name.removeprefix("pkg/");tf.addfile(m,io.BytesIO(data))
+                pp,mix=self.inputs(root,src); result=self.run_seal(src,pp,mix,root)
+                with tarfile.open(root/"corrected.tar.gz","r:gz") as tf:
+                    self.assertEqual(tf.getmembers()[0].name,".")
+                    self.assertTrue(tf.getmembers()[0].isdir())
+                    self.assertIn(REPLACEMENT,tf.extractfile(prefix+"s86-d/spec.js").read())
+    def test_root_file_or_normalized_duplicate_is_rejected(self):
+        for names in ((".",), ("x", "./x")):
+            with tempfile.TemporaryDirectory() as td:
+                path=Path(td)/"bad.tar.gz"
+                with tarfile.open(path,"w:gz") as tf:
+                    for name in names:
+                        m=tarfile.TarInfo(name);m.size=1;tf.addfile(m,io.BytesIO(b"x"))
+                with tarfile.open(path,"r:gz") as tf, self.assertRaises(SealError):core._inventory(tf)
     def test_cli_host_guard_precedes_path_access(self):
         with self.assertRaisesRegex(SealError,"Ubuntu only"):
             seal(Path("/missing/source"),Path("/missing/parts"),Path("/missing/mix"),Path("/tmp/p"),Path("/tmp/o"),Path("/tmp/r"),env={},system="Darwin")

@@ -71,15 +71,15 @@ def _inventory(tf: tarfile.TarFile) -> tuple[list[tarfile.TarInfo],dict[str,byte
     require(bool(members), "empty source archive")
     for m in members:
         raw=m.name; p=PurePosixPath(raw)
-        require("\\" not in raw and not p.is_absolute() and ".." not in p.parts and p.parts, "unsafe archive path")
+        require("\\" not in raw and not p.is_absolute() and ".." not in p.parts and (p.parts or (raw in (".","./") and m.isdir())), "unsafe archive path")
         norm=str(p)
         require(norm not in seen, f"duplicate archive path: {norm}"); seen.add(norm)
         require(m.isdir() or m.isfile(), "archive contains symlink, hardlink, device, or unsupported entry")
         if m.isfile():
             stream=tf.extractfile(m); require(stream is not None, "cannot read archive file")
             b=stream.read(); require(len(b)==m.size, "archive member size mismatch")
-            payloads[raw]=b
-        else: payloads[raw]=None
+            payloads[norm]=b
+        else: payloads[norm]=None
     return members,payloads
 
 def _verify_sums(prefix: str, payloads: Mapping[str,bytes|None], sums_path: str) -> None:
@@ -114,17 +114,18 @@ def seal(source: Path, parts: Path, mix: Path, parts_output: Path, output: Path,
     require(pdata.get("parts")==EXPECTED_PARTS,"parts timeline or segment contract drift")
     require(pdata.get("sha256")==parent_source_sha and pdata.get("bytes")==len(src),"parts.json source binding drift")
     with tarfile.open(source,"r:gz") as tf: members,payloads=_inventory(tf)
-    targets=[m for m in members if m.isfile() and m.name.endswith(SUFFIX)]
+    targets=[m for m in members if m.isfile() and (str(PurePosixPath(m.name))=="s86-d/spec.js" or str(PurePosixPath(m.name)).endswith(SUFFIX))]
     require(len(targets)==1,"expected exactly one S86-D spec.js")
     target=targets[0]; prefix=str(PurePosixPath(target.name).parent)
     sums_path=prefix+"/SHA256SUMS.txt"
     require(isinstance(payloads.get(sums_path),bytes),"S86-D checksum manifest missing")
     _verify_sums(prefix,payloads,sums_path)
-    original=dict(payloads); before=payloads[target.name]; require(isinstance(before,bytes),"target not regular file")
+    target_key=str(PurePosixPath(target.name))
+    original=dict(payloads); before=payloads[target_key]; require(isinstance(before,bytes),"target not regular file")
     require(before.count(INSERT)==1 and b'"pressed": "FOLLOW"' not in before,"CTA patch precondition mismatch")
     ctas=[m.start() for m in re.finditer(rb'"kind"\s*:\s*"cta"',before)]
     require(len(ctas)==1 and before.find(INSERT,ctas[0])>=0,"CTA object ambiguous")
-    after=before.replace(INSERT,REPLACEMENT,1); payloads[target.name]=after
+    after=before.replace(INSERT,REPLACEMENT,1); payloads[target_key]=after
     old_line=(sha(before)+"  ./spec.js").encode(); new_line=(sha(after)+"  ./spec.js").encode()
     sums=payloads[sums_path]; require(isinstance(sums,bytes) and sums.count(old_line)==1,"spec checksum entry mismatch")
     payloads[sums_path]=sums.replace(old_line,new_line,1); _verify_sums(prefix,payloads,sums_path)
@@ -132,14 +133,14 @@ def seal(source: Path, parts: Path, mix: Path, parts_output: Path, output: Path,
     import io
     with tarfile.open(output,"w:gz",format=tarfile.PAX_FORMAT) as out:
         for m in members:
-            info=copy.copy(m); data=payloads[m.name]
+            info=copy.copy(m); data=payloads[str(PurePosixPath(m.name))]
             if m.isfile(): info.size=len(data or b""); out.addfile(info,io.BytesIO(data or b""))
             else: out.addfile(info)
     corrected_sha=sha(output.read_bytes()); newparts=dict(pdata); newparts["sha256"]=corrected_sha; newparts["bytes"]=output.stat().st_size
     parts_output.write_text(json.dumps(newparts,indent=2)+"\n",encoding="utf-8")
     manifest=[]
     for m in members:
-        old=original[m.name]; new=payloads[m.name]
+        old=original[str(PurePosixPath(m.name))]; new=payloads[str(PurePosixPath(m.name))]
         manifest.append({"path":m.name,"type":"directory" if m.isdir() else "regular_file","before_bytes":m.size if m.isfile() else 0,"after_bytes":len(new or b"") if m.isfile() else 0,"before_sha256":sha(old) if isinstance(old,bytes) else None,"after_sha256":sha(new) if isinstance(new,bytes) else None})
     result={"kind":"s86_cta_source_seal","parent":{"tag":parent_tag,"release_id":parent_release_id,"node_id":PARENT_NODE_ID,"source_sha256":parent_source_sha,"parts_sha256":parent_parts_sha,"mix_sha256":parent_mix_sha},"corrected":{"source_sha256":corrected_sha,"source_bytes":output.stat().st_size,"parts_sha256":sha(parts_output.read_bytes()),"parts_bytes":parts_output.stat().st_size,"mix_sha256":sha(mix_raw),"mix_bytes":len(mix_raw)},"changed_member":target.name,"changed_member_before_sha256":sha(before),"changed_member_after_sha256":sha(after),"checksum_member":sums_path,"only_changed_members":[target.name,sums_path],"archive_inventory":manifest,"cta_pressed_label":"FOLLOW","editorial_status":"NOT_REVIEWED","approval":"NOT_GRANTED"}
     receipt.write_text(json.dumps(result,indent=2)+"\n",encoding="utf-8"); return result

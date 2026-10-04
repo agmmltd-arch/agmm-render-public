@@ -1,0 +1,136 @@
+name: S86 corrected 1080 review export
+on:
+  workflow_dispatch:
+    inputs:
+      source_tag: {description: Exact source-seal release tag, required: true, type: string}
+      source_release_id: {description: Native integer source-seal release ID, required: true, type: string}
+      render_run_id: {description: Successful full 60.6s render run ID, required: true, type: string}
+      input_artifact_id: {description: Native input artifact ID from that run, required: true, type: string}
+      master_artifact_id: {description: Native FINAL-MASTERS artifact ID from that run, required: true, type: string}
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: s86-corrected-master-export-${{ inputs.render_run_id }}
+  cancel-in-progress: false
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Guard Ubuntu public repository and exact current main before inputs
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$(uname -s)" == Linux ]]
+          [[ "$GITHUB_REPOSITORY" == agmmltd-arch/agmm-render-public && "$GITHUB_REF" == refs/heads/main && "$GITHUB_EVENT_NAME" == workflow_dispatch ]]
+          [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]
+          mkdir -p "$RUNNER_TEMP/s86-export"
+          gh api repos/agmmltd-arch/agmm-render-public > "$RUNNER_TEMP/s86-export/repository.json"
+          gh api repos/agmmltd-arch/agmm-render-public/git/ref/heads/main > "$RUNNER_TEMP/s86-export/main-ref.json"
+          python3 - "$RUNNER_TEMP/s86-export/repository.json" "$RUNNER_TEMP/s86-export/main-ref.json" "$GITHUB_SHA" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1])); m=json.load(open(sys.argv[2]))
+          assert r.get('full_name')=='agmmltd-arch/agmm-render-public' and r.get('private') is False and r.get('visibility')=='public'
+          assert m.get('object',{}).get('sha')==sys.argv[3], 'not exact current main'
+          PY
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {ref: '${{ github.sha }}', persist-credentials: false}
+      - name: Read exact source seal and render artifacts metadata
+        env:
+          GH_TOKEN: '${{ github.token }}'
+          SRC_TAG: '${{ inputs.source_tag }}'
+          SRC_ID: '${{ inputs.source_release_id }}'
+          RUN_ID: '${{ inputs.render_run_id }}'
+          INPUT_ID: '${{ inputs.input_artifact_id }}'
+          MASTER_ID: '${{ inputs.master_artifact_id }}'
+        run: |
+          set -euo pipefail
+          [[ "$SRC_ID" =~ ^[0-9]+$ && "$RUN_ID" =~ ^[0-9]+$ && "$INPUT_ID" =~ ^[0-9]+$ && "$MASTER_ID" =~ ^[0-9]+$ ]]
+          gh api "repos/agmmltd-arch/agmm-render-public/releases/$SRC_ID" > "$RUNNER_TEMP/s86-export/source-release.json"
+          gh api "repos/agmmltd-arch/agmm-render-public/releases/tags/$SRC_TAG" > "$RUNNER_TEMP/s86-export/source-by-tag.json"
+          gh api "repos/agmmltd-arch/agmm-render-public/releases/tags/S86-source-quote-37171207319" > "$RUNNER_TEMP/s86-export/parent-release.json"
+          gh api "repos/agmmltd-arch/agmm-render-public/actions/runs/$RUN_ID" > "$RUNNER_TEMP/s86-export/run.json"
+          gh api "repos/agmmltd-arch/agmm-render-public/actions/runs/$RUN_ID/artifacts" > "$RUNNER_TEMP/s86-export/artifacts.json"
+          python3 - "$RUNNER_TEMP/s86-export" "$SRC_TAG" "$SRC_ID" "$RUN_ID" "$INPUT_ID" "$MASTER_ID" <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path(sys.argv[1]); src=json.load(open(p/'source-release.json')); bytag=json.load(open(p/'source-by-tag.json')); parent=json.load(open(p/'parent-release.json')); run=json.load(open(p/'run.json')); arts=json.load(open(p/'artifacts.json'))['artifacts']
+          assert src.get('id')==int(sys.argv[3]) and bytag.get('id')==int(sys.argv[3]) and src.get('tag_name')==sys.argv[2]
+          assert parent.get('id')==402788582 and parent.get('node_id')=='RE_kwDOU05Rms4YAhDm'
+          assert run.get('id')==int(sys.argv[4])
+          for aid in map(int,sys.argv[5:]):
+            matches=[a for a in arts if a.get('id')==aid]
+            assert len(matches)==1 and matches[0].get('expired') is False and matches[0].get('workflow_run',{}).get('id')==int(sys.argv[4])
+            (p/f'artifact-{aid}.json').write_text(json.dumps(matches[0]))
+          PY
+          gh release download "$SRC_TAG" --repo agmmltd-arch/agmm-render-public -p source-receipt.json -p parts.json -D "$RUNNER_TEMP/s86-export/source-input"
+          gh api "repos/agmmltd-arch/agmm-render-public/releases/$SRC_ID/assets" > "$RUNNER_TEMP/s86-export/source-assets.json"
+          python3 - "$RUNNER_TEMP/s86-export" <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path(sys.argv[1]); rows=json.load(open(p/'source-assets.json')); names={a['name'] for a in rows}
+          assert names=={'source.tar.gz','source-receipt.json','parts.json','mix.wav'}, names
+          for n in ('source-receipt.json','parts.json'):
+            a=next(x for x in rows if x['name']==n); assert a['state']=='uploaded' and a['size']>0
+          PY
+      - name: Download exact render artifacts on Ubuntu and prepare unchanged master
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/s86-export/out"
+          gh api "repos/agmmltd-arch/agmm-render-public/actions/artifacts/${{ inputs.input_artifact_id }}/zip" > "$RUNNER_TEMP/s86-export/input.zip"
+          gh api "repos/agmmltd-arch/agmm-render-public/actions/artifacts/${{ inputs.master_artifact_id }}/zip" > "$RUNNER_TEMP/s86-export/master.zip"
+          python3 .github/scripts/export_s86_corrected_master.py prepare \
+            --run-id '${{ inputs.render_run_id }}' --input-id '${{ inputs.input_artifact_id }}' --master-id '${{ inputs.master_artifact_id }}' \
+            --repository "$RUNNER_TEMP/s86-export/repository.json" --main-ref "$RUNNER_TEMP/s86-export/main-ref.json" \
+            --run "$RUNNER_TEMP/s86-export/run.json" --input-metadata "$RUNNER_TEMP/s86-export/artifact-${{ inputs.input_artifact_id }}.json" \
+            --master-metadata "$RUNNER_TEMP/s86-export/artifact-${{ inputs.master_artifact_id }}.json" \
+            --input-zip "$RUNNER_TEMP/s86-export/input.zip" --master-zip "$RUNNER_TEMP/s86-export/master.zip" \
+            --source-receipt "$RUNNER_TEMP/s86-export/source-input/source-receipt.json" --parent-release "$RUNNER_TEMP/s86-export/parent-release.json" \
+            --source-release "$RUNNER_TEMP/s86-export/source-release.json" --out "$RUNNER_TEMP/s86-export/out"
+      - name: Require exact release tag and git ref 404 before draft creation
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          tag="S86-cta-follow-review-${{ inputs.render_run_id }}"
+          for endpoint in "releases/tags/$tag" "git/ref/tags/$tag"; do
+            body="$RUNNER_TEMP/s86-export/absence.json"
+            status=$(curl --silent --show-error --max-time 20 -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28' -o "$body" -w '%{http_code}' "https://api.github.com/repos/agmmltd-arch/agmm-render-public/$endpoint")
+            python3 .github/scripts/export_s86_corrected_master.py check-absence --http-status "$status" "$body"
+          done
+      - name: Create draft review release and verify native assets
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          tag="S86-cta-follow-review-${{ inputs.render_run_id }}"
+          python3 .github/scripts/export_s86_corrected_master.py inventory "$RUNNER_TEMP/s86-export/out" --tag "$tag" --output "$RUNNER_TEMP/s86-export/inventory.json"
+          gh release create "$tag" "$RUNNER_TEMP/s86-export/out"/* --repo agmmltd-arch/agmm-render-public --target "$GITHUB_SHA" --title 'S86 corrected FOLLOW 1080 review playback' --notes 'Exact full 60.6-second 1080 master from the successful native render artifact, copied unchanged. Review only; all editorial, full-playback and approval gates remain open.' --draft --prerelease
+          gh api "repos/agmmltd-arch/agmm-render-public/releases/tags/$tag" > "$RUNNER_TEMP/s86-export/release.json"
+          rid=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["id"])' "$RUNNER_TEMP/s86-export/release.json")
+          python3 .github/scripts/export_s86_corrected_master.py validate-release "$RUNNER_TEMP/s86-export/release.json" "$RUNNER_TEMP/s86-export/inventory.json" --release-id "$rid"
+          echo "$rid" > "$RUNNER_TEMP/s86-export/release-id"
+      - name: Publish review-only prerelease, then verify public range
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          tag="S86-cta-follow-review-${{ inputs.render_run_id }}"; rid=$(cat "$RUNNER_TEMP/s86-export/release-id")
+          gh api --method PATCH "repos/agmmltd-arch/agmm-render-public/releases/$rid" -F draft=false > "$RUNNER_TEMP/s86-export/release-published.json"
+          python3 .github/scripts/export_s86_corrected_master.py validate-release "$RUNNER_TEMP/s86-export/release-published.json" "$RUNNER_TEMP/s86-export/inventory.json" --release-id "$rid" --published
+          bytes=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["master_bytes"])' "$RUNNER_TEMP/s86-export/out/REVIEW-PLAYBACK-RECEIPT.json")
+          url="https://github.com/agmmltd-arch/agmm-render-public/releases/download/$tag/S86-FOLLOW-CORRECTED-1080.mp4"
+          python3 .github/scripts/export_s86_corrected_master.py verify-range --url "$url" --bytes "$bytes" --tag "$tag" --output "$RUNNER_TEMP/s86-export/range.json"
+          python3 .github/scripts/export_s86_corrected_master.py finalize "$RUNNER_TEMP/s86-export/out" --tag "$tag" "$RUNNER_TEMP/s86-export/range.json" --output "$RUNNER_TEMP/s86-export/final-inventory.json"
+      - name: Add final receipts and verify the published prerelease
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          tag="S86-cta-follow-review-${{ inputs.render_run_id }}"; rid=$(cat "$RUNNER_TEMP/s86-export/release-id")
+          gh release upload "$tag" "$RUNNER_TEMP/s86-export/out/PLAYBACK-TRANSPORT-VERIFICATION.json" "$RUNNER_TEMP/s86-export/out/HOSTED-MEDIA-MANIFEST.json" --repo agmmltd-arch/agmm-render-public
+          gh api "repos/agmmltd-arch/agmm-render-public/releases/$rid" > "$RUNNER_TEMP/s86-export/release-final.json"
+          python3 .github/scripts/export_s86_corrected_master.py validate-release "$RUNNER_TEMP/s86-export/release-final.json" "$RUNNER_TEMP/s86-export/final-inventory.json" --release-id "$rid" --published
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: S86-CORRECTED-MASTER-EXPORT-EVIDENCE-${{ github.run_id }}
+          path: ${{ runner.temp }}/s86-export/*.json
+          retention-days: 3
+          if-no-files-found: warn
