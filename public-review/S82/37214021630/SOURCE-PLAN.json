@@ -1,0 +1,361 @@
+{
+  "schema": "agmm-s82-source-plan-v3",
+  "story_id": "S82",
+  "status": "FROZEN_CANDIDATE_NEEDS_HOSTED_CAPTURE_AND_INDEPENDENT_EYES",
+  "composition": "two-source press desk",
+  "collection_policy": {
+    "runner": "GitHub Actions ubuntu-24.04 only",
+    "photos": false,
+    "clips": false,
+    "audio_or_video_download": false,
+    "follow_links": false,
+    "full_page_screenshots": false,
+    "network_hosts": [
+      "i2-prod.leicestermercury.co.uk",
+      "irishnews.com",
+      "premium.express.co.uk",
+      "santander.com",
+      "static.themebuilder.aws.arc.pub",
+      "www.irishnews.com",
+      "www.leicestermercury.co.uk",
+      "www.santander.com"
+    ],
+    "allow_images": "Only a visible publisher logo in the source page header after accessible-name and same-host URL verification; no other images.",
+    "exact_capture_files": [
+      "santander-header.png",
+      "santander-title.png",
+      "santander-date.png",
+      "santander-ai-target.png",
+      "santander-q1-value.png",
+      "santander-uk-calls.png",
+      "santander-staff-adoption.png",
+      "irishnews-header.png",
+      "irishnews-title.png",
+      "irishnews-byline.png",
+      "irishnews-date.png",
+      "irishnews-cost-target.png",
+      "leicestershire-header.png",
+      "leicestershire-title.png",
+      "leicestershire-byline.png",
+      "leicestershire-date.png",
+      "leicestershire-most-banks.png",
+      "leicestershire-q1-value.png"
+    ],
+    "host_policy": "Exact HTTPS hosts only per source. Reject cross-publisher redirects, off-list subresources, media, XHR/fetch, and every image except the single visible accessible publisher mark discovered in pass one and loaded from its exact URL in pass two.",
+    "max_png_bytes": 2000000,
+    "max_total_png_bytes": 24000000,
+    "text_only_failure_outputs": [
+      "SOURCE-PLAN.json",
+      "SOURCE-IDENTITY.json",
+      "CAPTURE-RECEIPT.json",
+      "SHA256SUMS.txt"
+    ],
+    "automated_page_load_query": "?utm_source=qa&utm_campaign=qa_release_audit"
+  },
+  "sources": [
+    {
+      "key": "primary",
+      "url": "https://www.santander.com/en/stories/santander-turns-its-ai-first-strategy-into-measurable-impact-and-extends-ai-access-to-all-185000-employees",
+      "publisher": "Santander",
+      "document_type": "Company story",
+      "title": "Santander turns its AI-first strategy into measurable impact and extends AI access to all 185,000 employees",
+      "date": "22 June 2026",
+      "header_logo_accessible_name_pattern": "Santander Bank",
+      "required_visible_text": [
+        "more than €1 billion in business value from AI between 2026 and 2028",
+        "through a combination of additional revenue and cost reductions",
+        "€35 million in business value generated in Q1",
+        "around 240,000 calls (40% of annual volume) resolved through self-service",
+        "giving service teams around 45,000 hours back",
+        "nearly 40,000 employees were actively using AI tools",
+        "AI access to all 185,000 employees worldwide"
+      ],
+      "credit": "Source: Santander, company story, 22 June 2026",
+      "files": [
+        {
+          "capture_id": "primary-header",
+          "file": "santander-header.png",
+          "type": "visible-native-publisher-header-mark"
+        },
+        {
+          "capture_id": "primary-title",
+          "file": "santander-title.png",
+          "type": "source-title"
+        },
+        {
+          "capture_id": "primary-date",
+          "file": "santander-date.png",
+          "type": "source-byline-date"
+        },
+        {
+          "capture_id": "primary-ai-target",
+          "file": "santander-ai-target.png",
+          "type": "exact-source-claim"
+        },
+        {
+          "capture_id": "primary-q1-value",
+          "file": "santander-q1-value.png",
+          "type": "exact-source-claim"
+        },
+        {
+          "capture_id": "primary-uk-calls",
+          "file": "santander-uk-calls.png",
+          "type": "exact-source-claim"
+        },
+        {
+          "capture_id": "primary-staff-adoption",
+          "file": "santander-staff-adoption.png",
+          "type": "exact-source-claim"
+        }
+      ],
+      "exact_title": "Santander turns its AI-first strategy into measurable impact and extends AI access to all 185,000 employees",
+      "exact_metadata_text": "Chief data & AI officer, Banco Santander",
+      "header_selector": "header",
+      "title_selector": ".santander-headline p",
+      "claim_paragraphs": {
+        "primary-ai-target": "This is why Santander has set a target of generating more than €1 billion in business value from AI between 2026 and 2028, through a combination of additional revenue and cost reductions. The new measurement period started in 2026, with €35 million in business value generated in Q1. We expect this figure to increase further in the second quarter and are on track to exceed €200 million by year-end, as selected solutions continue to scale across the group.",
+        "primary-q1-value": "This is why Santander has set a target of generating more than €1 billion in business value from AI between 2026 and 2028, through a combination of additional revenue and cost reductions. The new measurement period started in 2026, with €35 million in business value generated in Q1. We expect this figure to increase further in the second quarter and are on track to exceed €200 million by year-end, as selected solutions continue to scale across the group.",
+        "primary-uk-calls": "In customer service, AI is making interactions simpler and more natural. In the UK, the bank is beginning to roll out AI within its voice channels to support card-related queries. The target is around 240,000 calls (40% of annual volume) resolved through self-service, saving customers around 26,000 hours and giving service teams around 45,000 hours back to focus on more complex needs. This capability is also being applied in Santander and Openbank in Spain, with interactions designed to feel natural and simple for customers.",
+        "primary-staff-adoption": "The next step was to make this capability available to everyone. Until now, nearly 40,000 employees were actively using AI tools across the group. Starting today, Santander has extended AI access to all 185,000 employees worldwide."
+      },
+      "capture_text_binding": "Exact full visible paragraph after Unicode typography and whitespace normalization; each expected phrase is also required.",
+      "required_visible_text_by_capture": {
+        "primary-ai-target": [
+          "more than €1 billion in business value from AI between 2026 and 2028",
+          "through a combination of additional revenue and cost reductions"
+        ],
+        "primary-q1-value": [
+          "€35 million in business value generated in Q1"
+        ],
+        "primary-uk-calls": [
+          "around 240,000 calls (40% of annual volume) resolved through self-service",
+          "giving service teams around 45,000 hours back"
+        ],
+        "primary-staff-adoption": [
+          "nearly 40,000 employees were actively using AI tools",
+          "AI access to all 185,000 employees worldwide"
+        ]
+      },
+      "byline_date_selector": ".content-story-author-text__description",
+      "exact_date_text": "22 June 2026",
+      "allowed_hosts": [
+        "www.santander.com",
+        "santander.com"
+      ],
+      "paragraph_selector": "p",
+      "capture_preflight_observation": {
+        "checked_at_utc": "2026-10-04T14:59:36Z",
+        "request_url_suffix": "?utm_source=qa&utm_campaign=qa_release_audit",
+        "http_status": 200,
+        "live_title_selector_observed": ".santander-headline p",
+        "native_header_image_alt_observed": "Santander Bank",
+        "publisher_mark_host_observed": "www.santander.com",
+        "claim_texts": "present in server-rendered paragraph elements",
+        "limitations": "Tagged text/HTML observation only; no screenshot or visual editorial review."
+      }
+    },
+    {
+      "key": "reported-figure",
+      "url": "https://www.irishnews.com/news/uk/santander-uk-owner-reveals-plans-to-cut-costs-by-over-430m-under-ai-strategy-ZGW37ZCTBFK3LEQOPF5EDSSUFI/",
+      "publisher": "The Irish News / Press Association",
+      "document_type": "News report",
+      "title": "Santander UK owner reveals plans to cut costs by over £430m under AI strategy",
+      "date": "22 June 2026",
+      "header_logo_accessible_name_pattern": "The Irish News|Irish News",
+      "required_visible_text": [
+        "aims to cut costs by more than 500 million euros (£433 million)"
+      ],
+      "credit": "Source: The Irish News, Press Association report, 22 June 2026",
+      "files": [
+        {
+          "capture_id": "report-header",
+          "file": "irishnews-header.png",
+          "type": "visible-native-publisher-header-mark"
+        },
+        {
+          "capture_id": "report-title",
+          "file": "irishnews-title.png",
+          "type": "source-title"
+        },
+        {
+          "capture_id": "report-byline",
+          "file": "irishnews-byline.png",
+          "type": "source-byline"
+        },
+        {
+          "capture_id": "report-date",
+          "file": "irishnews-date.png",
+          "type": "source-date"
+        },
+        {
+          "capture_id": "report-cost-target",
+          "file": "irishnews-cost-target.png",
+          "type": "exact-source-claim"
+        }
+      ],
+      "exact_title": "Santander UK owner reveals plans to cut costs by over £430m under AI strategy",
+      "exact_byline": "Holly Williams, Press Association Business Editor",
+      "exact_date_text": "June 22, 2026 at 9:58am BST",
+      "header_selector": "header",
+      "title_selector": "h1",
+      "claim_paragraphs": {
+        "report-cost-target": "The Spanish owner of Santander UK has revealed aims to cut costs by more than 500 million euros (£433 million) by accelerating the use of artificial intelligence (AI) across its global operations."
+      },
+      "capture_text_binding": "Exact full visible paragraph after Unicode typography and whitespace normalization; each expected phrase is also required.",
+      "required_visible_text_by_capture": {
+        "report-cost-target": [
+          "aims to cut costs by more than 500 million euros (£433 million)"
+        ]
+      },
+      "byline_selector": ".c-attribution.b-byline",
+      "date_selector": "time.c-date",
+      "allowed_hosts": [
+        "www.irishnews.com",
+        "irishnews.com",
+        "static.themebuilder.aws.arc.pub"
+      ]
+    },
+    {
+      "key": "gap-claims",
+      "url": "https://www.leicestermercury.co.uk/news/uk-world-news/santander-cut-costs-433million-40pc-11024154",
+      "publisher": "Leicestershire Live / Press Association",
+      "document_type": "News report",
+      "title": "Santander to cut costs by £433million with 40pc of calls handled by AI",
+      "date": "22 June 2026",
+      "header_logo_accessible_name_pattern": "Leicestershire Live",
+      "required_visible_text": [
+        "Most banks have yet to put a figure on the financial benefit of AI",
+        "35 million euros (£30.3 million) of benefit in the first three months of the year"
+      ],
+      "credit": "Source: Leicestershire Live / Press Association, 22 June 2026",
+      "files": [
+        {
+          "capture_id": "gap-header",
+          "file": "leicestershire-header.png",
+          "type": "visible-native-publisher-header-mark"
+        },
+        {
+          "capture_id": "gap-title",
+          "file": "leicestershire-title.png",
+          "type": "source-title"
+        },
+        {
+          "capture_id": "gap-byline",
+          "file": "leicestershire-byline.png",
+          "type": "source-byline"
+        },
+        {
+          "capture_id": "gap-date",
+          "file": "leicestershire-date.png",
+          "type": "source-date"
+        },
+        {
+          "capture_id": "gap-most-banks",
+          "file": "leicestershire-most-banks.png",
+          "type": "exact-source-claim"
+        },
+        {
+          "capture_id": "gap-q1-value",
+          "file": "leicestershire-q1-value.png",
+          "type": "exact-source-claim"
+        }
+      ],
+      "exact_title": "Santander to cut costs by £433million with 40pc of calls handled by AI",
+      "exact_byline": "Neil Shaw",
+      "required_date_fragment": "22 Jun 2026",
+      "header_selector": "header",
+      "title_selector": "h1",
+      "allowed_hosts": [
+        "www.leicestermercury.co.uk",
+        "premium.express.co.uk",
+        "i2-prod.leicestermercury.co.uk"
+      ],
+      "claim_paragraphs": {
+        "gap-most-banks": "Bill Winters, the Asian-focused bank’s chief executive, quickly rowed back on the comments after sparking a backlash, saying the words were taken “out of context”. Most banks have yet to put a figure on the financial benefit of AI, although Lloyds Banking Group said earlier this year the tech had directly provided a £50 million profit boost in 2025 through both revenue gains and cost savings.",
+        "gap-q1-value": "Banco Santander expects to deliver more than 200 million euros (£173.4 million) in “business value” – extra revenues and cost savings – from AI group-wide, including British banking arm Santander UK, by the end of 2026 alone. It said it notched up 35 million euros (£30.3 million) of benefit in the first three months of the year, which is set to increase in the second quarter."
+      },
+      "required_visible_text_by_capture": {
+        "gap-most-banks": [
+          "Most banks have yet to put a figure on the financial benefit of AI"
+        ],
+        "gap-q1-value": [
+          "35 million euros (£30.3 million) of benefit in the first three months of the year"
+        ]
+      },
+      "capture_text_binding": "Each claim crop binds the exact full visible paragraph from the live page after Unicode typography and whitespace normalization; all listed phrases are required.",
+      "byline_selector": ".Authors_authors-container__wVWas",
+      "date_selector": ".ArticleTimestamp_dates-container__yHhr9",
+      "paragraph_selector": "article p, main p",
+      "capture_preflight_observation": {
+        "checked_at_utc": "2026-10-04T14:59:36Z",
+        "request_url_suffix": "?utm_source=qa&utm_campaign=qa_release_audit",
+        "http_status": 200,
+        "final_url_same_pinned_path": true,
+        "observed_title": "Santander to cut costs by £433million with 40pc of calls handled by AI",
+        "published_time_metadata": "2026-06-22T05:54:40Z",
+        "native_header_image_alt_observed": "Leicestershire Live",
+        "publisher_mark_host_observed": "www.leicestermercury.co.uk",
+        "exact_claim_paragraphs_matched_live": [
+          "gap-most-banks",
+          "gap-q1-value"
+        ],
+        "limitations": "Tagged text/HTML observation only; no screenshot or visual editorial review."
+      }
+    }
+  ],
+  "editorial_guards": [
+    "Show the £433m statement as The Irish News / PA reporting, with the actual publisher mark, headline, byline and date.",
+    "Show Santander's primary wording as a separate source. Do not describe its €1bn business-value target as a €1bn cost-cut target.",
+    "Do not reproduce the Irish News subheadline's £860 billion typo. The script does not use it.",
+    "No logo redraw, fabricated bank UI, internal report, customer data, staff portrait, call recording, or uncredited source crop.",
+    "Every source crop remains an editorial quotation candidate until root views every hosted PNG and grants source approval.",
+    "Do not describe Santander’s €1bn business-value target for 2026–2028 as the £433m cost-cutting target or as evidence that the £433m target is due by the end of 2028.",
+    "The added Leicestershire Live / PA captures bind the previously uncaptured “Most banks…” comparison and £30.3m conversion. The locked opening sentence joins a reported £433m cost-cut figure to a separate 2026–2028 cost-share target; that linkage remains an inference for independent review. Never show the source paragraph containing the £860bn typo."
+  ],
+  "script_claim_coverage": [
+    {
+      "spoken_claim": "More than £433m of AI cost cuts by end 2028",
+      "evidence": [
+        "reported-figure.report-cost-target",
+        "primary.primary-ai-target"
+      ],
+      "status": "COMPOSITE_INFERENCE_REVIEW_REQUIRED",
+      "note": "PA reports £433m cost cuts and separately reports the 2026–2028 €1bn combined business-value target with over half from cost cutting. The available source wording does not directly establish the locked sentence’s exact joined proposition. Do not portray this as source-cleared without independent fact review; do not capture or reproduce the source paragraph containing the £860bn typo."
+    },
+    {
+      "spoken_claim": "Most banks have not put a figure on AI value",
+      "evidence": [
+        "gap-claims.gap-most-banks"
+      ],
+      "status": "DIRECT_SOURCE_TEXT_CAPTURE_CANDIDATE"
+    },
+    {
+      "spoken_claim": "About £30m benefit in the first three months of 2026",
+      "evidence": [
+        "gap-claims.gap-q1-value"
+      ],
+      "status": "DIRECT_SOURCE_TEXT_CAPTURE_CANDIDATE",
+      "note": "Leicestershire Live / PA explicitly prints €35m (£30.3m) and “first three months”; the 22 June 2026 article date supplies Q1 context."
+    },
+    {
+      "spoken_claim": "UK voice channels for card queries; 240,000 calls and 40% self-service; 45,000 hours back to service teams",
+      "evidence": [
+        "primary.primary-uk-calls"
+      ],
+      "status": "DIRECT_SOURCE_TEXT_CAPTURE_CANDIDATE"
+    },
+    {
+      "spoken_claim": "AI access to 185,000 staff; nearly 40,000 actively use it",
+      "evidence": [
+        "primary.primary-staff-adoption"
+      ],
+      "status": "DIRECT_SOURCE_TEXT_CAPTURE_CANDIDATE"
+    },
+    {
+      "spoken_claim": "Business recommendation and CTA",
+      "evidence": [],
+      "status": "EDITORIAL_ADVICE_NOT_A_FACT_CLAIM"
+    }
+  ],
+  "coverage_status": "ALL_FACTUAL_SPOKEN_CLAIMS_HAVE_EXACT_SOURCE_CROP_CANDIDATES; OPENING_SENTENCE_IS_A_COMPOSITE_INFERENCE_REQUIRING_INDEPENDENT_REVIEW"
+}
