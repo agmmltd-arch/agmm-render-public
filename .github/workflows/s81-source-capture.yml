@@ -135,6 +135,10 @@ jobs:
           cp S81-SOURCE-STAGING-RECEIPT.json capture-pack/
           cp openai-logo-discovery.json capture-pack/S81-LOGO-DISCOVERY.json
           cp captured/s81.static-check.log capture-pack/static-check.txt
+          python3 .github/scripts/verify_s81_active_frames.py \
+            capture-pack/CAPTURE-EVIDENCE.json \
+            --snapshot-log captured/s81.snapshot.log \
+            --output capture-pack/S81-ACTIVE-FRAME-GUARD.json
           mkdir -p capture-pack/inputs
           cp .github/s81-candidate/S81-CANDIDATE-MANIFEST.json capture-pack/inputs/
           cp .github/s81-candidate/candidate/capture-plan-source.json capture-pack/inputs/
@@ -158,7 +162,7 @@ jobs:
           evidence=json.load(open('public-review/CAPTURE-EVIDENCE.json'))
           names=set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
           expected={'public-review/'+row['file'] for row in evidence['captures']}
-          expected.update({'public-review/CAPTURE-EVIDENCE.json','public-review/MEDIA-IDENTITIES.json','public-review/SHA256SUMS.txt','public-review/INPUT-RECEIPT.json','public-review/S81-SOURCE-STAGING-RECEIPT.json','public-review/S81-LOGO-DISCOVERY.json','public-review/inputs/S81-CANDIDATE-MANIFEST.json','public-review/inputs/capture-plan-source.json'})
+          expected.update({'public-review/CAPTURE-EVIDENCE.json','public-review/MEDIA-IDENTITIES.json','public-review/SHA256SUMS.txt','public-review/INPUT-RECEIPT.json','public-review/S81-SOURCE-STAGING-RECEIPT.json','public-review/S81-LOGO-DISCOVERY.json','public-review/S81-ACTIVE-FRAME-GUARD.json','public-review/inputs/S81-CANDIDATE-MANIFEST.json','public-review/inputs/capture-plan-source.json'})
           expected.update('public-review/receipts/'+row['look']+'.json' for row in evidence['captures'])
           expected.add('public-review/static-check.txt')
           assert len(evidence['captures'])==16, f"expected the 16 named source points for this single-part composition; got {len(evidence['captures'])}"

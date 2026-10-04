@@ -274,7 +274,7 @@ def make_spec(payload: Path) -> dict:
         "words": words, "narration_binding": {"attached_audio": False, "reason": "source-still capture only; exact selected voice remains a separate protected hosted input"},
         "voice": None, "music": None, "images": {},
         "beats": [{"id": "s81-evidence-route", "from": 0.0, "to": DURATION,
-                   "comp": "s81-custom", "props": {"scene": "s81-evidence-route"},
+                   "comp": "custom", "props": {"scene": "s81-evidence-route"},
                    "field": "none", "tx": "cut", "drift": False, "hold": 0.001}],
         "approval": "NOT_GRANTED", "editorial_status": "NOT_REVIEWED",
         "audio_visual_review": "NOT_PERFORMED", "publication_status": "NOT_REQUESTED",
@@ -305,6 +305,11 @@ def static_check(look: Path) -> None:
     spec = json.loads((look / "spec.json").read_text())
     if spec.get("id") != "S81" or spec.get("dur") != DURATION or spec.get("voice") is not None or spec.get("music") is not None:
         raise Refusal("S81 source-capture spec must preserve duration and remain silent")
+    beats = spec.get("beats")
+    if (not isinstance(beats, list) or len(beats) != 1
+            or beats[0].get("comp") != "custom"
+            or beats[0].get("props", {}).get("scene") != "s81-evidence-route"):
+        raise Refusal("S81 scene registration must use the pinned kit3 custom component schema")
 
 
 def static_check_source() -> str:
