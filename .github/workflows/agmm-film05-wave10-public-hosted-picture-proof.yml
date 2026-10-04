@@ -27,7 +27,7 @@ jobs:
       EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
       PATCH: ${{ github.workspace }}/film05-wave10-public-source-patch
       PATCH_SHA_MANIFEST: ${{ github.workspace }}/FILM05-WAVE10-PATCH-SHA256SUMS.txt
-      PATCH_MANIFEST_SHA256: 9cb7e646bbb9d202dbe0acda388eb77cc2de2d89145f5bbd62c8688d7fe94b6f
+      PATCH_MANIFEST_SHA256: 4d49ea30d391e8c60bdccd70aacfda4e91e5c474b8edf36adac4cf17cd2eee29
       SUPPORT: ${{ github.workspace }}/film05-wave10-public-hosted-support
       BASE_SHA: 1899af7ed53fd2f6e432966150b9db1b56ef74b0
       BASE_PACKAGE: video-program/longform/film05-wave08-first-act/source.tar.gz

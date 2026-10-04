@@ -7,6 +7,12 @@ assert 'data-composition-id="film05-first-act-wave10"' in s
 assert 'data-duration="27.9"' in s
 assert '.source-disclosure{position:absolute;inset:auto;right:40px;top:38px;width:max-content;height:auto;max-width:calc(100vw - 80px)' in s
 assert 'font:700 42px/1.08 Arial,sans-serif' in s
+assert '.physical-board .callout{position:static;align-self:center;' in s
+assert 'data-layout-allow-overlap' not in s
+assert s.index('id="task-strip"') < s.index('id="customer-proposal"') < s.index('<div class="callout">THE TASK MUST SERVE THE CUSTOMER DECISION</div>')
+assert manifest['followup_source_check_lineage']['diagnostic_run_id']==37213342359
+assert manifest['followup_source_check_lineage']['observed_result']['layout_errors']==2
+assert 'own centered flex-flow band' in manifest['followup_source_check_lineage']['correction']
 assert 'data-layout-allow-occlusion' not in s
 assert manifest['source_check_lineage']['diagnostic_run_id']==37212155745
 assert manifest['source_check_lineage']['observed_result']['layout_errors']==17

@@ -67,5 +67,36 @@
     },
     "correction": "Reset inherited full-frame clip inset; size the persistent disclosure as a bounded compact top-right label in the reserved band above the operations board, with 42px type to retain the 1080p craft minimum. Its 69.36px label box ends at 107.36px, above the board at 129.6px. Keep board and card text fully visible; add no occlusion suppression.",
     "verification_state": "source-level correction prepared; native check and stills must be rerun on the hosted Ubuntu route; no pass or render is claimed"
+  },
+  "followup_source_check_lineage": {
+    "diagnostic_run_id": 37213342359,
+    "diagnostic_public_head": "60c50bc740c82166a2370798f41cb792d0921f3d",
+    "tool": "HyperFrames CLI 0.8.62 check --json",
+    "observed_result": {
+      "overall_ok": false,
+      "lint_errors": 0,
+      "runtime_errors": 0,
+      "layout_errors": 2,
+      "layout_error_code": "content_overlap",
+      "container_selector": "div.callout",
+      "overlapping_blocks": [
+        {
+          "selector": "#task-strip > small:nth-of-type(1)",
+          "text": "INTERNAL DRAFT · NO MODEL RUN",
+          "first_seen_seconds": 18.683,
+          "last_seen_seconds": 22.793,
+          "held_ms": 4110
+        },
+        {
+          "selector": "#customer-proposal > small:nth-of-type(1)",
+          "text": "PRIYA · CUSTOMER-FACING",
+          "first_seen_seconds": 19.3,
+          "last_seen_seconds": 22.793,
+          "held_ms": 3493
+        }
+      ]
+    },
+    "correction": "Move THE TASK MUST SERVE THE CUSTOMER DECISION callout out of absolute overlay positioning and into its own centered flex-flow band after the two-card grid. Preserve both labels; suppress no overlap finding.",
+    "verification_state": "source-level correction prepared; native check must be rerun on hosted Ubuntu before still capture; no check pass or render is claimed"
   }
 }
