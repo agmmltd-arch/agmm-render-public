@@ -1,0 +1,125 @@
+{
+  "candidate_receipt_sha256": "6293f4a39ee2833f258213c02bc2fb540a57dc647430642834b8f27f1f444b9b",
+  "capture_class": "source_composition_not_final_master",
+  "editorial_status": "NOT_REVIEWED",
+  "frames": [
+    {
+      "bytes": 1110998,
+      "composition_time": 239.2667,
+      "film_time": 245.25,
+      "name": "investment_1b",
+      "path": "frames/investment_1b.png",
+      "sha256": "3bc21a08a9e52d5659e5906b5c231cd740446c40e128e0298c788cf56f216bba"
+    },
+    {
+      "bytes": 1096848,
+      "composition_time": 239.4167,
+      "film_time": 245.4,
+      "name": "investment_card_full",
+      "path": "frames/investment_card_full.png",
+      "sha256": "566373cc3a3363881f0507b624719d60367a773f4edc26b361b02492c1c15c49"
+    },
+    {
+      "bytes": 1088500,
+      "composition_time": 241.0,
+      "film_time": 246.983,
+      "name": "investment_card_during_phrase",
+      "path": "frames/investment_card_during_phrase.png",
+      "sha256": "c65348b72c501d46c3af39e46c400ef2af6a4da0404126e6bbbd8868eef4f8bd"
+    },
+    {
+      "bytes": 1085888,
+      "composition_time": 241.9167,
+      "film_time": 247.9,
+      "name": "investment_card_outro",
+      "path": "frames/investment_card_outro.png",
+      "sha256": "6c5bae0fc74b2f07b66d71918bfaca7a3868a9a3bb036a17c97e52c79e8dd22e"
+    },
+    {
+      "bytes": 1117607,
+      "composition_time": 242.6167,
+      "film_time": 248.6,
+      "name": "bridge_which_valued",
+      "path": "frames/bridge_which_valued.png",
+      "sha256": "8125472712082d551af4b84ec46d6447ed21728a43a7527cf78f7ddec6356e5b"
+    },
+    {
+      "bytes": 1116806,
+      "composition_time": 244.2667,
+      "film_time": 250.25,
+      "name": "valuation_seam_pre_1f",
+      "path": "frames/valuation_seam_pre_1f.png",
+      "sha256": "3d8353cd3bcf264f0b1cde4058448fcb5694eec5db4a84e414adbacae4591bd5"
+    },
+    {
+      "bytes": 1117208,
+      "composition_time": 244.2867,
+      "film_time": 250.27,
+      "name": "valuation_8_65",
+      "path": "frames/valuation_8_65.png",
+      "sha256": "902014207bc8fcd86cdfa22e9fba2049cbdb63e7ec9e969f7997faf597b9e2ec"
+    },
+    {
+      "bytes": 1117208,
+      "composition_time": 244.3,
+      "film_time": 250.283,
+      "name": "valuation_seam_exact",
+      "path": "frames/valuation_seam_exact.png",
+      "sha256": "902014207bc8fcd86cdfa22e9fba2049cbdb63e7ec9e969f7997faf597b9e2ec"
+    },
+    {
+      "bytes": 1117190,
+      "composition_time": 244.3333,
+      "film_time": 250.317,
+      "name": "valuation_seam_post_1f",
+      "path": "frames/valuation_seam_post_1f.png",
+      "sha256": "5498b3843dfe3cda7b3c71d45aa048ab3a0113060ad127ab431beb03525805fb"
+    },
+    {
+      "bytes": 1112848,
+      "composition_time": 245.7167,
+      "film_time": 251.7,
+      "name": "valuation_billion",
+      "path": "frames/valuation_billion.png",
+      "sha256": "23bb094a47d31e7ee11bb69698a1e9505f0f936a57f97ce819bf067c5dfd27ac"
+    },
+    {
+      "bytes": 1110562,
+      "composition_time": 246.1167,
+      "film_time": 252.1,
+      "name": "valuation_card_outro",
+      "path": "frames/valuation_card_outro.png",
+      "sha256": "16d4dd1ca864d8e7c7f5877a760ac3ade380dc2084a6ee5a2928b179ed89f2b2"
+    },
+    {
+      "bytes": 1108573,
+      "composition_time": 246.8997,
+      "film_time": 252.883,
+      "name": "next_shot_pre_cut",
+      "path": "frames/next_shot_pre_cut.png",
+      "sha256": "a500a6a23f553717ead6517e44570a80beb3de12788b7344cf45b5f2d70412fd"
+    }
+  ],
+  "kind": "f07-source-composition-review-capture",
+  "overlay_archive_release": null,
+  "overlay_candidate_sha256": "d2fdaf282e233a9d9691a11b216361b108dff7228a9dcbd0459b29649fb01962",
+  "overlay_files": {
+    "film/film.css": {
+      "bytes": 19163,
+      "sha256": "0d17eea12ed4ecac45b5207c35939334549ae970fe047b5e9fb3da9b4435fa07"
+    },
+    "film/film.js": {
+      "bytes": 71690,
+      "sha256": "cf6ddc29bf0e23ca50173773e43ee2d33ef3af8a1400f4ea3b375077adc3c3aa"
+    },
+    "film/sets_studio.js": {
+      "bytes": 12049,
+      "sha256": "988a0d98b5eb71c3bac0777ee5b02a161ef9e744d7c8bb0e3bcff40385ddea2c"
+    }
+  },
+  "release_approval": "NOT_GRANTED",
+  "source_asset_id": 601625680,
+  "source_release": "F07-r4-actions-full-landscape-4k-20260930194517",
+  "source_release_id": 400360556,
+  "source_sha256": "10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7"
+}
