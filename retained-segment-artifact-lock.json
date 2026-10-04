@@ -1,0 +1,546 @@
+{
+  "schema": "f07-retained-segment-artifact-lock-v1",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "parent_run_id": 37183236257,
+  "parent_head_sha": "11b7c8d03c33a180620a653164a99efd037e409b",
+  "parent_workflow_name": "AGMM film segments render",
+  "parent_run_name": "AGMM film F07-full-63243-9bb0efdd-20261004",
+  "source_release": "F07-source-candidate-9bb0efdd24a3801f",
+  "source_sha256": "9bb0efdd24a3801fa4c29c8f72e6c9cb3f797a36bdfb59d75dcfebed042b8ec2",
+  "composition_duration_seconds": 632.43,
+  "fps": 30,
+  "expected_frames": 18973,
+  "segments": [
+    {
+      "id": 11295544585,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG01",
+      "size_bytes": 28309481,
+      "sha256": "cf4010a1e0024d6d3d9378415711a3ee612bf3a2443faaec9a33ce4d157ebbca",
+      "expires_at": "2026-10-05T06:47:47Z"
+    },
+    {
+      "id": 11295764388,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG02",
+      "size_bytes": 26381544,
+      "sha256": "0ef7e6fe26c39b2f0395df5adf3d24d841f70a9bb71da84329efaaa591759056",
+      "expires_at": "2026-10-05T06:52:33Z"
+    },
+    {
+      "id": 11295689690,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG03",
+      "size_bytes": 23698463,
+      "sha256": "59819bc5105d6e7ab8e5cb49f5fb88aacf324878c91964b8d6b15e6edddc91b1",
+      "expires_at": "2026-10-05T06:51:32Z"
+    },
+    {
+      "id": 11295804055,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG04",
+      "size_bytes": 21858694,
+      "sha256": "670721b12fa8238656c9eff27b541e9086e38f7911b0df160130cfb0d234ef36",
+      "expires_at": "2026-10-05T06:46:54Z"
+    },
+    {
+      "id": 11295684041,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG05",
+      "size_bytes": 25584054,
+      "sha256": "f7511254603c119e76ff8bcef757889fa86adae6ea196a96fa3c83bb41e241a7",
+      "expires_at": "2026-10-05T06:44:40Z"
+    },
+    {
+      "id": 11296390982,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG06",
+      "size_bytes": 24356095,
+      "sha256": "298571f2652e440128095a71a84f621298d35662327f3cf84c1d88814b6f4949",
+      "expires_at": "2026-10-05T06:44:29Z"
+    },
+    {
+      "id": 11296121478,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG07",
+      "size_bytes": 22320969,
+      "sha256": "1906dc6876c1abaf965a46b7b35221c28911fd1beee9e36b878763f7bb2ced4b",
+      "expires_at": "2026-10-05T06:42:36Z"
+    },
+    {
+      "id": 11295664364,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG08",
+      "size_bytes": 21911749,
+      "sha256": "aff81049e26f039594efe95775c2325c7fbfafd82c56f7f2d2a4e89b663e7076",
+      "expires_at": "2026-10-05T06:46:45Z"
+    },
+    {
+      "id": 11295639012,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG09",
+      "size_bytes": 26303720,
+      "sha256": "48bf278b79620d70d6f3c1617e0f7822c1ef1b3c76cd5fc1ac6400622d8599dc",
+      "expires_at": "2026-10-05T06:42:42Z"
+    },
+    {
+      "id": 11295957656,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG10",
+      "size_bytes": 26056006,
+      "sha256": "b0f4e772fa2f2346c4e813aa83c668f63fd7e648602a6063483a4045bb87a866",
+      "expires_at": "2026-10-05T06:51:44Z"
+    },
+    {
+      "id": 11295414686,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG11",
+      "size_bytes": 29208034,
+      "sha256": "356fce895c50354d3241e786baca4849365edf88c1089ea45c09e0ac91ba9a8f",
+      "expires_at": "2026-10-05T06:44:36Z"
+    },
+    {
+      "id": 11296012357,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG12",
+      "size_bytes": 35289729,
+      "sha256": "98190886d9f72cb3e512f9b376951bf9289c3a21de1f9e3680d212a075170eb7",
+      "expires_at": "2026-10-05T06:51:31Z"
+    },
+    {
+      "id": 11296530849,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG13",
+      "size_bytes": 24919579,
+      "sha256": "088326b74c2e3fb72d45ee7861f5e1ec8f262db3b1810791fa5927b7fb1d19f7",
+      "expires_at": "2026-10-05T06:50:54Z"
+    },
+    {
+      "id": 11296445928,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG14",
+      "size_bytes": 29533342,
+      "sha256": "89733e6271db3719f975ac6dc711eab77335f269596f832422885cb90742472c",
+      "expires_at": "2026-10-05T06:48:33Z"
+    },
+    {
+      "id": 11295284188,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG15",
+      "size_bytes": 28349581,
+      "sha256": "e53a62299a599a502b4018d635ba81c1e9d784a20433747aaeb0bef5f2a14c77",
+      "expires_at": "2026-10-05T06:46:54Z"
+    },
+    {
+      "id": 11295864470,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG16",
+      "size_bytes": 28556404,
+      "sha256": "6f95f8039e9eb63b8b3acae3d6f098035eb32cdba99c218aa21fb81ab3a2801f",
+      "expires_at": "2026-10-05T06:53:53Z"
+    },
+    {
+      "id": 11295929921,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG17",
+      "size_bytes": 41156638,
+      "sha256": "2f871313ee77e79405c805a60e47e7d0e7b693b3d56a79f118c4412518db056d",
+      "expires_at": "2026-10-05T07:01:26Z"
+    },
+    {
+      "id": 11295424582,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG18",
+      "size_bytes": 23980264,
+      "sha256": "468e6a8cd427df9b154826bc36b9fdd8d8e2b21a023bece190e71248dbc3ae69",
+      "expires_at": "2026-10-05T06:43:36Z"
+    },
+    {
+      "id": 11296496405,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG19",
+      "size_bytes": 26883643,
+      "sha256": "eee5e9da3ba49877a1e81172f4eee7c2ddb70d49e3a512ea59afcd3da62c6f52",
+      "expires_at": "2026-10-05T06:55:07Z"
+    },
+    {
+      "id": 11296645069,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG20",
+      "size_bytes": 28142873,
+      "sha256": "09559c518528996b5181c85cf8e55b890d336f77534bcc121535907bf1e0db2a",
+      "expires_at": "2026-10-05T06:50:26Z"
+    },
+    {
+      "id": 11296436429,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG21",
+      "size_bytes": 29742403,
+      "sha256": "efb8ec23e5b81a17a53c6609cf6027dccba288c1870a29e1f4e9e3cf082f593e",
+      "expires_at": "2026-10-05T06:56:02Z"
+    },
+    {
+      "id": 11295934074,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG22",
+      "size_bytes": 30833219,
+      "sha256": "562d234ced9563bb7b70f9cb0ed68e8f33a90c55dbd5cf40ca776f19ddbdd4e5",
+      "expires_at": "2026-10-05T06:50:32Z"
+    },
+    {
+      "id": 11296057722,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG23",
+      "size_bytes": 32995991,
+      "sha256": "c3ff0c1b76d9860d1347397170ec578e522122ebdb43980cf25379b7812e064e",
+      "expires_at": "2026-10-05T06:58:33Z"
+    },
+    {
+      "id": 11296655661,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG24",
+      "size_bytes": 41381200,
+      "sha256": "495855acd60ab2f06d9f5811277a9c948b07f28145c6a11006d58f416f113b38",
+      "expires_at": "2026-10-05T06:56:13Z"
+    },
+    {
+      "id": 11296396610,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG25",
+      "size_bytes": 33964289,
+      "sha256": "d5927f5ae4d42093646efcf3c811c2a5ce8f4b166b52547a4f4a35296fb099c7",
+      "expires_at": "2026-10-05T06:55:57Z"
+    },
+    {
+      "id": 11296182752,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG26",
+      "size_bytes": 42874438,
+      "sha256": "d8e8a18891c3a35c9f3af15e2d030bb8bc995a354693e7478adffa9e9027bec2",
+      "expires_at": "2026-10-05T07:02:15Z"
+    },
+    {
+      "id": 11295939388,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG27",
+      "size_bytes": 24767454,
+      "sha256": "fd79ee1f3871d326b0764027417a72d1ff54aa68de1653fdebffbf1ef50bba8f",
+      "expires_at": "2026-10-05T06:54:53Z"
+    },
+    {
+      "id": 11296372031,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG28",
+      "size_bytes": 33643517,
+      "sha256": "211a3e656225e499b3657c128a146f70698998a50f93af6d68da235581f01cca",
+      "expires_at": "2026-10-05T07:01:18Z"
+    },
+    {
+      "id": 11296855271,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG29",
+      "size_bytes": 31662271,
+      "sha256": "a6db0fcc788f9ad0885ec7dc561a6d90bc24cebb4e83c3f530c844acd67f9b2c",
+      "expires_at": "2026-10-05T06:56:39Z"
+    },
+    {
+      "id": 11296471273,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG30",
+      "size_bytes": 43323202,
+      "sha256": "abaeadac99b7da92270e2f88f9cf2fc9abd630d53f2c208fa8dc7d6e3db49861",
+      "expires_at": "2026-10-05T06:54:58Z"
+    },
+    {
+      "id": 11296386938,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG31",
+      "size_bytes": 41099563,
+      "sha256": "2b25d3e63f9cf84f2db453b898c750a18577e44991427b64749acb9a86ef7e8f",
+      "expires_at": "2026-10-05T07:00:01Z"
+    },
+    {
+      "id": 11295994160,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG32",
+      "size_bytes": 22503237,
+      "sha256": "9f7942eb6a8cc5e6062c467bc7ab6fb945da4e1c54cb090ec1e92d8911b7b564",
+      "expires_at": "2026-10-05T06:59:43Z"
+    },
+    {
+      "id": 11296511234,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG33",
+      "size_bytes": 25159659,
+      "sha256": "e41a4322c6a20e4819417fea0e451f20dd65b99868e9f0d3214d34510b3e8f2d",
+      "expires_at": "2026-10-05T07:04:24Z"
+    },
+    {
+      "id": 11296067913,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG34",
+      "size_bytes": 28946909,
+      "sha256": "fee4eab7a2cd9818b2ac194a2b438325f4777dc3c8ad3d199540181a92a15395",
+      "expires_at": "2026-10-05T07:01:50Z"
+    },
+    {
+      "id": 11296422315,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG35",
+      "size_bytes": 29755772,
+      "sha256": "600b17eae60e3a39c0d19cfd7a12b5d9b21e3c1c3c02b830ae154931197e646c",
+      "expires_at": "2026-10-05T07:08:46Z"
+    },
+    {
+      "id": 11296782969,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG36",
+      "size_bytes": 33931153,
+      "sha256": "09189ce29d98103a863077db00069c12d6e6cabe5010688930b0ece2fbf59f6a",
+      "expires_at": "2026-10-05T07:26:21Z"
+    },
+    {
+      "id": 11296661492,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG37",
+      "size_bytes": 31908934,
+      "sha256": "960a5b297aedbed1a33b9a494829edec047224a1470cb6c7d219ee1258e36261",
+      "expires_at": "2026-10-05T07:16:56Z"
+    },
+    {
+      "id": 11296741406,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG38",
+      "size_bytes": 39597893,
+      "sha256": "b24de3136e33985a629f6aca23a2e36fe9029e88584e0cb185bc58748d438c26",
+      "expires_at": "2026-10-05T07:06:26Z"
+    },
+    {
+      "id": 11296546628,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG39",
+      "size_bytes": 17166923,
+      "sha256": "d79da755ea6e55ecf5a9c0599da853dcb7c7342e8afae17c99b4336c3175e0d4",
+      "expires_at": "2026-10-05T07:02:40Z"
+    },
+    {
+      "id": 11295654199,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG40",
+      "size_bytes": 26345464,
+      "sha256": "18b12cab7e0aef285476dd9427658981d89d9882ca52ed41e5fcaf13eece42e5",
+      "expires_at": "2026-10-05T07:09:02Z"
+    },
+    {
+      "id": 11296073346,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG41",
+      "size_bytes": 21404718,
+      "sha256": "b9b306ad9f6865e49fc1b6e0d7cfa0c2321159f6dc874eae7d17585b08a4e746",
+      "expires_at": "2026-10-05T07:08:57Z"
+    },
+    {
+      "id": 11297130513,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG42",
+      "size_bytes": 24186369,
+      "sha256": "0fb07876c62e935ba7d0452a0c038f9f012b9db845f0b30f4306bf3bc3e870fd",
+      "expires_at": "2026-10-05T07:09:17Z"
+    },
+    {
+      "id": 11296571667,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG43",
+      "size_bytes": 23598836,
+      "sha256": "3949ae2d22a71bf9b1ae2357046dbce0a2a2b48d80291d10f699a06cf7642476",
+      "expires_at": "2026-10-05T07:05:57Z"
+    },
+    {
+      "id": 11295978386,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG44",
+      "size_bytes": 34502002,
+      "sha256": "2f61d076fabf96089222f07739e2a185ed5781806d9885ac4b2142478586b775",
+      "expires_at": "2026-10-05T07:05:14Z"
+    },
+    {
+      "id": 11296478934,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG45",
+      "size_bytes": 37854585,
+      "sha256": "ee32afc0cac6e517003eebf2fe365c8d6179f36c2ce88479fc79c3bcad1b4113",
+      "expires_at": "2026-10-05T07:16:40Z"
+    },
+    {
+      "id": 11297111474,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG46",
+      "size_bytes": 34804977,
+      "sha256": "84f7448083203cc318ade95936dbbe0d9d30610313585e1c0e5b9409186c7c30",
+      "expires_at": "2026-10-05T07:18:55Z"
+    },
+    {
+      "id": 11296637678,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG47",
+      "size_bytes": 38406329,
+      "sha256": "24b54587b1f3bf1c40d1a31b2d1c29bdfdbbe2e00422086ed187e1c9e543e91c",
+      "expires_at": "2026-10-05T07:16:49Z"
+    },
+    {
+      "id": 11296866442,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG48",
+      "size_bytes": 32575453,
+      "sha256": "0535fdb34540457c05ff9fff121ea408d1ae49741f5c41b3cefa1bdc337d52d4",
+      "expires_at": "2026-10-05T07:11:10Z"
+    },
+    {
+      "id": 11296013414,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG49",
+      "size_bytes": 11362926,
+      "sha256": "041b7c0491c92b880e85ffefd8dd5896bd4171a8e0e9de50f3cc809b02109f71",
+      "expires_at": "2026-10-05T07:08:28Z"
+    },
+    {
+      "id": 11296487525,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG50",
+      "size_bytes": 11374737,
+      "sha256": "ad5b5c180583c0b16cac7239cf414c990490a5ffd787f92bb877750c7822f5ad",
+      "expires_at": "2026-10-05T07:07:16Z"
+    },
+    {
+      "id": 11295868964,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG51",
+      "size_bytes": 14953494,
+      "sha256": "3090bd151ffeabfb2c1645469414e311b16c59e8f6392f2e86810c84a0f3f963",
+      "expires_at": "2026-10-05T07:07:57Z"
+    },
+    {
+      "id": 11297135975,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG52",
+      "size_bytes": 22036654,
+      "sha256": "35c834462cb57220fb6658480b6b601f53b017d47005aac9056224148f9aa762",
+      "expires_at": "2026-10-05T07:14:17Z"
+    },
+    {
+      "id": 11297130820,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG53",
+      "size_bytes": 22411058,
+      "sha256": "d3d3250e6dfff841ef8c6afdc9d7324700e881d6c7b8f5b6e20a8245df135340",
+      "expires_at": "2026-10-05T07:12:28Z"
+    },
+    {
+      "id": 11296932187,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG54",
+      "size_bytes": 34530663,
+      "sha256": "20fb09a582a1cf8eec1f87c1b95f4feb5e87b99bf6696ed09b6ce2938178ed6b",
+      "expires_at": "2026-10-05T07:20:42Z"
+    },
+    {
+      "id": 11296921621,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG55",
+      "size_bytes": 26213974,
+      "sha256": "849423632bb0106b3d727b2a7df59a60c85845876f912c23be13c6648a3cf683",
+      "expires_at": "2026-10-05T07:13:41Z"
+    },
+    {
+      "id": 11297086425,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG56",
+      "size_bytes": 24729117,
+      "sha256": "fec8b73162803c0aac24dbe855522ef8b1130d8e3b24f1d4b573bbcd962f91e5",
+      "expires_at": "2026-10-05T07:15:17Z"
+    },
+    {
+      "id": 11296838102,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG57",
+      "size_bytes": 35147937,
+      "sha256": "56ef85c25db608b8041160c7aaa425905544b00b3536eec96f1e3595df1a9aa2",
+      "expires_at": "2026-10-05T07:29:27Z"
+    },
+    {
+      "id": 11296986908,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG58",
+      "size_bytes": 23762426,
+      "sha256": "ef1fbbec42a6c7e813e3ed0c0785590cabc9c250b75b5ef9a75134868486a06a",
+      "expires_at": "2026-10-05T07:19:17Z"
+    },
+    {
+      "id": 11296213624,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG59",
+      "size_bytes": 27970513,
+      "sha256": "895a926bbbf7d468be19e806927956bd586d70702682c25df0e9b91933ceb565",
+      "expires_at": "2026-10-05T07:19:44Z"
+    },
+    {
+      "id": 11296982448,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG60",
+      "size_bytes": 35271202,
+      "sha256": "8231d2be3fd0959a2ccfc7b9381dd4e9bef06877ebb6326e9eae0e62334446eb",
+      "expires_at": "2026-10-05T07:25:17Z"
+    },
+    {
+      "id": 11296014978,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG61",
+      "size_bytes": 45320944,
+      "sha256": "22170b48807682b9be8ce4823f226b794f06a8a45bc5ea42b5293a30553cc813",
+      "expires_at": "2026-10-05T07:33:01Z"
+    },
+    {
+      "id": 11297012138,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG62",
+      "size_bytes": 32416190,
+      "sha256": "77c7b5db76024bcb51080b1411c4ca0046cf03859bf37f0ae5f64a6cd3a9afc3",
+      "expires_at": "2026-10-05T07:23:26Z"
+    },
+    {
+      "id": 11295959724,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG63",
+      "size_bytes": 33032389,
+      "sha256": "2d30e02473322ae6ede8b2bfb67c5eb840195cd34606ed2be60ed5fee6c13465",
+      "expires_at": "2026-10-05T07:24:21Z"
+    },
+    {
+      "id": 11297091667,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG64",
+      "size_bytes": 32095575,
+      "sha256": "03fca9ef86a7e8869a7ebf78c6c70fec670c8ceab7d14c4f616ee08af8144939",
+      "expires_at": "2026-10-05T07:19:52Z"
+    },
+    {
+      "id": 11296203725,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG65",
+      "size_bytes": 36832787,
+      "sha256": "d6b1df41f37530be5b5ebc78f77083f5c8cc365aa472f8adea0a30bc735bd91d",
+      "expires_at": "2026-10-05T07:21:19Z"
+    },
+    {
+      "id": 11296767982,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG66",
+      "size_bytes": 35827278,
+      "sha256": "c5f0438db003362933beb9f2150bb81f94be94398a0ec05a2cffd640baeeb2ba",
+      "expires_at": "2026-10-05T07:27:27Z"
+    },
+    {
+      "id": 11296712650,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG67",
+      "size_bytes": 24910818,
+      "sha256": "acb4c9a93e32b33ec0b89f63c1b23afe5d9374337b57b771f04aef3e10734680",
+      "expires_at": "2026-10-05T07:20:49Z"
+    },
+    {
+      "id": 11296378856,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG68",
+      "size_bytes": 30186216,
+      "sha256": "ae2c8d38087169ea83c25f7f28d58188818c929499444b612565ba844bbb81cc",
+      "expires_at": "2026-10-05T07:29:13Z"
+    },
+    {
+      "id": 11297012724,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG69",
+      "size_bytes": 28757022,
+      "sha256": "eacbfc3978d2a21d62753a86f3e37cfbe01e29f234bc150e17ab1e0a42b8cf96",
+      "expires_at": "2026-10-05T07:30:32Z"
+    },
+    {
+      "id": 11296693471,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG70",
+      "size_bytes": 35522707,
+      "sha256": "7c533c2fa044ea5069274391e734aa2a43f9fbd951af19292af5df529e6a8ad5",
+      "expires_at": "2026-10-05T07:29:33Z"
+    },
+    {
+      "id": 11296752848,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG71",
+      "size_bytes": 32495487,
+      "sha256": "31cdc21d9ee9522f624e491ae26f462ab1c66901e30c8e92d62664b48985cae9",
+      "expires_at": "2026-10-05T07:25:25Z"
+    },
+    {
+      "id": 11296418826,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG72",
+      "size_bytes": 28531769,
+      "sha256": "747416439d4a73f79636dde18176e151cc2153a0dd785b13fba37cdf06ac6123",
+      "expires_at": "2026-10-05T07:29:46Z"
+    },
+    {
+      "id": 11296823876,
+      "name": "F07-full-63243-9bb0efdd-20261004-SEG73",
+      "size_bytes": 41333658,
+      "sha256": "e2f72d689d3541374ba4047e31cec3ba9ed979b6f2125bfdc6c0255048cb338f",
+      "expires_at": "2026-10-05T07:36:03Z"
+    }
+  ],
+  "tag": "F07-full-63243-9bb0efdd-20261004",
+  "fid": "F07",
+  "overlay_sha256": "6c3ec29f09a5e22eff2a3061ea737c50b8d02438a4877671096d82301076e2cc",
+  "segments_json_sha256": "696d83956a11d91d92b20d788f3ded108d7bfe5e68779f192d9c5cae2f2e1215",
+  "mix_sha256": "5dde65a9a4ee8fb22ade88fcba4167fcc0f4a9b976e0ecd7a29645acc142a49a",
+  "overlay_release": "F07-code-overlay-6c3ec29f09a5e22eff2a3061ea737c50b8d02438a4877671096d82301076e2cc",
+  "source_release_id": 402859166,
+  "source_asset": {
+    "id": 609203437,
+    "name": "source.tar.gz",
+    "size_bytes": 43645916,
+    "sha256": "9bb0efdd24a3801fa4c29c8f72e6c9cb3f797a36bdfb59d75dcfebed042b8ec2"
+  },
+  "overlay_release_id": 402696548,
+  "overlay_asset": {
+    "id": 608555583,
+    "name": "f07-qa-overlay.tar.gz",
+    "size_bytes": 77722,
+    "sha256": "6c3ec29f09a5e22eff2a3061ea737c50b8d02438a4877671096d82301076e2cc"
+  }
+}

@@ -50,6 +50,10 @@ on:
         type: boolean
         required: false
         default: true
+      reuse_segments_run_id:
+        description: Exact pinned run ID for a one-time reuse of its verified segment artifacts; empty renders normally
+        required: false
+        default: ""
       overlay_release_asset:
         description: Optional code-only QA overlay release asset filename
         required: false
@@ -76,6 +80,7 @@ permissions:
 
 jobs:
   render:
+    if: ${{ inputs.reuse_segments_run_id == '' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 300
     strategy:
@@ -204,9 +209,12 @@ jobs:
           if-no-files-found: warn
 
   assemble:
-    if: ${{ inputs.remote_only && inputs.assemble_full && inputs.res == 'landscape-4k' && inputs.comp == 'film' }}
+    if: ${{ always() && inputs.remote_only && inputs.assemble_full && inputs.res == 'landscape-4k' && inputs.comp == 'film' && (inputs.reuse_segments_run_id != '' || needs.render.result == 'success') }}
     needs: render
     runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
     timeout-minutes: 180
     env:
       GH_TOKEN: ${{ github.token }}
@@ -217,10 +225,23 @@ jobs:
       OVERLAY_SHA256: ${{ inputs.overlay_sha256 }}
       OVERLAY_RELEASE: ${{ inputs.overlay_release || inputs.release }}
       FID: ${{ inputs.fid }}
+      REUSE_SEGMENTS_RUN_ID: ${{ inputs.reuse_segments_run_id }}
+      TAG: ${{ inputs.tag }}
+      APPLY_SOURCE_OVERLAY: ${{ inputs.apply_source_overlay }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Verify exact retained F07 segment run and artifact lock
+        if: ${{ inputs.reuse_segments_run_id != '' }}
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/verify_f07_reuse_lock.py \
+            --run-id "$REUSE_SEGMENTS_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --package-sha256 "$PACKAGE_SHA256" --overlay-sha256 "$OVERLAY_SHA256" \
+            --source-release "$RELEASE" --overlay-release "$OVERLAY_RELEASE" \
+            --tag "$TAG" --fid "$FID" --segments-json "$SEGS_JSON" \
+            --apply-source-overlay "$APPLY_SOURCE_OVERLAY"
       - name: Install FFmpeg
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
@@ -228,6 +249,31 @@ jobs:
           pattern: ${{ inputs.tag }}-SEG*
           path: segments
           merge-multiple: true
+          run-id: ${{ inputs.reuse_segments_run_id || github.run_id }}
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+      - name: Verify exact downloaded part filenames
+        run: |
+          python3 - <<'PYCODE'
+          import json, os, re
+          from pathlib import Path
+          rows = json.loads(os.environ["SEGS_JSON"])
+          if not isinstance(rows, list) or not rows:
+              raise SystemExit("segment plan must be a non-empty list")
+          ids = [row.get("i") if isinstance(row, dict) else None for row in rows]
+          expected_ids = [f"{i:02d}" for i in range(1, len(rows) + 1)]
+          if ids != expected_ids:
+              raise SystemExit("segment plan IDs must be contiguous two-digit IDs")
+          expected = {f"SEG{sid}.{suffix}" for sid in ids for suffix in ("mp4", "render.log", "verify.json")}
+          root = Path("segments")
+          entries = list(root.iterdir())
+          if any(path.is_symlink() for path in entries):
+              raise SystemExit("downloaded segment directory contains a symlink")
+          actual = {path.name for path in entries if path.is_file() and path.name.startswith("SEG")}
+          if actual != expected:
+              raise SystemExit("downloaded segment files do not exactly match the requested plan")
+          print(f"DOWNLOADED_SEGMENT_FILES_PASS:{len(ids)}")
+          PYCODE
       - name: Fetch hash-bound source and QA overlay
         run: |
           set -euo pipefail
@@ -279,8 +325,10 @@ jobs:
           print(match.group(1))
           PYCODE
           )
-          python3 qa_overlay/.github/scripts/assemble_verify.py --self-test
-          python3 qa_overlay/.github/scripts/assemble_verify.py --segments-json "$SEGS_JSON" \
+          HELPER_SHA=$(sha256sum .github/scripts/assemble_verify.py | cut -d ' ' -f1)
+          test "$HELPER_SHA" = "eac69b56c018c3b1b122d5e48a1ed962c3334e3ab91d04d155db6402e8f1dac6"
+          python3 .github/scripts/assemble_verify.py --self-test
+          python3 .github/scripts/assemble_verify.py --segments-json "$SEGS_JSON" \
             --duration "$DURATION" --segments-dir segments --package-dir package --output-dir remote-final --fid "$FID"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
