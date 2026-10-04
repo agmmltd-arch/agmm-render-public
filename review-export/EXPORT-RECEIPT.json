@@ -1,0 +1,148 @@
+{
+  "kind": "S86-hosted-final-review-compact-export",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "render_run_id": 37171852324,
+  "render_head_sha": "fddd199eecae2a4774bfc9f7c041320619cfce0f",
+  "export_head_sha": "d9b21b780bc185fa8d31870986226b9533ca65a6",
+  "source_sha256": "666a90579d57f2bd5c2abed41e55b5dad3fff790f93707d79b2929bddf1c93b6",
+  "source_identity_receipt": "INPUT-RECEIPT.json",
+  "input_artifact": {
+    "id": 11291104171,
+    "name": "S86-quote-final-20261004-EXACT-INPUT",
+    "size_in_bytes": 27276224,
+    "digest": "sha256:b187a1c98a088b10cc6475cd95ec19a236cd7b86a1b58c2e41287918c50c3793"
+  },
+  "masters_artifact": {
+    "id": 11292320586,
+    "name": "S86-quote-final-20261004-FINAL-MASTERS",
+    "size_in_bytes": 383964779,
+    "digest": "sha256:940096ef373f68f7ec0515e005ec02cb1bacc6720e67a782fa029ea16c2483b3",
+    "content_hash_verification": "artifact metadata pinned; inner master bytes not downloaded or rehashed by this compact exporter"
+  },
+  "compact_artifact": {
+    "id": 11291958626,
+    "name": "S86-quote-final-20261004-REVIEW-COMPACT",
+    "size_in_bytes": 2507756,
+    "digest": "sha256:2afd28726b6bd59e69c9b68ddfb2975312d90dbbe7cc69be76eb6c5c4186db69"
+  },
+  "master_identities": [
+    {
+      "file": "FINAL-4K.mp4",
+      "sha256": "d43e379e64cf011f57292438278e7d8e7aa113ddb2d1e425dfd8c6e156d30277"
+    },
+    {
+      "file": "FINAL.mp4",
+      "sha256": "9bca09769370e520db8063ae6d70d13482ad5fe58310e6f03cfc4d2369ed3d1c"
+    }
+  ],
+  "review_master": "FINAL.mp4",
+  "review_sample_count": 14,
+  "input_artifact_members": [
+    "INPUT-RECEIPT.json",
+    "MATRIX.json",
+    "NORMALISED-PARTS.json",
+    "mix.wav",
+    "parts.json",
+    "source.tar.gz"
+  ],
+  "compact_artifact_members": [
+    "SHA256SUMS.txt",
+    "TECHNICAL-EVIDENCE.json",
+    "review/CONTACT-SHEET.jpg",
+    "review/frame-01-000.400s.jpg",
+    "review/frame-02-015.127s.jpg",
+    "review/frame-03-015.150s.jpg",
+    "review/frame-04-015.187s.jpg",
+    "review/frame-05-015.227s.jpg",
+    "review/frame-06-030.293s.jpg",
+    "review/frame-07-030.300s.jpg",
+    "review/frame-08-030.353s.jpg",
+    "review/frame-09-030.393s.jpg",
+    "review/frame-10-045.450s.jpg",
+    "review/frame-11-045.460s.jpg",
+    "review/frame-12-045.520s.jpg",
+    "review/frame-13-045.560s.jpg",
+    "review/frame-14-060.200s.jpg"
+  ],
+  "exported_files": [
+    {
+      "path": "review/CONTACT-SHEET.jpg",
+      "bytes": 605377,
+      "sha256": "e7e1268499e43b1a210a13961ea55da8214339d1248eb69f800b895115b2fd59"
+    },
+    {
+      "path": "review/frame-01-000.400s.jpg",
+      "bytes": 165347,
+      "sha256": "20e651184c2d9ae98b4068a231c61d90aa253d37fe86a86925faaf12cdc43ba8"
+    },
+    {
+      "path": "review/frame-02-015.127s.jpg",
+      "bytes": 139617,
+      "sha256": "d42fd3d1347209531224ca9831b0e02bce2a48399c2c35ae01a76c87b5674326"
+    },
+    {
+      "path": "review/frame-03-015.150s.jpg",
+      "bytes": 139201,
+      "sha256": "c0ebda3790d951b68b932c281b63b314dbc1388599d5bbeaea9b6a19c4b4d205"
+    },
+    {
+      "path": "review/frame-04-015.187s.jpg",
+      "bytes": 140627,
+      "sha256": "0996dc627256e700f984a9df00720ce30812cf08f9d8c80d99d2c16fc82d70bc"
+    },
+    {
+      "path": "review/frame-05-015.227s.jpg",
+      "bytes": 140256,
+      "sha256": "2723ee8d424a91671aa02e3c8a446df35d34fb2f03cb6588fcdac6a20d4077e8"
+    },
+    {
+      "path": "review/frame-06-030.293s.jpg",
+      "bytes": 131461,
+      "sha256": "d74c88b83a68ff0059182ded9bbfa0d1c1b6b38d512dfad454468a4c5fa17e1f"
+    },
+    {
+      "path": "review/frame-07-030.300s.jpg",
+      "bytes": 131461,
+      "sha256": "d74c88b83a68ff0059182ded9bbfa0d1c1b6b38d512dfad454468a4c5fa17e1f"
+    },
+    {
+      "path": "review/frame-08-030.353s.jpg",
+      "bytes": 132512,
+      "sha256": "4e218eaac3ae54affb2b3594bba1f94ad77d7e15d969a824d1c1a59bf31a6f61"
+    },
+    {
+      "path": "review/frame-09-030.393s.jpg",
+      "bytes": 135768,
+      "sha256": "6e2d77f475c0d66fc7e7ace5f27e3adaa47dcb74574af97c1c00723af11f0845"
+    },
+    {
+      "path": "review/frame-10-045.450s.jpg",
+      "bytes": 146225,
+      "sha256": "e73017a0386dc117bbae7c75fc78c5b24ec046b3e47ddc24d23612b0d41c0316"
+    },
+    {
+      "path": "review/frame-11-045.460s.jpg",
+      "bytes": 146225,
+      "sha256": "e73017a0386dc117bbae7c75fc78c5b24ec046b3e47ddc24d23612b0d41c0316"
+    },
+    {
+      "path": "review/frame-12-045.520s.jpg",
+      "bytes": 146474,
+      "sha256": "1a030418290b8cf0776388a137229bcdfed58477d65239b5d66cba83a2831b5f"
+    },
+    {
+      "path": "review/frame-13-045.560s.jpg",
+      "bytes": 147191,
+      "sha256": "ef70761681c46642bdc2417ecd7c32e5383446d4b63cf81001e66694654007ee"
+    },
+    {
+      "path": "review/frame-14-060.200s.jpg",
+      "bytes": 88239,
+      "sha256": "acd4741de28ef2f661cd6ada308dfa18ba01c76e38b56ab11a38b8d58491d0e7"
+    }
+  ],
+  "scope": "review JPEG samples and exact TEXT receipts only; no master or source archive exported",
+  "full_master_review": "OPEN",
+  "editorial_status": "NOT_REVIEWED",
+  "release_approval": "NOT_GRANTED"
+}
