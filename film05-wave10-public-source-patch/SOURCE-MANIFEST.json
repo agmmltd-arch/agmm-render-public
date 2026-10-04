@@ -37,5 +37,35 @@
       ]
     }
   ],
-  "presentation_guard": "Persistent ILLUSTRATIVE FOOTAGE · FICTIONAL EXAMPLE label over both clips; overlay props and events are fictional; no real customer, quotation, outcome, model test or endorsement."
+  "presentation_guard": "Persistent ILLUSTRATIVE FOOTAGE · FICTIONAL EXAMPLE label over both clips; overlay props and events are fictional; no real customer, quotation, outcome, model test or endorsement.",
+  "source_check_lineage": {
+    "diagnostic_run_id": 37212155745,
+    "diagnostic_public_head": "ecdd898910b725c326472f3b5adc6ca98f51a138",
+    "tool": "HyperFrames CLI 0.8.62 check --json",
+    "observed_result": {
+      "overall_ok": false,
+      "lint_errors": 0,
+      "layout_errors": 17,
+      "layout_error_code": "text_occluded",
+      "covering_selector": "#operations-disclosure",
+      "covered_selectors": [
+        "div.board-head",
+        "#task-strip > strong:nth-of-type(1)",
+        "#task-strip > span:nth-of-type(1)",
+        "#customer-proposal > small:nth-of-type(1)",
+        "#customer-proposal > strong:nth-of-type(1)",
+        "#customer-proposal > span:nth-of-type(1)"
+      ],
+      "covered_fraction": 1.0,
+      "observed_times_seconds": [
+        18.35,
+        18.8,
+        19.3,
+        20.5,
+        21.9
+      ]
+    },
+    "correction": "Reset inherited full-frame clip inset; size the persistent disclosure as a bounded compact top-right label in the reserved band above the operations board, with 42px type to retain the 1080p craft minimum. Its 69.36px label box ends at 107.36px, above the board at 129.6px. Keep board and card text fully visible; add no occlusion suppression.",
+    "verification_state": "source-level correction prepared; native check and stills must be rerun on the hosted Ubuntu route; no pass or render is claimed"
+  }
 }

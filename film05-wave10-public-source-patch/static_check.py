@@ -5,6 +5,12 @@ s=(root/'index.html').read_text()
 manifest=json.loads((root/'SOURCE-MANIFEST.json').read_text())
 assert 'data-composition-id="film05-first-act-wave10"' in s
 assert 'data-duration="27.9"' in s
+assert '.source-disclosure{position:absolute;inset:auto;right:40px;top:38px;width:max-content;height:auto;max-width:calc(100vw - 80px)' in s
+assert 'font:700 42px/1.08 Arial,sans-serif' in s
+assert 'data-layout-allow-occlusion' not in s
+assert manifest['source_check_lineage']['diagnostic_run_id']==37212155745
+assert manifest['source_check_lineage']['observed_result']['layout_errors']==17
+assert 'bounded compact top-right label' in manifest['source_check_lineage']['correction']
 assert len(re.findall(r'class="[^"]*\bclip\b[^"]*"',s))==18
 for phrase in ('FICTIONAL EXAMPLE','Compare supplier quotations','NO MODEL RUN','INPUTS ONLY','Replacement proposal','RECOMMENDATION STAYS WITH PRIYA','ILLUSTRATIVE FOOTAGE · FICTIONAL EXAMPLE','INCLUDED','EXCLUDED','PERSON TO CHECK','NO RECOMMENDATION OR CUSTOMER OUTCOME SHOWN','COMPARE THEM FOR WHAT?'):
     assert phrase in s, phrase
