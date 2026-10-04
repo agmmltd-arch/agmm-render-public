@@ -1,0 +1,151 @@
+{
+  "candidate_root": "S81-CANDIDATE",
+  "forbidden_local_media_suffixes": [
+    ".wav",
+    ".mp3",
+    ".mp4",
+    ".mov",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".webp",
+    ".zip",
+    ".tar",
+    ".gz"
+  ],
+  "kind": "s81_hosted_capture_text_payload_manifest",
+  "missing_runner_products": [
+    "sealed source.tar.gz",
+    "parts.json bound to source archive",
+    "native asset IDs/digests for source/parts/plan",
+    "media identity manifest/digest",
+    "hosted voice bytes and verified digest",
+    "licensed music/SFX staged bytes/digests",
+    "verified logo asset/digest"
+  ],
+  "privacy_redaction": {
+    "audio_bytes_in_payload": false,
+    "canonical_private_receipts_modified": false,
+    "kind": "s81_public_text_local_path_redaction_v1",
+    "original_private_text_copy_sha256": {
+      "candidate/MANIFEST.json": "53b1b66bc6b2baafc01f92851897b1774f0bff2042341945674ddae7d4298b02",
+      "voice-text/S81.RESULT.json": "c24b0eebe72b5483ed8468db1f3d8ccf1a1c435c7a5a3208c5ca1b0ba71f136a",
+      "voice-text/S81.receipt.json": "17b4c23f59e8c1df5affe0aa9dd8fef8c5b0bc3616eb269301d4029e9a18c23a"
+    },
+    "path_fields_redacted": {
+      "candidate/MANIFEST.json": [
+        "inputs.selected_wav_path"
+      ],
+      "voice-text/S81.RESULT.json": [
+        "attempts[0].take_dir",
+        "final.take_dir",
+        "wav_path",
+        "words_json_path",
+        "receipt_path"
+      ],
+      "voice-text/S81.receipt.json": [
+        "piece_dir"
+      ]
+    },
+    "relative_text_provenance_adjustments": {
+      "candidate/tests/test_s81_story_sound.py": {
+        "reference": "package-relative word-clock lookup",
+        "source_copy_sha256_before_redaction": "e480d48d9bdf705cf136304bf3823f4900f50871ccda7317fe302704392a55ba"
+      }
+    }
+  },
+  "required_files": [
+    {
+      "path": "candidate/MANIFEST.json",
+      "bytes": 4118,
+      "sha256": "362c00c245084c8ad976e686aa291e8a100de0695095fe9b6df2e906cdbcac78"
+    },
+    {
+      "path": "candidate/RESULT.json",
+      "bytes": 3067,
+      "sha256": "f3328f2fd8a8428acf6d47266462d34861af10d2dea0f11de576f1e9a573cd54"
+    },
+    {
+      "path": "candidate/TEST-OUTPUT.txt",
+      "bytes": 534,
+      "sha256": "76912500cfe5eda398ac15392484caa031f4c14295409fd49d27c950402cf05d"
+    },
+    {
+      "path": "candidate/capture-plan-source.json",
+      "bytes": 3696,
+      "sha256": "33e553d9a831278ef3f1137397f8864ef744839aca0cdef825b6b16d4339210d"
+    },
+    {
+      "path": "candidate/mix_spec.json",
+      "bytes": 2308,
+      "sha256": "157ab9ad2ddf4fee977c28642a7a2763416a2c172021ed0ae9b2db4a9554fa3d"
+    },
+    {
+      "path": "candidate/scenes.js",
+      "bytes": 22838,
+      "sha256": "c7d6349b0871d03919eb1166399df8b96a94abba626dfb9408c4855f802bad6d"
+    },
+    {
+      "path": "candidate/selected-sound-assets.json",
+      "bytes": 9920,
+      "sha256": "a6999c2a3d8bd5c3d5538e86acc4c1b63677e19654a3876ee243c4e1d4d00bb7"
+    },
+    {
+      "path": "candidate/sources.js",
+      "bytes": 1008,
+      "sha256": "9c90c9d650486a0be75da9b3b8682598a510c7a5e70bae53e3730a977b142466"
+    },
+    {
+      "path": "candidate/spec-delta.json",
+      "bytes": 1709,
+      "sha256": "e8912da6376689340b4f5cb56f457378ff50aebec87f6cf216fa1d63f0a79e10"
+    },
+    {
+      "path": "candidate/spec.json",
+      "bytes": 1888,
+      "sha256": "02fc9522e7e46800c2254ad4eeefa240c08e5033a686e98a7411e7225c4ba3e2"
+    },
+    {
+      "path": "candidate/storyboard-and-sound.md",
+      "bytes": 10149,
+      "sha256": "3b0c42c2d1540ce8f5f3a26cf1b896061a4237533fb088172d160543d11e7c62"
+    },
+    {
+      "path": "candidate/tests/test_s81_story_sound.py",
+      "bytes": 3764,
+      "sha256": "038cd017b1e568fab4a749fa1f2e50fbda9aa916d78137a48a379933d145e6b5"
+    },
+    {
+      "path": "voice-text/S81.RESULT.json",
+      "bytes": 2315,
+      "sha256": "24a357f2d7c9fc6ace606635da693e8c15f8a878ce99584cfe3dc8c5fc768c0c"
+    },
+    {
+      "path": "voice-text/S81.namecheck.json",
+      "bytes": 1076,
+      "sha256": "87db67d8b180416a615b8937eb47f9b5d7d511f56167fa8990fbe70297e3138b"
+    },
+    {
+      "path": "voice-text/S81.receipt.json",
+      "bytes": 9333,
+      "sha256": "79037cf727a08226678d5cde49ef3e37b3c95fd3a5b4338e255c47f71e4bffcb"
+    },
+    {
+      "path": "voice-text/S81.voicelead.json",
+      "bytes": 8447,
+      "sha256": "376bec25085915f7b6c96b9acd1b977570a70dedd3d7f1a8a07bf40837613e73"
+    },
+    {
+      "path": "voice-text/S81.words.json",
+      "bytes": 20459,
+      "sha256": "0310ac0df4fca1f82d3da2f2413d536c85acedf6e30ed104df2412e9bd3d3b0f"
+    }
+  ],
+  "status": "SANITIZED_TEXT_PAYLOAD_READY_FOR_ROOT_REVIEW_NOT_CAPTURE_APPROVAL",
+  "voice_media": {
+    "digest": "MUST_BE_COMPUTED_ON_UBUNTU",
+    "expected_bytes_from_local_stat_only": 2705582,
+    "local_media_read_copy_hash_decode_archive": false,
+    "path_expected_on_hosted_release": "S81.wav"
+  }
+}
