@@ -144,6 +144,7 @@
     </section>
     <div class="caption-band" aria-hidden="true"></div>
   </main>
+  <script src="assets/gsap.min.js"></script>
   <script type="application/json" id="word-data">{
   "words": [
     {
@@ -1263,6 +1264,9 @@
   "tempo_factor": 0.9908748241912799
 }</script>
   <script>
+    if (!window.gsap || typeof window.gsap.timeline !== 'function') throw new Error('Pinned GSAP runtime did not load');
+    window.__timelines = window.__timelines || {};
+    if (typeof window.__timelines !== 'object' || Array.isArray(window.__timelines)) throw new Error('HyperFrames timeline registry is invalid');
     const root = document.getElementById('root');
     const wordRows = JSON.parse(document.getElementById('word-data').textContent).words;
     const groups = [];

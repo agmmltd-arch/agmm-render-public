@@ -59,5 +59,18 @@
     "mix_spec": "MIX-SPEC.json targets -14 LUFS integrated and no more than -1 dBTP; no mix result exists.",
     "media_boundary": "No audio opened, copied, processed, hashed, rendered or heard locally."
   },
-  "rights_evidence": "RIGHTS-EVIDENCE.md records official brand guidance found and why it does not grant AGMM permission; status remains NOT_ASSESSED."
+  "rights_evidence": "RIGHTS-EVIDENCE.md records official brand guidance found and why it does not grant AGMM permission; status remains NOT_ASSESSED.",
+  "runtime_assets": [
+    {
+      "id": "GSAP-RUNTIME-01",
+      "purpose": "Pinned browser animation runtime required by the S83 authored paused timeline",
+      "source_package": "gsap@3.14.2 installed package dist/gsap.min.js",
+      "sha256": "c174bfce53a729418d57a8ad8625e7247c793a22fef8e2851e3cfa3de9cd8280",
+      "git_blob_sha1": "fde57af06cc445f47ca2a6fc1232ec04666346d4",
+      "license": "GSAP Standard 'no charge' license; original notice retained",
+      "license_url": "https://gsap.com/community/standard-license/",
+      "runtime_path": "assets/gsap.min.js",
+      "approval": "runtime dependency only; not visual, audio, rights, or release approval"
+    }
+  ]
 }

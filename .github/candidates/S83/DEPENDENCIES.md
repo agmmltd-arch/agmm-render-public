@@ -26,12 +26,13 @@ The workflow verifies these exact `main` blobs before source access:
 
 ## Pinned runner tools and actions
 
-- Ubuntu 24.04 GitHub-hosted runner; Node 22; checkout fetch-depth 2 with exact `HEAD == GITHUB_SHA` and `GITHUB_SHA^ == S83_PARENT` guards.
+- Ubuntu 24.04 GitHub-hosted runner; Node 22.23.1 (asserted exactly); checkout fetch-depth 2 with exact `HEAD == GITHUB_SHA` and `GITHUB_SHA^ == S83_PARENT` guards.
 - `actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683`.
 - `actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020`.
 - `actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02`, one-day retention, `if-no-files-found: error`.
 - Playwright 1.55.1 with Chromium installed by the workflow.
-- HyperFrames 0.8.71 for the hosted source composition check and 37 stills.
+- HyperFrames 0.8.71: an early `lint --json` static contract check runs before protected inputs are checked or processed; the later hosted `check` and 37 still captures run only after source/mix gates. `check` includes browser/layout work and is never represented by local lint.
+- GSAP 3.14.2 is vendored at `assets/gsap.min.js` from the existing installed `gsap` package; SHA256 `c174bfce53a729418d57a8ad8625e7247c793a22fef8e2851e3cfa3de9cd8280`, Git blob `fde57af06cc445f47ca2a6fc1232ec04666346d4`. The original license header is retained. The inline composition checks `window.gsap.timeline`, initializes `window.__timelines` to an object when absent (matching HyperFrames 0.8.71 runtime lazy initialization), and type-checks it before creating/registering the paused `s83` timeline. The exact package/source/license binding is in `CANDIDATE-MANIFEST.json`.
 - Node built-in test runner for URL/identity negatives; Python standard-library unittest for packet guard negatives.
 
 A dedicated step derives `S83_CAPTURE_DIR`, `S83_STILLS_DIR`, `S83_CHECK_JSON`, and `S83_REVIEW_DIR` from shell `$RUNNER_TEMP`, then writes them to `$GITHUB_ENV`. The workflow's receipt and output guard are gated on successful `steps.verify`; it emits no failure artifact after a repository, ref, helper or hash preflight failure.
