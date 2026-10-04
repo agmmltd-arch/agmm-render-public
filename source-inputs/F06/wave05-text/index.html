@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Film06 key release and paced response motion probe</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; background: #171c20; }
+    #root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; color: #fff9ef; }
+    .clip { position: absolute; inset: 0; overflow: hidden; }
+    .plate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+    .board-label { position: absolute; z-index: 2; top: 130px; width: 238px; color: #202225; font-size: 26px; line-height: 1.13; font-weight: 800; letter-spacing: .025em; text-align: center; text-shadow: 0 1px rgba(255,255,255,.18); mix-blend-mode: multiply; }
+    .warehouse { left: 706px; } .dispatch { left: 1070px; }
+    .tray-label { position: absolute; z-index: 2; left: 788px; top: 834px; width: 475px; color: #fff8ea; font-size: 33px; line-height: 1.12; font-weight: 900; letter-spacing: .025em; text-align: center; text-shadow: 0 1px 1px rgba(0,0,0,.4); }
+    .tray-subline { position: absolute; z-index: 2; left: 795px; top: 881px; width: 460px; color: #fff8ea; font-size: 24px; font-weight: 800; letter-spacing: .025em; text-align: center; text-shadow: 0 1px 1px rgba(0,0,0,.4); }
+    #scenario { position: absolute; z-index: 20; right: 70px; bottom: 53px; padding: 12px 17px; color: #fff9ef; background: rgba(21,26,29,.9); border: 1px solid rgba(255,249,239,.45); font-size: 22px; font-weight: 700; letter-spacing: .1em; }
+    .screen { position: absolute; z-index: 2; left: 538px; top: 311px; width: 844px; height: 405px; background: #1d2730; color: #f4f1e9; overflow: hidden; border-radius: 2px; box-shadow: inset 0 0 0 2px #151b21; }
+    .screen-top { height: 58px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-bottom: 1px solid #62717c; background: #26333b; font-size: 23px; font-weight: 800; letter-spacing: .02em; }
+    .screen-top span { color: #b9cad0; font-size: 17px; }
+    .screen-condition { margin: 18px 27px 0; font-size: 27px; font-weight: 800; color: #faf3e6; }
+    .screen-condition b { color: #efbd72; }
+    .screen-rule { margin: 15px 27px 0; height: 2px; background: #61717c; }
+    .draft-card { position: absolute; left: 28px; top: 166px; width: 460px; height: 154px; padding: 17px 20px; background: #eef1ef; color: #22313a; border: 2px solid #d5dadd; box-shadow: 0 5px 10px #0005; transform-origin: left top; }
+    .draft-card small { display: block; font-size: 17px; font-weight: 900; color: #804c2c; letter-spacing: .04em; }
+    .draft-card strong { display: block; padding-top: 10px; font-size: 25px; line-height: 1.15; }
+    .pending-zone { position: absolute; top: 158px; right: 27px; width: 280px; height: 169px; border: 2px dashed #a5b4b9; background: #34434b; padding: 12px; font-size: 19px; line-height: 1.1; font-weight: 800; color: #dce5e5; }
+    .pending-card { margin-top: 18px; width: 246px; height: 91px; padding: 13px 11px; background: #f0f2ee; border-left: 7px solid #cf9148; color: #23333a; font-size: 17px; line-height: 1.12; font-weight: 900; box-shadow: 0 3px 7px #0004; opacity: 0; }
+    .pending-card small { display: block; margin-top: 6px; color: #805331; font-size: 16px; }
+    .hold-button { position: absolute; bottom: 20px; left: 28px; width: 280px; height: 46px; background: #d59d45; color: #1e292b; display: grid; place-items: center; font-size: 22px; font-weight: 900; box-shadow: 0 3px #90642b; }
+    .venue-board { position: absolute; z-index: 2; left: 1190px; top: 150px; width: 627px; height: 685px; color: #28323a; overflow: hidden; }
+    .venue-heading { position: absolute; left: 26px; top: 13px; width: 560px; padding-bottom: 14px; border-bottom: 3px solid #68767b; font-size: 27px; font-weight: 900; letter-spacing: .03em; }
+    .venue-sub { position: absolute; left: 28px; top: 74px; font-size: 21px; font-weight: 800; color: #46575f; }
+    .venue-card { position: absolute; width: 232px; height: 132px; background: #f3f0e9; border: 2px solid #697b82; box-shadow: 0 6px 10px #0003; padding: 21px 16px; font-size: 25px; font-weight: 900; text-align: center; }
+    .venue-card small { display: block; margin-top: 12px; font-size: 17px; font-weight: 800; color: #59696e; }
+    #drop-one { left: 30px; top: 132px; } #drop-two { left: 285px; top: 132px; }
+    #new-condition { position: absolute; left: 91px; top: 164px; width: 402px; height: 208px; background: #f4e4bc; border: 3px solid #b27e37; box-shadow: 0 7px 11px #0003; padding: 25px 22px; color: #313b3c; font-size: 31px; font-weight: 900; text-align: center; opacity: 0; }
+    #new-condition small { display: block; margin-top: 20px; font-size: 22px; line-height: 1.15; color: #573b1d; }
+    #staff-hold { position: absolute; left: 79px; top: 404px; width: 420px; border-top: 3px solid #9d624b; border-bottom: 3px solid #9d624b; padding: 14px 0; text-align: center; color: #873e2e; font-size: 27px; font-weight: 900; opacity: 0; }
+    .packing-paper { position: absolute; z-index: 2; top: 496px; background: #f6f0e3; color: #23343c; border: 2px solid #c7bba9; box-shadow: 0 14px 20px #0005; }
+    .release-paper { left: 550px; width: 650px; height: 375px; padding: 32px 38px; transform: rotate(-3deg); }
+    .paper-kicker { font-size: 22px; letter-spacing: .08em; font-weight: 900; color: #53646d; }
+    .paper-heading { margin-top: 29px; font-size: 39px; font-weight: 900; line-height: 1.04; }
+    .paper-line { border-bottom: 2px solid #9aa4a7; margin: 19px 0; }
+    .paper-detail { display: flex; justify-content: space-between; font-size: 26px; font-weight: 800; }
+    .change-paper { left: 70px; width: 455px; height: 261px; padding: 30px 28px; transform: rotate(2deg); opacity: 0; }
+    .change-paper .paper-heading { color: #773f2e; font-size: 35px; }
+    .review-slip { left: 1230px; top: 568px; width: 560px; height: 195px; padding: 25px 30px; background: #e4b254; border-color: #a7762b; color: #273139; transform: rotate(1deg); opacity: 0; }
+    .review-slip .paper-heading { margin-top: 18px; font-size: 37px; }
+    .review-slip .paper-kicker { color: #3d4b4d; }
+    .review-ring { position: absolute; z-index: 3; left: 570px; top: 557px; width: 615px; height: 116px; opacity: 0; transform: rotate(-3deg); }
+    .review-ring ellipse { fill: none; stroke: #a54632; stroke-width: 9; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="film06-opening-wave05" data-width="1920" data-height="1080" data-start="0" data-duration="9.6">
+    <section id="amendment" class="clip" data-start="0" data-duration="0.9"><img class="plate" src="assets/amendment.webp" alt=""></section>
+    <section id="cleared" class="clip" data-start="0.9" data-duration="0.433333"><img class="plate" src="assets/board-cleared.webp" alt=""><div class="board-label warehouse">PACKING<br>RELEASE</div><div class="board-label dispatch">DISPATCH<br>BOOKING</div><div class="tray-label">REVIEW REQUIRED</div><div class="tray-subline">HOLD CUSTOMER REPLY</div></section>
+    <section id="action" class="clip" data-start="1.333333" data-duration="0.366667"><img class="plate" src="assets/board-hand-action.webp" alt=""><div class="board-label warehouse">PACKING<br>RELEASE</div><div class="board-label dispatch">DISPATCH<br>BOOKING</div><div class="tray-label">REVIEW REQUIRED</div><div class="tray-subline">HOLD CUSTOMER REPLY</div></section>
+    <section id="release" class="clip" data-start="1.7" data-duration="0.2"><img class="plate" src="assets/board-release-action.png" alt=""><div class="board-label warehouse">PACKING<br>RELEASE</div><div class="board-label dispatch">DISPATCH<br>BOOKING</div><div class="tray-label">REVIEW REQUIRED</div><div class="tray-subline">HOLD CUSTOMER REPLY</div></section>
+    <section id="settled" class="clip" data-start="1.9" data-duration="0.4"><img class="plate" src="assets/board-review.webp" alt=""><div class="board-label warehouse">PACKING<br>RELEASE</div><div class="board-label dispatch">DISPATCH<br>BOOKING</div><div class="tray-label">REVIEW REQUIRED</div><div class="tray-subline">HOLD CUSTOMER REPLY</div></section>
+    <section id="sales" class="clip" data-start="2.3" data-duration="1.566667">
+      <img class="plate" src="assets/sales-desk.webp" alt="">
+      <div class="screen">
+        <div class="screen-top">CUSTOMER SERVICE · ORDER 0147 <span>UNSENT REPLY</span></div>
+        <div class="screen-condition">Customer change: <b>ONE DELIVERY ONLY</b></div><div class="screen-rule"></div>
+        <div class="draft-card" id="draft-card"><small>DRAFT · NOT SENT</small><strong>We can confirm one delivery...</strong></div>
+        <div class="pending-zone">PENDING REVIEW<div class="pending-card" id="pending-card">REPLY HELD<small>Dispatch check required</small></div></div>
+        <div class="hold-button" id="hold-button">HOLD REPLY</div>
+      </div>
+    </section>
+    <section id="review" class="clip" data-start="3.866667" data-duration="0.533333"><img class="plate" src="assets/board-review.webp" alt=""><div class="board-label warehouse">PACKING<br>RELEASE</div><div class="board-label dispatch">DISPATCH<br>BOOKING</div><div class="tray-label">REVIEW REQUIRED</div><div class="tray-subline">HOLD CUSTOMER REPLY</div></section>
+    <section id="venue" class="clip" data-start="4.4" data-duration="2.4">
+      <img class="plate" src="assets/venue-bay.webp" alt="">
+      <div class="venue-board">
+        <div class="venue-heading">VENUE RECEIVING</div><div class="venue-sub">STAFF ROTA · ORDER 0147</div>
+        <div class="venue-card" id="drop-one">ARRIVAL 1<small>EARLIER PLAN</small></div>
+        <div class="venue-card" id="drop-two">ARRIVAL 2<small>EARLIER PLAN</small></div>
+        <div id="new-condition">ONE DELIVERY<small>Receiving time to confirm</small></div>
+        <div id="staff-hold">STAFF ROTA PENDING</div>
+      </div>
+    </section>
+    <section id="packing" class="clip" data-start="6.8" data-duration="2.8">
+      <img class="plate" src="assets/packing-table.webp" alt="">
+      <div class="packing-paper release-paper">
+        <div class="paper-kicker">PACKING RELEASE · ORDER 0147</div><div class="paper-heading">TWO PACKING WAVES</div>
+        <div class="paper-line"></div><div class="paper-detail"><span>WAVE 1 · STAGED</span><span>WAVE 2 · STAGED</span></div>
+        <div class="paper-line"></div><div class="paper-detail"><span>APPROVED BEFORE CHANGE</span></div>
+      </div>
+      <div class="packing-paper change-paper" id="packing-change">
+        <div class="paper-kicker">CUSTOMER AMENDMENT</div><div class="paper-heading">ONE DELIVERY ONLY</div>
+        <div class="paper-line"></div><div class="paper-detail">ORDER 0147</div>
+      </div>
+      <div class="packing-paper review-slip" id="packing-review">
+        <div class="paper-kicker">WAREHOUSE LEAD · NEXT ACTION</div><div class="paper-heading">CHECK CARTONS TOGETHER</div>
+      </div>
+      <svg class="review-ring" id="review-ring" viewBox="0 0 615 116" aria-hidden="true"><ellipse cx="307" cy="58" rx="298" ry="49"/></svg>
+    </section>
+    <div id="scenario">ILLUSTRATIVE SCENARIO</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({paused: true});
+    tl.set('#scenario', {opacity: 1}, 0);
+    tl.to('#hold-button', {scale: .96, duration: .12, ease: 'power2.in'}, 2.62);
+    tl.to('#hold-button', {scale: 1, duration: .13, ease: 'power2.out'}, 2.76);
+    tl.to('#draft-card', {opacity: 0, scale: .92, duration: .24, ease: 'power2.in'}, 2.94);
+    tl.fromTo('#pending-card', {opacity: 0, y: 16}, {opacity: 1, y: 0, duration: .28, ease: 'power2.out'}, 3.2);
+    tl.to('#drop-one', {x: -275, opacity: 0, duration: .48, ease: 'power2.inOut'}, 4.733333);
+    tl.to('#drop-two', {x: 270, opacity: 0, duration: .48, ease: 'power2.inOut'}, 5.0);
+    tl.fromTo('#new-condition', {opacity: 0, y: -32}, {opacity: 1, y: 0, duration: .38, ease: 'power2.out'}, 5.533333);
+    tl.to('#staff-hold', {opacity: 1, duration: .32, ease: 'power1.out'}, 6.133333);
+    tl.fromTo('#packing-change', {x: -510, opacity: 0}, {x: 0, opacity: 1, duration: .56, ease: 'power2.out'}, 7.0);
+    tl.fromTo('#packing-review', {x: 100, opacity: 0}, {x: 0, opacity: 1, duration: .54, ease: 'power2.out'}, 7.78);
+    tl.to('#review-ring', {opacity: 1, duration: .28, ease: 'power1.out'}, 8.866667);
+    window.__timelines['film06-opening-wave05'] = tl;
+  </script>
+</body>
+</html>

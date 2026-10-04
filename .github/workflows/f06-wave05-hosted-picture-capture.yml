@@ -1,0 +1,252 @@
+name: F06 Wave05 protected hosted picture capture
+run-name: F06 Wave05 picture capture ${{ inputs.expected_head_sha }}
+
+# Candidate only. Root must coordinate publication of this file and the exact private input commit.
+on:
+  workflow_dispatch:
+    inputs:
+      expected_head_sha:
+        description: Exact reviewed public main commit containing this workflow and text overlay
+        required: true
+        type: string
+      private_media_head_sha:
+        description: Exact private agmm-video-render commit containing the pinned base archive and release-action input
+        required: true
+        type: string
+      private_media_git_blob_sha:
+        description: Git blob SHA for source-inputs/F06/wave05/board-release-action.png in private_media_head_sha
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: f06-wave05-picture-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+      PRIVATE_MEDIA_HEAD_SHA: ${{ inputs.private_media_head_sha }}
+      PRIVATE_MEDIA_GIT_BLOB_SHA: ${{ inputs.private_media_git_blob_sha }}
+      SOURCE_REPO: agmmltd-arch/agmm-video-render
+      SOURCE_ARCHIVE: video-program/longform/film06-wave04c-packing-response/source.tar.gz
+      SOURCE_ARCHIVE_SHA256: 82802d929d8b04f4fabec0d29da3148861b3d1cd6c28bdb9f1b7b7d21c9b935c
+      RELEASE_INPUT: source-inputs/F06/wave05/board-release-action.png
+      EVIDENCE: ${{ github.workspace }}/remote-output/evidence
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout exact public text candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Initialize hosted paths
+        id: paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "WORKROOT=$RUNNER_TEMP/f06-wave05"
+            echo "PROJECT_ROOT=$RUNNER_TEMP/f06-wave05/project"
+            echo "PROJECT=$RUNNER_TEMP/f06-wave05/project/opening-wave04c-packing-response-motion-probe"
+            echo "VIDEO=$RUNNER_TEMP/f06-wave05/F06-WAVE05-SILENT-PICTURE.mp4"
+            echo "PRIVATE_CHECKOUT=$GITHUB_WORKSPACE/private-f06-input"
+          } >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/f06-wave05" "$GITHUB_WORKSPACE/remote-output/evidence"
+
+      - name: Verify public source, run pins and input locations
+        id: public_guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == refs/heads/main ]]
+          [[ "$EXPECTED_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PRIVATE_MEDIA_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PRIVATE_MEDIA_GIT_BLOB_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
+          mkdir -p "$WORKROOT" "$EVIDENCE"
+          gh api "repos/$GITHUB_REPOSITORY" > "$RUNNER_TEMP/f06-wave05/repository.json"
+          jq -e '.full_name == "agmmltd-arch/agmm-render-public" and .private == false and .visibility == "public"' "$RUNNER_TEMP/f06-wave05/repository.json" >/dev/null
+          python3 - <<'PY'
+          import hashlib,pathlib
+          expected={
+              'BRIEF.md':'91f6d2a100a2bcd62f4cd9c90a6b34d7bb8c9aaf329d3e3d41e4f3e96b94c2e3',
+              'SOURCE-AND-RIGHTS.md':'abfc30a842297aa267589d5b4bfce78b9036f788f5d094a766385215298f3b36',
+              'index.html':'48a26e827bd90b51a43f9ffad70b8dc59d6d20e3295331bd9e16c12b117772ac',
+              'static_check.py':'b027a73cd044b34ec093694af602cc033c7d33e1ab2ae9c200ba2da006a7ec5c',
+          }
+          root=pathlib.Path('source-inputs/F06/wave05-text')
+          def verify(files):
+              if set(files)!=set(expected):
+                  raise ValueError('text source file set mismatch')
+              for name,digest in expected.items():
+                  if hashlib.sha256(files[name]).hexdigest()!=digest:
+                      raise ValueError(f'text source pin mismatch: {name}')
+          paths=list(root.iterdir())
+          assert all(p.is_file() and not p.is_symlink() for p in paths), 'non-file or symlink text source refused'
+          actual={p.name:p.read_bytes() for p in paths}
+          verify(actual)
+          # Negative checks prove that altered, missing, and extra text inputs fail closed.
+          negatives=[]
+          changed=dict(actual); changed['index.html']=actual['index.html']+b' altered'; negatives.append(changed)
+          missing=dict(actual); missing.pop('static_check.py'); negatives.append(missing)
+          extra=dict(actual); extra['unapproved.txt']=b'extra'; negatives.append(extra)
+          for candidate in negatives:
+              try:
+                  verify(candidate)
+              except ValueError:
+                  pass
+              else:
+                  raise AssertionError('negative text pin test unexpectedly passed')
+          PY
+          echo "validated=true" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout only the pinned private F06 source archive and added picture input
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_media_head_sha }}
+          path: private-f06-input
+          sparse-checkout: |
+            video-program/longform/film06-wave04c-packing-response/source.tar.gz
+            source-inputs/F06/wave05/board-release-action.png
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          fetch-depth: 1
+
+      - name: Verify exact private commit, allowlisted paths and unchanged base archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C "$PRIVATE_CHECKOUT" rev-parse HEAD)" = "$PRIVATE_MEDIA_HEAD_SHA"
+          test "$(git -C "$PRIVATE_CHECKOUT" rev-parse HEAD:$RELEASE_INPUT)" = "$PRIVATE_MEDIA_GIT_BLOB_SHA"
+          test "$(git -C "$PRIVATE_CHECKOUT" ls-files | wc -l | tr -d ' ')" = 2
+          mkdir -p "$WORKROOT" "$PROJECT_ROOT" "$EVIDENCE"
+          cp "$PRIVATE_CHECKOUT/$SOURCE_ARCHIVE" "$WORKROOT/source.tar.gz"
+          test "$(sha256sum "$WORKROOT/source.tar.gz" | cut -d ' ' -f1)" = "$SOURCE_ARCHIVE_SHA256"
+          python3 - "$WORKROOT/source.tar.gz" "$PROJECT_ROOT" <<'PY'
+          import pathlib,sys,tarfile
+          archive=pathlib.Path(sys.argv[1]); root=pathlib.Path(sys.argv[2]).resolve(); seen=set()
+          with tarfile.open(archive,"r:gz") as tf:
+              members=tf.getmembers()
+              assert 0<len(members)<8192 and sum(m.size for m in members)<1024**3
+              for m in members:
+                  name=m.name
+                  if "\\" in name or name.startswith("/"): raise ValueError("unsafe archive path")
+                  parts=name.rstrip("/").split("/")
+                  while parts and parts[0] in ("","."): parts.pop(0)
+                  if any(p in ("",".","..") for p in parts): raise ValueError("unsafe archive path")
+                  normalized="/".join(parts)
+                  if normalized in seen: raise ValueError("duplicate normalized archive path")
+                  seen.add(normalized)
+                  dest=(root/normalized).resolve()
+                  assert dest==root or root in dest.parents
+                  assert m.isfile() or m.isdir(), "links and special members refused"
+              tf.extractall(root,filter="data")
+          PY
+          (cd "$PROJECT_ROOT" && sha256sum -c SHA256SUMS.txt >/dev/null)
+          cp source-inputs/F06/wave05-text/index.html "$PROJECT/index.html"
+          cp source-inputs/F06/wave05-text/BRIEF.md "$PROJECT/BRIEF.md"
+          cp source-inputs/F06/wave05-text/SOURCE-AND-RIGHTS.md "$PROJECT/SOURCE-AND-RIGHTS.md"
+          cp source-inputs/F06/wave05-text/static_check.py "$PROJECT/static_check.py"
+          cp "$PRIVATE_CHECKOUT/$RELEASE_INPUT" "$PROJECT/assets/board-release-action.png"
+          (cd "$PROJECT" && python3 static_check.py)
+          test "$(find "$PROJECT" -type f \( -iname '*.wav' -o -iname '*.mp3' -o -iname '*.mp4' \) | wc -l | tr -d ' ')" = 0
+          (cd "$PROJECT" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          (cd "$PROJECT" && sha256sum -c SHA256SUMS.txt >/dev/null)
+          python3 - "$PRIVATE_MEDIA_HEAD_SHA" "$PRIVATE_MEDIA_GIT_BLOB_SHA" "$WORKROOT/source.tar.gz" "$PROJECT/SHA256SUMS.txt" "$WORKROOT/SOURCE-RECEIPT.json" <<'PY'
+          import hashlib,json,pathlib,sys
+          commit,blob,archive,lock,out=sys.argv[1:]
+          d={"private_media_commit":commit,"new_image_git_blob_sha":blob,
+             "base_source_archive_sha256":hashlib.sha256(pathlib.Path(archive).read_bytes()).hexdigest(),
+             "host_rebuilt_source_lock_sha256":hashlib.sha256(pathlib.Path(lock).read_bytes()).hexdigest(),
+             "compute":"GitHub-hosted Ubuntu 24.04","release_approval":"NOT_GRANTED"}
+          pathlib.Path(out).write_text(json.dumps(d,indent=2)+"\n")
+          PY
+
+      - name: Install pinned hosted browser and decode tools
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+
+      - name: Install FFmpeg on hosted Ubuntu
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
+
+      - name: Run source check, render and decode on hosted Ubuntu only
+        id: capture
+        working-directory: ${{ env.PROJECT }}
+        run: |
+          set -euo pipefail
+          npx --yes hyperframes@0.8.71 check --json --at "0,0.89,0.9,1.333333,1.7,1.9,2.3,3.866667,4.4,6.8,9.59" > "$EVIDENCE/check.json"
+          npx --yes hyperframes@0.8.71 render --quality high --fps 30 --workers 1 \
+            --output "$VIDEO" > "$EVIDENCE/render.log" 2>&1 || { tail -60 "$EVIDENCE/render.log"; exit 1; }
+          ffprobe -v error -show_format -show_streams -of json "$VIDEO" > "$EVIDENCE/ffprobe.json"
+          ffmpeg -hide_banner -loglevel error -i "$VIDEO" -map 0:v:0 -an -sn -dn -f framemd5 "$EVIDENCE/video-frames.framemd5"
+          ffmpeg -hide_banner -nostats -i "$VIDEO" -vf 'blackdetect=d=0.10:pix_th=0.10,freezedetect=n=-60dB:d=0.5' -an -f null - 2> "$EVIDENCE/black-freeze-scan.txt"
+          ffmpeg -hide_banner -loglevel error -i "$VIDEO" -map 0:v:0 -vf 'scale=320:180:flags=lanczos,tile=6x8' -fps_mode vfr -q:v 3 "$EVIDENCE/contact-%03d.jpg"
+          python3 - "$EVIDENCE" "$EVIDENCE/ffprobe.json" "$EVIDENCE/video-frames.framemd5" "$WORKROOT/SOURCE-RECEIPT.json" <<'PY'
+          import csv,json,math,pathlib,sys
+          from pathlib import Path
+          out=Path(sys.argv[1]); probe=json.loads(Path(sys.argv[2]).read_text()); receipt=json.loads(Path(sys.argv[4]).read_text())
+          video=[s for s in probe['streams'] if s['codec_type']=='video']; audio=[s for s in probe['streams'] if s['codec_type']=='audio']
+          assert len(video)==1 and len(audio)==0
+          assert (video[0]['width'],video[0]['height'],video[0]['r_frame_rate'])==(1920,1080,'30/1')
+          frames=sum(bool(s.strip()) and not s.startswith('#') for s in Path(sys.argv[3]).open())
+          assert frames==288 and abs(float(probe['format']['duration'])-9.6)<0.06
+          contacts=sorted(out.glob('contact-*.jpg')); assert len(contacts)==6,len(contacts)
+          seams=[27,40,51,57,69,116,132,204]; events=[79,83,88,96,142,150,166,184,210,233,234,266]
+          native=sorted({n for b in seams for n in range(max(0,b-2),min(288,b+3))}|{n for e in events for n in range(max(0,e-2),min(288,e+3))}|{0,1,2,285,286,287})
+          expr='+'.join(f'between(n,{n},{n})' for n in native)
+          import os,subprocess
+          mp4=os.environ['VIDEO']
+          subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-i',mp4,'-map','0:v:0','-vf',f"select='{expr}'",'-vsync','0',str(out/'native-%03d.png')],check=True)
+          imgs=sorted(out.glob('native-*.png')); assert len(imgs)==len(native),(len(imgs),len(native))
+          with (out/'FRAME-REVIEW-INDEX.csv').open('w',newline='') as f:
+              w=csv.writer(f); w.writerow(['frame','time_seconds','contact_sheet','tile_1_based'])
+              for n in range(frames): w.writerow([n,f'{n/30:.6f}',f'contact-{n//48+1:03d}.jpg',n%48+1])
+          (out/'BOUNDARY-FRAME-MAP.csv').write_text('output_png,source_frame,time_seconds\n'+''.join(f'native-{i+1:03d}.png,{n},{n/30:.6f}\n' for i,n in enumerate(native)))
+          (out/'FRAME-COUNT.txt').write_text(f'{frames} fully decoded frames; {len(contacts)} chronological sheets; {len(native)} native cut/event frames; silent picture proof only; release approval not granted.\n')
+          receipt['fully_decoded_video_frames']=frames; receipt['contact_sheets']=len(contacts); receipt['native_review_frames']=len(native)
+          (out/'SOURCE-RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          expected={'check.json','ffprobe.json','video-frames.framemd5','black-freeze-scan.txt','render.log','FRAME-REVIEW-INDEX.csv','BOUNDARY-FRAME-MAP.csv','FRAME-COUNT.txt','SOURCE-RECEIPT.json'}|{f'contact-{i:03d}.jpg' for i in range(1,7)}|{f'native-{i:03d}.png' for i in range(1,len(native)+1)}
+          actual={p.name for p in out.iterdir() if p.is_file()}
+          assert actual==expected, (sorted(actual-expected),sorted(expected-actual))
+          assert not any(p.suffix.lower()=='.mp4' for p in out.iterdir())
+          print((out/'FRAME-COUNT.txt').read_text())
+          PY
+      - name: Upload allowlisted motion review and capture evidence
+        if: success() && steps.public_guard.outputs.validated == 'true' && steps.capture.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: F06-WAVE05-HOSTED-PICTURE-${{ github.run_id }}
+          path: |
+            ${{ github.workspace }}/remote-output/evidence/
+            ${{ runner.temp }}/f06-wave05/F06-WAVE05-SILENT-PICTURE.mp4
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+
+      - name: Remove protected source and intermediates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$GITHUB_WORKSPACE/private-f06-input" "$RUNNER_TEMP/f06-wave05/project" "$RUNNER_TEMP/f06-wave05/source.tar.gz"
+          rm -f "$RUNNER_TEMP/f06-wave05/SOURCE-RECEIPT.json" "$RUNNER_TEMP/f06-wave05/repository.json"
+          test ! -e "$GITHUB_WORKSPACE/private-f06-input"
+          test ! -e "$RUNNER_TEMP/f06-wave05/project"
+          test ! -e "$RUNNER_TEMP/f06-wave05/source.tar.gz"
