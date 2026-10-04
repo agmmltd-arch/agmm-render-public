@@ -19,9 +19,9 @@ jobs:
     timeout-minutes: 25
     env:
       GH_REPO: agmmltd-arch/agmm-render-public
-      S82_PARENT_SHA: ab8011d077cd219319a04670c7e89f367d45934f
+      S82_PARENT_SHA: d1cfb6dec52082159b7fadfbffe2965d4ef1754a
       S82_PLAN_SHA256: 0fe325104557169140b7b7ca1643acbbcbac92c2c57a8f6075845b24055ca661
-      S82_HELPER_SHA256: d5e99cfe2825763b199e0dbe8dea0f90475ec540475ff596e1f2bc268623b576
+      S82_HELPER_SHA256: 33c60e176316ab0f420ee80da6b717fb089d2ed179d7c6441b4b459ecf3fe76d
       S82_DIAGNOSTIC_ONLY: ${{ inputs.diagnostic_only }}
       GH_TOKEN: ${{ github.token }}
     steps:

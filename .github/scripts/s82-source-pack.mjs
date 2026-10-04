@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process';
 export const REPOSITORY = 'agmmltd-arch/agmm-render-public';
 export const PLAN_PATH = '.github/scripts/s82-source-pack-plan.json';
 export const PLAN_SHA256 = '0fe325104557169140b7b7ca1643acbbcbac92c2c57a8f6075845b24055ca661';
-export const PARENT_SHA = 'ab8011d077cd219319a04670c7e89f367d45934f';
+export const PARENT_SHA = 'd1cfb6dec52082159b7fadfbffe2965d4ef1754a';
 export const MAX_FILE_BYTES = 2_000_000;
 export const MAX_TOTAL_BYTES = 16_000_000;
 export const MAX_LOGO_DIAGNOSTIC_ROWS = 20;
@@ -167,7 +167,7 @@ export function validateLogoCandidate(candidate, source, baseURL) {
   return url;
 }
 
-async function findVisibleLogo(page, source) {
+export async function findVisibleLogo(page, source) {
   return page.evaluate(({ selector, patternText }) => {
     const re = new RegExp(patternText, 'i');
     const shown = el => {
@@ -194,10 +194,11 @@ async function findVisibleLogo(page, source) {
         diagnosticRows.push({ kind:'descendant', headerIndex, tag:el.tagName.toLowerCase(), rect:rect(el),
           display:style.display, visibility:style.visibility, opacity:style.opacity, label, url:rawURL });
       }
-      if (!shown(header)) continue;
+      // Absolutely positioned marks may be visible inside a zero-height header.
+      if (headerStyle.display === 'none' || headerStyle.visibility === 'hidden' || Number(headerStyle.opacity || 1) <= 0) continue;
       for (const el of header.querySelectorAll('img,svg,[role="img"]')) {
         const style = getComputedStyle(el);
-        if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity || 1) <= 0) continue;
+        if (!shown(el)) continue;
         const label = [el.getAttribute('alt'), el.getAttribute('aria-label'), el.getAttribute('title')]
           .filter(Boolean).join(' ').trim();
         if (!label || !re.test(label)) continue;

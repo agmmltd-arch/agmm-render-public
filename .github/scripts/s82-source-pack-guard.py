@@ -9,11 +9,11 @@ from pathlib import Path
 import subprocess
 
 REPOSITORY = 'agmmltd-arch/agmm-render-public'
-PARENT_SHA = 'ab8011d077cd219319a04670c7e89f367d45934f'
+PARENT_SHA = 'd1cfb6dec52082159b7fadfbffe2965d4ef1754a'
 PLAN_PATH = Path('.github/scripts/s82-source-pack-plan.json')
 HELPER_PATH = Path('.github/scripts/s82-source-pack.mjs')
 PLAN_SHA256 = '0fe325104557169140b7b7ca1643acbbcbac92c2c57a8f6075845b24055ca661'
-HELPER_SHA256 = 'd5e99cfe2825763b199e0dbe8dea0f90475ec540475ff596e1f2bc268623b576'
+HELPER_SHA256 = '33c60e176316ab0f420ee80da6b717fb089d2ed179d7c6441b4b459ecf3fe76d'
 INHERITED_BLOBS = {
     '.github/scripts/capture_short_package.py': '65f9b89f126c6113a91061a2f1f361954c96a0ae',
     '.github/scripts/render_short_package.py': '754099346a84c5bd305f5684ef24399a53bd9697',

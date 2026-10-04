@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { canonicalURL, sanitizeLogoDiscovery, taggedURL, validateLogoCandidate, validatePlan } from './s82-source-pack.mjs';
+import { findVisibleLogo, canonicalURL, sanitizeLogoDiscovery, taggedURL, validateLogoCandidate, validatePlan } from './s82-source-pack.mjs';
 
 const here = new URL('.', import.meta.url);
 const plan = JSON.parse(fs.readFileSync(new URL('./SOURCE-PLAN.json', here), 'utf8'));
@@ -110,4 +110,34 @@ test('diagnostic mode returns before the logo-only image pass and any screenshot
   assert.ok(logoPass > diagnosticReturn && screenshot > logoPass);
   assert.match(source, /if \(type === 'image'\) return permittedLogoURLs\.has\(url\.href\) \? route\.continue\(\) : route\.abort\(\)/);
   assert.ok(source.indexOf('permittedLogoURLs.add(logoURL.href)') > diagnosticReturn);
+});
+
+
+test('actual logo discovery admits visible positioned child in zero-height header but refuses hidden or zero-size marks', async () => {
+  const originalDocument = globalThis.document, originalComputed = globalThis.getComputedStyle;
+  const originalImage = globalThis.HTMLImageElement;
+  class MockImage {
+    tagName = 'IMG';
+    width = 192; height = 36; display = 'block';
+    getBoundingClientRect() { return {x:32,y:52,width:this.width,height:this.height}; }
+    getAttribute(key) { return {alt:'Santander Bank',src:'/content/dam/santander-com/images/logo/santander-logo-negative.svg'}[key] || null; }
+  }
+  const image = new MockImage();
+  const header = {tagName:'HEADER',display:'block',visibility:'visible',opacity:'1',
+    getBoundingClientRect:()=>({x:0,y:0,width:1440,height:0}),querySelectorAll:()=>[image]};
+  globalThis.HTMLImageElement = MockImage;
+  globalThis.document = {querySelectorAll:()=>[header]};
+  globalThis.getComputedStyle = el => ({display:el.display || 'block',visibility:el.visibility || 'visible',opacity:el.opacity || '1'});
+  const page = {evaluate:async(fn,args)=>fn(args)};
+  try {
+    assert.equal((await findVisibleLogo(page,plan.sources[0])).candidateCount,1);
+    header.display = 'none'; assert.equal((await findVisibleLogo(page,plan.sources[0])).candidateCount,0);
+    header.display = 'block'; image.width = 0; assert.equal((await findVisibleLogo(page,plan.sources[0])).candidateCount,0);
+    image.width = 192; image.display = 'none'; assert.equal((await findVisibleLogo(page,plan.sources[0])).candidateCount,0);
+    image.display = 'block'; image.getAttribute = key => key === 'alt' ? 'Unrelated publisher' : null;
+    assert.equal((await findVisibleLogo(page,plan.sources[0])).candidateCount,0);
+  } finally {
+    globalThis.document = originalDocument; globalThis.getComputedStyle = originalComputed;
+    globalThis.HTMLImageElement = originalImage;
+  }
 });
