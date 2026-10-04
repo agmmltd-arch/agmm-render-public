@@ -9,7 +9,7 @@
     ".s81-kicker{position:absolute;left:64px;top:58px;font:700 26px/1.15 'AG2 Red Hat Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:"+C.teal+"}",
     ".s81-credit{position:absolute;left:64px;right:64px;bottom:56px;border-top:2px solid rgba(244,240,231,.55);padding-top:15px;font:700 26px/1.2 'AG2 Red Hat Mono',monospace;color:"+C.paper+"}",
     ".s81-mark{position:absolute;right:66px;top:48px;width:148px;height:148px;object-fit:contain;background:"+C.paper+";padding:18px;border-radius:50%;box-sizing:border-box;filter:drop-shadow(0 4px 0 rgba(0,0,0,.15))}",
-    ".s81-title{position:absolute;left:64px;right:64px;top:190px;font:700 94px/.93 'AG2 Bricolage',sans-serif;letter-spacing:-.045em;text-transform:uppercase;white-space:pre-line}",
+    ".s81-title{position:absolute;left:64px;right:64px;top:190px;font:700 124px/.93 'AG2 Bricolage',sans-serif;letter-spacing:-.045em;text-transform:uppercase;white-space:pre-line}",
     ".s81-small{font:700 28px/1.2 'AG2 Red Hat Mono',monospace;letter-spacing:.04em;text-transform:uppercase}",
     ".s81-portal{position:absolute;left:50%;margin-left:-340px;top:420px;width:680px;height:760px;border:18px solid "+C.teal+";border-radius:360px 360px 12px 12px;background:linear-gradient(90deg,"+C.ink2+" 0 48%,"+C.red+" 48% 50%,"+C.ink2+" 50%);box-shadow:0 0 0 22px rgba(123,198,186,.13),0 40px 100px rgba(0,0,0,.4);box-sizing:border-box}",
     ".s81-portal:before{content:'';position:absolute;inset:46px 40px 0;border:4px solid rgba(244,240,231,.54);border-bottom:0;border-radius:315px 315px 0 0}",
@@ -120,18 +120,21 @@
 
     var hook = world(root, "JUNE · AUSTRALIA · SYSTEM ACCESS", "BBC News · 24 Sep 2026 · source headline and report");
     logo(hook);
-    bar(hook, "s81-title", "AGENT\nIN PORTAL");
+    bar(hook, "s81-title", "OPENAI AGENT\nIN PORTAL");
     var portal = el("div", "s81-portal", hook);
     el("div", "s81-portallabel", portal, "MEDICARE\nSTATISTICS");
     el("div", "s81-gateway-tag", hook, "AUSTRALIA · PORTAL ACCESS");
     var route = el("div", "s81-route", hook); route.style.setProperty("--fill", "0%");
     el("i", "s81-node june", hook); el("i", "s81-node sept", hook);
     el("div", "s81-date june", hook, "JUNE"); el("div", "s81-date sept", hook, "SEPTEMBER · EMAIL");
-    tl.fromTo(portal, { scaleY: .72, transformOrigin: "50% 100%" }, { scaleY: 1, duration: .7, ease: "power3.out" }, .05);
+    tl.set(hook, { autoAlpha: 1 }, 0);
+    tl.fromTo(portal, { scaleY: .86, transformOrigin: "50% 100%" }, { scaleY: 1, duration: .7, ease: "power3.out" }, 0);
     tl.fromTo(route, { "--fill": "0%" }, { "--fill": "100%", duration: 1.7, ease: "none" }, .18);
-    tl.fromTo(hook.querySelector(".s81-title"), { y: 65, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .45, ease: "back.out(1.1)" }, .12);
+    tl.fromTo(hook.querySelector(".s81-title"), { y: 22, autoAlpha: 1 }, { y: 0, autoAlpha: 1, duration: .42, ease: "power2.out" }, 0);
+    tl.fromTo(hook.querySelector(".s81-mark"), { rotation: -7, scale: .92 }, { rotation: 0, scale: 1, duration: .48, ease: "power2.out" }, 0);
     tl.fromTo(hook.querySelector(".s81-gateway-tag"), { y: 38, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .28, ease: "power2.out" }, .64);
-    enter(tl, hook, 0, 8.60, 0, 0, "power2.out");
+    // Opening hook is fully present on the first frame; only its objects move.
+    tl.to(hook, { autoAlpha: 0, duration: .22, ease: "power1.in" }, 8.38);
 
     var breach = world(root, "BBC · ALBANESE ON THE PORTAL", "Source: BBC News · 24 Sep 2026 · bbc.com/news/articles/c6vgy0333dppo");
     var proof = el("div", "s81-evidence", breach);

@@ -138,6 +138,7 @@ jobs:
           python3 .github/scripts/verify_s81_active_frames.py \
             capture-pack/CAPTURE-EVIDENCE.json \
             --snapshot-log captured/s81.snapshot.log \
+            --scene-source .github/s81-candidate/candidate/scenes.js \
             --output capture-pack/S81-ACTIVE-FRAME-GUARD.json
           mkdir -p capture-pack/inputs
           cp .github/s81-candidate/S81-CANDIDATE-MANIFEST.json capture-pack/inputs/

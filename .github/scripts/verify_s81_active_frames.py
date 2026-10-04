@@ -12,14 +12,14 @@ from pathlib import Path
 from typing import Optional
 
 ACTIVE = {
-    "portal-description", "openai-internal-evaluation", "unintended-actions-quote",
+    "hook-frame-zero", "portal-description", "openai-internal-evaluation", "unintended-actions-quote",
     "august-discovery", "september-email", "once-daily-monitoring",
     "albanese-response", "privacy-qualification", "lesson-route-fold", "cta-audit-link",
     "privacy-line-start", "privacy-qualification-settled", "cta-follow-start",
 }
 
 
-def png_rgb(path: Path) -> tuple[int, int, set[tuple[int, int, int]], int]:
+def png_rgb(path: Path, inspect_hero: bool = False) -> tuple[int, int, set[tuple[int, int, int]], int, int]:
     data = path.read_bytes()
     if not data.startswith(b"\x89PNG\r\n\x1a\n"):
         raise ValueError(f"{path.name}: not a PNG")
@@ -47,6 +47,7 @@ def png_rgb(path: Path) -> tuple[int, int, set[tuple[int, int, int]], int]:
     prev = bytearray(stride)
     palette: set[tuple[int, int, int]] = set()
     nonpaper = 0
+    hero_ink_samples = 0
     for y in range(height):
         base = y * (stride + 1)
         filt = raw[base]
@@ -70,11 +71,58 @@ def png_rgb(path: Path) -> tuple[int, int, set[tuple[int, int, int]], int]:
             rgb = (row[x], row[x+1], row[x+2])
             if len(palette) < 128: palette.add(rgb)
             if min(rgb) < 242: nonpaper += 7
+        # On the frame-zero hook only, count sparse 4px samples in the reserved
+        # hero-title band. Navy grain cannot satisfy this high-contrast test.
+        if inspect_hero and 175 <= y < 415:
+            for px in range(0, width, 4):
+                x = px * bpp
+                rgb = (row[x], row[x+1], row[x+2])
+                if min(rgb) >= 170 and max(rgb) - min(rgb) <= 90:
+                    hero_ink_samples += 1
         prev = row
-    return width, height, palette, nonpaper
+    return width, height, palette, nonpaper, hero_ink_samples
 
 
-def verify(evidence_path: Path, snapshot_log: Optional[Path] = None) -> dict:
+def validate_hook_source_text(source: str) -> None:
+    marker = 'A.scenes["s81-evidence-route"] = function (ctx) {'
+    if source.count(marker) != 1:
+        raise ValueError("frame-zero hook source must define exactly one S81 scene")
+    scene = source.split(marker, 1)[1]
+    if "\n    var breach = world(" not in scene:
+        raise ValueError("cannot isolate the actual S81 opening scene block")
+    opening = scene.split("\n    var breach = world(", 1)[0]
+    if re.search(r"enter\(tl,\s*hook,\s*0\s*,", opening):
+        raise ValueError("frame-zero hook parent is hidden by a delayed entrance")
+    if re.search(r"tl\.set\(hook,\s*\{\s*autoAlpha:\s*0\s*\},\s*0\)", opening):
+        raise ValueError("frame-zero hook parent is hidden at time zero")
+    required = (
+        'bar(hook, "s81-title", "OPENAI AGENT\\nIN PORTAL");',
+        'tl.set(hook, { autoAlpha: 1 }, 0);',
+        'tl.fromTo(portal, { scaleY: .86, transformOrigin: "50% 100%" }',
+        'tl.fromTo(hook.querySelector(".s81-title"), { y: 22, autoAlpha: 1 }',
+        'tl.fromTo(hook.querySelector(".s81-mark"), { rotation: -7, scale: .92 }',
+    )
+    missing = [snippet for snippet in required if snippet not in opening]
+    if missing:
+        raise ValueError(f"actual S81 opening timeline lacks visible-at-zero content or motion: {missing}")
+    # Explicitly require a time-zero start for every intentional opening move.
+    for selector in ("portal", 'hook.querySelector(".s81-title")', 'hook.querySelector(".s81-mark")'):
+        line = next((row for row in opening.splitlines() if f"tl.fromTo({selector}," in row), "")
+        if not re.search(r",\s*0\);\s*$", line):
+            raise ValueError(f"opening motion for {selector} does not begin at timeline zero")
+    title_rule = re.search(r"\.s81-title\{[^}]*font:700 (\d+)px", source)
+    if not title_rule or int(title_rule.group(1)) < 120:
+        raise ValueError("frame-zero hook title must use at least 120px type")
+
+
+def verify_hook_source(path: Path) -> None:
+    validate_hook_source_text(path.read_text())
+
+
+def verify(evidence_path: Path, snapshot_log: Optional[Path] = None, scene_source: Optional[Path] = None) -> dict:
+    if scene_source is None:
+        raise ValueError("exact scene source is required for the frame-zero hook guard")
+    verify_hook_source(scene_source)
     evidence = json.loads(evidence_path.read_text())
     rows = {row.get("name"): row for row in evidence.get("captures", [])}
     missing = sorted(ACTIVE - rows.keys())
@@ -101,12 +149,14 @@ def verify(evidence_path: Path, snapshot_log: Optional[Path] = None) -> dict:
         if digest in digests:
             raise ValueError(f"{name}: active captures are byte-identical")
         digests.add(digest)
-        width, height, colors, nonpaper = png_rgb(image)
+        width, height, colors, nonpaper, hero_ink = png_rgb(image, inspect_hero=(name == "hook-frame-zero"))
         if (width, height) != (1080, 1920):
             raise ValueError(f"{name}: expected 1080x1920, got {width}x{height}")
         if len(colors) < 16 or nonpaper < 5000:
             raise ValueError(f"{name}: active frame appears blank (colors={len(colors)}, nonpaper_pixels={nonpaper})")
-        checked.append({"name": name, "sha256": digest, "sampled_colors": len(colors), "nonpaper_pixels": nonpaper})
+        if name == "hook-frame-zero" and hero_ink < 300:
+            raise ValueError(f"{name}: no legible high-contrast hook subject in title band (samples={hero_ink})")
+        checked.append({"name": name, "sha256": digest, "sampled_colors": len(colors), "nonpaper_pixels": nonpaper, "hero_ink_samples": hero_ink if name == "hook-frame-zero" else None})
     return {"kind": "s81_active_frame_content_guard", "status": "PASS", "snapshot_log_checked": log_checked, "checked": checked}
 
 
@@ -114,9 +164,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("evidence", type=Path)
     parser.add_argument("--snapshot-log", type=Path)
+    parser.add_argument("--scene-source", type=Path, required=True)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    result = verify(args.evidence, args.snapshot_log)
+    result = verify(args.evidence, args.snapshot_log, args.scene_source)
     encoded = json.dumps(result, indent=2) + "\n"
     if args.output: args.output.write_text(encoded)
     print(encoded, end="")

@@ -58,7 +58,7 @@
     {
       "path": "candidate/MANIFEST.json",
       "bytes": 4118,
-      "sha256": "362c00c245084c8ad976e686aa291e8a100de0695095fe9b6df2e906cdbcac78"
+      "sha256": "17b7a022dbe91373b92b68f3143b22a85d7ff552492b374d0d069554b83e3405"
     },
     {
       "path": "candidate/RESULT.json",
@@ -82,8 +82,8 @@
     },
     {
       "path": "candidate/scenes.js",
-      "bytes": 22838,
-      "sha256": "c7d6349b0871d03919eb1166399df8b96a94abba626dfb9408c4855f802bad6d"
+      "bytes": 23126,
+      "sha256": "045a9f74d976055573057a9833eebd6d6a8a54030b9fb5ca7f787bef2273645b"
     },
     {
       "path": "candidate/selected-sound-assets.json",
