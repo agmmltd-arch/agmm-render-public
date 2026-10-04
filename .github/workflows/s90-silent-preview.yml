@@ -175,3 +175,22 @@ jobs:
           git commit -m 'S90 silent development frames; NOT approval'
           gh auth setup-git
           git push origin "HEAD:refs/heads/$branch"
+      - name: Verify B16 source geometry in the hosted browser
+        env:
+          S90_HOSTED_PREVIEW: '1'
+          S90_PLAYWRIGHT_ENTRY: '${{ runner.temp }}/s90-geometry/node_modules/playwright/index.mjs'
+        run: |
+          set -euo pipefail
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install --prefix "$RUNNER_TEMP/s90-geometry" --no-save playwright@1.55.0
+          mkdir -p "$RUNNER_TEMP/s90-b16-original"
+          cp -a prepared/project/s90-preview-a/. "$RUNNER_TEMP/s90-b16-original/"
+          git fetch --no-tags --depth=1 origin 94a61bedfcf83d42dd3f64e558e05e4ffacbc491
+          git show 94a61bedfcf83d42dd3f64e558e05e4ffacbc491:s90-development-input/S90-scene-prototype-luna/scenes.js \
+            > "$RUNNER_TEMP/s90-b16-original/scenes.js"
+          test "$(sha256sum "$RUNNER_TEMP/s90-b16-original/scenes.js" | cut -d' ' -f1)" = \
+            a77a514b9de9c4e45941758615ebb7512c3630b95c9d5483742e8963a403eba9
+          test "$(sha256sum prepared/project/s90-preview-a/scenes.js | cut -d' ' -f1)" = \
+            5b476328cee03f6225817e2dff5f9e6cb0e5cbf5532fbc20f7682490ba6d9afe
+          node .github/scripts/check_s90_b16_geometry.mjs \
+            --original-root="$RUNNER_TEMP/s90-b16-original" \
+            --candidate-root=prepared/project/s90-preview-a
