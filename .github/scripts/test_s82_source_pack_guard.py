@@ -27,7 +27,8 @@ class SourcePackGuardTests(unittest.TestCase):
         self.helper_bytes = b'fixture helper'
         self.env = {'GITHUB_ACTIONS':'true','RUNNER_OS':'Linux',
             'GITHUB_REPOSITORY':guard.REPOSITORY,'GITHUB_REF':'refs/heads/main',
-            'GITHUB_SHA':'c' * 40, 'S82_PLAN_SHA256':'fixture', 'S82_HELPER_SHA256':'fixture'}
+            'GITHUB_SHA':'c' * 40, 'S82_PLAN_SHA256':'fixture', 'S82_HELPER_SHA256':'fixture',
+            'S82_DIAGNOSTIC_ONLY':'false'}
         self.repo = {'full_name':guard.REPOSITORY,'private':False,'visibility':'public'}
         self.head = 'c' * 40
         self.parent = guard.PARENT_SHA
@@ -52,6 +53,28 @@ class SourcePackGuardTests(unittest.TestCase):
     def test_exact_public_linux_parent_and_text_runtime_pass(self):
         self.validate()
 
+    def test_nonmain_dispatch_refuses_and_cannot_publish_failure_receipt(self):
+        self.env['GITHUB_REF'] = 'refs/heads/untrusted-fixture'
+        with self.assertRaisesRegex(ValueError, 'preimage moved'):
+            self.validate()
+        workflow = yaml.safe_load((HERE / 's82-source-pack-capture.yml').read_text())
+        steps = workflow['jobs']['capture']['steps']
+        preflight = next(x for x in steps if x.get('id') == 'preflight')
+        self.assertIn('s82-source-pack-guard.py', preflight['run'])
+        prepare = next(x for x in steps if x.get('id') == 'prepare')
+        publish = next(x for x in steps if x.get('name', '').startswith("Publish only this run"))
+        self.assertEqual(prepare['if'], "always() && steps.preflight.outcome == 'success'")
+        self.assertEqual(publish['if'], "always() && steps.preflight.outcome == 'success' && steps.prepare.outcome == 'success'")
+
+    def test_workflow_guard_and_receipt_parent_bind_the_same_commit(self):
+        import re
+        workflow = yaml.safe_load((HERE / 's82-source-pack-capture.yml').read_text())
+        self.assertEqual(workflow['jobs']['capture']['env']['S82_PARENT_SHA'], guard.PARENT_SHA)
+        helper = (HERE / 's82-source-pack.mjs').read_text()
+        match = re.search(r"const PARENT_SHA = '([0-9a-f]{40})'", helper)
+        self.assertIsNotNone(match)
+        self.assertEqual(match.group(1), guard.PARENT_SHA)
+
     def test_private_target_refuses_before_capture(self):
         self.repo['private'] = True
         with self.assertRaisesRegex(ValueError, 'public repository'):
@@ -63,8 +86,15 @@ class SourcePackGuardTests(unittest.TestCase):
             self.validate()
 
     def test_previous_observed_parent_refuses_after_refresh(self):
-        self.parent = '1cbf444fe3278327aa098bee93deadd8abbc97a7'
+        self.parent = '0e24eb4e932d54fee571e37338d3c9807edac922'
         with self.assertRaisesRegex(ValueError, 'preimage moved'):
+            self.validate()
+
+    def test_diagnostic_only_input_is_strict_boolean_text(self):
+        self.env['S82_DIAGNOSTIC_ONLY'] = 'true'
+        self.validate()
+        self.env['S82_DIAGNOSTIC_ONLY'] = 'yes'
+        with self.assertRaisesRegex(ValueError, 'must be a boolean'):
             self.validate()
 
     def test_unexpected_inherited_runtime_blob_refuses(self):
@@ -95,6 +125,8 @@ class SourcePackGuardTests(unittest.TestCase):
         workflow_path = HERE / 's82-source-pack-capture.yml'
         workflow_text = workflow_path.read_text()
         workflow = yaml.safe_load(workflow_text)
+        self.assertIn('diagnostic_only', workflow_text)
+        self.assertIn('S82_DIAGNOSTIC_ONLY: ${{ inputs.diagnostic_only }}', workflow_text)
         steps = workflow['jobs']['capture']['steps']
         checkout = next(step for step in steps if step.get('uses', '').startswith('actions/checkout@'))
         self.assertEqual(checkout['with'].get('fetch-depth'), 2)
@@ -136,6 +168,34 @@ class SourcePackGuardTests(unittest.TestCase):
             self.assertEqual({p.name for p in payload.iterdir()},
                 set(expected)|{'SOURCE-PLAN.json','CAPTURE-RECEIPT.json','SOURCE-IDENTITY.json','manifest.json','SHA256SUMS.txt'})
             self.assertFalse(any(p.is_dir() for p in payload.iterdir()))
+
+    def test_diagnostic_only_identity_is_preserved_as_text_without_pngs(self):
+        workflow = yaml.safe_load((HERE / 's82-source-pack-capture.yml').read_text())
+        step = next(step for step in workflow['jobs']['capture']['steps']
+                    if step.get('name') == 'Prepare an exact allowlisted public review payload, including failure receipts')
+        run = step['run']
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); workspace = root / 'workspace'; runner = root / 'runner'
+            (workspace / '.github/scripts').mkdir(parents=True)
+            (workspace / '.github/scripts/s82-source-pack-plan.json').write_text((HERE / 'SOURCE-PLAN.json').read_text())
+            source = runner / 's82-source-capture'; source.mkdir(parents=True)
+            receipt = {'status':'SOURCE_IDENTITY_DIAGNOSTIC_ONLY','story_id':'S82','asset_count':0,
+                       'diagnostic_only':True,'assets':[],'render_approval':'NOT_GRANTED'}
+            identity = {'status':receipt['status'],'sources':[{'key':'primary','diagnostic_only':True,
+                       'logo_discovery':{'header_count':1,'candidate_count':0,'diagnostic_rows':[{'kind':'header','display':'none'}]}}]}
+            (source / 'CAPTURE-RECEIPT.json').write_text(json.dumps(receipt))
+            (source / 'SOURCE-IDENTITY.json').write_text(json.dumps(identity))
+            env = dict(os.environ)
+            env.update({'RUNNER_TEMP':str(runner),'S82_CAPTURE_DIR':str(source),
+                        'S82_PLAN_SHA256':guard.PLAN_SHA256,'CAPTURE_OUTCOME':'success'})
+            result = subprocess.run(['bash','-euo','pipefail','-c',run],cwd=workspace,env=env,
+                                    text=True,capture_output=True)
+            self.assertEqual(result.returncode,0,result.stderr or result.stdout)
+            payload=runner/'s82-source-review'
+            self.assertEqual({p.name for p in payload.iterdir()},
+                {'SOURCE-PLAN.json','CAPTURE-RECEIPT.json','SOURCE-IDENTITY.json','SHA256SUMS.txt'})
+            self.assertEqual(json.loads((payload/'SOURCE-IDENTITY.json').read_text())['sources'][0]['logo_discovery']['candidate_count'],0)
+            self.assertFalse(any(p.suffix.lower()=='.png' for p in payload.iterdir()))
 
     def test_orphan_publish_fixture_empties_index_before_exact_run_payload(self):
         workflow=yaml.safe_load((HERE/'s82-source-pack-capture.yml').read_text())

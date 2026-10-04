@@ -7,9 +7,10 @@ import { execFileSync } from 'node:child_process';
 export const REPOSITORY = 'agmmltd-arch/agmm-render-public';
 export const PLAN_PATH = '.github/scripts/s82-source-pack-plan.json';
 export const PLAN_SHA256 = '0fe325104557169140b7b7ca1643acbbcbac92c2c57a8f6075845b24055ca661';
-export const PARENT_SHA = '0e24eb4e932d54fee571e37338d3c9807edac922';
+export const PARENT_SHA = 'ab8011d077cd219319a04670c7e89f367d45934f';
 export const MAX_FILE_BYTES = 2_000_000;
 export const MAX_TOTAL_BYTES = 16_000_000;
+export const MAX_LOGO_DIAGNOSTIC_ROWS = 20;
 export const QA = { utm_source: 'qa', utm_campaign: 'qa_release_audit' };
 
 export const normalizeText = value => String(value ?? '')
@@ -113,6 +114,59 @@ function visible(el) {
     && Number(s.opacity || 1) > 0;
 }
 
+function diagnosticText(value, cap = 160) {
+  return String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, cap);
+}
+
+function diagnosticRect(value) {
+  if (!value || typeof value !== 'object') return null;
+  const out = {};
+  for (const key of ['x', 'y', 'width', 'height']) {
+    const number = Number(value[key]);
+    out[key] = Number.isFinite(number) ? Math.round(number * 100) / 100 : null;
+  }
+  return out;
+}
+
+export function sanitizeLogoDiscovery(value, baseURL) {
+  const rows = Array.isArray(value?.diagnosticRows) ? value.diagnosticRows.slice(0, MAX_LOGO_DIAGNOSTIC_ROWS) : [];
+  return {
+    header_count: Number.isSafeInteger(value?.headerCount) && value.headerCount >= 0 ? value.headerCount : 0,
+    candidate_count: Number.isSafeInteger(value?.candidateCount) && value.candidateCount >= 0 ? value.candidateCount : 0,
+    diagnostic_rows: rows.map(row => {
+      const safe = {
+        kind: row?.kind === 'header' ? 'header' : 'descendant',
+        header_index: Number.isSafeInteger(row?.headerIndex) && row.headerIndex >= 0 ? row.headerIndex : null,
+        tag: diagnosticText(row?.tag, 24).toLowerCase(),
+        rect: diagnosticRect(row?.rect),
+        display: diagnosticText(row?.display, 24),
+        visibility: diagnosticText(row?.visibility, 24),
+        opacity: diagnosticText(row?.opacity, 24),
+      };
+      if (row?.kind !== 'header') {
+        safe.accessible_label = diagnosticText(row?.label, 160);
+        try {
+          const url = new URL(String(row?.url || ''), baseURL);
+          safe.url_protocol = url.protocol;
+          safe.url_host = diagnosticText(url.host, 160);
+          safe.url_path = diagnosticText(url.pathname, 240);
+        } catch {
+          safe.url_protocol = 'invalid'; safe.url_host = ''; safe.url_path = '';
+        }
+      }
+      return safe;
+    }),
+  };
+}
+
+export function validateLogoCandidate(candidate, source, baseURL) {
+  const url = new URL(String(candidate?.url || ''), baseURL);
+  if (candidate?.tag !== 'img' || url.protocol !== 'https:' || !source?.allowed_hosts?.includes(url.hostname)) {
+    throw new Error('native publisher mark is not a same-source HTTPS image');
+  }
+  return url;
+}
+
 async function findVisibleLogo(page, source) {
   return page.evaluate(({ selector, patternText }) => {
     const re = new RegExp(patternText, 'i');
@@ -121,9 +175,25 @@ async function findVisibleLogo(page, source) {
       return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'
         && Number(s.opacity || 1) > 0;
     };
+    const rect = el => { const r = el.getBoundingClientRect(); return { x:r.x, y:r.y, width:r.width, height:r.height }; };
     const headers = [...document.querySelectorAll(selector)];
     const candidates = [];
+    let candidateCount = 0;
+    const diagnosticRows = [];
     for (const [headerIndex, header] of headers.entries()) {
+      const headerStyle = getComputedStyle(header);
+      if (diagnosticRows.length < 20) diagnosticRows.push({ kind:'header', headerIndex,
+        tag:header.tagName.toLowerCase(), rect:rect(header), display:headerStyle.display,
+        visibility:headerStyle.visibility, opacity:headerStyle.opacity });
+      for (const el of header.querySelectorAll('img,svg,[role="img"]')) {
+        if (diagnosticRows.length >= 20) break;
+        const style=getComputedStyle(el);
+        const label=[el.getAttribute('alt'),el.getAttribute('aria-label'),el.getAttribute('title')]
+          .filter(Boolean).join(' ').trim();
+        const rawURL=el instanceof HTMLImageElement ? (el.getAttribute('src') || el.currentSrc || el.src) : '';
+        diagnosticRows.push({ kind:'descendant', headerIndex, tag:el.tagName.toLowerCase(), rect:rect(el),
+          display:style.display, visibility:style.visibility, opacity:style.opacity, label, url:rawURL });
+      }
       if (!shown(header)) continue;
       for (const el of header.querySelectorAll('img,svg,[role="img"]')) {
         const style = getComputedStyle(el);
@@ -131,11 +201,12 @@ async function findVisibleLogo(page, source) {
         const label = [el.getAttribute('alt'), el.getAttribute('aria-label'), el.getAttribute('title')]
           .filter(Boolean).join(' ').trim();
         if (!label || !re.test(label)) continue;
-        candidates.push({ headerIndex, label, tag: el.tagName.toLowerCase(),
+        candidateCount += 1;
+        if (candidates.length < 20) candidates.push({ headerIndex, label, tag: el.tagName.toLowerCase(),
           url: el instanceof HTMLImageElement ? (el.getAttribute('src') || el.currentSrc || el.src) : '' });
       }
     }
-    return { headerCount: headers.length, candidates };
+    return { headerCount: headers.length, candidateCount, candidates, diagnosticRows };
   }, { selector: source.header_selector || 'header', patternText: source.header_logo_accessible_name_pattern });
 }
 
@@ -175,11 +246,22 @@ async function captureSource(plan, source, outDir) {
 
     stage = 'source-identity-discovery';
     const logo = await findVisibleLogo(page, source);
-    if (logo.candidates.length !== 1) throw new Error(`expected one accessible logo in visible publisher header; found ${logo.candidates.length}`);
+    const diagnosticOnly = process.env.S82_DIAGNOSTIC_ONLY === 'true';
+    if (logo.candidateCount !== 1) {
+      identity.logo_discovery = sanitizeLogoDiscovery(logo, source.url);
+      throw new Error(`expected one accessible logo in visible publisher header; found ${logo.candidateCount}`);
+    }
     const candidate = logo.candidates[0];
-    const logoURL = new URL(candidate.url, qaURL);
-    if (candidate.tag !== 'img' || logoURL.protocol !== 'https:' || !allowedHosts.has(logoURL.hostname)) {
-      throw new Error('native publisher mark is not a same-source HTTPS image');
+    if (diagnosticOnly) {
+      identity.logo_discovery = sanitizeLogoDiscovery(logo, source.url);
+      identity.diagnostic_only = true;
+      return { identity, assets: [] };
+    }
+    let logoURL;
+    try { logoURL = validateLogoCandidate(candidate, source, qaURL); }
+    catch (error) {
+      identity.logo_discovery = sanitizeLogoDiscovery(logo, source.url);
+      throw error;
     }
     permittedLogoURLs.add(logoURL.href);
 
@@ -288,16 +370,19 @@ async function captureSource(plan, source, outDir) {
 export async function runCapture(plan, outDir) {
   validatePlan(plan);
   hostedGuard();
+  const diagnosticOnly = process.env.S82_DIAGNOSTIC_ONLY === 'true';
   const planBytes = await fs.readFile(PLAN_PATH);
   const planHash = crypto.createHash('sha256').update(planBytes).digest('hex');
   if (planHash !== PLAN_SHA256) throw new Error('frozen source plan hash changed');
   await fs.mkdir(outDir, { recursive: false });
   const receipt = { schema: 'agmm-s82-source-pack-receipt-v1', story_id: 'S82', status: 'CAPTURE_IN_PROGRESS',
     plan_sha256: planHash, plan_parent_sha: PARENT_SHA, assets_published: false,
-    editorial_status: 'NOT_REVIEWED', render_approval: 'NOT_GRANTED', release_approval: 'NOT_GRANTED', assets: [] };
+    editorial_status: 'NOT_REVIEWED', render_approval: 'NOT_GRANTED', release_approval: 'NOT_GRANTED',
+    diagnostic_only: diagnosticOnly, assets: [] };
   const identity = { schema: 'agmm-s82-source-identities-v1', story_id: 'S82', plan_sha256: planHash, sources: [] };
   try {
-    for (const source of plan.sources) {
+    const sourceRows = diagnosticOnly ? plan.sources.slice(0, 1) : plan.sources;
+    for (const source of sourceRows) {
       try {
         const result = await captureSource(plan, source, outDir);
         identity.sources.push(result.identity); receipt.assets.push(...result.assets);
@@ -306,6 +391,11 @@ export async function runCapture(plan, outDir) {
         throw error;
       }
     }
+    if (diagnosticOnly) {
+      receipt.status = 'SOURCE_IDENTITY_DIAGNOSTIC_ONLY';
+      receipt.asset_count = 0;
+      receipt.total_bytes = 0;
+    } else {
     const expected = [...plan.collection_policy.exact_capture_files].sort();
     const actual = receipt.assets.map(row => row.file).sort();
     if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error('captured file set does not match frozen output allowlist');
@@ -314,6 +404,7 @@ export async function runCapture(plan, outDir) {
     receipt.status = 'SOURCE_CROPS_CAPTURED_NEEDS_ROOT_EYES';
     receipt.asset_count = receipt.assets.length; receipt.total_bytes = total;
     receipt.claim_coverage = plan.script_claim_coverage;
+    }
   } catch (error) {
     receipt.status = 'SOURCE_CAPTURE_FAILED'; receipt.failure_stage = error.stage || 'workflow';
     receipt.failure = String(error?.message || error).slice(0, 500);
@@ -337,7 +428,9 @@ export async function runCapture(plan, outDir) {
   }
   await fs.writeFile(path.join(outDir, 'SOURCE-IDENTITY.json'), JSON.stringify(identity, null, 2) + '\n');
   await fs.writeFile(path.join(outDir, 'CAPTURE-RECEIPT.json'), JSON.stringify(receipt, null, 2) + '\n');
-  if (receipt.status !== 'SOURCE_CROPS_CAPTURED_NEEDS_ROOT_EYES') throw new Error(receipt.failure || 'capture failed');
+  if (receipt.status !== 'SOURCE_CROPS_CAPTURED_NEEDS_ROOT_EYES' && receipt.status !== 'SOURCE_IDENTITY_DIAGNOSTIC_ONLY') {
+    throw new Error(receipt.failure || 'capture failed');
+  }
   return receipt;
 }
 

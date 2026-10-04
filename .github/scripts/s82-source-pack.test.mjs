@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { canonicalURL, taggedURL, validatePlan } from './s82-source-pack.mjs';
+import { canonicalURL, sanitizeLogoDiscovery, taggedURL, validateLogoCandidate, validatePlan } from './s82-source-pack.mjs';
 
 const here = new URL('.', import.meta.url);
 const plan = JSON.parse(fs.readFileSync(new URL('./SOURCE-PLAN.json', here), 'utf8'));
@@ -60,4 +60,54 @@ test('plan rejects a source host not explicitly allowlisted', () => {
 test('no capture passage includes the excluded GBP 860bn source typo', () => {
   const text = JSON.stringify(plan.sources.map(s => s.claim_paragraphs));
   assert.doesNotMatch(text, /£860 billion/i);
+});
+
+test('logo failure diagnostics are capped, metadata-only and strip query/fragment values', () => {
+  const rows = Array.from({ length: 30 }, (_, i) => ({
+    kind: i === 0 ? 'header' : 'descendant', headerIndex: 0, tag: i === 0 ? 'header' : 'img',
+    rect: { x: 1.234, y: 2, width: 192, height: 36 }, display: 'block', visibility: 'visible', opacity: '1',
+    label: i === 0 ? '' : 'Santander Bank',
+    url: i === 0 ? '' : 'https://www.santander.com/content/logo.svg?secret=must-not-escape#private',
+    innerHTML: '<img src="private">',
+  }));
+  const diagnostic = sanitizeLogoDiscovery({ headerCount: 1, candidateCount: 0, diagnosticRows: rows }, plan.sources[0].url);
+  assert.equal(diagnostic.header_count, 1);
+  assert.equal(diagnostic.candidate_count, 0);
+  assert.equal(diagnostic.diagnostic_rows.length, 20);
+  assert.equal(diagnostic.diagnostic_rows[1].url_host, 'www.santander.com');
+  assert.equal(diagnostic.diagnostic_rows[1].url_path, '/content/logo.svg');
+  assert.equal(diagnostic.diagnostic_rows[1].rect.x, 1.23);
+  assert.doesNotMatch(JSON.stringify(diagnostic), /secret|private|innerHTML|must-not-escape/);
+});
+
+test('logo diagnostics safely report off-host sources and reject them for capture', () => {
+  const candidate = { tag: 'img', label: 'Santander Bank', url: 'https://evil.example/logo.svg?token=hidden' };
+  const diagnostic = sanitizeLogoDiscovery({ headerCount: 1, candidateCount: 1,
+    diagnosticRows: [{ kind: 'descendant', headerIndex: 0, tag: 'img', label: candidate.label, url: candidate.url }] },
+    plan.sources[0].url);
+  assert.equal(diagnostic.diagnostic_rows[0].url_host, 'evil.example');
+  assert.equal(diagnostic.diagnostic_rows[0].url_path, '/logo.svg');
+  assert.doesNotMatch(JSON.stringify(diagnostic), /token=hidden/);
+  assert.throws(() => validateLogoCandidate(candidate, plan.sources[0], plan.sources[0].url), /same-source HTTPS image/);
+  assert.throws(() => validateLogoCandidate({ ...candidate, url: 'http://www.santander.com/logo.svg' }, plan.sources[0], plan.sources[0].url), /same-source HTTPS image/);
+  assert.throws(() => validateLogoCandidate({ ...candidate, tag: 'svg', url: 'https://www.santander.com/logo.svg' }, plan.sources[0], plan.sources[0].url), /same-source HTTPS image/);
+  assert.equal(validateLogoCandidate({ ...candidate, url: '/content/logo.svg', tag: 'img' }, plan.sources[0], plan.sources[0].url).hostname, 'www.santander.com');
+});
+
+test('diagnostic receipt rejects string counts and malformed row containers', () => {
+  const diagnostic = sanitizeLogoDiscovery({ headerCount: '1', candidateCount: '0', diagnosticRows: 'not-an-array' }, plan.sources[0].url);
+  assert.deepEqual(diagnostic, { header_count: 0, candidate_count: 0, diagnostic_rows: [] });
+});
+
+
+test('diagnostic mode returns before the logo-only image pass and any screenshot call', () => {
+  const source = fs.readFileSync(new URL('./s82-source-pack.mjs', here), 'utf8');
+  const discovery = source.indexOf("stage = 'source-identity-discovery'");
+  const diagnosticReturn = source.indexOf('if (diagnosticOnly) {', discovery);
+  const logoPass = source.indexOf("stage = 'tagged-source-logo-pass'", diagnosticReturn);
+  const screenshot = source.indexOf('await locator.screenshot', logoPass);
+  assert.ok(discovery >= 0 && diagnosticReturn > discovery);
+  assert.ok(logoPass > diagnosticReturn && screenshot > logoPass);
+  assert.match(source, /if \(type === 'image'\) return permittedLogoURLs\.has\(url\.href\) \? route\.continue\(\) : route\.abort\(\)/);
+  assert.ok(source.indexOf('permittedLogoURLs.add(logoURL.href)') > diagnosticReturn);
 });

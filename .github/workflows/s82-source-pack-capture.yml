@@ -2,6 +2,12 @@ name: S82 tagged source captures only
 run-name: S82 source pack ${{ github.run_id }}
 on:
   workflow_dispatch:
+    inputs:
+      diagnostic_only:
+        description: Inspect first source header DOM metadata; block images and do not take screenshots.
+        required: false
+        default: false
+        type: boolean
 permissions:
   contents: write
 concurrency:
@@ -13,9 +19,10 @@ jobs:
     timeout-minutes: 25
     env:
       GH_REPO: agmmltd-arch/agmm-render-public
-      S82_PARENT_SHA: 0e24eb4e932d54fee571e37338d3c9807edac922
+      S82_PARENT_SHA: ab8011d077cd219319a04670c7e89f367d45934f
       S82_PLAN_SHA256: 0fe325104557169140b7b7ca1643acbbcbac92c2c57a8f6075845b24055ca661
-      S82_HELPER_SHA256: f98601c5d3237fe7a7486d6431a7e02515efbeaf1a551eac50bb34eb0f89c992
+      S82_HELPER_SHA256: d5e99cfe2825763b199e0dbe8dea0f90475ec540475ff596e1f2bc268623b576
+      S82_DIAGNOSTIC_ONLY: ${{ inputs.diagnostic_only }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -29,6 +36,7 @@ jobs:
           set -euo pipefail
           printf 'S82_CAPTURE_DIR=%s/s82-source-capture\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
       - name: Guard public Ubuntu target, exact preimage and text-only inputs
+        id: preflight
         run: |
           set -euo pipefail
           [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux ]]
@@ -47,7 +55,8 @@ jobs:
         continue-on-error: true
         run: node .github/scripts/s82-source-pack.mjs
       - name: Prepare an exact allowlisted public review payload, including failure receipts
-        if: always()
+        id: prepare
+        if: always() && steps.preflight.outcome == 'success'
         env:
           CAPTURE_OUTCOME: ${{ steps.capture.outcome }}
         run: |
@@ -113,7 +122,7 @@ jobs:
           (out/'SHA256SUMS.txt').write_text('\n'.join(rows)+'\n')
           PY
       - name: Publish only this run's source crops and TEXT receipts to a review branch
-        if: always()
+        if: always() && steps.preflight.outcome == 'success' && steps.prepare.outcome == 'success'
         run: |
           set -euo pipefail
           git config user.name 'AGMM hosted source review'

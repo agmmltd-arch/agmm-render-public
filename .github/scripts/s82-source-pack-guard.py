@@ -9,11 +9,11 @@ from pathlib import Path
 import subprocess
 
 REPOSITORY = 'agmmltd-arch/agmm-render-public'
-PARENT_SHA = '0e24eb4e932d54fee571e37338d3c9807edac922'
+PARENT_SHA = 'ab8011d077cd219319a04670c7e89f367d45934f'
 PLAN_PATH = Path('.github/scripts/s82-source-pack-plan.json')
 HELPER_PATH = Path('.github/scripts/s82-source-pack.mjs')
 PLAN_SHA256 = '0fe325104557169140b7b7ca1643acbbcbac92c2c57a8f6075845b24055ca661'
-HELPER_SHA256 = 'f98601c5d3237fe7a7486d6431a7e02515efbeaf1a551eac50bb34eb0f89c992'
+HELPER_SHA256 = 'd5e99cfe2825763b199e0dbe8dea0f90475ec540475ff596e1f2bc268623b576'
 INHERITED_BLOBS = {
     '.github/scripts/capture_short_package.py': '65f9b89f126c6113a91061a2f1f361954c96a0ae',
     '.github/scripts/render_short_package.py': '754099346a84c5bd305f5684ef24399a53bd9697',
@@ -39,6 +39,8 @@ def validate_preflight(*, env: dict[str, str], repo: dict, head: str, parent: st
         raise ValueError('requires GitHub Actions Linux runner')
     if env.get('GITHUB_REPOSITORY') != REPOSITORY or repo.get('full_name') != REPOSITORY:
         raise ValueError('wrong GitHub repository')
+    if env.get('S82_DIAGNOSTIC_ONLY', 'false') not in ('true', 'false'):
+        raise ValueError('diagnostic-only workflow input must be a boolean')
     if repo.get('private') is not False or repo.get('visibility') != 'public':
         raise ValueError('source-crop target must be the public repository')
     if env.get('GITHUB_REF') != 'refs/heads/main' or env.get('GITHUB_SHA') != head or parent != PARENT_SHA:
