@@ -1,0 +1,74 @@
+{
+  "schema": "f07-source-composition-capture-plan-v2",
+  "source_release": "F07-r4-actions-full-landscape-4k-20260930194517",
+  "source_asset_id": 601625680,
+  "source_asset_sha256": "10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7",
+  "overlay_candidate_sha256": "d2fdaf282e233a9d9691a11b216361b108dff7228a9dcbd0459b29649fb01962",
+  "overlay_film_js_sha256": "cf6ddc29bf0e23ca50173773e43ee2d33ef3af8a1400f4ea3b375077adc3c3aa",
+  "clock_rule": "film time = composition time + 5.9833 in authenticated linear region; composition 246.8997 is immediately before the 246.9 S66 cut",
+  "captures": [
+    {
+      "name": "investment_1b",
+      "composition_time": 239.2667,
+      "film_time": 245.25
+    },
+    {
+      "name": "investment_card_full",
+      "composition_time": 239.4167,
+      "film_time": 245.4
+    },
+    {
+      "name": "investment_card_during_phrase",
+      "composition_time": 241.0,
+      "film_time": 246.983
+    },
+    {
+      "name": "investment_card_outro",
+      "composition_time": 241.9167,
+      "film_time": 247.9
+    },
+    {
+      "name": "bridge_which_valued",
+      "composition_time": 242.6167,
+      "film_time": 248.6
+    },
+    {
+      "name": "valuation_8_65",
+      "composition_time": 244.2867,
+      "film_time": 250.27
+    },
+    {
+      "name": "valuation_seam_pre_1f",
+      "composition_time": 244.2667,
+      "film_time": 250.25
+    },
+    {
+      "name": "valuation_seam_exact",
+      "composition_time": 244.3,
+      "film_time": 250.283
+    },
+    {
+      "name": "valuation_seam_post_1f",
+      "composition_time": 244.3333,
+      "film_time": 250.317
+    },
+    {
+      "name": "valuation_billion",
+      "composition_time": 245.7167,
+      "film_time": 251.7
+    },
+    {
+      "name": "valuation_card_outro",
+      "composition_time": 246.1167,
+      "film_time": 252.1
+    },
+    {
+      "name": "next_shot_pre_cut",
+      "composition_time": 246.8997,
+      "film_time": 252.883
+    }
+  ],
+  "capture_class": "source_composition_not_final_master",
+  "editorial_status": "NOT_REVIEWED",
+  "release_approval": "NOT_GRANTED"
+}

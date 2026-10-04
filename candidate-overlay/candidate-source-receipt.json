@@ -1,0 +1,45 @@
+{
+  "approval": "NOT_GRANTED",
+  "archive_release": null,
+  "candidate_lineage": {
+    "candidate_film_js_sha256": "cf6ddc29bf0e23ca50173773e43ee2d33ef3af8a1400f4ea3b375077adc3c3aa",
+    "change": "Restore default document fade to 0.12s; keep the genuine source headline as one full-cut card across the two valuation shots.",
+    "owner_base_film_js_sha256": "24930d3fb1d62ce5de6fcfdd1c061054ab67c69de70e81f4fc4ebabd4da1148c"
+  },
+  "candidate_sha256": "d2fdaf282e233a9d9691a11b216361b108dff7228a9dcbd0459b29649fb01962",
+  "candidate_status": "ISOLATED_NOT_ADOPTED",
+  "capture_class": "source_composition_not_final_master",
+  "files": {
+    "film/film.css": {
+      "bytes": 19163,
+      "sha256": "0d17eea12ed4ecac45b5207c35939334549ae970fe047b5e9fb3da9b4435fa07"
+    },
+    "film/film.js": {
+      "bytes": 71690,
+      "sha256": "cf6ddc29bf0e23ca50173773e43ee2d33ef3af8a1400f4ea3b375077adc3c3aa"
+    },
+    "film/sets_studio.js": {
+      "bytes": 12049,
+      "sha256": "988a0d98b5eb71c3bac0777ee5b02a161ef9e744d7c8bb0e3bcff40385ddea2c"
+    }
+  },
+  "kind": "source-candidate-overlay-text-only",
+  "manifest": "film-overlay.sha256",
+  "parent_source": {
+    "asset_id": 601625680,
+    "asset_name": "source.tar.gz",
+    "bytes": 43650580,
+    "release": "F07-r4-actions-full-landscape-4k-20260930194517",
+    "repository": "agmmltd-arch/agmm-render-public",
+    "sha256": "10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7"
+  },
+  "published_overlay_archive_identity": null,
+  "schema": "f07-overlay-candidate-text-provenance-v1",
+  "unchanged_text_source": {
+    "asset_id": 608555583,
+    "asset_sha256": "6c3ec29f09a5e22eff2a3061ea737c50b8d02438a4877671096d82301076e2cc",
+    "release": "F07-code-overlay-6c3ec29f09a5e22eff2a3061ea737c50b8d02438a4877671096d82301076e2cc",
+    "release_id": 402696548,
+    "role": "prior verified text-overlay lineage for unchanged film.css and film/sets_studio.js only"
+  }
+}

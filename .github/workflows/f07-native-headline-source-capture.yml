@@ -1,0 +1,114 @@
+name: F07 isolated headline candidate source capture
+run-name: F07 candidate source capture ${{ github.run_id }}
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: agmmltd-arch/agmm-render-public
+      SOURCE_RELEASE: F07-r4-actions-full-landscape-4k-20260930194517
+      SOURCE_ASSET_ID: '601625680'
+      SOURCE_SHA256: 10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7
+      SOURCE_BYTES: '43650580'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+      - name: Guard the public hosted target and verify parent metadata before archive access
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == "$GH_REPO" ]]
+          gh api "repos/$GH_REPO" > repository.json
+          python3 - <<'PY'
+          import json
+          repo=json.load(open('repository.json'))
+          assert repo.get('full_name') == 'agmmltd-arch/agmm-render-public'
+          assert repo.get('private') is False and repo.get('visibility') == 'public'
+          PY
+          gh api "repos/$GH_REPO/releases/tags/$SOURCE_RELEASE" > parent-release.json
+          gh api "repos/$GH_REPO/releases/assets/$SOURCE_ASSET_ID" > parent-asset.json
+          python3 - <<'PY'
+          import json
+          release=json.load(open('parent-release.json')); asset=json.load(open('parent-asset.json'))
+          assert release.get('tag_name') == 'F07-r4-actions-full-landscape-4k-20260930194517'
+          assert release.get('draft') is False
+          assert asset.get('id') == 601625680 and asset.get('name') == 'source.tar.gz'
+          assert asset.get('state') == 'uploaded' and asset.get('size') == 43650580
+          assert asset.get('digest') == 'sha256:10394b58dad8f1e6131486edb2d9d310b82a923fef2ca6aea50f229cb165bfd7'
+          assert any(a.get('id') == 601625680 and a.get('name') == 'source.tar.gz'
+                     and a.get('size') == 43650580
+                     and a.get('digest') == asset['digest'] for a in release.get('assets', []))
+          PY
+      - name: Verify isolated candidate text and native text provenance
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/f07_candidate_capture.py verify-candidate \
+            --candidate-root candidate-overlay \
+            --candidate-receipt candidate-overlay/candidate-source-receipt.json \
+            --parent-release parent-release.json
+          (cd candidate-overlay && sha256sum -c film-overlay.sha256)
+          node --check candidate-overlay/film/film.js
+      - name: Download and verify the authenticated parent on hosted Linux
+        run: |
+          set -euo pipefail
+          mkdir -p input project
+          gh release download "$SOURCE_RELEASE" -R "$GH_REPO" -p source.tar.gz -D input
+          test "$(wc -c < input/source.tar.gz | tr -d ' ')" = "$SOURCE_BYTES"
+          test "$(sha256sum input/source.tar.gz | cut -d ' ' -f1)" = "$SOURCE_SHA256"
+          tar -xzf input/source.tar.gz -C project
+          (cd project && sha256sum -c SHA256SUMS.txt >/dev/null && python3 static_check.py)
+          cp candidate-overlay/film/film.js project/film/film.js
+          cp candidate-overlay/film/film.css project/film/film.css
+          cp candidate-overlay/film/sets_studio.js project/film/sets_studio.js
+          (cd project && python3 static_check.py)
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+      - name: Install renderer browser dependencies
+        run: sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg libnss3 libatk-bridge2.0-0 libgbm1 libxkbcommon0 libasound2t64 libxcomposite1 libxdamage1 libxrandr2 libpango-1.0-0 libcairo2 fonts-liberation
+      - name: Capture source-composition snapshots only
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' > capture-times.txt
+          import json
+          plan=json.load(open('capture-plan.json'))
+          print(','.join(f"{row['film_time']:.3f}" for row in plan['captures']))
+          PY
+          npx --yes hyperframes@0.8.71 snapshot project/film --at "$(cat capture-times.txt)" \
+            --no-end --describe false --no-browser-gpu --timeout 180000 --output "$GITHUB_WORKSPACE/source-frames"
+          python3 .github/scripts/f07_candidate_capture.py collect \
+            --snapshots source-frames --plan capture-plan.json \
+            --candidate-root candidate-overlay \
+            --candidate-receipt candidate-overlay/candidate-source-receipt.json \
+            --parent-release parent-release.json --output f07-review
+      - name: Publish run-scoped review branch with allowlisted capture evidence only
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted source review'
+          git config user.email 'evidence@users.noreply.github.com'
+          BRANCH="review-F07-headline-candidate-$GITHUB_RUN_ID"
+          git checkout --orphan "$BRANCH"
+          git rm -rf --cached . >/dev/null
+          mkdir -p public-review
+          cp -R f07-review/frames public-review/
+          cp f07-review/CAPTURE-RECEIPT.json f07-review/CANDIDATE-SOURCE-RECEIPT.json f07-review/SHA256SUMS.txt public-review/
+          git add public-review
+          python3 - <<'PY'
+          import subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert len(names)==15 and all(n.startswith('public-review/') and n.lower().endswith(('.png','.json','.txt')) for n in names)
+          assert sum(n.endswith('.png') for n in names)==12
+          assert {n.rsplit('/',1)[-1] for n in names if n.endswith('.json')} == {'CAPTURE-RECEIPT.json','CANDIDATE-SOURCE-RECEIPT.json'}
+          PY
+          git commit -m 'F07 isolated source candidate composition captures; not final master review'
+          git push origin "HEAD:refs/heads/$BRANCH"
