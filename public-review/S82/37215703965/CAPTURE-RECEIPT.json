@@ -1,0 +1,15 @@
+{
+  "schema": "agmm-s82-source-pack-receipt-v1",
+  "story_id": "S82",
+  "status": "SOURCE_CAPTURE_FAILED",
+  "plan_sha256": "0fe325104557169140b7b7ca1643acbbcbac92c2c57a8f6075845b24055ca661",
+  "plan_parent_sha": "ab8011d077cd219319a04670c7e89f367d45934f",
+  "assets_published": false,
+  "editorial_status": "NOT_REVIEWED",
+  "render_approval": "NOT_GRANTED",
+  "release_approval": "NOT_GRANTED",
+  "diagnostic_only": true,
+  "assets": [],
+  "failure_stage": "source-identity-discovery",
+  "failure": "expected one accessible logo in visible publisher header; found 0"
+}
