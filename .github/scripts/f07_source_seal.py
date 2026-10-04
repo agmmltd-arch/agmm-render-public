@@ -415,11 +415,20 @@ def make_sealed_package(parent_archive: Path, repo_meta: dict, release_meta: dic
         raise ValueError("parent package has no static_check.py")
     # Text-only syntax/static checks; actual film rendering is not performed here.
     import subprocess
+    import os
     for path in (package_dir / "film/film.js", package_dir / "film/sets_studio.js"):
         p = subprocess.run(["node", "--check", str(path)], capture_output=True, text=True)
         if p.returncode:
             raise ValueError(f"node syntax check failed for {path.name}: {p.stderr[-500:]}")
-    p = subprocess.run(["python3", str(static)], cwd=package_dir, capture_output=True, text=True)
+    # Fix: static_check.py path must be absolute (os.path.abspath) while preserving
+    # cwd=package_dir so the static checker's relative asset lookups remain intact.
+    # Original: `subprocess.run(["python3", str(static)], cwd=package_dir)` resolved the
+    # script path as `sealed/package/sealed/package/static_check.py` (double-nesting)
+    # when the workflow cwd already contained "sealed/package".
+    # Corrected: use absolute script path with same cwd — verified: original nested argv
+    # fails, absolute argv + same cwd passes. All node/checksum/source/HTTP404/voice guards unchanged.
+    static_abs = os.path.abspath(str(static))
+    p = subprocess.run(["python3", static_abs], capture_output=True, text=True, cwd=package_dir)
     if p.returncode:
         raise ValueError("package static_check failed: " + (p.stderr or p.stdout)[-500:])
     # Verify the just-written checksum manifest against every regular file.
