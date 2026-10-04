@@ -1,0 +1,25 @@
+{
+  "asset_bytes": 37971142,
+  "asset_id": 609677772,
+  "asset_name": "source.tar.gz",
+  "asset_sha256": "3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5",
+  "asset_state": "uploaded",
+  "candidate_class": "isolated_source_candidate",
+  "create_only_tag_absence_preflight": true,
+  "editorial_status": "NOT_REVIEWED",
+  "github_immutable_release_feature": "not asserted",
+  "owner_adoption": "NOT_ADOPTED",
+  "prior_db1e_source": {
+    "asset_id": 608687529,
+    "release_id": 402725212,
+    "role": "diagnostic_only_not_candidate_input",
+    "sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+    "status": "REJECTED_BY_ROOT_SOURCE_CAPTURE_REVIEW",
+    "tag_name": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68"
+  },
+  "release_approval": "NOT_GRANTED",
+  "release_id": 402977719,
+  "release_tag": "F02-isolated-source-candidate-3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "source_receipt_sha256": "304c17e0182daecc74d9584e948737b1ca922341ae210d345daa3408906f4c1a"
+}
