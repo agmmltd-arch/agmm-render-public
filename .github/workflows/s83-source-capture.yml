@@ -27,13 +27,8 @@ jobs:
     timeout-minutes: 40
     env:
       GH_REPO: agmmltd-arch/agmm-render-public
-      S83_PARENT: 24938d939a775c6eabefe6e329f9a16f7595359a
+      S83_PARENT: c97fad6aebd7a990c268b892b2227a90199c742b
       CANDIDATE: .github/candidates/S83
-      S83_CAPTURE_DIR: ${{ runner.temp }}/s83-source
-      S83_STILLS_DIR: ${{ runner.temp }}/s83-stills
-      S83_REVIEW_DIR: ${{ runner.temp }}/s83-review
-      S83_MIX_DIR: ${{ runner.temp }}/s83-mix
-      S83_RECEIPTS: ${{ runner.temp }}/s83-receipts
       EXPECTED_PUBLIC_HEAD_SHA: ${{ inputs.expected_public_head_sha }}
       CANDIDATE_MANIFEST_SHA256: ${{ inputs.candidate_manifest_sha256 }}
       EXPECTED_PRIVATE_INPUT_COMMIT: ${{ inputs.expected_private_input_commit }}
@@ -43,6 +38,25 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 2
           persist-credentials: false
+      - name: Initialize S83 temporary paths from the GitHub runner environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${RUNNER_TEMP:?RUNNER_TEMP is required on the hosted runner}"
+          : "${GITHUB_ENV:?GITHUB_ENV is required on the hosted runner}"
+          export S83_CAPTURE_DIR="$RUNNER_TEMP/s83-source"
+          export S83_STILLS_DIR="$RUNNER_TEMP/s83-stills"
+          export S83_REVIEW_DIR="$RUNNER_TEMP/s83-review"
+          export S83_MIX_DIR="$RUNNER_TEMP/s83-mix"
+          export S83_RECEIPTS="$RUNNER_TEMP/s83-receipts"
+          {
+            printf 'S83_CAPTURE_DIR=%s\n' "$S83_CAPTURE_DIR"
+            printf 'S83_STILLS_DIR=%s\n' "$S83_STILLS_DIR"
+            printf 'S83_REVIEW_DIR=%s\n' "$S83_REVIEW_DIR"
+            printf 'S83_MIX_DIR=%s\n' "$S83_MIX_DIR"
+            printf 'S83_RECEIPTS=%s\n' "$S83_RECEIPTS"
+          } >> "$GITHUB_ENV"
+          mkdir -p "$S83_CAPTURE_DIR" "$S83_STILLS_DIR" "$S83_REVIEW_DIR" "$S83_MIX_DIR" "$S83_RECEIPTS"
       - name: Validate exact root-published candidate and public runtime blobs
         run: |
           set -euo pipefail
@@ -82,7 +96,6 @@ jobs:
           test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/v2/mix2.py")" = 623521fb087ce296fe3895f6c23205c49976b837
           test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/v2/voice_chain.py")" = ea817bb829f4ffd68b2abdaacb1a8128731d4b21
           test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/library.json")" = ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05
-          mkdir -p "$S83_CAPTURE_DIR" "$S83_STILLS_DIR" "$S83_REVIEW_DIR" "$S83_MIX_DIR" "$S83_RECEIPTS"
       - name: Checkout exact private Git input tree using the existing read-only deploy key
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
