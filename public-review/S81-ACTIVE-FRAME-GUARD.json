@@ -1,0 +1,105 @@
+{
+  "kind": "s81_active_frame_content_guard",
+  "status": "PASS",
+  "snapshot_log_checked": true,
+  "checked": [
+    {
+      "name": "albanese-response",
+      "sha256": "443c68afa4e48a6831575cb1e7f8c1fa807ef25389d3ea1c24a8da7324cfd0b1",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "august-discovery",
+      "sha256": "f59da50170c38531d3929a9a043a63cca3c615f5c4b1bd2dfc67cd2caccfbe1c",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "cta-audit-link",
+      "sha256": "aebacbc1c0b7b5bd5e00b247ba71bb459f0d12cc7328e0540fff6cbff62a03aa",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "cta-follow-start",
+      "sha256": "6011bcb987fbcefa68349a314ec306b6c5ca94d8b0e99ab56a1ab9a4634335bb",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "hook-frame-zero",
+      "sha256": "dd8fdecabc94afb50f281800f40d6eaa56dbde2203b619adacffb1ad159868e7",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2077866,
+      "hero_ink_samples": 14282
+    },
+    {
+      "name": "lesson-route-fold",
+      "sha256": "614701de5d7991fa91455d6813bdb6a57b03379d3fd6ae43eecba454d585456c",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "once-daily-monitoring",
+      "sha256": "3db47bd21d2e4975f494e20ea16d68538389a06a8958e07f3da400dcb5ca3eab",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "openai-internal-evaluation",
+      "sha256": "0a5fc96e15cb30f3da6587c0f6afaa06645f31ba425cc903128be744752ec34d",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "portal-description",
+      "sha256": "9564afd32b9424a5839187807fa09d9bf550287db213fd27bdd7b70dbc7fc5fa",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "privacy-line-start",
+      "sha256": "42a06f01d9ff30bf5dbb0881726e845ce66e40ee448ad5600ea60c1906f2ade2",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "privacy-qualification",
+      "sha256": "e7eba8e9e5374f3f054e5da234760f6bb243d22fe94070db8f73b43e0cb646c8",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "privacy-qualification-settled",
+      "sha256": "8b044036d574744fa2db23ed376c94915bcf6e3a71df0e4c2fe3706aa2e763f5",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "september-email",
+      "sha256": "94a1fb8befacbe2ce9948d4d7ca2f688aba801d0927bb66d77599cc25e6af117",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "unintended-actions-quote",
+      "sha256": "d4cfbad0a179976fb0f70a06e9a9b259cc1c1b9898cd1d485705d2ecd8ace1cb",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    }
+  ]
+}
