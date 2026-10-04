@@ -45,6 +45,11 @@ on:
         type: boolean
         required: false
         default: false
+      run_macos_ocr:
+        description: Run the separate GitHub-hosted macOS OCR job after assembly
+        type: boolean
+        required: false
+        default: true
       overlay_release_asset:
         description: Optional code-only QA overlay release asset filename
         required: false
@@ -274,7 +279,8 @@ jobs:
           print(match.group(1))
           PYCODE
           )
-          python3 .github/scripts/assemble_verify.py --segments-json "$SEGS_JSON" \
+          python3 qa_overlay/.github/scripts/assemble_verify.py --self-test
+          python3 qa_overlay/.github/scripts/assemble_verify.py --segments-json "$SEGS_JSON" \
             --duration "$DURATION" --segments-dir segments --package-dir package --output-dir remote-final --fid "$FID"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -316,7 +322,7 @@ jobs:
           if-no-files-found: error
 
   macos-ocr:
-    if: ${{ inputs.remote_only && inputs.assemble_full }}
+    if: ${{ inputs.remote_only && inputs.assemble_full && inputs.run_macos_ocr }}
     needs: assemble
     runs-on: macos-15-intel
     timeout-minutes: 90
