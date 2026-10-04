@@ -1,0 +1,306 @@
+{
+  "version": 1,
+  "short_id": "S83",
+  "source_sha256": "BOUND_AFTER_HOSTED_SOURCE_ASSETS_AND_CANONICAL_VO_ARE_STAGED",
+  "parts_sha256": "BOUND_AFTER_EXACT_PART_MAP_IS_FROZEN",
+  "media_identity_sha256": "CALCULATED_ONLY_ON_PUBLIC_UBUNTU_FROM_AUTHENTICATED_ASSETS",
+  "include_part_seams": true,
+  "captures": [
+    {
+      "name": "hook-zero",
+      "kind": "beat",
+      "global": 0,
+      "local": 0,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "hook-120ms",
+      "kind": "beat",
+      "global": 0.12,
+      "local": 0.12,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "hook-350ms",
+      "kind": "beat",
+      "global": 0.35,
+      "local": 0.35,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "hook-700ms",
+      "kind": "beat",
+      "global": 0.7,
+      "local": 0.7,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "hook-1200ms",
+      "kind": "beat",
+      "global": 1.2,
+      "local": 1.2,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-07775ms",
+      "kind": "seam",
+      "global": 7.775,
+      "local": 7.775,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-07835ms",
+      "kind": "seam",
+      "global": 7.835,
+      "local": 7.835,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-07875ms",
+      "kind": "seam",
+      "global": 7.875,
+      "local": 7.875,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "tool-midpoint",
+      "kind": "beat",
+      "global": 13.2,
+      "local": 13.2,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-18579ms",
+      "kind": "seam",
+      "global": 18.579,
+      "local": 18.579,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-18639ms",
+      "kind": "seam",
+      "global": 18.639,
+      "local": 18.639,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-18679ms",
+      "kind": "seam",
+      "global": 18.679,
+      "local": 18.679,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "aslam-midpoint",
+      "kind": "beat",
+      "global": 23.5,
+      "local": 23.5,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-28417ms",
+      "kind": "seam",
+      "global": 28.417,
+      "local": 28.417,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-28477ms",
+      "kind": "seam",
+      "global": 28.477,
+      "local": 28.477,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-28517ms",
+      "kind": "seam",
+      "global": 28.517,
+      "local": 28.517,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "bbc-correction-midpoint",
+      "kind": "beat",
+      "global": 33.1,
+      "local": 33.1,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-34493ms",
+      "kind": "seam",
+      "global": 34.493,
+      "local": 34.493,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-34553ms",
+      "kind": "seam",
+      "global": 34.553,
+      "local": 34.553,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-34593ms",
+      "kind": "seam",
+      "global": 34.593,
+      "local": 34.593,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-35313ms",
+      "kind": "seam",
+      "global": 35.313,
+      "local": 35.313,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-37825ms",
+      "kind": "seam",
+      "global": 37.825,
+      "local": 37.825,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-37885ms",
+      "kind": "seam",
+      "global": 37.885,
+      "local": 37.885,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-37925ms",
+      "kind": "seam",
+      "global": 37.925,
+      "local": 37.925,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "evidence-split-midpoint",
+      "kind": "beat",
+      "global": 41.2,
+      "local": 41.2,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-44861ms",
+      "kind": "seam",
+      "global": 44.861,
+      "local": 44.861,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-44921ms",
+      "kind": "seam",
+      "global": 44.921,
+      "local": 44.921,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-44961ms",
+      "kind": "seam",
+      "global": 44.961,
+      "local": 44.961,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "lesson-midpoint",
+      "kind": "beat",
+      "global": 48,
+      "local": 48,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-50895ms",
+      "kind": "seam",
+      "global": 50.895,
+      "local": 50.895,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-50955ms",
+      "kind": "seam",
+      "global": 50.955,
+      "local": 50.955,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "review-50995ms",
+      "kind": "seam",
+      "global": 50.995,
+      "local": 50.995,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "cta-midpoint",
+      "kind": "beat",
+      "global": 53,
+      "local": 53,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "last-spoken-business",
+      "kind": "beat",
+      "global": 56.3,
+      "local": 56.3,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "voice-tail-50ms",
+      "kind": "beat",
+      "global": 56.45,
+      "local": 56.45,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "voice-end-sample",
+      "kind": "beat",
+      "global": 56.5,
+      "local": 56.5,
+      "look": "S83",
+      "file": "index.html"
+    },
+    {
+      "name": "final-frame-hold",
+      "kind": "beat",
+      "global": 56.53,
+      "local": 56.53,
+      "look": "S83",
+      "file": "index.html"
+    }
+  ]
+}

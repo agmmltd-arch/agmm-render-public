@@ -1,0 +1,201 @@
+name: S83 protected production and source review
+run-name: S83 protected production ${{ github.run_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      expected_public_head_sha:
+        description: Exact root-published public main commit to run
+        required: true
+        type: string
+      candidate_manifest_sha256:
+        description: Exact published CANDIDATE-MANIFEST.json SHA256
+        required: true
+        type: string
+      expected_private_input_commit:
+        description: Root-staged private Git tree commit
+        required: true
+        default: 04b48f467025d86ffcdb54d933717682b0e84903
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: s83-protected-production
+  cancel-in-progress: false
+jobs:
+  produce:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      GH_REPO: agmmltd-arch/agmm-render-public
+      S83_PARENT: 24938d939a775c6eabefe6e329f9a16f7595359a
+      CANDIDATE: .github/candidates/S83
+      S83_CAPTURE_DIR: ${{ runner.temp }}/s83-source
+      S83_STILLS_DIR: ${{ runner.temp }}/s83-stills
+      S83_REVIEW_DIR: ${{ runner.temp }}/s83-review
+      S83_MIX_DIR: ${{ runner.temp }}/s83-mix
+      S83_RECEIPTS: ${{ runner.temp }}/s83-receipts
+      EXPECTED_PUBLIC_HEAD_SHA: ${{ inputs.expected_public_head_sha }}
+      CANDIDATE_MANIFEST_SHA256: ${{ inputs.candidate_manifest_sha256 }}
+      EXPECTED_PRIVATE_INPUT_COMMIT: ${{ inputs.expected_private_input_commit }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Validate exact root-published candidate and public runtime blobs
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$RUNNER_ENVIRONMENT" == github-hosted ]]
+          [[ "$GITHUB_REPOSITORY" == "$GH_REPO" && "$GITHUB_REF" == refs/heads/main ]]
+          [[ "$GITHUB_SHA" == "$EXPECTED_PUBLIC_HEAD_SHA" ]]
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" && "$(git rev-parse HEAD^)" == "$S83_PARENT" ]]
+          cd "$CANDIDATE"
+          echo "$CANDIDATE_MANIFEST_SHA256  CANDIDATE-MANIFEST.json" | sha256sum -c -
+          sha256sum -c CANDIDATE-MANIFEST.sha256
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          manifest=Path('CANDIDATE-MANIFEST.json').read_bytes()
+          doc=json.loads(manifest)
+          for rel, expected in doc['candidate_files'].items():
+              path=Path(rel)
+              if path.is_symlink() or not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=expected:
+                  raise SystemExit('candidate file binding failed: '+rel)
+          listed={}
+          for line in Path('CANDIDATE-TEXT-HASHES.txt').read_text().splitlines():
+              digest, rel=line.split(None,1); listed[rel.strip()]=digest
+          if listed != doc['candidate_files']:
+              raise SystemExit('candidate hash list differs from manifest')
+          if hashlib.sha256(Path('CANDIDATE-TEXT-HASHES.txt').read_bytes()).hexdigest()!=doc['candidate_text_hashes_sha256']:
+              raise SystemExit('candidate text hash-list digest mismatch')
+          PY
+          python3 verify_protected_input_manifest.py PROTECTED-INPUTS.json
+          python3 -c 'import json,os; assert json.load(open("PROTECTED-INPUTS.json"))["private_tree_binding"]["commit"] == os.environ["EXPECTED_PRIVATE_INPUT_COMMIT"]'
+          python3 -m unittest -v test_validate_s83_source_clock.py test_verify_protected_input_manifest.py test_guard_review_artifact.py
+          node --test source_url_guard.test.mjs
+          python3 -m unittest -v test_cue_pan_map.py
+          python3 validate_cue_pan_map.py MIX-SPEC.json MIX-CUE-PAN-MAP.json index.html
+          cd "$GITHUB_WORKSPACE"
+          test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/v2/audio_core.py")" = 9a0aaee6f0676677efff34d25fdcf79d9537cb16
+          test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/v2/audio_rules.json")" = e00afb1410d4ae9278be24ccb3811972a62e7b17
+          test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/v2/mix2.py")" = 623521fb087ce296fe3895f6c23205c49976b837
+          test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/v2/voice_chain.py")" = ea817bb829f4ffd68b2abdaacb1a8128731d4b21
+          test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/library.json")" = ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05
+          mkdir -p "$S83_CAPTURE_DIR" "$S83_STILLS_DIR" "$S83_REVIEW_DIR" "$S83_MIX_DIR" "$S83_RECEIPTS"
+      - name: Checkout exact private Git input tree using the existing read-only deploy key
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.expected_private_input_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-s83-inputs
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            protected-inputs/S83/voice/S83.wav
+            protected-inputs/S83/sound/library/foley_click/foley_click_01.wav
+            protected-inputs/S83/sound/library/foley_click/foley_click_02.wav
+            protected-inputs/S83/sound/library/foley_click/foley_click_04.wav
+            protected-inputs/S83/sound/library/foley_click/foley_click_05.wav
+            protected-inputs/S83/sound/library/foley_click/foley_click_06.wav
+            protected-inputs/S83/sound/library/foley_paper/foley_paper_02.wav
+            protected-inputs/S83/sound/library/foley_paper/foley_paper_03.wav
+            protected-inputs/S83/sound/library/foley_paper/foley_paper_05.wav
+            protected-inputs/S83/sound/library/foley_paper/foley_paper_08.wav
+            protected-inputs/S83/sound/library/foley_paper/foley_paper_09.wav
+            protected-inputs/S83/sound/library/foley_stamp/foley_stamp_01.wav
+            protected-inputs/S83/sound/library/foley_stamp/foley_stamp_03.wav
+            protected-inputs/S83/sound/library/impact_soft/impact_soft_09.wav
+            protected-inputs/S83/sound/library/paper_page/paper_page_06.wav
+            protected-inputs/S83/sound/library/paper_page/paper_page_07.wav
+            protected-inputs/S83/sound/library/paper_page/paper_page_08.wav
+            protected-inputs/S83/sound/library/paper_page/paper_page_10.wav
+      - name: Verify native private Git blobs, bytes, and release SHA256 on Ubuntu
+        run: |
+          set -euo pipefail
+          cd "$CANDIDATE"
+          python3 verify_staged_protected_inputs.py --manifest PROTECTED-INPUTS.json --checkout "$GITHUB_WORKSPACE/private-s83-inputs" --output "$S83_RECEIPTS/PROTECTED-INPUT-VERIFICATION.json"
+          mkdir -p inputs/sound
+          cp "$GITHUB_WORKSPACE/tools/agmm-kit-mirror/sound/library.json" inputs/sound/library.json
+          while IFS= read -r row; do
+            rel=$(python3 -c 'import json,sys; x=json.loads(sys.stdin.read()); print(x["runtime_path"]+"\t"+x["private_tree_path"])' <<< "$row")
+            dest=${rel%%$'\t'*}; src=${rel#*$'\t'}
+            mkdir -p "$(dirname "$dest")"
+            install -m 0600 "$GITHUB_WORKSPACE/private-s83-inputs/$src" "$dest"
+          done < <(python3 -c 'import json; print("\n".join(json.dumps(x) for x in json.load(open("PROTECTED-INPUTS.json"))["assets"]))')
+          cd "$GITHUB_WORKSPACE"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12.8'
+      - name: Install pinned numerical dependency and FFmpeg package
+        run: |
+          set -euo pipefail
+          printf '%s\n' 'numpy==2.2.6 --hash=sha256:fd83c01228a688733f1ded5201c678f0c53ecc1006ffbc404db9f7a899ac6249' > "$RUNNER_TEMP/s83-requirements.txt"
+          python -m pip install --require-hashes -r "$RUNNER_TEMP/s83-requirements.txt"
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg=7:6.1.1-3ubuntu5
+          dpkg-query -W -f='${Version}\n' ffmpeg | grep -Fx '7:6.1.1-3ubuntu5'
+          ffmpeg -version | head -n 1
+          ffprobe -version | head -n 1
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path(os.environ['S83_RECEIPTS'])/'RUNTIME-RECEIPT.json'
+          p.write_text(json.dumps({'schema':'agmm-s83-runtime-receipt-v1','status':'PINNED_RUNTIME_READY','public_commit':os.environ['GITHUB_SHA'],'runner_image_version':os.environ.get('ImageVersion'),'runner_image_os':os.environ.get('ImageOS'),'python':'3.12.8','numpy':'2.2.6','ffmpeg_package':'7:6.1.1-3ubuntu5','approval':'NOT_GRANTED'},indent=2)+'\n')
+          PY
+      - name: Bind exact source PCM to canonical word clock
+        run: |
+          set -euo pipefail
+          cd "$CANDIDATE"
+          python3 validate_s83_source_clock.py --wav inputs/S83.wav --timings CANONICAL-WORD-TIMINGS.json --protected-inputs PROTECTED-INPUTS.json --output "$S83_RECEIPTS/SOURCE-CLOCK-RECEIPT.json"
+      - name: Render private mix on the hosted runner
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE/$CANDIDATE"
+          python3 "$GITHUB_WORKSPACE/tools/agmm-kit-mirror/sound/v2/mix2.py" render MIX-SPEC.json --out "$S83_MIX_DIR"
+          python3 summarize_s83_mix.py --manifest "$S83_MIX_DIR/mix_manifest.json" --master "$S83_MIX_DIR/master.wav" --output "$S83_RECEIPTS/MIX-QUALITY-RECEIPT.json"
+          cd "$GITHUB_WORKSPACE"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.23.1'
+      - name: Assert pinned Node runtime
+        run: test "$(node --version)" = "v22.23.1"
+      - name: Install pinned browser capture dependencies
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.1
+          npx playwright install --with-deps chromium
+      - name: Verify exact source text and capture identified Trust logo imgs
+        run: node "$CANDIDATE/source_capture.mjs"
+      - name: Stage approved source marks into temporary composition
+        run: |
+          set -euo pipefail
+          mkdir -p "$CANDIDATE/assets"
+          install -m 0644 "$S83_CAPTURE_DIR/assets/wht-mark.png" "$CANDIDATE/assets/wht-mark.png"
+          install -m 0644 "$S83_CAPTURE_DIR/assets/rwt-mark.png" "$CANDIDATE/assets/rwt-mark.png"
+      - name: Check composition and capture the 37 frozen review stills
+        run: |
+          set -euo pipefail
+          npx --yes hyperframes@0.8.71 check "$CANDIDATE" --json > "$RUNNER_TEMP/s83-check.json"
+          npx --yes hyperframes@0.8.71 snapshot "$CANDIDATE" --at "0,0.12,0.35,0.7,1.2,7.775,7.835,7.875,13.2,18.579,18.639,18.679,23.5,28.417,28.477,28.517,33.1,34.493,34.553,34.593,35.313,37.825,37.885,37.925,41.2,44.861,44.921,44.961,48,50.895,50.955,50.995,53,56.3,56.45,56.50,56.53" --no-end --describe false --no-browser-gpu --timeout 180000 --output "$S83_STILLS_DIR"
+      - name: Build sanitized bounded review packet and attach text receipts
+        run: |
+          set -euo pipefail
+          python3 "$CANDIDATE/hosted_receipt.py" --sources "$S83_CAPTURE_DIR" --stills "$S83_STILLS_DIR" --check "$RUNNER_TEMP/s83-check.json" --output "$S83_REVIEW_DIR" --source-outcome success --check-outcome success --stills-outcome success
+          python3 "$CANDIDATE/seal_s83_production_packet.py" --packet "$S83_REVIEW_DIR" --receipts "$S83_RECEIPTS"
+          python3 "$CANDIDATE/guard_review_artifact.py" "$S83_REVIEW_DIR"
+      - name: Delete all protected inputs, mix outputs, and temp media before upload
+        if: always()
+        run: |
+          set -euo pipefail
+          rm -rf "$GITHUB_WORKSPACE/private-s83-inputs" "$GITHUB_WORKSPACE/$CANDIDATE/inputs" "$S83_MIX_DIR" "$S83_STILLS_DIR" "$S83_CAPTURE_DIR"
+      - name: Upload bounded source and text review packet
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: s83-protected-source-review-${{ github.run_id }}
+          path: ${{ runner.temp }}/s83-review/
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error

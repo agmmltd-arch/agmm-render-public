@@ -1,0 +1,175 @@
+{
+  "schema": "agmm-s83-mix2-spec-v1",
+  "status": "EXACT_PRIVATE_GIT_TREE_BOUND_HOSTED_MIX_PENDING_RUN_AND_EARS_REVIEW",
+  "runtime": {
+    "platform": "Ubuntu 24.04 hosted runner only",
+    "mixer": "tools/agmm-kit-mirror/sound/v2/mix2.py from pinned public runtime manifest",
+    "requirements": "See MIX-RUNTIME-DEPENDENCIES.json. Actual source and SFX files must be staged from protected input and bound by exact path/SHA256 before execution.",
+    "execution": "Public agmmltd-arch/agmm-render-public Ubuntu Actions only. Workflow checks out the exact private Git tree at the root-pinned commit using the existing read-only SSH deploy key, verifies native Git blobs, byte sizes, and protected release SHA256 values on the hosted runner, stages inputs transiently, and executes the pinned public mix runtime. It uploads no audio, stems, or mix derivative."
+  },
+  "voice": {
+    "src": "inputs/S83.wav",
+    "offset_s": 0.0,
+    "canonical_narration": "CANONICAL-NARRATION.md",
+    "canonical_words": "CANONICAL-WORD-TIMINGS.json",
+    "source_receipt_sha256": "15581ed2212383875ddb8fc45b5c06e3ca4b548044958e744adfe8e9345c6caa",
+    "reference_sha256_only": "3df9d7568c0b0569887e6c9f39bd35835cda305a09d288ea535c63d9cdc15443",
+    "duration_seconds": 56.523,
+    "identity_status": "Selected take/model are text-receipt identified; stable voice ID absent. Ears review required."
+  },
+  "words": "CANONICAL-WORD-TIMINGS.json",
+  "sfx": {
+    "library": "inputs/sound/library.json",
+    "protect_words": true,
+    "cues": [
+      {
+        "t": 0.0,
+        "sfx_id": "foley_click_02",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Walsall identity card enters from the left",
+        "pan": -0.7
+      },
+      {
+        "t": 0.28,
+        "sfx_id": "impact_soft_09",
+        "gain_db": -20,
+        "designed_hit": false,
+        "event": "Metric value expands from its left-origin scale anchor",
+        "pan": -0.22
+      },
+      {
+        "t": 7.815,
+        "sfx_id": "foley_click_04",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Illustrative phone silhouette enters from the left",
+        "pan": -0.69
+      },
+      {
+        "t": 8.2,
+        "sfx_id": "foley_paper_03",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Trust statement card enters from the right",
+        "pan": 0.68
+      },
+      {
+        "t": 13.674,
+        "sfx_id": "foley_paper_02",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "REVIEWED step appears at left; pencil appears on it",
+        "pan": -0.42
+      },
+      {
+        "t": 14.582,
+        "sfx_id": "foley_paper_05",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "EDITED IF NEEDED step appears; pencil starts its pass from the left",
+        "pan": -0.42
+      },
+      {
+        "t": 15.894,
+        "sfx_id": "foley_stamp_01",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "APPROVED step appears at right",
+        "pan": 0.44
+      },
+      {
+        "t": 18.619,
+        "sfx_id": "paper_page_06",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Clinician evidence card enters from the left",
+        "pan": -0.54
+      },
+      {
+        "t": 23.6,
+        "sfx_id": "foley_paper_08",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Route line draws from its left endpoint",
+        "pan": -0.43
+      },
+      {
+        "t": 23.75,
+        "sfx_id": "foley_click_01",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Walsall mark lands in the left Trust card",
+        "pan": -0.32
+      },
+      {
+        "t": 23.99,
+        "sfx_id": "foley_click_06",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Royal Wolverhampton mark lands in the right Trust card",
+        "pan": 0.32
+      },
+      {
+        "t": 28.457,
+        "sfx_id": "paper_page_07",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "BBC clarification sheet enters at centre",
+        "pan": 0.0
+      },
+      {
+        "t": 34.533,
+        "sfx_id": "paper_page_08",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Evidence sheet turns around centre",
+        "pan": 0.0
+      },
+      {
+        "t": 40.15,
+        "sfx_id": "foley_stamp_03",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Not-published state appears in the right evidence column",
+        "pan": 0.3
+      },
+      {
+        "t": 44.901,
+        "sfx_id": "foley_paper_09",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Worksheet enters from the left",
+        "pan": -0.26
+      },
+      {
+        "t": 50.935,
+        "sfx_id": "paper_page_10",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Follow card rises at centre",
+        "pan": 0.01
+      },
+      {
+        "t": 53.4,
+        "sfx_id": "foley_click_05",
+        "gain_db": -18,
+        "designed_hit": false,
+        "event": "Underline stroke begins at its left edge",
+        "pan": -0.44
+      }
+    ]
+  },
+  "ambience": {
+    "regions": []
+  },
+  "master": {
+    "integrated_lufs": -14.0,
+    "true_peak_dbtp": -1.0
+  },
+  "music": null,
+  "limitations": [
+    "17 cues are a paper edit only. Every sound must be auditioned on the hosted runner; reject any cue that masks speech or feels literal, comic or overstated.",
+    "No mix or audio review is claimed until the hosted workflow produces its text-only receipt and a reviewer listens to the mix through an authorized route."
+  ]
+}

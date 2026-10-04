@@ -1,0 +1,1118 @@
+{
+  "words": [
+    {
+      "word": "An",
+      "start": 0.026,
+      "end": 0.107,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "NHS",
+      "start": 0.127,
+      "end": 0.531,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "trust",
+      "start": 0.531,
+      "end": 0.834,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "in",
+      "start": 0.935,
+      "end": 1.035,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "Walsall",
+      "start": 1.035,
+      "end": 1.439,
+      "paragraph": "P01",
+      "emphasis": true
+    },
+    {
+      "word": "says",
+      "start": 2.045,
+      "end": 2.246,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "an",
+      "start": 2.246,
+      "end": 2.347,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "AI",
+      "start": 2.448,
+      "end": 2.65,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "scribe",
+      "start": 2.751,
+      "end": 3.155,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "cut",
+      "start": 3.558,
+      "end": 3.659,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "its",
+      "start": 3.76,
+      "end": 3.861,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "clinician's",
+      "start": 3.962,
+      "end": 4.467,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "note",
+      "start": 4.568,
+      "end": 4.669,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "writing",
+      "start": 4.77,
+      "end": 5.173,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 5.375,
+      "end": 5.678,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "under",
+      "start": 5.779,
+      "end": 6.081,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "four",
+      "start": 6.182,
+      "end": 6.283,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "minutes",
+      "start": 6.384,
+      "end": 6.687,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 6.788,
+      "end": 6.869,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "patient.",
+      "start": 6.889,
+      "end": 7.393,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "The",
+      "start": 7.815,
+      "end": 7.921,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "tool",
+      "start": 7.921,
+      "end": 8.123,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "is",
+      "start": 8.123,
+      "end": 8.224,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "called",
+      "start": 8.224,
+      "end": 8.527,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Heidi.",
+      "start": 8.527,
+      "end": 8.93,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "It",
+      "start": 9.334,
+      "end": 9.435,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "listens",
+      "start": 9.435,
+      "end": 9.738,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 9.839,
+      "end": 9.92,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 9.94,
+      "end": 10.02,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "consultation",
+      "start": 10.041,
+      "end": 10.646,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "on",
+      "start": 10.747,
+      "end": 10.828,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 10.848,
+      "end": 10.858,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "phone",
+      "start": 10.848,
+      "end": 11.151,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 11.353,
+      "end": 11.554,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "writes",
+      "start": 11.554,
+      "end": 11.756,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 11.756,
+      "end": 11.857,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "clinical",
+      "start": 11.857,
+      "end": 12.261,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "notes,",
+      "start": 12.261,
+      "end": 12.665,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 12.866,
+      "end": 13.068,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 13.068,
+      "end": 13.169,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "clinician",
+      "start": 13.169,
+      "end": 13.674,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "reviews",
+      "start": 13.674,
+      "end": 14.077,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "them,",
+      "start": 14.077,
+      "end": 14.279,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "edits",
+      "start": 14.582,
+      "end": 14.986,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "where",
+      "start": 14.986,
+      "end": 15.087,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "needed,",
+      "start": 15.188,
+      "end": 15.591,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 15.692,
+      "end": 15.894,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "approves",
+      "start": 15.894,
+      "end": 16.298,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "them",
+      "start": 16.298,
+      "end": 16.5,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "before",
+      "start": 16.5,
+      "end": 16.802,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "anything",
+      "start": 16.802,
+      "end": 17.206,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "goes",
+      "start": 17.206,
+      "end": 17.408,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "on",
+      "start": 17.408,
+      "end": 17.509,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 17.509,
+      "end": 17.61,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "record.",
+      "start": 17.61,
+      "end": 18.013,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "One",
+      "start": 18.619,
+      "end": 18.821,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "emergency",
+      "start": 18.821,
+      "end": 19.325,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "consultant,",
+      "start": 19.325,
+      "end": 19.931,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Dr",
+      "start": 20.234,
+      "end": 20.536,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "Jamil",
+      "start": 20.536,
+      "end": 20.839,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "Aslam,",
+      "start": 20.94,
+      "end": 21.344,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "says",
+      "start": 21.647,
+      "end": 21.949,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 21.949,
+      "end": 22.05,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "saves",
+      "start": 22.05,
+      "end": 22.353,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "him",
+      "start": 22.353,
+      "end": 22.555,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "six",
+      "start": 22.656,
+      "end": 22.757,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "minutes",
+      "start": 22.959,
+      "end": 23.16,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 23.261,
+      "end": 23.342,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "consultation,",
+      "start": 23.362,
+      "end": 24.069,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 24.371,
+      "end": 24.573,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "after",
+      "start": 24.573,
+      "end": 24.775,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "an",
+      "start": 24.775,
+      "end": 24.876,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "eight-month",
+      "start": 24.977,
+      "end": 25.381,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "pilot,",
+      "start": 25.482,
+      "end": 25.885,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "it's",
+      "start": 26.087,
+      "end": 26.289,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "being",
+      "start": 26.289,
+      "end": 26.491,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "rolled",
+      "start": 26.491,
+      "end": 26.793,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "out",
+      "start": 26.793,
+      "end": 26.995,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "across",
+      "start": 26.995,
+      "end": 27.298,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "two",
+      "start": 27.399,
+      "end": 27.5,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "trusts.",
+      "start": 27.601,
+      "end": 28.005,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "There's",
+      "start": 28.457,
+      "end": 28.579,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "one",
+      "start": 28.579,
+      "end": 28.68,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "thing",
+      "start": 28.781,
+      "end": 28.882,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 28.882,
+      "end": 28.982,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "hasn't",
+      "start": 28.982,
+      "end": 29.285,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "shown.",
+      "start": 29.285,
+      "end": 29.588,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "In",
+      "start": 30.194,
+      "end": 30.294,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "July,",
+      "start": 30.294,
+      "end": 30.597,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 30.597,
+      "end": 30.698,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "BBC",
+      "start": 30.698,
+      "end": 31.001,
+      "paragraph": "P03",
+      "emphasis": true
+    },
+    {
+      "word": "reported",
+      "start": 31.102,
+      "end": 31.707,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 31.909,
+      "end": 32.01,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "tool",
+      "start": 32.01,
+      "end": 32.212,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "was",
+      "start": 32.313,
+      "end": 32.414,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "improving",
+      "start": 32.414,
+      "end": 32.918,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "NHS",
+      "start": 32.918,
+      "end": 33.322,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "waiting",
+      "start": 33.322,
+      "end": 33.625,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "times,",
+      "start": 33.625,
+      "end": 34.029,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "then",
+      "start": 34.331,
+      "end": 34.533,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "changed",
+      "start": 34.533,
+      "end": 34.836,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "its",
+      "start": 34.937,
+      "end": 35.038,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "headline",
+      "start": 35.038,
+      "end": 35.441,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "because",
+      "start": 35.744,
+      "end": 35.946,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "evidence",
+      "start": 36.047,
+      "end": 36.35,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 36.35,
+      "end": 36.451,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "that",
+      "start": 36.451,
+      "end": 36.652,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "has",
+      "start": 36.652,
+      "end": 36.854,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "not",
+      "start": 36.854,
+      "end": 37.056,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "yet",
+      "start": 37.056,
+      "end": 37.157,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "been",
+      "start": 37.157,
+      "end": 37.359,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "published.",
+      "start": 37.359,
+      "end": 37.864,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "The",
+      "start": 38.422,
+      "end": 38.523,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "typing",
+      "start": 38.523,
+      "end": 39.027,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "time",
+      "start": 39.027,
+      "end": 39.33,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "was",
+      "start": 39.532,
+      "end": 39.734,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "measured.",
+      "start": 39.734,
+      "end": 40.238,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "The",
+      "start": 40.743,
+      "end": 40.945,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "waiting",
+      "start": 40.945,
+      "end": 41.348,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "times",
+      "start": 41.348,
+      "end": 41.752,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "haven't",
+      "start": 41.853,
+      "end": 42.156,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "been",
+      "start": 42.156,
+      "end": 42.257,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "shown.",
+      "start": 42.358,
+      "end": 42.66,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "So",
+      "start": 43.266,
+      "end": 43.468,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "when",
+      "start": 43.468,
+      "end": 43.569,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "you",
+      "start": 43.569,
+      "end": 43.77,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "try",
+      "start": 43.77,
+      "end": 44.073,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "AI,",
+      "start": 44.174,
+      "end": 44.578,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "pick",
+      "start": 45.082,
+      "end": 45.284,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 45.284,
+      "end": 45.486,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "one",
+      "start": 45.486,
+      "end": 45.789,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "job",
+      "start": 45.789,
+      "end": 46.092,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "you'll",
+      "start": 46.293,
+      "end": 46.495,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "time",
+      "start": 46.495,
+      "end": 46.798,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "before",
+      "start": 46.798,
+      "end": 47.202,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 47.303,
+      "end": 47.504,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "after",
+      "start": 47.605,
+      "end": 47.908,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 48.312,
+      "end": 48.514,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "only",
+      "start": 48.615,
+      "end": 48.917,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "claim",
+      "start": 48.917,
+      "end": 49.321,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "what",
+      "start": 49.523,
+      "end": 49.725,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "those",
+      "start": 49.725,
+      "end": 49.927,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "numbers",
+      "start": 49.927,
+      "end": 50.229,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "show.",
+      "start": 50.33,
+      "end": 50.633,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "Follow",
+      "start": 50.982,
+      "end": 51.184,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 51.285,
+      "end": 51.487,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "one",
+      "start": 51.79,
+      "end": 52.092,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "real",
+      "start": 52.193,
+      "end": 52.496,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "AI",
+      "start": 52.597,
+      "end": 52.9,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "story",
+      "start": 53.102,
+      "end": 53.505,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 53.606,
+      "end": 53.616,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "day",
+      "start": 53.606,
+      "end": 53.909,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 54.716,
+      "end": 54.817,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "what",
+      "start": 54.817,
+      "end": 55.019,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 55.019,
+      "end": 55.12,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "means",
+      "start": 55.12,
+      "end": 55.322,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 55.423,
+      "end": 55.524,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "your",
+      "start": 55.524,
+      "end": 55.826,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "business.",
+      "start": 55.826,
+      "end": 56.432,
+      "paragraph": "P05",
+      "emphasis": false
+    }
+  ],
+  "tempo_factor": 0.9908748241912799
+}

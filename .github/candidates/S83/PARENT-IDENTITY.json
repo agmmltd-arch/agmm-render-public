@@ -1,0 +1,28 @@
+{
+  "schema": "agmm-s83-parent-identity-v1",
+  "observed_at": "2026-10-04T19:26:56Z",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "private": false,
+  "visibility": "public",
+  "default_branch": "main",
+  "main_commit": "24938d939a775c6eabefe6e329f9a16f7595359a",
+  "main_commit_date": "2026-10-04T19:26:56Z",
+  "latest_main_rechecked_after_root_updates": "24938d939a775c6eabefe6e329f9a16f7595359a",
+  "latest_main_rechecked_commit_date": "2026-10-04T19:26:56Z",
+  "candidate_parent_is_ancestor": true,
+  "latest_main_helpers_match_pins": true,
+  "existing_helper_blobs": {
+    ".github/workflows/agmm-short-capture.yml": "3cb41404efec5fed821510b8d8717b8188221891",
+    ".github/scripts/capture_short_package.py": "65f9b89f126c6113a91061a2f1f361954c96a0ae",
+    ".github/scripts/render_short_package.py": "754099346a84c5bd305f5684ef24399a53bd9697",
+    ".github/workflows/agmm-short-package.yml": "2e8c6e21409e0bdaaf80356d8b02b71bd4c5491b"
+  },
+  "candidate_actions_run_or_repo_changed": false,
+  "observed_public_runtime_blobs": {
+    "tools/agmm-kit-mirror/sound/v2/audio_core.py": "9a0aaee6f0676677efff34d25fdcf79d9537cb16",
+    "tools/agmm-kit-mirror/sound/v2/audio_rules.json": "e00afb1410d4ae9278be24ccb3811972a62e7b17",
+    "tools/agmm-kit-mirror/sound/v2/mix2.py": "623521fb087ce296fe3895f6c23205c49976b837",
+    "tools/agmm-kit-mirror/sound/v2/voice_chain.py": "ea817bb829f4ffd68b2abdaacb1a8128731d4b21",
+    "tools/agmm-kit-mirror/sound/library.json": "ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05"
+  }
+}

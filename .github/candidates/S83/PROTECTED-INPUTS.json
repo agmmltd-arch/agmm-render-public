@@ -1,0 +1,224 @@
+{
+  "schema": "agmm-s83-protected-inputs-v1",
+  "status": "EXACT_PRIVATE_GIT_TREE_BOUND_HOSTED_SHA256_STILL_REQUIRED",
+  "repository": "agmmltd-arch/agmm-video-render",
+  "release_id": 403141125,
+  "tag": "S83-protected-inputs-20261004",
+  "target_commitish": "d75f21511e9603506f9cc934a0f430db6d75d172",
+  "assets": [
+    {
+      "id": 610332048,
+      "name": "foley_click_01.wav",
+      "size": 29472,
+      "digest": "sha256:2a63dc6bff2514a0de47177788184956094fd80037d66a4876e50751f109253e",
+      "sfx_id": "foley_click_01",
+      "runtime_path": "inputs/sound/library/foley_click/foley_click_01.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_click/foley_click_01.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "c31ec9811e7051b51a85d019c512619698fd0bf2"
+    },
+    {
+      "id": 610331993,
+      "name": "foley_click_02.wav",
+      "size": 7014,
+      "digest": "sha256:3b321ace83be2de6ea20bace72003061de5c6475eb40787ed64bdca9edb3a1a7",
+      "sfx_id": "foley_click_02",
+      "runtime_path": "inputs/sound/library/foley_click/foley_click_02.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_click/foley_click_02.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "0b7386f0de62c29ab547129dd65441eadaae0bd8"
+    },
+    {
+      "id": 610331996,
+      "name": "foley_click_04.wav",
+      "size": 7014,
+      "digest": "sha256:f960975cd2173626a33a7a885f32f8322d478f58a7bb40cf238f4a272bf35399",
+      "sfx_id": "foley_click_04",
+      "runtime_path": "inputs/sound/library/foley_click/foley_click_04.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_click/foley_click_04.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "e2ea78ea2d623511376b600470c7fa378bf7c326"
+    },
+    {
+      "id": 610332062,
+      "name": "foley_click_05.wav",
+      "size": 72102,
+      "digest": "sha256:23da61200a62daa38ea6503a00c616b8569621efa5131d22e9e15389aea85c76",
+      "sfx_id": "foley_click_05",
+      "runtime_path": "inputs/sound/library/foley_click/foley_click_05.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_click/foley_click_05.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "41e44c3c05be7e7edc01df64b91f78e5ac17dd82"
+    },
+    {
+      "id": 610332049,
+      "name": "foley_click_06.wav",
+      "size": 43302,
+      "digest": "sha256:3f7d291ed86b364ffbd4f2dcef2d8b5ebca46e579bfcd5b83e2b3ea4cad36478",
+      "sfx_id": "foley_click_06",
+      "runtime_path": "inputs/sound/library/foley_click/foley_click_06.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_click/foley_click_06.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "008db77c1eed016b442479e3516957777ac500e2"
+    },
+    {
+      "id": 610332019,
+      "name": "foley_paper_02.wav",
+      "size": 35814,
+      "digest": "sha256:f1e1a0d561a0039e6999944c773f6b6eac321649aff5304c5ead7e682191fa1b",
+      "sfx_id": "foley_paper_02",
+      "runtime_path": "inputs/sound/library/foley_paper/foley_paper_02.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_paper/foley_paper_02.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "a3af4a65c9bef4e9a02bb5058052c56f625540ad"
+    },
+    {
+      "id": 610331992,
+      "name": "foley_paper_03.wav",
+      "size": 86502,
+      "digest": "sha256:97966ae2339209e47587ecfefab354a3eaa0b09f620bb054cfa1d9f7a7d04805",
+      "sfx_id": "foley_paper_03",
+      "runtime_path": "inputs/sound/library/foley_paper/foley_paper_03.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_paper/foley_paper_03.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "5c8d101eeb55c0b62633f0d9fe11bd2611099be7"
+    },
+    {
+      "id": 610332024,
+      "name": "foley_paper_05.wav",
+      "size": 79590,
+      "digest": "sha256:49f23be34ff0ec254703b5fd7e91ccb17ae735bfee9f60efc10b8c9e46cbf21c",
+      "sfx_id": "foley_paper_05",
+      "runtime_path": "inputs/sound/library/foley_paper/foley_paper_05.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_paper/foley_paper_05.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "48a3eff0f37e410bad159a23fc78c8b5b59c19f9"
+    },
+    {
+      "id": 610332047,
+      "name": "foley_paper_08.wav",
+      "size": 82470,
+      "digest": "sha256:adea920a80b13099e98652b0df27d503a4f788f0a5a820b21250d39451b1d83d",
+      "sfx_id": "foley_paper_08",
+      "runtime_path": "inputs/sound/library/foley_paper/foley_paper_08.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_paper/foley_paper_08.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "0d35908af7782211a262dbafd71479f0368d54fb"
+    },
+    {
+      "id": 610332059,
+      "name": "foley_paper_09.wav",
+      "size": 130278,
+      "digest": "sha256:67672135813826b43f1e8154b22644875716677e54556c00e849d6f1eb0244c0",
+      "sfx_id": "foley_paper_09",
+      "runtime_path": "inputs/sound/library/foley_paper/foley_paper_09.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_paper/foley_paper_09.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "d9380d8965524ba17bc45c747bda980f92b4ee3c"
+    },
+    {
+      "id": 610332023,
+      "name": "foley_stamp_01.wav",
+      "size": 100902,
+      "digest": "sha256:1c401c3e5db7161c1bf034b2f6864d957af08ba6d47a861da01fb35128480194",
+      "sfx_id": "foley_stamp_01",
+      "runtime_path": "inputs/sound/library/foley_stamp/foley_stamp_01.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_stamp/foley_stamp_01.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "b79b083ac43094cd688c3c05612514506ebea216"
+    },
+    {
+      "id": 610332056,
+      "name": "foley_stamp_03.wav",
+      "size": 100902,
+      "digest": "sha256:31bc9a8ac5d2b3560c7e087079cb60c5470d161f1cf990ccf44952a8767f7103",
+      "sfx_id": "foley_stamp_03",
+      "runtime_path": "inputs/sound/library/foley_stamp/foley_stamp_03.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/foley_stamp/foley_stamp_03.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "70330c99f8bf5fbed31ebb7c545fe1736030292b"
+    },
+    {
+      "id": 610331991,
+      "name": "impact_soft_09.wav",
+      "size": 42332,
+      "digest": "sha256:725d5563ef95268cb1b1a9e0bbd83c56416aa3cbbcc5a6f5c2a90d5d5f3afb60",
+      "sfx_id": "impact_soft_09",
+      "runtime_path": "inputs/sound/library/impact_soft/impact_soft_09.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/impact_soft/impact_soft_09.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "da912b5642fcda531d87c18e639482c2818e8cec"
+    },
+    {
+      "id": 610332029,
+      "name": "paper_page_06.wav",
+      "size": 27244,
+      "digest": "sha256:42a68a895a5fd14d0ef1df9b21e46c9f77fdbc6aea243e18ae22928cf6eb82f1",
+      "sfx_id": "paper_page_06",
+      "runtime_path": "inputs/sound/library/paper_page/paper_page_06.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/paper_page/paper_page_06.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "6651dbb2c9c802c7cc8bff358c5f22a83c3ee4ae"
+    },
+    {
+      "id": 610332052,
+      "name": "paper_page_07.wav",
+      "size": 223770,
+      "digest": "sha256:ff38a07ef3489a2e4c90e33cdb4ea7cb398dff167cbb0288226c704ee6f0d51f",
+      "sfx_id": "paper_page_07",
+      "runtime_path": "inputs/sound/library/paper_page/paper_page_07.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/paper_page/paper_page_07.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "a64c026a69bfb268294b0db982009b87ea2541b3"
+    },
+    {
+      "id": 610332051,
+      "name": "paper_page_08.wav",
+      "size": 163736,
+      "digest": "sha256:083e21e28e0ceea960351ce5cf7e54621012fad6f15b6ec12a1d1fca53ad3fc4",
+      "sfx_id": "paper_page_08",
+      "runtime_path": "inputs/sound/library/paper_page/paper_page_08.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/paper_page/paper_page_08.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "95913f4b9c94842f39ce7bd17fac9fdb5e8ed14e"
+    },
+    {
+      "id": 610332060,
+      "name": "paper_page_10.wav",
+      "size": 97128,
+      "digest": "sha256:6170388a02a15f7d0dae6a78ca832e44a577c60f21c55840999552df8e432dc5",
+      "sfx_id": "paper_page_10",
+      "runtime_path": "inputs/sound/library/paper_page/paper_page_10.wav",
+      "private_tree_path": "protected-inputs/S83/sound/library/paper_page/paper_page_10.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "818b86ff57cd4439287eca157b305301d97f61b1"
+    },
+    {
+      "id": 610331997,
+      "name": "S83.wav",
+      "size": 2713200,
+      "digest": "sha256:09d63637253f35155c74e183ba32fb530e10261218a607dfb5544ad829138cb6",
+      "sfx_id": null,
+      "runtime_path": "inputs/S83.wav",
+      "private_tree_path": "protected-inputs/S83/voice/S83.wav",
+      "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+      "git_blob_sha": "10c3a4f72fa017af3de8833dd3b5fd4a78b805ac"
+    }
+  ],
+  "public_runtime_library": {
+    "path": "tools/agmm-kit-mirror/sound/library.json",
+    "git_blob_sha": "ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05",
+    "sha256": "2744f53024d42208538675f8d27e24e3f06c4135b81e892af29e2f0538c56215"
+  },
+  "policy": {
+    "read_only_private_input_access_required": true,
+    "raw_inputs_may_not_appear_in_public_artifact": true,
+    "public_runner_only": true,
+    "credentials_step_scope_only": true
+  },
+  "private_tree_binding": {
+    "commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+    "paths_root": "protected-inputs/S83",
+    "commit_policy": "Workflow dispatch must supply this exact private commit; exact 18-file allowlist and Git blob IDs are verified before media processing."
+  }
+}

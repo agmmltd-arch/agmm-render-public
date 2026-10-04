@@ -1,0 +1,93 @@
+{
+  "schema": "agmm-s83-mix-runtime-dependencies-v1",
+  "status": "PUBLIC_RUNTIME_PINNED_PRIVATE_GIT_TREE_BOUND_HOSTED_RUN_PENDING",
+  "observed_public_repository": "agmmltd-arch/agmm-render-public",
+  "observed_public_main_commit": "24938d939a775c6eabefe6e329f9a16f7595359a",
+  "observed_at_utc": "2026-10-04T19:26:56Z",
+  "runner": {
+    "os": "ubuntu-24.04",
+    "architecture": "x86_64",
+    "media_processing_on_mac": false,
+    "image_version": "Record the GitHub-hosted ImageVersion/ImageOS values in every run receipt because ubuntu-24.04 is a moving hosted image label."
+  },
+  "python": {
+    "version": "3.12.8",
+    "setup_python_action": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065"
+  },
+  "python_packages": {
+    "numpy": {
+      "version": "2.2.6",
+      "wheel": "numpy-2.2.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "sha256": "fd83c01228a688733f1ded5201c678f0c53ecc1006ffbc404db9f7a899ac6249"
+    }
+  },
+  "system_tools": {
+    "ffmpeg_ffprobe_ubuntu_package": "7:6.1.1-3ubuntu5",
+    "install": "sudo apt-get install ffmpeg=7:6.1.1-3ubuntu5",
+    "receipt": "Record ffmpeg -version, ffprobe -version, and dpkg-query -W ffmpeg; fail closed if pinned package unavailable."
+  },
+  "public_runtime_blobs": [
+    {
+      "path": "tools/agmm-kit-mirror/sound/v2/audio_core.py",
+      "git_blob_sha": "9a0aaee6f0676677efff34d25fdcf79d9537cb16"
+    },
+    {
+      "path": "tools/agmm-kit-mirror/sound/v2/audio_rules.json",
+      "git_blob_sha": "e00afb1410d4ae9278be24ccb3811972a62e7b17"
+    },
+    {
+      "path": "tools/agmm-kit-mirror/sound/v2/mix2.py",
+      "git_blob_sha": "623521fb087ce296fe3895f6c23205c49976b837"
+    },
+    {
+      "path": "tools/agmm-kit-mirror/sound/v2/voice_chain.py",
+      "git_blob_sha": "ea817bb829f4ffd68b2abdaacb1a8128731d4b21"
+    },
+    {
+      "path": "tools/agmm-kit-mirror/sound/library.json",
+      "git_blob_sha": "ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05",
+      "size_bytes": 223658
+    }
+  ],
+  "execution_contract": [
+    "Before processing, assert the current public checkout contains every listed blob at the exact path and SHA; root must rebind to current main at publication.",
+    "Run from tools/agmm-kit-mirror/sound/v2 so mix2.py resolves colocated audio_rules.json and voice_chain.py; expose colocated audio_core.py for import.",
+    "Do not install packages or start a media job until the exact private input manifest and all source assets pass hosted hash/path validation.",
+    "Do not output protected voice/SFX bytes or their processed stems/mix to a public Actions artifact. Publish only allowlisted sanitized text/source-clock/runtime receipts to public artifacts; full mix review uses the authorized tagged public preview release route; no mix or stem belongs in the one-day Actions artifact.",
+    "Safe full-mix delivery for independent listening remains a separate OPEN gate. The public artifact must not contain a mix or stem; do not delete a successful mix before its authorized tagged preview release export is verified; do not regenerate merely to recover a review copy."
+  ],
+  "protected_input_findings": {
+    "checked_repository": "agmmltd-arch/agmm-video-render",
+    "checked_main_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+    "private_release_id": 403141125,
+    "private_release_tag": "S83-protected-inputs-20261004",
+    "asset_count": 18,
+    "voice_server_sha256": "09d63637253f35155c74e183ba32fb530e10261218a607dfb5544ad829138cb6",
+    "voice_size_bytes": 2713200,
+    "selected_sfx_count": 17,
+    "hosted_sha_verification": "PENDING_UBUNTU_ACTIONS_RUN"
+  },
+  "catalog_license_metadata_is_not_audio_file_presence_or_file_level_rights_evidence": true,
+  "no_mix_or_audio_review_claimed": true,
+  "read_route_gap": "RESOLVED_FOR_EXACT_GIT_TREE_CHECKOUT: root staged the 18 exact input blobs at private commit 04b48f467025d86ffcdb54d933717682b0e84903; existing read-only SSH deploy key is used only in the private actions/checkout step.",
+  "actions": {
+    "checkout": "11bd71901bbe5b1630ceea73d27597364c9af683",
+    "setup_node": "49933ea5288caeca8642d1e84afbd3f7d6820020",
+    "upload_artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02"
+  },
+  "node_packages": {
+    "playwright": "1.55.1",
+    "hyperframes": "0.8.71",
+    "browser": "Playwright-matched Chromium via npx playwright install --with-deps chromium"
+  },
+  "protected_input_manifest": "PROTECTED-INPUTS.json binds the 18 exact private Git blob IDs and source release IDs, sizes, digests, and runtime paths.",
+  "public_output_policy": "The one-day Actions artifact contains only allowlisted sanitized clock/mix/source receipts and bounded source stills. The separate authorized tagged public in-review preview release may contain the single mixed programme master with NOT_REVIEWED labels and all approval gates open. Raw voice and individual stems remain private.",
+  "public_mix_preview_route": {
+    "status": "AUTHORIZED_ROUTE_AVAILABLE_INTEGRATION_OPEN",
+    "authorization_receipt": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-durable-review-export-luna/ROOT-PUBLIC-PREVIEW-AUTHORIZATION.json",
+    "native_exporter": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-durable-review-export-luna/candidate/s90_preview_export.py and its published workflow; root owns integration",
+    "scope": "Single mixed S83 in-review preview master plus sanitized receipts in a tagged public preview prerelease. Keep raw voice and stems private. Label NOT_REVIEWED; AV/craft/Ready/release approval remain open.",
+    "implementation_state": "S83 workflow currently deletes master before durable export. Integrate into the same run and verify exact release asset SHA256/size before review handoff. Do not rerender a successfully exported mix.",
+    "actions_artifact": "No mix, stems, or raw media in one-day Actions artifact."
+  }
+}

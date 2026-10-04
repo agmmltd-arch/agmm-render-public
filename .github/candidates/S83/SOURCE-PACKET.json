@@ -1,0 +1,79 @@
+{
+  "schema": "agmm-short-source-packet-v1",
+  "story_id": "S83",
+  "candidate": "walsall-ai-scribe-paper-turn",
+  "status": "TEXT_SOURCE_AND_MIX_PLAN_ONLY_NEEDS_HOSTED_SOURCE_CAPTURE_AND_INDEPENDENT_EYES_EARS",
+  "locked_narration": {
+    "script_path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/shorts/scripts-v2/S83.md",
+    "spoken_words": 158,
+    "visual_word_timing_end_seconds": 56.432,
+    "voice_receipt_final_duration_seconds": 56.523,
+    "unbound_audio_tail_seconds": 0.091,
+    "final_av_tail_status": "VISUAL_HOLD_TO_56.533333S_COVERS_56.523S_RECEIPT_DURATION; exact source audio binding and ears review pending",
+    "word_timing_path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/shorts/voice/S83/S83.words.json",
+    "voice_take": "S83/take-pass1 (canonical selection, text receipt only)",
+    "voice_model_receipt": "voxtral-mini-tts-2603",
+    "voice_id": "NOT_RECORDED_IN_INSPECTED_RECEIPTS",
+    "edit": false
+  },
+  "source_truth": {
+    "trust_release": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/",
+    "bbc_report": "https://www.bbc.com/news/articles/cjrgrxgexjro",
+    "factcheck_receipt": "S83.factcheck.json says CLEAN, 8/8 lines found on BBC pages and the issuer source, checked 2026-09-25",
+    "freshness": "Walsall issuer page re-opened in this task; BBC canonical page remains to be authenticated by the hosted runner",
+    "current_product_source": "Heidi Help Center, 2026-08-17, says the mobile app does not currently support phone-call or telehealth-call transcription. Preserve the script's dated BBC account, and ensure visuals do not imply Walsall uses Heidi to record telephone/telehealth calls.",
+    "current_product_url": "https://support.heidihealth.com/en/articles/9908824-heidi-mobile-app",
+    "capture_rules": [
+      "Every factual scene labels its publisher and publication/clarification date.",
+      "The six-minute figure stays attributed to BBC reporting about Dr Jamil Aslam.",
+      "Do not imply waiting times improved; the BBC says evidence had not yet been published.",
+      "No invented patient, consultation, record, metric, quotation or reconstructed Heidi interface; phone/waveform is labelled illustrative and not Walsall's deployed interface.",
+      "No BBC photograph, screenshot, headline crop or unnecessary Heidi product screenshot; use short exact source-text excerpts with authentic source/date attribution.",
+      "Only original Trust logo img elements are captured. Exact visible locator/src/currentSrc/alt are recorded; rights and permission for the public review copy remain NOT ASSESSED, with no final-use permission inferred.",
+      "Every main-frame navigation request and accepted final URL carries exactly utm_source=qa and utm_campaign=qa_release_audit; only those two parameters are removed for strict source-identity comparison. Redirect host, path, and every other query binding remain allowlisted and exact. Navigation and mark URLs reject credentials and nondefault HTTPS ports. Public receipt URLs and embedded URL text retain only protocol, host, path and exact QA parameters where present; other query values and fragments are stripped, and all strings/errors are capped at 512 characters."
+    ]
+  },
+  "canonical_text_receipts": {
+    "script_sha256": "7e452ef4c3ae8cbd139a2eed99f42b29ec2ea079934fb745500d18305a6a3d09",
+    "words_sha256": "fcbefcf7dc844e0976c477ebcd10de7a566ce1cad879473615b58cfe23e66c06",
+    "voice_receipt_sha256": "15581ed2212383875ddb8fc45b5c06e3ca4b548044958e744adfe8e9345c6caa",
+    "voicelead_sha256": "e4deec6cb7dde24b331ffac06d468f851a8f2461d312d604dbbcadbac453895f",
+    "voice_result_sha256": "a6d431971de0305913a1b8e4ab41950d3158bf34fc8968117c361f247ac53744",
+    "factcheck_sha256": "4b5642d76288ad01daedadc61ae5a1c88ce879a7f76b2568cef550b9b83b73ed",
+    "source_S83_1_text_sha256": "335de6d4613392dc5a9460bfc363e5e4862f501bc91c893251a5a81d71cc2831",
+    "source_S83_2_text_sha256": "382080775458e6066e06560a6a911468887a6debdba1f33a49eabdf6d99b08fe"
+  },
+  "voice_qualification": {
+    "text_receipt_status": "PASS",
+    "voice_receipt_final_duration_seconds": 56.523,
+    "visual_word_timing_end_seconds": 56.432,
+    "unbound_audio_tail_seconds": 0.091,
+    "pace_wpm_span": 169.1,
+    "full_asr_match": false,
+    "reported_asr_mismatch": "clinicians' heard as clinician's in full-file Whisper transcript",
+    "reported_pronunciation_warning": "isolated Whisper heard Heidi as 'Called hidey'; other listed listener heard Heidi correctly",
+    "independent_ears_review": "REQUIRED",
+    "identity_limit": "The selected take and model are identifiable from text receipts, but a stable speaker/voice ID is absent from the inspected S83 receipts."
+  },
+  "visual_source_status": {
+    "existing_s83_visual_source": "NOT_FOUND in the bounded S83 file inventory; existing S83 files found were script/factcheck/voice text receipts and existing audio, which was not opened or processed.",
+    "candidate_source": "index.html",
+    "external_media_local": false,
+    "source_capture_asset_allowlist": [
+      "rwt-mark.png",
+      "wht-mark.png"
+    ],
+    "bbc_media_captured": false,
+    "heidi_product_screenshot_captured": false,
+    "trust_logo_locator_and_source_attributes": "RECORDED_BY_HOSTED_CAPTURE_IF_UNIQUE_VISIBLE_OFFICIAL_IMG_MATCHES_EXIST",
+    "trust_logo_rights_and_permission": "NOT_ASSESSED; public review copy and all downstream use remain restricted pending approval"
+  },
+  "release_gates": {
+    "maker_visual_review": "NOT_DONE",
+    "independent_visual_review": "NEEDS_EYES",
+    "audio_listening": "NEEDS_EARS",
+    "audio_mux_and_master": "NOT_RUN; text-only MIX-SPEC.json and SOUND-PLAN.md prepared; media staging pending",
+    "ready_to_post": false,
+    "publication_or_dispatch": false
+  }
+}

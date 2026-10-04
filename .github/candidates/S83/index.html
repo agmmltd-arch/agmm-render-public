@@ -1,0 +1,1315 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>S83 — Walsall AI scribe</title>
+  <style>
+    :root{--paper:#f1e8d5;--paper2:#e8dcc4;--ink:#172d3c;--blue:#005eb8;--red:#a33c32;--rule:#81909a;--caption:#fffdf8}
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:Arial,sans-serif}
+    #root{position:relative;width:100%;height:100%;overflow:hidden;background:var(--paper)}
+    .desk{position:absolute;inset:0;background-color:var(--paper);background-image:radial-gradient(ellipse at 84% 9%,rgba(0,94,184,.18),transparent 42%),linear-gradient(112deg,rgba(255,255,255,.26),transparent 44%)}
+    .grain{position:absolute;inset:0;opacity:.12;background-image:repeating-linear-gradient(0deg,transparent 0 6px,rgba(23,45,60,.08) 7px,transparent 8px);mix-blend-mode:multiply}
+    .caption-band{position:absolute;left:0;right:0;bottom:0;height:292px;z-index:50;background:var(--caption);border-top:5px solid var(--blue);box-shadow:0 -16px 48px rgba(23,45,60,.14);display:flex;align-items:center;justify-content:center;padding:34px 78px}
+    .caption-clip{position:absolute;inset:0;width:100%;height:100%;z-index:51;pointer-events:none}
+    .caption-text{position:absolute;left:78px;right:78px;bottom:55px;min-height:130px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:46px;line-height:1.14;font-weight:700;letter-spacing:-.5px;color:var(--ink)}
+    .clip{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;padding:72px 76px 340px}
+    .eyebrow{font:700 42px/1.1 Arial,sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--blue)}
+    .source-tag{font:700 42px/1.12 Arial,sans-serif;letter-spacing:0;color:var(--blue)}
+    .display{font:700 98px/.94 Georgia,serif;letter-spacing:-2.3px;color:var(--ink)}
+    .big{font:700 126px/.9 Georgia,serif;letter-spacing:-4px;color:var(--blue)}
+    .paper{position:absolute;background:var(--caption);border:2px solid rgba(23,45,60,.16);box-shadow:0 22px 48px rgba(23,45,60,.18),inset 0 1px rgba(255,255,255,.7);}
+    .rule{height:2px;background:var(--rule);opacity:.55}
+    .label{font:700 42px/1.1 Arial,sans-serif;letter-spacing:.5px;text-transform:uppercase}
+    .body{font:400 42px/1.2 Georgia,serif}
+    .scene-heading{position:absolute;top:84px;left:76px;right:76px;z-index:5}
+    .s1 .identity{position:absolute;left:76px;top:330px;width:590px;height:205px;border:3px solid var(--blue);background:#f8f4e9;display:flex;align-items:center;gap:20px;padding:18px 22px;box-shadow:10px 16px 0 rgba(0,94,184,.12)}
+    .s1 .identity img{width:240px;height:142px;object-fit:contain}
+    .s1 .identity span{font:700 42px/1.05 Arial,sans-serif;max-width:260px}
+    .s1 .identity .identity-name span{display:block;max-width:none}
+    .s1 .lanyard{position:absolute;left:365px;top:250px;width:5px;height:95px;background:var(--blue);transform-origin:top}
+    .s1 .metric{position:absolute;left:80px;right:76px;top:625px;border-top:6px solid var(--ink);border-bottom:6px solid var(--ink);padding:38px 0 42px}
+    .s1 .metric .qualifier{font:700 42px/1.08 Arial,sans-serif;letter-spacing:.5px;text-transform:uppercase}
+    .s1 .metric .value{font:700 190px/.9 Georgia,serif;letter-spacing:-7px;color:var(--blue);margin:14px 0}
+    .s1 .metric .unit{font:700 48px/1 Arial,sans-serif;letter-spacing:1px;text-transform:uppercase}
+    .s1 .metric .average{font:700 42px/1.1 Arial,sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-top:20px}
+    .s1 .paper-edge{position:absolute;right:-98px;top:1120px;width:560px;height:300px;background:var(--paper2);transform:rotate(-9deg);border-top:5px solid rgba(23,45,60,.15)}
+    .s2 .phone{position:absolute;left:92px;top:390px;width:315px;height:545px;border:11px solid var(--ink);border-radius:48px;background:#e9f0ec;box-shadow:22px 28px 0 rgba(23,45,60,.12);padding:26px}
+    .s2 .phone-screen{height:100%;border-radius:25px;background:linear-gradient(148deg,#f8f4e9 20%,#e6eee9 100%);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px}
+    .s2 .product-name{font:700 54px/1 Arial,sans-serif;letter-spacing:2px;color:var(--blue)}
+    .s2 .illustrative-wave{height:115px;width:220px;display:flex;align-items:center;justify-content:center;gap:10px}
+    .s2 .illustrative-wave i{display:block;width:12px;border-radius:9px;background:var(--blue);opacity:.72}
+    .s2 .illustrative-wave i:nth-child(1),.s2 .illustrative-wave i:nth-child(9){height:30px}
+    .s2 .illustrative-wave i:nth-child(2),.s2 .illustrative-wave i:nth-child(8){height:55px}
+    .s2 .illustrative-wave i:nth-child(3),.s2 .illustrative-wave i:nth-child(7){height:82px}
+    .s2 .illustrative-wave i:nth-child(4),.s2 .illustrative-wave i:nth-child(6){height:105px}
+    .s2 .illustrative-wave i:nth-child(5){height:72px}
+    .s2 .note{position:absolute;left:440px;right:76px;top:420px;height:590px;padding:42px 40px 34px}
+    .s2 .note h2{font:700 56px/1.05 Georgia,serif;margin:0 0 34px}
+    .s2 .note blockquote{font:700 48px/1.15 Georgia,serif;color:var(--ink);margin:0}
+    .s2 .note .source-tag{position:absolute;left:40px;right:40px;bottom:34px}
+    .s2 .device-disclaimer{position:absolute;left:76px;right:76px;top:1026px;text-align:center;font:700 42px/1.12 Arial,sans-serif;color:var(--red)}
+    .s2 .steps{position:absolute;left:90px;right:90px;top:1210px;display:flex;justify-content:space-between;align-items:center}
+    .s2 .step{font:700 42px/1.05 Arial,sans-serif;text-align:center;padding:22px 12px;border:3px solid var(--blue);background:var(--paper);min-width:260px;transform:rotate(-2deg)}
+    .s2 .step span,.s3 .pilot span,.evidence-state span{display:block}
+    .s2 .arrow{font:700 48px/1 Georgia,serif;color:var(--blue)}
+    .s2 .review-pencil{position:absolute;left:111px;top:1395px;width:216px;height:13px;border-radius:8px;background:linear-gradient(180deg,#e7cf86 0 23%,#9a7530 24% 78%,#f0d991 79%);box-shadow:0 5px 9px rgba(23,45,60,.2);transform-origin:center;z-index:4}
+    .s2 .review-pencil:before{content:"";position:absolute;right:-15px;top:0;border-top:6.5px solid transparent;border-bottom:6.5px solid transparent;border-left:15px solid #c8b18a}
+    .s2 .review-pencil:after{content:"";position:absolute;left:-8px;top:0;width:9px;height:13px;border-radius:7px 0 0 7px;background:#9bb4c4}
+    .s3 .proof{position:absolute;left:76px;right:76px;top:360px;height:515px;padding:42px 48px;border-left:10px solid var(--blue)}
+    .s3 .proof .name{font:700 50px/1.08 Georgia,serif;margin:18px 0}
+    .s3 .proof blockquote{font:700 64px/1.08 Georgia,serif;color:var(--blue);margin:24px 0 0}
+    .s3 .route{position:absolute;left:92px;right:92px;top:960px;height:340px;display:flex;align-items:center;justify-content:space-between}
+    .s3 .route-line{position:absolute;left:116px;right:116px;top:145px;border-top:6px dashed var(--blue)}
+    .s3 .trust{position:relative;z-index:2;width:400px;height:260px;background:var(--caption);border:3px solid var(--blue);box-shadow:0 15px 32px rgba(23,45,60,.14);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:16px;text-align:center}
+    .s3 .trust img{width:280px;height:112px;object-fit:contain}
+    .s3 .trust span{font:700 42px/1.08 Arial,sans-serif;margin-top:8px}
+    .s3 .pilot{position:absolute;left:110px;right:110px;top:1370px;padding:22px 30px;text-align:center;background:var(--ink);color:var(--caption);font:700 42px/1.12 Arial,sans-serif;letter-spacing:.2px;transform:rotate(-1deg)}
+    .evidence-turn{perspective:1800px}
+    .turnover{position:absolute;left:74px;right:74px;top:420px;height:940px;transform-style:preserve-3d;transform-origin:center;box-shadow:0 28px 72px rgba(23,45,60,.2)}
+    .face{position:absolute;inset:0;backface-visibility:hidden;background:var(--caption);border:2px solid rgba(23,45,60,.18);overflow:hidden}
+    .face-back{transform:rotateY(180deg);display:grid;grid-template-columns:1fr 1fr}
+    .source-note{position:absolute;inset:64px 58px;padding:74px 62px;background:#fbf9f3;border-left:10px solid var(--blue);display:flex;flex-direction:column;justify-content:center;gap:58px}
+    .source-note .source-tag{font:700 46px/1.12 Arial,sans-serif;color:var(--blue)}
+    .source-note blockquote{font:700 66px/1.12 Georgia,serif;color:var(--ink);margin:0}
+    .source-attribution{font:700 42px/1.12 Arial,sans-serif;color:var(--ink)}
+    .ledger-column{padding:55px 40px;position:relative}
+    .ledger-column:first-child{border-right:4px solid var(--ink)}
+    .ledger-column h2{font:700 44px/1.05 Arial,sans-serif;letter-spacing:.3px;margin:0 0 38px;min-height:104px}
+    .ledger-column .claim{font:700 52px/1.08 Georgia,serif;color:var(--blue)}
+    .ledger-column .source-tag{position:absolute;left:40px;right:40px;bottom:50px}
+    .evidence-state{position:absolute;left:30px;right:30px;top:385px;border:4px dashed var(--red);padding:33px 18px;text-align:center;color:var(--red);font:700 42px/1.08 Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center}
+    .blank-field{position:absolute;left:60px;right:60px;top:540px;height:220px;border-bottom:3px solid var(--rule);border-top:3px solid rgba(23,45,60,.14)}
+    .s6 .worksheet{position:absolute;left:116px;right:96px;top:400px;height:910px;padding:60px 65px}
+    .s6 .worksheet h2{font:700 66px/1 Georgia,serif;margin:0 0 60px}
+    .s6 .row{height:178px;border-top:4px solid var(--ink);display:grid;grid-template-columns:180px 1fr 1fr;align-items:center;gap:18px}
+    .s6 .row .label{font-size:42px}
+    .s6 .field{height:90px;border:3px solid var(--rule);background:rgba(241,232,213,.35)}
+    .s6 .only{position:absolute;left:110px;right:100px;top:1320px;text-align:center;font:700 45px/1.08 Georgia,serif;color:var(--blue)}
+    .s7 .final-sheet{position:absolute;left:128px;right:108px;top:430px;height:760px;padding:70px 62px;border-top:18px solid var(--blue)}
+    .s7 .final-sheet .follow{font:700 72px/.98 Georgia,serif;margin:0 0 42px}
+    .s7 .ink-line{position:absolute;left:200px;top:1290px;width:580px;height:8px;background:var(--blue);transform:rotate(13deg);transform-origin:left}
+    .s7 .end-mark{position:absolute;right:108px;top:1380px;width:210px;height:210px;object-fit:contain}
+    .micro{position:absolute;right:75px;top:72px;font:700 42px/1 Arial,sans-serif;letter-spacing:.5px;color:var(--ink);opacity:.86}
+  </style>
+</head>
+<body>
+  <main id="root" data-composition-id="s83" data-root="true" data-width="1080" data-height="1920" data-duration="56.533333">
+    <div class="desk" aria-hidden="true"></div><div class="grain" aria-hidden="true"></div>
+    <section class="clip s1" data-start="0" data-duration="7.815" data-track-index="0">
+      <div class="micro">WALSALL HEALTHCARE · 25 AUG 2026</div><div class="lanyard"></div>
+      <div class="identity"><img src="assets/wht-mark.png" alt="Official Walsall Healthcare NHS Trust logo"><span class="identity-name">Walsall Healthcare <span>NHS Trust</span></span></div>
+      <div class="metric"><div class="qualifier">AI SCRIBE · DOCUMENTATION TIME</div><div class="value">&lt; 4</div><div class="unit">minutes per patient</div><div class="average">ON AVERAGE</div></div>
+      <div class="paper-edge" aria-hidden="true"></div>
+    </section>
+    <section class="clip s2" data-start="7.815" data-duration="10.804" data-track-index="1">
+      <div class="scene-heading"><div class="eyebrow">One task, three human steps</div></div>
+      <div class="phone" aria-hidden="true"><div class="phone-screen"><div class="product-name">HEIDI</div><div class="illustrative-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+      <article class="paper note"><h2>Trust statement</h2><blockquote>reviewed, edited where necessary and approved</blockquote><div class="source-tag">Walsall Healthcare NHS Trust · 25 Aug 2026</div></article>
+      <div class="device-disclaimer">ILLUSTRATIVE WORKFLOW · NOT WALSALL'S DEPLOYED INTERFACE</div>
+      <div class="steps"><div class="step review">REVIEWED</div><span class="arrow">›</span><div class="step edit"><span>EDITED</span><span>IF NEEDED</span></div><span class="arrow">›</span><div class="step approve">APPROVED</div></div><div class="review-pencil" aria-hidden="true"></div>
+    </section>
+    <section class="clip s3" data-start="18.619" data-duration="9.838" data-track-index="2">
+      <div class="scene-heading"><div class="eyebrow">One clinician’s report</div></div>
+      <article class="paper proof"><div class="source-tag">BBC NEWS · 15 JULY 2026</div><div class="name">Dr Mohammed Jamil Aslam</div><blockquote>saving him six minutes per consultation</blockquote></article>
+      <div class="route"><div class="route-line"></div><div class="trust"><img src="assets/wht-mark.png" alt="Official Walsall Healthcare NHS Trust logo"><span>Walsall Healthcare</span></div><div class="trust"><img src="assets/rwt-mark.png" alt="Official Royal Wolverhampton NHS Trust logo"><span>Royal Wolverhampton</span></div></div>
+      <div class="pilot"><span>Walsall Healthcare NHS Trust · 25 Aug 2026</span><span>8-MONTH PILOT · TWO TRUSTS</span></div>
+    </section>
+    <section class="clip evidence-turn" data-start="28.457" data-duration="16.444" data-track-index="3">
+      <div class="scene-heading"><div class="eyebrow">The report and its evidence</div></div>
+      <div class="turnover">
+        <article class="face face-front">
+          <div class="source-note">
+            <div class="source-tag">BBC NEWS · CLARIFICATION · 24 JULY 2026</div>
+            <blockquote>evidence for this has not yet been published</blockquote>
+            <div class="source-attribution">BBC article · 15 July 2026</div>
+          </div>
+        </article>
+        <article class="face face-back">
+          <div class="ledger-column"><h2>DOCUMENTATION TIME · ON AVERAGE</h2><div class="claim">less than four minutes per patient</div><div class="source-tag">WALSALL HEALTHCARE NHS TRUST · 25 AUGUST 2026</div></div>
+          <div class="ledger-column"><h2>WAITING-TIME EVIDENCE</h2><div class="blank-field" aria-hidden="true"></div><div class="evidence-state"><span>NOT YET</span><span>PUBLISHED</span></div><div class="source-tag">BBC CLARIFICATION · 24 JULY 2026</div></div>
+        </article>
+      </div>
+    </section>
+    <section class="clip s6" data-start="44.901" data-duration="6.034" data-track-index="5">
+      <div class="scene-heading"><div class="eyebrow">A usable test for your own work</div></div>
+      <article class="paper worksheet"><h2>Time one job</h2><div class="row"><span class="label">JOB</span><div class="field"></div><div class="field"></div></div><div class="row"><span class="label">BEFORE</span><div class="field"></div><div class="field"></div></div><div class="row"><span class="label">AFTER</span><div class="field"></div><div class="field"></div></div></article>
+      <div class="only">Only claim what those numbers show.</div>
+    </section>
+    <section class="clip s7" data-start="50.935" data-duration="5.598333" data-track-index="6">
+      <div class="scene-heading"><div class="eyebrow">AGMM · one real AI story a day</div></div>
+      <article class="paper final-sheet"><p class="follow">Follow for one real AI story a day, and what it means for your business.</p></article>
+      <div class="ink-line" aria-hidden="true"></div><img class="end-mark" src="assets/wht-mark.png" alt="Walsall Healthcare NHS Trust original mark as story source">
+    </section>
+    <div class="caption-band" aria-hidden="true"></div>
+  </main>
+  <script type="application/json" id="word-data">{
+  "words": [
+    {
+      "word": "An",
+      "start": 0.026,
+      "end": 0.107,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "NHS",
+      "start": 0.127,
+      "end": 0.531,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "trust",
+      "start": 0.531,
+      "end": 0.834,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "in",
+      "start": 0.935,
+      "end": 1.035,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "Walsall",
+      "start": 1.035,
+      "end": 1.439,
+      "paragraph": "P01",
+      "emphasis": true
+    },
+    {
+      "word": "says",
+      "start": 2.045,
+      "end": 2.246,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "an",
+      "start": 2.246,
+      "end": 2.347,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "AI",
+      "start": 2.448,
+      "end": 2.65,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "scribe",
+      "start": 2.751,
+      "end": 3.155,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "cut",
+      "start": 3.558,
+      "end": 3.659,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "its",
+      "start": 3.76,
+      "end": 3.861,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "clinician's",
+      "start": 3.962,
+      "end": 4.467,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "note",
+      "start": 4.568,
+      "end": 4.669,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "writing",
+      "start": 4.77,
+      "end": 5.173,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 5.375,
+      "end": 5.678,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "under",
+      "start": 5.779,
+      "end": 6.081,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "four",
+      "start": 6.182,
+      "end": 6.283,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "minutes",
+      "start": 6.384,
+      "end": 6.687,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 6.788,
+      "end": 6.869,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "patient.",
+      "start": 6.889,
+      "end": 7.393,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "The",
+      "start": 7.815,
+      "end": 7.921,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "tool",
+      "start": 7.921,
+      "end": 8.123,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "is",
+      "start": 8.123,
+      "end": 8.224,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "called",
+      "start": 8.224,
+      "end": 8.527,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Heidi.",
+      "start": 8.527,
+      "end": 8.93,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "It",
+      "start": 9.334,
+      "end": 9.435,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "listens",
+      "start": 9.435,
+      "end": 9.738,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 9.839,
+      "end": 9.92,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 9.94,
+      "end": 10.02,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "consultation",
+      "start": 10.041,
+      "end": 10.646,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "on",
+      "start": 10.747,
+      "end": 10.828,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 10.848,
+      "end": 10.858,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "phone",
+      "start": 10.848,
+      "end": 11.151,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 11.353,
+      "end": 11.554,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "writes",
+      "start": 11.554,
+      "end": 11.756,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 11.756,
+      "end": 11.857,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "clinical",
+      "start": 11.857,
+      "end": 12.261,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "notes,",
+      "start": 12.261,
+      "end": 12.665,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 12.866,
+      "end": 13.068,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 13.068,
+      "end": 13.169,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "clinician",
+      "start": 13.169,
+      "end": 13.674,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "reviews",
+      "start": 13.674,
+      "end": 14.077,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "them,",
+      "start": 14.077,
+      "end": 14.279,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "edits",
+      "start": 14.582,
+      "end": 14.986,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "where",
+      "start": 14.986,
+      "end": 15.087,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "needed,",
+      "start": 15.188,
+      "end": 15.591,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 15.692,
+      "end": 15.894,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "approves",
+      "start": 15.894,
+      "end": 16.298,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "them",
+      "start": 16.298,
+      "end": 16.5,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "before",
+      "start": 16.5,
+      "end": 16.802,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "anything",
+      "start": 16.802,
+      "end": 17.206,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "goes",
+      "start": 17.206,
+      "end": 17.408,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "on",
+      "start": 17.408,
+      "end": 17.509,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 17.509,
+      "end": 17.61,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "record.",
+      "start": 17.61,
+      "end": 18.013,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "One",
+      "start": 18.619,
+      "end": 18.821,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "emergency",
+      "start": 18.821,
+      "end": 19.325,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "consultant,",
+      "start": 19.325,
+      "end": 19.931,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Dr",
+      "start": 20.234,
+      "end": 20.536,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "Jamil",
+      "start": 20.536,
+      "end": 20.839,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "Aslam,",
+      "start": 20.94,
+      "end": 21.344,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "says",
+      "start": 21.647,
+      "end": 21.949,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 21.949,
+      "end": 22.05,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "saves",
+      "start": 22.05,
+      "end": 22.353,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "him",
+      "start": 22.353,
+      "end": 22.555,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "six",
+      "start": 22.656,
+      "end": 22.757,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "minutes",
+      "start": 22.959,
+      "end": 23.16,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 23.261,
+      "end": 23.342,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "consultation,",
+      "start": 23.362,
+      "end": 24.069,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 24.371,
+      "end": 24.573,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "after",
+      "start": 24.573,
+      "end": 24.775,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "an",
+      "start": 24.775,
+      "end": 24.876,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "eight-month",
+      "start": 24.977,
+      "end": 25.381,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "pilot,",
+      "start": 25.482,
+      "end": 25.885,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "it's",
+      "start": 26.087,
+      "end": 26.289,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "being",
+      "start": 26.289,
+      "end": 26.491,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "rolled",
+      "start": 26.491,
+      "end": 26.793,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "out",
+      "start": 26.793,
+      "end": 26.995,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "across",
+      "start": 26.995,
+      "end": 27.298,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "two",
+      "start": 27.399,
+      "end": 27.5,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "trusts.",
+      "start": 27.601,
+      "end": 28.005,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "There's",
+      "start": 28.457,
+      "end": 28.579,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "one",
+      "start": 28.579,
+      "end": 28.68,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "thing",
+      "start": 28.781,
+      "end": 28.882,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 28.882,
+      "end": 28.982,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "hasn't",
+      "start": 28.982,
+      "end": 29.285,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "shown.",
+      "start": 29.285,
+      "end": 29.588,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "In",
+      "start": 30.194,
+      "end": 30.294,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "July,",
+      "start": 30.294,
+      "end": 30.597,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 30.597,
+      "end": 30.698,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "BBC",
+      "start": 30.698,
+      "end": 31.001,
+      "paragraph": "P03",
+      "emphasis": true
+    },
+    {
+      "word": "reported",
+      "start": 31.102,
+      "end": 31.707,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 31.909,
+      "end": 32.01,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "tool",
+      "start": 32.01,
+      "end": 32.212,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "was",
+      "start": 32.313,
+      "end": 32.414,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "improving",
+      "start": 32.414,
+      "end": 32.918,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "NHS",
+      "start": 32.918,
+      "end": 33.322,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "waiting",
+      "start": 33.322,
+      "end": 33.625,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "times,",
+      "start": 33.625,
+      "end": 34.029,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "then",
+      "start": 34.331,
+      "end": 34.533,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "changed",
+      "start": 34.533,
+      "end": 34.836,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "its",
+      "start": 34.937,
+      "end": 35.038,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "headline",
+      "start": 35.038,
+      "end": 35.441,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "because",
+      "start": 35.744,
+      "end": 35.946,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "evidence",
+      "start": 36.047,
+      "end": 36.35,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 36.35,
+      "end": 36.451,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "that",
+      "start": 36.451,
+      "end": 36.652,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "has",
+      "start": 36.652,
+      "end": 36.854,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "not",
+      "start": 36.854,
+      "end": 37.056,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "yet",
+      "start": 37.056,
+      "end": 37.157,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "been",
+      "start": 37.157,
+      "end": 37.359,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "published.",
+      "start": 37.359,
+      "end": 37.864,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "The",
+      "start": 38.422,
+      "end": 38.523,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "typing",
+      "start": 38.523,
+      "end": 39.027,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "time",
+      "start": 39.027,
+      "end": 39.33,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "was",
+      "start": 39.532,
+      "end": 39.734,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "measured.",
+      "start": 39.734,
+      "end": 40.238,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "The",
+      "start": 40.743,
+      "end": 40.945,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "waiting",
+      "start": 40.945,
+      "end": 41.348,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "times",
+      "start": 41.348,
+      "end": 41.752,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "haven't",
+      "start": 41.853,
+      "end": 42.156,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "been",
+      "start": 42.156,
+      "end": 42.257,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "shown.",
+      "start": 42.358,
+      "end": 42.66,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "So",
+      "start": 43.266,
+      "end": 43.468,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "when",
+      "start": 43.468,
+      "end": 43.569,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "you",
+      "start": 43.569,
+      "end": 43.77,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "try",
+      "start": 43.77,
+      "end": 44.073,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "AI,",
+      "start": 44.174,
+      "end": 44.578,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "pick",
+      "start": 45.082,
+      "end": 45.284,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 45.284,
+      "end": 45.486,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "one",
+      "start": 45.486,
+      "end": 45.789,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "job",
+      "start": 45.789,
+      "end": 46.092,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "you'll",
+      "start": 46.293,
+      "end": 46.495,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "time",
+      "start": 46.495,
+      "end": 46.798,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "before",
+      "start": 46.798,
+      "end": 47.202,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 47.303,
+      "end": 47.504,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "after",
+      "start": 47.605,
+      "end": 47.908,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 48.312,
+      "end": 48.514,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "only",
+      "start": 48.615,
+      "end": 48.917,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "claim",
+      "start": 48.917,
+      "end": 49.321,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "what",
+      "start": 49.523,
+      "end": 49.725,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "those",
+      "start": 49.725,
+      "end": 49.927,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "numbers",
+      "start": 49.927,
+      "end": 50.229,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "show.",
+      "start": 50.33,
+      "end": 50.633,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "Follow",
+      "start": 50.982,
+      "end": 51.184,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 51.285,
+      "end": 51.487,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "one",
+      "start": 51.79,
+      "end": 52.092,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "real",
+      "start": 52.193,
+      "end": 52.496,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "AI",
+      "start": 52.597,
+      "end": 52.9,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "story",
+      "start": 53.102,
+      "end": 53.505,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 53.606,
+      "end": 53.616,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "day",
+      "start": 53.606,
+      "end": 53.909,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 54.716,
+      "end": 54.817,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "what",
+      "start": 54.817,
+      "end": 55.019,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 55.019,
+      "end": 55.12,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "means",
+      "start": 55.12,
+      "end": 55.322,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 55.423,
+      "end": 55.524,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "your",
+      "start": 55.524,
+      "end": 55.826,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "business.",
+      "start": 55.826,
+      "end": 56.432,
+      "paragraph": "P05",
+      "emphasis": false
+    }
+  ],
+  "tempo_factor": 0.9908748241912799
+}</script>
+  <script>
+    const root = document.getElementById('root');
+    const wordRows = JSON.parse(document.getElementById('word-data').textContent).words;
+    const groups = [];
+    for (let i = 0; i < wordRows.length; i += 3) {
+      const rows = wordRows.slice(i, i + 3);
+      groups.push({ start: rows[0].start, end: rows.at(-1).end, text: rows.map(row => row.word).join(' ') });
+    }
+    for (const [i, group] of groups.entries()) {
+      const node = document.createElement('div');
+      node.className = 'caption-clip clip'; node.id = `s83-caption-${i}`;
+      node.setAttribute('data-start', group.start.toFixed(3));
+      node.setAttribute('data-duration', Math.max(0.08, group.end - group.start).toFixed(3));
+      node.setAttribute('data-track-index', '9'); root.appendChild(node);
+      const text = document.createElement('span');
+      text.className = 'caption-text'; text.textContent = group.text; node.appendChild(text);
+    }
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo('.s1 .identity', { x: -480, rotation: -18 }, { x: 0, rotation: -4, duration: .62, ease: 'power4.out' }, 0)
+      .fromTo('.s1 .value', { scale: .62, opacity: 0, transformOrigin: 'left center' }, { scale: 1, opacity: 1, duration: .68, ease: 'back.out(1.08)' }, .28)
+      .fromTo('.s1 .metric .qualifier', { x: 54, opacity: 0 }, { x: 0, opacity: 1, duration: .44, ease: 'power3.out' }, .06)
+      .fromTo('.s2 .phone', { x: -240, rotation: -14 }, { x: 0, rotation: 0, duration: .54, ease: 'power3.out' }, 7.815)
+      .fromTo('.s2 .note', { x: 340, rotation: 11 }, { x: 0, rotation: 2, duration: .62, ease: 'power4.out' }, 8.2)
+      .fromTo('.s2 .note .line', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: .34, stagger: .19, ease: 'power2.out' }, 9.1)
+      .fromTo('.s2 .review', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: .32, ease: 'power3.out' }, 13.674)
+      .fromTo('.s2 .edit', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: .32, ease: 'power3.out' }, 14.582)
+      .fromTo('.s2 .approve', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: .32, ease: 'power3.out' }, 15.894)
+      .fromTo('.s2 .review-pencil', { x: 0, opacity: 0, rotation: -5 }, { x: 0, opacity: 1, rotation: 0, duration: .18, ease: 'power2.out' }, 13.674)
+      .to('.s2 .review-pencil', { x: 274, duration: .3, ease: 'power2.inOut' }, 14.582)
+      .to('.s2 .review-pencil', { x: 548, duration: .3, ease: 'power2.inOut' }, 15.894)
+      .fromTo('.s3 .proof', { x: -420, rotation: -6, opacity: 0 }, { x: 0, rotation: 0, opacity: 1, duration: .58, ease: 'power3.out' }, 18.619)
+      .fromTo('.s3 .route-line', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: .55, ease: 'power2.inOut' }, 23.6)
+      .fromTo('.s3 .trust', { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: .42, stagger: .24, ease: 'power3.out' }, 23.75)
+      .fromTo('.turnover', { y: 100, rotation: -2, scale: .96 }, { y: 0, rotation: 0, scale: 1, duration: .58, ease: 'power3.out' }, 28.457)
+      .fromTo('.turnover', { rotationY: 0 }, { rotationY: 180, duration: .78, ease: 'power2.inOut' }, 34.533)
+      .fromTo('.evidence-state', { scale: .78, opacity: 0, rotation: 8 }, { scale: 1, opacity: 1, rotation: 0, duration: .45, ease: 'back.out(1.04)' }, 40.15)
+      .fromTo('.s6 .worksheet', { x: -210, rotation: -5 }, { x: 0, rotation: 2, duration: .55, ease: 'power3.out' }, 44.901)
+      .fromTo('.s6 .field', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: .3, stagger: .12, ease: 'power2.out' }, 46.1)
+      .fromTo('.s7 .final-sheet', { y: 350, rotation: 8 }, { y: 0, rotation: -2, duration: .62, ease: 'power4.out' }, 50.935)
+      .fromTo('.s7 .ink-line', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: .5, ease: 'power2.out' }, 53.4);
+    tl.fromTo('.s1 .lanyard', { rotation: 13 }, { rotation: 19, duration: 1.05, yoyo: true, repeat: 5, ease: 'sine.inOut' }, .7)
+      .to('.s2 .phone', { y: -8, duration: .9, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 12.8)
+      .to('.s2 .note', { y: -8, duration: .9, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 12.8)
+      .to('.s3 .proof', { y: -10, duration: .85, yoyo: true, repeat: 4, ease: 'sine.inOut' }, 21.0)
+      .to('.turnover', { y: -8, duration: .95, yoyo: true, repeat: 6, ease: 'sine.inOut' }, 37.0)
+      .to('.s6 .only', { y: -9, duration: .75, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 47.4)
+      .to('.s7 .ink-line', { rotation: 2, duration: .7, yoyo: true, repeat: 2, ease: 'sine.inOut' }, 54.0);
+    window.__timelines.s83 = tl;
+  </script>
+</body>
+</html>

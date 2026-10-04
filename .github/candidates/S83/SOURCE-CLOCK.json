@@ -1,0 +1,25 @@
+{
+  "schema": "agmm-s83-source-clock-v1",
+  "status": "TEXT_CLOCK_ONLY_PENDING_EXACT_WAV_BINDING_AND_AUDIO_REVIEW",
+  "timing_file": "CANONICAL-WORD-TIMINGS.json",
+  "timing_sha256": "fcbefcf7dc844e0976c477ebcd10de7a566ce1cad879473615b58cfe23e66c06",
+  "voice_receipt_sha256": "15581ed2212383875ddb8fc45b5c06e3ca4b548044958e744adfe8e9345c6caa",
+  "reported_wav_duration_seconds": 56.523,
+  "current_wav_sha256": null,
+  "timed_word_count": 159,
+  "canonical_spoken_whitespace_token_count": 158,
+  "last_timed_word_end_seconds": 56.432,
+  "reported_duration_minus_last_timed_word_seconds": 0.091,
+  "paragraph_windows": [
+    {"paragraph": "P01", "first_word_index": 1, "last_word_index": 20, "start_seconds": 0.026, "end_seconds": 7.393},
+    {"paragraph": "P02", "first_word_index": 21, "last_word_index": 81, "start_seconds": 7.815, "end_seconds": 28.005},
+    {"paragraph": "P03", "first_word_index": 82, "last_word_index": 112, "start_seconds": 28.457, "end_seconds": 37.864},
+    {"paragraph": "P04", "first_word_index": 113, "last_word_index": 144, "start_seconds": 38.422, "end_seconds": 50.633},
+    {"paragraph": "P05", "first_word_index": 145, "last_word_index": 159, "start_seconds": 50.982, "end_seconds": 56.432}
+  ],
+  "known_anomalies": [
+    {"paragraph": "P02", "word": "a", "start_seconds": 10.848, "end_seconds": 10.858, "following_word": "phone", "following_start_seconds": 10.848, "issue": "10 ms word interval; next interval overlaps by 10 ms"},
+    {"paragraph": "P05", "word": "a", "start_seconds": 53.606, "end_seconds": 53.616, "following_word": "day", "following_start_seconds": 53.606, "issue": "10 ms word interval; next interval overlaps by 10 ms"}
+  ],
+  "interpretation": "This is a text-derived clock map. The 91 ms tail is a reported difference only; it is not proof of an audio tail or silence. No timestamps were corrected."
+}

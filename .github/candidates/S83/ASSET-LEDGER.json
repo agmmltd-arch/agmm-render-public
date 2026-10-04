@@ -1,0 +1,63 @@
+{
+  "schema": "agmm-s83-asset-ledger-v1",
+  "story_id": "S83",
+  "status": "TEXT_PLAN_ONLY_WITH_HOSTED_TRUST_LOGO_CAPTURE_PROPOSED",
+  "assets": [
+    {
+      "id": "WHT-01",
+      "purpose": "Exact Walsall Healthcare NHS Trust logo image selected from its official source page; never redrawn",
+      "source_url": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/",
+      "publisher": "Walsall Healthcare NHS Trust",
+      "capture": "Hosted Ubuntu Playwright tags every main-frame navigation with utm_source=qa and utm_campaign=qa_release_audit, then selects a unique visible header img only when its alt/title/aria-label or linked brand label identifies Walsall; src/currentSrc are recorded but are not brand proof.",
+      "credit": "Walsall Healthcare NHS Trust",
+      "rights": "NOT_ASSESSED",
+      "restriction": "Public review-copy permission is unverified. The one-day Actions artifact follows access rules for this public repository and is not asserted private. Do not use in a public master/site/post or imply NHS endorsement until rights are assessed and approved.",
+      "local_media": false
+    },
+    {
+      "id": "RWT-01",
+      "purpose": "Exact Royal Wolverhampton NHS Trust logo image selected from its official source page; never redrawn",
+      "source_url": "https://www.royalwolverhampton.nhs.uk/",
+      "publisher": "The Royal Wolverhampton NHS Trust",
+      "capture": "Hosted Ubuntu Playwright uses the exact RWT host allowlist and tagged main-frame navigation; it selects a unique visible header img only when accessible alt/title/aria-label or linked brand label identifies The Royal Wolverhampton NHS Trust. src/currentSrc are recorded but are not brand proof.",
+      "credit": "The Royal Wolverhampton NHS Trust",
+      "rights": "NOT_ASSESSED",
+      "restriction": "Public review-copy permission is unverified. The one-day Actions artifact follows access rules for this public repository and is not asserted private. Do not use in a public master/site/post or imply NHS endorsement until rights are assessed and approved.",
+      "local_media": false
+    },
+    {
+      "id": "BBC-TEXT-01",
+      "purpose": "Verify the BBC report date, attributed six-minute statement and correction text; no BBC image or screenshot is captured",
+      "source_url": "https://www.bbc.com/news/articles/cjrgrxgexjro",
+      "publisher": "BBC News",
+      "capture": "Hosted Ubuntu Playwright verifies article title/host, exact 15 July 2026 date, six-minute source text and 24 July clarification before issuing a text-only receipt. The composition uses short attributed excerpts, not a recreated BBC page.",
+      "credit": "BBC News, report 15 July 2026; clarification 24 July 2026",
+      "rights": "NOT_ASSESSED",
+      "local_media": false,
+      "stored_media": false
+    },
+    {
+      "id": "WHT-TEXT-01",
+      "purpose": "Verify the source date, under-four-minute average and approval sequence; no webpage crop is captured",
+      "source_url": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/",
+      "publisher": "Walsall Healthcare NHS Trust",
+      "capture": "Hosted runner checks the exact source wording and date, then stores only two short text excerpts in its receipt",
+      "credit": "Walsall Healthcare NHS Trust, New digital Ambient Voice Technology (AVT), 25 August 2026",
+      "rights": "NOT_ASSESSED",
+      "local_media": false
+    }
+  ],
+  "generated_visuals": [
+    "Handmade paper note, timing sheet, phone silhouette, schematic waveform, pencil and evidence register are composition source code. The phone graphic is explicitly labelled illustrative and not Walsall's deployed interface.",
+    "No patient record, patient face, BBC photo, product screenshot, reconstructed native webpage, false clinical interface or invented measurement is captured or generated."
+  ],
+  "audio": {
+    "narration": "LOCKED_EXISTING_CANONICAL_S83",
+    "voice_identity": "Model receipt identifies voxtral-mini-tts-2603; a selected voice ID is not present in the inspected S83 receipt/voicelead text.",
+    "music": "BGM considered; no bed selected for a dry evidence-documentary tone.",
+    "sfx": "17-cue text-only plan in MIX-SPEC.json; catalog metadata indicates Sonniss GDC bundle license; source files not staged or auditioned; ears review required.",
+    "mix_spec": "MIX-SPEC.json targets -14 LUFS integrated and no more than -1 dBTP; no mix result exists.",
+    "media_boundary": "No audio opened, copied, processed, hashed, rendered or heard locally."
+  },
+  "rights_evidence": "RIGHTS-EVIDENCE.md records official brand guidance found and why it does not grant AGMM permission; status remains NOT_ASSESSED."
+}

@@ -1,0 +1,184 @@
+{
+  "schema": "agmm-s83-cue-pan-map-v1",
+  "status": "PROPOSED_SOURCE_LAYOUT_BINDING_PENDING_REVIEW",
+  "viewport_width_px": 1080,
+  "pan_max": 0.7,
+  "formula": "clamp(0.7 * (2 * cue_x_at_onset_px / 1080 - 1), -0.7, 0.7)",
+  "source_file": "candidate index.html (frozen candidate hash to be recorded when reviewer completes)",
+  "cue_count": 17,
+  "positions_are": "CSS geometry plus the cue-bound GSAP event-start transform; object boxes use transformed centres and drawing cues use their moving/drawing start point; off-canvas event-start positions are clamped by the pinned mixer range",
+  "requires_hosted_visual_and_ears_review": true,
+  "cues": [
+    {
+      "sfx_id": "foley_click_02",
+      "cue_time_seconds": 0.0,
+      "event": "Walsall identity card enters from the left",
+      "selector": ".s1 .identity",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": -109.0,
+      "pan": -0.7,
+      "timeline_snippet": "tl.fromTo('.s1 .identity', { x: -480, rotation: -18 }, { x: 0, rotation: -4, duration: .62, ease: 'power4.out' }, 0)"
+    },
+    {
+      "sfx_id": "impact_soft_09",
+      "cue_time_seconds": 0.28,
+      "event": "Metric value expands from its left-origin scale anchor",
+      "selector": ".s1 .value",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 366.44,
+      "pan": -0.22,
+      "timeline_snippet": ".fromTo('.s1 .value', { scale: .62, opacity: 0, transformOrigin: 'left center' }, { scale: 1, opacity: 1, duration: .68, ease: 'back.out(1.08)' }, .28)"
+    },
+    {
+      "sfx_id": "foley_click_04",
+      "cue_time_seconds": 7.815,
+      "event": "Illustrative phone silhouette enters from the left",
+      "selector": ".s2 .phone",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 9.5,
+      "pan": -0.69,
+      "timeline_snippet": ".fromTo('.s2 .phone', { x: -240, rotation: -14 }, { x: 0, rotation: 0, duration: .54, ease: 'power3.out' }, 7.815)"
+    },
+    {
+      "sfx_id": "foley_paper_03",
+      "cue_time_seconds": 8.2,
+      "event": "Trust statement card enters from the right",
+      "selector": ".s2 .note",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 1062.0,
+      "pan": 0.68,
+      "timeline_snippet": ".fromTo('.s2 .note', { x: 340, rotation: 11 }, { x: 0, rotation: 2, duration: .62, ease: 'power4.out' }, 8.2)"
+    },
+    {
+      "sfx_id": "foley_paper_02",
+      "cue_time_seconds": 13.674,
+      "event": "REVIEWED step appears at left; pencil appears on it",
+      "selector": ".s2 .review-pencil",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 219.0,
+      "pan": -0.42,
+      "timeline_snippet": ".fromTo('.s2 .review-pencil', { x: 0, opacity: 0, rotation: -5 }, { x: 0, opacity: 1, rotation: 0, duration: .18, ease: 'power2.out' }, 13.674)"
+    },
+    {
+      "sfx_id": "foley_paper_05",
+      "cue_time_seconds": 14.582,
+      "event": "EDITED IF NEEDED step appears; pencil starts its pass from the left",
+      "selector": ".s2 .review-pencil",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 219.0,
+      "pan": -0.42,
+      "timeline_snippet": ".to('.s2 .review-pencil', { x: 274, duration: .3, ease: 'power2.inOut' }, 14.582)"
+    },
+    {
+      "sfx_id": "foley_stamp_01",
+      "cue_time_seconds": 15.894,
+      "event": "APPROVED step appears at right",
+      "selector": ".s2 .approve",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 877.0,
+      "pan": 0.44,
+      "timeline_snippet": ".fromTo('.s2 .approve', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: .32, ease: 'power3.out' }, 15.894)"
+    },
+    {
+      "sfx_id": "paper_page_06",
+      "cue_time_seconds": 18.619,
+      "event": "Clinician evidence card enters from the left",
+      "selector": ".s3 .proof",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 120.0,
+      "pan": -0.54,
+      "timeline_snippet": ".fromTo('.s3 .proof', { x: -420, rotation: -6, opacity: 0 }, { x: 0, rotation: 0, opacity: 1, duration: .58, ease: 'power3.out' }, 18.619)"
+    },
+    {
+      "sfx_id": "foley_paper_08",
+      "cue_time_seconds": 23.6,
+      "event": "Route line draws from its left endpoint",
+      "selector": ".s3 .route-line",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 208.0,
+      "pan": -0.43,
+      "timeline_snippet": ".fromTo('.s3 .route-line', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: .55, ease: 'power2.inOut' }, 23.6)"
+    },
+    {
+      "sfx_id": "foley_click_01",
+      "cue_time_seconds": 23.75,
+      "event": "Walsall mark lands in the left Trust card",
+      "selector": ".s3 .trust",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 292.0,
+      "pan": -0.32,
+      "timeline_snippet": ".fromTo('.s3 .trust', { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: .42, stagger: .24, ease: 'power3.out' }, 23.75)"
+    },
+    {
+      "sfx_id": "foley_click_06",
+      "cue_time_seconds": 23.99,
+      "event": "Royal Wolverhampton mark lands in the right Trust card",
+      "selector": ".s3 .trust",
+      "timeline_stagger_index": 1,
+      "cue_x_at_onset_px": 788.0,
+      "pan": 0.32,
+      "timeline_snippet": ".fromTo('.s3 .trust', { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: .42, stagger: .24, ease: 'power3.out' }, 23.75)"
+    },
+    {
+      "sfx_id": "paper_page_07",
+      "cue_time_seconds": 28.457,
+      "event": "BBC clarification sheet enters at centre",
+      "selector": ".turnover",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 540.0,
+      "pan": 0.0,
+      "timeline_snippet": ".fromTo('.turnover', { y: 100, rotation: -2, scale: .96 }, { y: 0, rotation: 0, scale: 1, duration: .58, ease: 'power3.out' }, 28.457)"
+    },
+    {
+      "sfx_id": "paper_page_08",
+      "cue_time_seconds": 34.533,
+      "event": "Evidence sheet turns around centre",
+      "selector": ".turnover",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 540.0,
+      "pan": 0.0,
+      "timeline_snippet": ".fromTo('.turnover', { rotationY: 0 }, { rotationY: 180, duration: .78, ease: 'power2.inOut' }, 34.533)"
+    },
+    {
+      "sfx_id": "foley_stamp_03",
+      "cue_time_seconds": 40.15,
+      "event": "Not-published state appears in the right evidence column",
+      "selector": ".evidence-state",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 772.0,
+      "pan": 0.3,
+      "timeline_snippet": ".fromTo('.evidence-state', { scale: .78, opacity: 0, rotation: 8 }, { scale: 1, opacity: 1, rotation: 0, duration: .45, ease: 'back.out(1.04)' }, 40.15)"
+    },
+    {
+      "sfx_id": "foley_paper_09",
+      "cue_time_seconds": 44.901,
+      "event": "Worksheet enters from the left",
+      "selector": ".s6 .worksheet",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 340.0,
+      "pan": -0.26,
+      "timeline_snippet": ".fromTo('.s6 .worksheet', { x: -210, rotation: -5 }, { x: 0, rotation: 2, duration: .55, ease: 'power3.out' }, 44.901)"
+    },
+    {
+      "sfx_id": "paper_page_10",
+      "cue_time_seconds": 50.935,
+      "event": "Follow card rises at centre",
+      "selector": ".s7 .final-sheet",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 550.0,
+      "pan": 0.01,
+      "timeline_snippet": ".fromTo('.s7 .final-sheet', { y: 350, rotation: 8 }, { y: 0, rotation: -2, duration: .62, ease: 'power4.out' }, 50.935)"
+    },
+    {
+      "sfx_id": "foley_click_05",
+      "cue_time_seconds": 53.4,
+      "event": "Underline stroke begins at its left edge",
+      "selector": ".s7 .ink-line",
+      "timeline_stagger_index": 0,
+      "cue_x_at_onset_px": 200.0,
+      "pan": -0.44,
+      "timeline_snippet": ".fromTo('.s7 .ink-line', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: .5, ease: 'power2.out' }, 53.4)"
+    }
+  ],
+  "geometry_note": "index.html applies border-box sizing globally; phone width 315px includes border and padding. Its centre at x=92+315/2 and the t=7.815 tween starts at x=-240."
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "agmm-s83-mix-input-staging-v1",
+  "status": "EXACT_18_INPUTS_PINNED_IN_PRIVATE_GIT_TREE; HOSTED_SHA256_VERIFICATION_PENDING",
+  "target": "Public agmmltd-arch/agmm-render-public GitHub Actions ubuntu-24.04 only",
+  "items": [
+    {
+      "logical_path": "inputs/S83.wav",
+      "source_identity": "Selected S83 pass1 voice asset, private Git tree commit 04b48f467025d86ffcdb54d933717682b0e84903, Git blob 10c3a4f72fa017af3de8833dd3b5fd4a78b805ac; release SHA256 and size pinned in PROTECTED-INPUTS.json.",
+      "file_hash": "Expected release SHA256 pinned in PROTECTED-INPUTS.json; hosted rehash pending",
+      "protected_asset_manifest": "PROTECTED-INPUTS.json; voice asset id 610331997"
+    },
+    {
+      "logical_path": "CANONICAL-WORD-TIMINGS.json",
+      "sha256": "fcbefcf7dc844e0976c477ebcd10de7a566ce1cad879473615b58cfe23e66c06",
+      "media": false,
+      "source_identity": "Frozen candidate text file; SHA256 is candidate manifest binding",
+      "file_hash": "Expected release SHA256 pinned in PROTECTED-INPUTS.json; hosted rehash pending"
+    },
+    {
+      "logical_path": "inputs/sound/library.json",
+      "file_hash": "Public sound library Git blob ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05; raw SHA256 2744f53024d42208538675f8d27e24e3f06c4135b81e892af29e2f0538c56215.",
+      "source_identity": "Pinned public library blob ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05; raw SHA256 2744f53024d42208538675f8d27e24e3f06c4135b81e892af29e2f0538c56215"
+    },
+    {
+      "logical_path": "inputs/sound/<selected-library-assets>",
+      "source_identity": "17 selected private Git-tree assets; exact Git blob IDs, release IDs, byte sizes, SHA256 values and runtime paths are bound in PROTECTED-INPUTS.json.",
+      "file_hashes": "Hosted Ubuntu rehash pending",
+      "file_hash": "Expected release SHA256 pinned in PROTECTED-INPUTS.json; hosted rehash pending"
+    },
+    {
+      "logical_path": "MIX-SPEC.json",
+      "source": "this candidate",
+      "media": false,
+      "file_hash": "Expected release SHA256 pinned in PROTECTED-INPUTS.json; hosted rehash pending",
+      "source_identity": ""
+    }
+  ],
+  "source_audit": "Root staged the original 18 media files unchanged in private commit 04b48f467025d86ffcdb54d933717682b0e84903 under protected-inputs/S83. Native Git blobs, sizes and exact paths were verified from remote tree metadata. The existing AGMM_SFX_READ_DEPLOY_KEY is used only by one private actions/checkout step. The public Ubuntu workflow verifies Git blob IDs, sizes and original release SHA256 values before processing; public artifacts exclude raw inputs, stems and the mix.",
+  "private_tree_commit": "04b48f467025d86ffcdb54d933717682b0e84903",
+  "public_main_commit": "5499b45d278c6a0908a81558352ceec49afd7973",
+  "route_status": "INPUT_CHECKOUT_READY; PRIVATE_FULL_MIX_REVIEW_ROUTE_OPEN"
+}

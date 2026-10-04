@@ -1,0 +1,46 @@
+{
+  "schema": "agmm-s83-source-binding-v1",
+  "status": "TEXT_BINDINGS_FROZEN_AUDIO_FILE_UNVERIFIED",
+  "script": {
+    "logical_path": "CANONICAL-NARRATION.md",
+    "candidate_sha256": "1ac8e7c57326d7bfa873d5f30f6159434e0e3e1de110e72b657ae39f7e1b5b70",
+    "upstream_script_source_sha256": "7e452ef4c3ae8cbd139a2eed99f42b29ec2ea079934fb745500d18305a6a3d09",
+    "spoken_whitespace_token_count": 158
+  },
+  "word_timings": {
+    "logical_path": "CANONICAL-WORD-TIMINGS.json",
+    "sha256": "fcbefcf7dc844e0976c477ebcd10de7a566ce1cad879473615b58cfe23e66c06",
+    "timed_entry_count": 159,
+    "final_word_end_seconds": 56.432
+  },
+  "selected_voice_receipt": {
+    "receipt_sha256": "15581ed2212383875ddb8fc45b5c06e3ca4b548044958e744adfe8e9345c6caa",
+    "current_audio_sha256": null,
+    "receipt_reference_sha256_only": "3df9d7568c0b0569887e6c9f39bd35835cda305a09d288ea535c63d9cdc15443",
+    "reported_duration_seconds": 56.523,
+    "model": "voxtral-mini-tts-2603",
+    "selected_pass": "pass1",
+    "identity_status": "No stable voice ID in receipt"
+  },
+  "text_diagnostics": [
+    "Full-file ASR disagrees on clinicians' versus clinician's; no audio correction is authorized by this package.",
+    "Word timing tokenization differs from canonical spoken text: clinicians' is represented as clinician's; note-writing is represented as note and writing.",
+    "P02 and P05 each contain an article with a 10 ms duration and the following word begins at the same timestamp.",
+    "Detailed isolated-name check has an unresolved Heidi recognition warning; ears review is required."
+  ],
+  "gate": "Do not label the audio source-bound or ready for ears review until the exact protected WAV is staged on Ubuntu, its SHA-256 and decoded duration are recorded, and the text/timing discrepancies have been reviewed against that exact audio.",
+  "protected_asset_binding": {
+    "id": 610331997,
+    "name": "S83.wav",
+    "size": 2713200,
+    "digest": "sha256:09d63637253f35155c74e183ba32fb530e10261218a607dfb5544ad829138cb6",
+    "runtime_path": "inputs/S83.wav"
+  },
+  "protected_release": {
+    "repository": "agmmltd-arch/agmm-video-render",
+    "release_id": 403141125,
+    "tag": "S83-protected-inputs-20261004",
+    "target_commitish": "d75f21511e9603506f9cc934a0f430db6d75d172",
+    "download_status": "NOT_YET_REHASHED_ON_PUBLIC_UBUNTU"
+  }
+}
