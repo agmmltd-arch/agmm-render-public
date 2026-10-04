@@ -3,14 +3,16 @@
   "assets_or_media_changed": false,
   "base_sources_sha256": "9c90c9d650486a0be75da9b3b8682598a510c7a5e70bae53e3730a977b142466",
   "base_spec_sha256": "02fc9522e7e46800c2254ad4eeefa240c08e5033a686e98a7411e7225c4ba3e2",
-  "candidate_scene_sha256": "ab824b1c60f35c32cf47c1511793eff536aa3e1f9124603c8b454d2d9c5e209a",
+  "candidate_scene_sha256": "c7d6349b0871d03919eb1166399df8b96a94abba626dfb9408c4855f802bad6d",
   "candidate_sources_sha256": "9c90c9d650486a0be75da9b3b8682598a510c7a5e70bae53e3730a977b142466",
   "candidate_spec_sha256": "02fc9522e7e46800c2254ad4eeefa240c08e5033a686e98a7411e7225c4ba3e2",
   "canonical_scene_sha256": "7400b9321cd13f5dea7f29f6b54fac55266e103a54fba8316369b93635125298",
   "capture_plan_schema": "source global timestamps; converted on Ubuntu after parts.json is validated",
   "change_summary": [
-    "candidate scene timing aligns OpenAI evaluation/account and statement cards to narration",
-    "Guardian card ends and Albanese response card begins at authenticated word boundary"
+    "candidate preserves existing voice, factual claims, attributed quotations and source credits while replacing sparse repeated cards with a drawn portal, split file boundary, evaluation monitor, calendar route, monitored inbox, qualified status boundary, labelled two-step controls and distinct CTA",
+    "privacy copy is readable by 41.90s and the background card is in place by 41.927s; the AT THIS STAGE shield scales until 42.207s while the spoken qualification starts at 42.027s; captures check motion at line start and the settled marker at 42.65s",
+    "existing provisional mix specification, sound selections and official mark use remain unchanged and unauditioned",
+    "CTA title is settled before Follow at 51.834s; audit URL entrance starts at 52.02s and finishes by 52.37s, with a separate settled 52.4s capture"
   ],
   "kind": "s81_candidate_spec_delta",
   "spec_changes": [],

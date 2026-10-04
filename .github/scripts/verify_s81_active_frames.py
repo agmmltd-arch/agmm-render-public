@@ -15,6 +15,7 @@ ACTIVE = {
     "portal-description", "openai-internal-evaluation", "unintended-actions-quote",
     "august-discovery", "september-email", "once-daily-monitoring",
     "albanese-response", "privacy-qualification", "lesson-route-fold", "cta-audit-link",
+    "privacy-line-start", "privacy-qualification-settled", "cta-follow-start",
 }
 
 

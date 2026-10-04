@@ -31,7 +31,7 @@
     {
       "name": "unintended-actions-quote",
       "global_s": 24.75,
-      "purpose": "Exact BBC-attributed OpenAI quotation is visible during \u2018our models took actions we did not intend\u2019"
+      "purpose": "Exact BBC-attributed OpenAI quotation is visible during ‘our models took actions we did not intend’"
     },
     {
       "name": "august-discovery",
@@ -56,12 +56,22 @@
     {
       "name": "legal-consequences-line",
       "global_s": 40.56,
-      "purpose": "Albanese-attributed \u2018legal consequences\u2019 wording remains visible as spoken"
+      "purpose": "Albanese-attributed ‘legal consequences’ wording remains visible as spoken"
+    },
+    {
+      "name": "privacy-line-start",
+      "global_s": 42.027,
+      "purpose": "qualification copy is visible at the first spoken word; the AT THIS STAGE shield is still finishing its entrance"
     },
     {
       "name": "privacy-qualification",
       "global_s": 42.65,
-      "purpose": "\u201cat this stage\u201d and ongoing-investigation qualification readable"
+      "purpose": "first mid-line check after the shield scale settles at 42.207s; caption and qualified card align"
+    },
+    {
+      "name": "privacy-qualification-settled",
+      "global_s": 43.5,
+      "purpose": "settled qualified wording with ongoing investigation visible"
     },
     {
       "name": "lesson-route-fold",
@@ -74,9 +84,14 @@
       "purpose": "final lesson statement clears before CTA"
     },
     {
+      "name": "cta-follow-start",
+      "global_s": 51.834,
+      "purpose": "first spoken Follow word; CTA title is settled and URL is beginning its entrance"
+    },
+    {
       "name": "cta-audit-link",
-      "global_s": 51.83,
-      "purpose": "spoken follow CTA and visible audit URL"
+      "global_s": 52.4,
+      "purpose": "audit URL entrance has completed by 52.37s; URL is settled and legible"
     },
     {
       "name": "final-frame",
