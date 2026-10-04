@@ -47,7 +47,10 @@ CAPTURES = [
     {"name":"next_shot_pre_cut","composition_time":246.8997,"film_time":252.883},
 ]
 SNAPSHOT_RE = re.compile(r"^frame-(\d+)-at-([0-9]+(?:\.[0-9]+)?)s\.png$")
-SNAPSHOT_AUXILIARY_FILES = {"contact-sheet.jpg"}
+# HyperFrames 0.8.71 writes these native review aids beside requested frames.
+# Accept only the observed basename set; the collector never copies or hashes
+# these auxiliaries into the public review branch.
+SNAPSHOT_AUXILIARY_FILES = {"contact-sheet.jpg", "contact-sheet-1.jpg", "contact-sheet-2.jpg"}
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 PNG_IEND = b"\x00\x00\x00\x00IEND\xaeB`\x82"
 MAX_CAPTURE_BYTES = 10_000_000

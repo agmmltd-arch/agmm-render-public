@@ -104,11 +104,16 @@ jobs:
           cp f07-review/CAPTURE-RECEIPT.json f07-review/CANDIDATE-SOURCE-RECEIPT.json f07-review/SHA256SUMS.txt public-review/
           git add public-review
           python3 - <<'PY'
-          import subprocess
+          import json, subprocess
           names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
-          assert len(names)==15 and all(n.startswith('public-review/') and n.lower().endswith(('.png','.json','.txt')) for n in names)
-          assert sum(n.endswith('.png') for n in names)==12
-          assert {n.rsplit('/',1)[-1] for n in names if n.endswith('.json')} == {'CAPTURE-RECEIPT.json','CANDIDATE-SOURCE-RECEIPT.json'}
+          plan=json.load(open('capture-plan.json'))
+          expected={'public-review/frames/'+row['name']+'.png' for row in plan['captures']}
+          expected.update({'public-review/CAPTURE-RECEIPT.json',
+                           'public-review/CANDIDATE-SOURCE-RECEIPT.json',
+                           'public-review/SHA256SUMS.txt'})
+          assert len(plan['captures'])==12
+          assert set(names)==expected and len(names)==15
+          assert all(n.startswith('public-review/') and n.lower().endswith(('.png','.json','.txt')) for n in names)
           PY
           git commit -m 'F07 isolated source candidate composition captures; not final master review'
           git push origin "HEAD:refs/heads/$BRANCH"
