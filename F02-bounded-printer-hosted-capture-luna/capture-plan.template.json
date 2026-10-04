@@ -1,0 +1,122 @@
+{
+  "schema": "f02-isolated-source-candidate-capture-plan-v1",
+  "parent_release": "F02-profit-qualifier-20261003",
+  "parent_release_id": 402632642,
+  "parent_asset_id": 608285956,
+  "parent_source_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
+  "film_js_sha256": "df5ce541596154dca09a8037bf5a465474967c354db062f075f056953781a48f",
+  "sets_a_sha256": "e80cd9920ceb5e48074b66fb110b2f5595d936c3d54068b6b0753e37e2ece7d1",
+  "capture_class": "isolated_source_candidate_composition_only",
+  "captures": [
+    {
+      "name": "printer_rise_1",
+      "time": 8.533
+    },
+    {
+      "name": "printer_rise_2",
+      "time": 8.6
+    },
+    {
+      "name": "printer_rise_3",
+      "time": 8.667
+    },
+    {
+      "name": "printer_lift_start",
+      "time": 8.752
+    },
+    {
+      "name": "printer_lift_8800",
+      "time": 8.8
+    },
+    {
+      "name": "printer_assistant_start",
+      "time": 8.864
+    },
+    {
+      "name": "printer_reveal_mid",
+      "time": 9.0
+    },
+    {
+      "name": "printer_reveal_late",
+      "time": 9.3
+    },
+    {
+      "name": "printer_assistant_end",
+      "time": 9.425
+    },
+    {
+      "name": "printer_label",
+      "time": 9.5
+    },
+    {
+      "name": "printer_pre_cut",
+      "time": 10.28
+    },
+    {
+      "name": "printer_cut",
+      "time": 10.3
+    },
+    {
+      "name": "printer_post_cut",
+      "time": 10.32
+    },
+    {
+      "name": "floor_700",
+      "time": 12.57
+    },
+    {
+      "name": "opening_profit",
+      "time": 76.2
+    },
+    {
+      "name": "profit_before",
+      "time": 108.1
+    },
+    {
+      "name": "profit_landing",
+      "time": 108.2
+    },
+    {
+      "name": "profit_during",
+      "time": 108.3
+    },
+    {
+      "name": "profit_clear",
+      "time": 108.7
+    },
+    {
+      "name": "duplicate_before",
+      "time": 439.5
+    },
+    {
+      "name": "duplicate_edge_1",
+      "time": 439.75
+    },
+    {
+      "name": "duplicate_edge_2",
+      "time": 439.8
+    }
+  ],
+  "editorial_status": "NOT_REVIEWED",
+  "release_approval": "NOT_GRANTED",
+  "candidate_class": "isolated_source_candidate",
+  "owner_adoption": "NOT_ADOPTED",
+  "candidate_builder_owner_source": {
+    "film/film.js": {
+      "sha256": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b"
+    },
+    "film/sets_a.js": {
+      "sha256": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e"
+    }
+  },
+  "prior_db1e_source": {
+    "release_id": 402725212,
+    "asset_id": 608687529,
+    "tag_name": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+    "sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+    "status": "REJECTED_BY_ROOT_SOURCE_CAPTURE_REVIEW",
+    "role": "diagnostic_only_not_candidate_input"
+  },
+  "source_text_check_status": "PASS_SYNTHETIC_TEXT_AND_PROJECTION_ONLY",
+  "text_checker_sha256": "6842933ce96d54ca9ae6b11912491f850602de8023769f0b46820c529cf78f9a"
+}

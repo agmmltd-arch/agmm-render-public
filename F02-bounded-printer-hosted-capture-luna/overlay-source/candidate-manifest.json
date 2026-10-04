@@ -1,0 +1,36 @@
+{
+  "kind": "f02-isolated-source-candidate-manifest",
+  "candidate_class": "isolated_source_candidate",
+  "owner_adoption": "NOT_ADOPTED",
+  "candidate_builder_owner_source": {
+    "film/film.js": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b",
+    "film/sets_a.js": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e"
+  },
+  "candidate": {
+    "film/film.js": "df5ce541596154dca09a8037bf5a465474967c354db062f075f056953781a48f",
+    "film/sets_a.js": "e80cd9920ceb5e48074b66fb110b2f5595d936c3d54068b6b0753e37e2ece7d1"
+  },
+  "parent_source_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
+  "capture_count": 22,
+  "additional_transition_times": [
+    8.752,
+    8.8,
+    8.864,
+    9.0,
+    9.3,
+    9.425
+  ],
+  "editorial_status": "NOT_REVIEWED",
+  "release_approval": "NOT_GRANTED",
+  "render_authorization": "NOT_REQUESTED",
+  "prior_db1e_source": {
+    "release_id": 402725212,
+    "asset_id": 608687529,
+    "tag_name": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+    "sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+    "status": "REJECTED_BY_ROOT_SOURCE_CAPTURE_REVIEW",
+    "role": "diagnostic_only_not_candidate_input"
+  },
+  "text_checker_sha256": "6842933ce96d54ca9ae6b11912491f850602de8023769f0b46820c529cf78f9a",
+  "source_text_check_status": "PASS_SYNTHETIC_TEXT_AND_PROJECTION_ONLY"
+}

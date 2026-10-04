@@ -1,0 +1,211 @@
+name: F02 isolated printer source-candidate overlay and bounded capture
+run-name: F02 isolated printer source-candidate capture ${{ github.run_id }}
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  seal-and-capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      GH_REPO: agmmltd-arch/agmm-render-public
+      PARENT_RELEASE: F02-profit-qualifier-20261003
+      PARENT_RELEASE_ID: '402632642'
+      PARENT_ASSET_ID: '608285956'
+      PARENT_BYTES: '37951315'
+      PARENT_SHA256: b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719
+      HYPERFRAMES_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+      - name: Guard exact public Linux repository before metadata and package IO
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$GITHUB_REPOSITORY" == "$GH_REPO" ]]
+          python3 - <<'PY'
+          import os, platform
+          assert platform.system() == "Linux"
+          assert os.environ.get("GITHUB_ACTIONS") == "true"
+          assert os.environ.get("GITHUB_REPOSITORY") == "agmmltd-arch/agmm-render-public"
+          PY
+          gh api "repos/$GH_REPO" > repository.json
+          gh api "repos/$GH_REPO/releases/tags/$PARENT_RELEASE" > parent-release.json
+          gh api "repos/$GH_REPO/releases/assets/$PARENT_ASSET_ID" > parent-asset.json
+          python3 - <<'PY'
+          import json
+          repo=json.load(open("repository.json")); release=json.load(open("parent-release.json")); asset=json.load(open("parent-asset.json"))
+          assert repo["full_name"] == "agmmltd-arch/agmm-render-public" and repo["private"] is False and repo["visibility"] == "public"
+          assert release["id"] == 402632642 and release["tag_name"] == "F02-profit-qualifier-20261003" and release["draft"] is False
+          assert asset["id"] == 608285956 and asset["name"] == "source.tar.gz" and asset["size"] == 37951315
+          assert asset["state"] == "uploaded" and asset["digest"] == "sha256:b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719"
+          assert any(a.get("id")==asset["id"] and a.get("name")==asset["name"] and a.get("size")==asset["size"] and a.get("digest")==asset["digest"] and a.get("state")=="uploaded" for a in release.get("assets", []))
+          PY
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Download the exact sealed parent only after public release membership checks
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/f02-parent"
+          gh release download "$PARENT_RELEASE" --repo "$GH_REPO" --pattern source.tar.gz --dir "$RUNNER_TEMP/f02-parent"
+          test "$(wc -c < "$RUNNER_TEMP/f02-parent/source.tar.gz" | tr -d ' ')" = "$PARENT_BYTES"
+          test "$(sha256sum "$RUNNER_TEMP/f02-parent/source.tar.gz" | cut -d ' ' -f1)" = "$PARENT_SHA256"
+      - name: Apply the two exact isolated source-candidate files; keep the owner unmodified
+        run: |
+          set -euo pipefail
+          python3 F02-bounded-printer-hosted-capture-luna/f02_hosted_overlay.py seal \
+            --repository-json repository.json --release-json parent-release.json --asset-json parent-asset.json \
+            --parent-archive "$RUNNER_TEMP/f02-parent/source.tar.gz" \
+            --overlay-root F02-bounded-printer-hosted-capture-luna/overlay-source \
+            --output "$RUNNER_TEMP/f02-source.tar.gz" --receipt "$RUNNER_TEMP/f02-source-receipt.json" \
+            --project-root "$RUNNER_TEMP/f02-project"
+          (cd "$RUNNER_TEMP/f02-project" && sha256sum -c SHA256SUMS.txt && python3 static_check.py)
+          node --check "$RUNNER_TEMP/f02-project/film/film.js"
+          npm install --no-save playwright@1.55.1
+          npx playwright install --with-deps chromium
+      - name: Refuse an existing package tag or release before create-only source publication
+        run: |
+          set -euo pipefail
+          TAG=$(python3 - "$RUNNER_TEMP/f02-source-receipt.json" <<'PY'
+          import json,sys
+          print(json.load(open(sys.argv[1],encoding="utf-8"))["source_archive_tag"])
+          PY
+          )
+          python3 F02-bounded-printer-hosted-capture-luna/f02_hosted_overlay.py check-tag-free --tag "$TAG"
+          mkdir -p "$RUNNER_TEMP/f02-release"
+          cp "$RUNNER_TEMP/f02-source.tar.gz" "$RUNNER_TEMP/f02-release/source.tar.gz"
+          cp "$RUNNER_TEMP/f02-source-receipt.json" "$RUNNER_TEMP/f02-release/source-receipt.json"
+          gh release create "$TAG" \
+            "$RUNNER_TEMP/f02-release/source.tar.gz" \
+            "$RUNNER_TEMP/f02-release/source-receipt.json" \
+            --repo "$GH_REPO" --target "$GITHUB_SHA" --draft \
+            --title "F02 isolated printer source candidate $GITHUB_RUN_ID" \
+            --notes "Hash-pinned isolated source candidate over the verified F02 parent package. Source-composition evidence only; not owner-adopted, no editorial approval, and no final-master release approval."
+          # Draft releases are not reliably resolvable through the public tag
+          # endpoint. Find the just-created draft in the authenticated native
+          # release listing, require one exact tag match, then use its ID.
+          gh api --paginate --slurp "repos/$GH_REPO/releases?per_page=100" > "$RUNNER_TEMP/f02-release-list.json"
+          python3 - "$RUNNER_TEMP/f02-release-list.json" "$TAG" > "$RUNNER_TEMP/f02-release-id.txt" <<'PY'
+          import json,sys
+          pages=json.load(open(sys.argv[1],encoding="utf-8"))
+          if not isinstance(pages,list): raise SystemExit("release listing is not paginated JSON")
+          rows=[]
+          for page in pages:
+              if isinstance(page,list): rows.extend(page)
+              elif isinstance(page,dict): rows.append(page)
+              else: raise SystemExit("unexpected release-list page schema")
+          matches=[r for r in rows if isinstance(r,dict) and r.get("tag_name")==sys.argv[2]]
+          if len(matches)!=1: raise SystemExit(f"expected one exact draft tag match; got {len(matches)}")
+          release=matches[0]
+          rid=release.get("id")
+          if release.get("draft") is not True or isinstance(rid,bool) or not isinstance(rid,int) or rid<=0:
+              raise SystemExit("exact tag match is not a valid draft release")
+          print(rid)
+          PY
+          RELEASE_ID=$(cat "$RUNNER_TEMP/f02-release-id.txt")
+          gh api "repos/$GH_REPO/releases/$RELEASE_ID" > "$RUNNER_TEMP/f02-new-release.json"
+          ASSET_ID=$(python3 - "$RUNNER_TEMP/f02-new-release.json" <<'PY'
+          import json,sys
+          release=json.load(open(sys.argv[1],encoding="utf-8"))
+          assets=[a for a in release.get("assets",[]) if a.get("name")=="source.tar.gz"]
+          if release.get("draft") is not True or len(assets)!=1:
+              raise SystemExit("by-ID release is not draft or source asset is not unique")
+          aid=assets[0].get("id")
+          if isinstance(aid,bool) or not isinstance(aid,int) or aid<=0:
+              raise SystemExit("draft source asset has invalid ID")
+          print(aid)
+          PY
+          )
+          gh api "repos/$GH_REPO/releases/assets/$ASSET_ID" > "$RUNNER_TEMP/f02-new-asset.json"
+          python3 - "$RUNNER_TEMP/f02-source-receipt.json" "$RUNNER_TEMP/f02-new-release.json" "$RUNNER_TEMP/f02-new-asset.json" "$RUNNER_TEMP/f02-release-id.txt" <<'PY'
+          import json,sys
+          receipt,release,asset=(json.load(open(p,encoding="utf-8")) for p in sys.argv[1:4])
+          expected_release_id=int(open(sys.argv[4],encoding="utf-8").read().strip())
+          expected="sha256:"+receipt["source_archive_sha256"]
+          assert release["tag_name"]==receipt["source_archive_tag"] and release["draft"] is True
+          assert release["id"]==expected_release_id
+          assert asset["name"]=="source.tar.gz" and asset["state"]=="uploaded"
+          assert asset["size"]==receipt["source_archive_bytes"] and asset["digest"]==expected
+          assert any(a.get("id")==asset["id"] and a.get("name")=="source.tar.gz" and a.get("digest")==expected and a.get("size")==asset["size"] and a.get("state")=="uploaded" for a in release.get("assets",[]))
+          PY
+          RELEASE_ID=$(python3 - "$RUNNER_TEMP/f02-new-release.json" <<'PY'
+          import json,sys
+          print(json.load(open(sys.argv[1],encoding="utf-8"))["id"])
+          PY
+          )
+          gh api --method PATCH "repos/$GH_REPO/releases/$RELEASE_ID" -F draft=false > "$RUNNER_TEMP/f02-published-release.json"
+          gh api "repos/$GH_REPO/releases/tags/$TAG" > "$RUNNER_TEMP/f02-published-release.json"
+          gh api "repos/$GH_REPO/releases/assets/$ASSET_ID" > "$RUNNER_TEMP/f02-new-asset.json"
+          python3 F02-bounded-printer-hosted-capture-luna/f02_hosted_overlay.py verify-published \
+            --receipt "$RUNNER_TEMP/f02-source-receipt.json" \
+            --release-json "$RUNNER_TEMP/f02-published-release.json" --asset-json "$RUNNER_TEMP/f02-new-asset.json" \
+            --output "$RUNNER_TEMP/f02-source-identity.json"
+      - name: Bind capture plan to the newly published source digest and asset
+        run: |
+          set -euo pipefail
+          python3 F02-bounded-printer-hosted-capture-luna/f02_hosted_overlay.py bind-plan \
+            --template F02-bounded-printer-hosted-capture-luna/capture-plan.template.json \
+            --receipt "$RUNNER_TEMP/f02-source-receipt.json" --output "$RUNNER_TEMP/f02-capture-plan.json"
+      - name: Capture exact source-composition times, not a rendered master
+        env:
+          F02_CAPTURE_PLAN: ${{ runner.temp }}/f02-capture-plan.json
+          F02_SNAPSHOT_DIR: ${{ runner.temp }}/f02-snapshots
+          F02_PROJECT_DIR: ${{ runner.temp }}/f02-project
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8765 --directory "$RUNNER_TEMP/f02-project" > "$RUNNER_TEMP/f02-http.log" 2>&1 &
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const plan = JSON.parse(fs.readFileSync(process.env.F02_CAPTURE_PLAN, 'utf8'));
+          (async () => {
+            const browser = await chromium.launch({ headless: true, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+            const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            await page.goto('http://127.0.0.1:8765/film/index.html');
+            await page.waitForFunction(() => !!window.__f02Render && !!window.__F02TL && !!window.__f02Set, {}, { timeout: 120000 });
+            await page.evaluate(() => document.fonts.ready);
+            fs.mkdirSync(process.env.F02_SNAPSHOT_DIR, { recursive: false });
+            for (const row of plan.captures) {
+              const t = row.time;
+              await page.evaluate(t => { window.__F02TL.pause(); window.__F02TL.time(t); window.__f02Set(t); window.__f02Set(t); }, t);
+              await page.waitForTimeout(250);
+              await page.screenshot({ path: path.join(process.env.F02_SNAPSHOT_DIR, `frame-${t}.png`), type: 'png' });
+            }
+            await browser.close();
+            if (errors.length) throw new Error(errors.join('\n'));
+          })().catch(error => { console.error(error); process.exit(1); });
+          JS
+          python3 F02-bounded-printer-hosted-capture-luna/f02_hosted_overlay.py collect \
+            --snapshots "$F02_SNAPSHOT_DIR" --plan "$F02_CAPTURE_PLAN" \
+            --source-receipt "$RUNNER_TEMP/f02-source-receipt.json" --source-identity "$RUNNER_TEMP/f02-source-identity.json" \
+            --output "$RUNNER_TEMP/f02-review"
+      - name: Publish only the 22 named PNGs and text receipts to a run-specific orphan review branch
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted source review'
+          git config user.email 'evidence@users.noreply.github.com'
+          BRANCH="review-F02-printer-source-candidate-$GITHUB_RUN_ID"
+          git checkout --orphan "$BRANCH"
+          git rm -rf --cached . >/dev/null
+          mkdir -p public-review
+          cp -R "$RUNNER_TEMP/f02-review/frames" public-review/
+          cp "$RUNNER_TEMP/f02-review/CAPTURE-RECEIPT.json" "$RUNNER_TEMP/f02-review/SHA256SUMS.txt" "$RUNNER_TEMP/f02-source-identity.json" public-review/
+          git add public-review
+          python3 - <<'PY'
+          import subprocess
+          names=subprocess.check_output(["git","diff","--cached","--name-only"],text=True).splitlines()
+          stems="opening_profit profit_before profit_landing profit_during profit_clear printer_rise_1 printer_rise_2 printer_rise_3 printer_lift_start printer_lift_8800 printer_assistant_start printer_reveal_mid printer_reveal_late printer_assistant_end printer_label printer_pre_cut printer_cut printer_post_cut floor_700 duplicate_before duplicate_edge_1 duplicate_edge_2".split()
+          expected={"public-review/frames/"+name+".png" for name in stems}
+          expected |= {"public-review/CAPTURE-RECEIPT.json","public-review/SHA256SUMS.txt","public-review/f02-source-identity.json"}
+          assert set(names)==expected and len(names)==25 and sum(n.endswith(".png") for n in names)==22
+          PY
+          git commit -m 'F02 isolated printer source-candidate frames; NOT owner adoption or final-master approval'
+          git push origin "HEAD:refs/heads/$BRANCH"
