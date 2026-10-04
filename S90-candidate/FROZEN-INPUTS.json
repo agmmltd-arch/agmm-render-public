@@ -1,0 +1,109 @@
+{
+  "candidate_file_hashes": {
+    "S90-SFX-HOSTED-ASSET-MAP.json": "a5e0174ed8dc1e38a7163746f6048345c65417c3b16d7f0dbd9a52817a0a23f3",
+    "build_s90_av_development_candidate.py": "547f6f6a3d3c829a595c2320649be34b06bf1e38ce633120ad1bb68cff9ecbf7",
+    "check_candidate_inputs.py": "1ad32e7634cfe3dc78809eee11df9b6f498e37d35ec147f3d878a18842dce9a8",
+    "guard_public_payload.py": "fcd22a5445e89d14545749144279092abb8571347b4669104a0291a65764e7fa",
+    "prepare_private_sfx_inputs.py": "6f06ea023fabc74f9e9ce90d52b8c47fd5f66169a6d0b9aa9b19088b202999f5",
+    "prepare_selected_voice.py": "23cc7accf83e4362bee0fda92067c0bc6d300790a2804b045faff47df207b405",
+    "s90-av-development-candidate.yml": "57344fd6c28a70ccf0b3b4ced2fa2299701adc7174e1da853630d11eb0b3fde0",
+    "s90_grid_packager_development.py": "cdf61d29429e1709f0005c00ee62b358bc695ee49e8a73b858ecc4df47ee30d4",
+    "test_development_admission.py": "773d3655c505c210c0f0a97753aeaf8a4466e7443f869965c8f9eb1deb68148a",
+    "test_private_sfx_inputs.py": "76d36b7576a2d5bd43b47cce26bb2c8babf9b289b44d6a10a96e9771377ed753",
+    "test_public_payload_guard.py": "788c3026778b51c34f30199cb9184a823bac9f7106cb410454f9aa5ddcd82284"
+  },
+  "candidate_scene_publication_commit": "509df65306cce047b0c39ef88ab3b192e18255d8",
+  "gates": {
+    "audio_listening": "OPEN",
+    "full_av_review": "OPEN",
+    "independent_development_render_admission": "MISSING; must bind exact candidate files/grid before any hosted SFX/voice read",
+    "ready": "NOT_GRANTED",
+    "release_approval": "NOT_GRANTED",
+    "source_and_sfx_rights": "OPEN",
+    "storyboard": "NOT_APPROVED"
+  },
+  "hosted_route": {
+    "development_builder_sha256": "547f6f6a3d3c829a595c2320649be34b06bf1e38ce633120ad1bb68cff9ecbf7",
+    "excluded_public_payloads": [
+      "all .wav files",
+      "raw SFX files",
+      "voice WAV",
+      "mix WAV",
+      "source.tar.gz",
+      "private SFX verification receipt",
+      "private source checkout"
+    ],
+    "hosted_run_not_performed": true,
+    "native_renderer_helper_sha256": "2c7db0660522368489697d48220d8832e3f84b070d946e2f83133b4eb4114028",
+    "native_renderer_observed_head": "509df65306cce047b0c39ef88ab3b192e18255d8",
+    "native_renderer_workflow_sha256": "01551516e51bf49add20c5b6aef5b8a1a420d7a0412b09037c373a88da122777",
+    "private_sfx_input_helper_sha256": "6f06ea023fabc74f9e9ce90d52b8c47fd5f66169a6d0b9aa9b19088b202999f5",
+    "public_artifact_allowlist": [
+      "FINAL.mp4",
+      "TECHNICAL-EVIDENCE.json",
+      "SHA256SUMS.txt"
+    ],
+    "public_payload_guard_sha256": "fcd22a5445e89d14545749144279092abb8571347b4669104a0291a65764e7fa",
+    "render_contract_source": "current public .github/scripts/render_short_package.py; manual dispatch requires exact reviewed head SHA",
+    "workflow": "workflow-proposal/s90-av-development-candidate.yml",
+    "workflow_sha256": "57344fd6c28a70ccf0b3b4ced2fa2299701adc7174e1da853630d11eb0b3fde0"
+  },
+  "kind": "s90_av_development_candidate_frozen_inputs_v1",
+  "mix_spec_candidate_sha256": "99921ecd40dc797a76ef9786b75ebfedc6ccc48d8400e0136f89dd47ff7c8a3f",
+  "scene_sha256": "fe631a9dfed40facb4e04c37618185a48f21e9f9046f33cb19b0c82624406234",
+  "sfx_cue_count": 19,
+  "sfx_plan": {
+    "asset_count": 16,
+    "asset_map_sha256": "a5e0174ed8dc1e38a7163746f6048345c65417c3b16d7f0dbd9a52817a0a23f3",
+    "cue_count": 19,
+    "license_review": "OPEN; current Sonniss sync licence reviewed; original download-date version and catalog-only per-asset provenance remain unresolved",
+    "private_commit": "b2c1ead7c7c55fceaaa3229adfa1b4fdc77f1d2d",
+    "private_repository": "agmmltd-arch/agmm-video-render",
+    "private_root_manifest_sha256": "1f7295498ac8cb9c3c4cb47765c879ff56c5df73c0ddd03354bd2d429345622f",
+    "raw_assets_publication": "PROHIBITED; private checkout and scratch only; never source/review/Actions artifact/release/Git tree",
+    "selected_asset_ids": [
+      "camera_shutter_04",
+      "foley_click_01",
+      "foley_click_02",
+      "foley_paper_02",
+      "foley_paper_03",
+      "foley_paper_04",
+      "foley_paper_05",
+      "foley_phone_02",
+      "foley_phone_03",
+      "foley_printer_04",
+      "foley_stamp_04",
+      "mouse_02",
+      "paper_page_07",
+      "paper_page_10",
+      "swoosh_transition_05",
+      "ui_click_04"
+    ],
+    "source_bytes_total": 1466896,
+    "ubuntu_sha256": "COMPUTE_AND_VERIFY_ON_HOSTED_UBUNTU_ONLY"
+  },
+  "source_asset_publication_commit": "3fb9befef4d9cc3c3529945d41edccab8915ef06",
+  "spec_candidate_sha256": "f2147c726d4104c0b4043b71a7fd901bba8ff186ce080da7a44bdec4a0b1200c",
+  "spec_delta_sha256": "a6358970948829a231850f1d77f122de1210863c6f1865251e530c557db96857",
+  "status": "UNAPPROVED_DEVELOPMENT_CANDIDATE; private SFX input path is pinned; no hosted AV render run; independent ADMITTED_FOR_DEVELOPMENT_RENDER receipt absent.",
+  "storyboard_candidate_sha256": "c092d1f80b1adb01f15b03f27e6eaa46efb01a4cc1c53cb201b3ff101b1f1b7c",
+  "timeline": {
+    "duration_s": 58.3,
+    "final_cta_hold_from_s": 58.107,
+    "final_cta_hold_to_s": 58.3,
+    "frame_rate": 30,
+    "frames": 1749,
+    "hold_status": "PROPOSED_FOR_DEVELOPMENT_ONLY"
+  },
+  "voice_identity_sha256": "b34e9d45a123e2f6f167a2bc5f63d8bc7d15a5e652df13804083c92634faa33c",
+  "voice_selection": {
+    "asset_id": 609728994,
+    "bytes": 2798068,
+    "duration_metadata_s": 58.291,
+    "listened": false,
+    "name": "S90.wav",
+    "release_id": 402989473,
+    "repo": "agmmltd-arch/agmm-render-public",
+    "sha256": "5f8ce5a135e0b81ba0623d801bb8047cd6a729f8abc1840d4f266ad5bf05cdd1"
+  }
+}
