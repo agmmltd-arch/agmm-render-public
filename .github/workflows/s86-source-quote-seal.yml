@@ -1,0 +1,106 @@
+name: S86-B readable authentic quotation source seal
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: s86-source-quote-treatment
+  cancel-in-progress: false
+
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PARENT_RELEASE: S86-r2-source-202610010547
+      PARENT_SOURCE_SHA256: c8fa6aea8bc904de1183ef648188de4d7ec2ab0d432be623f6b165fd7ac4408b
+      PARENT_PARTS_SHA256: 1585e81e26e654aabc04ebe0f851a81f0cd13962069027557f1e29db2dadc02d
+      PARENT_MIX_SHA256: 0c252cdf6e412fc2ccadcdb29b940d6a23b7c527276ebf79da468b7f633df436
+    steps:
+      - name: Guard hosted public runner before any release access
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux ]]
+          [[ "$GITHUB_REPOSITORY" == agmmltd-arch/agmm-render-public ]]
+
+      - name: Check out exact workflow source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Confirm public repository visibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}" --jq '{full_name,private,visibility}' > "$RUNNER_TEMP/s86-repository.json"
+          python3 .github/scripts/seal_s86_source_quote.py check-repository \
+            --metadata "$RUNNER_TEMP/s86-repository.json"
+
+      - name: Authenticate immutable parent release metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${PARENT_RELEASE}" \
+            --jq '{tag_name,assets:[.assets[] | select(.id == 602456630 or .id == 602456631 or .id == 602456632) | {id,name,size,digest,state}]}' \
+            > "$RUNNER_TEMP/s86-parent-release.json"
+          python3 .github/scripts/seal_s86_source_quote.py check-parent-release \
+            --metadata "$RUNNER_TEMP/s86-parent-release.json"
+
+      - name: Download exactly the pinned parent assets on hosted Linux
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/s86-parent" "$RUNNER_TEMP/s86-sealed"
+          gh release download "$PARENT_RELEASE" --repo "$GITHUB_REPOSITORY" \
+            --pattern source.tar.gz --pattern parts.json --pattern mix.wav \
+            --dir "$RUNNER_TEMP/s86-parent"
+          test "$(find "$RUNNER_TEMP/s86-parent" -maxdepth 1 -type f | wc -l | tr -d ' ')" = 3
+          printf '%s  %s\n' "$PARENT_SOURCE_SHA256" "$RUNNER_TEMP/s86-parent/source.tar.gz" | sha256sum -c -
+          printf '%s  %s\n' "$PARENT_PARTS_SHA256" "$RUNNER_TEMP/s86-parent/parts.json" | sha256sum -c -
+          printf '%s  %s\n' "$PARENT_MIX_SHA256" "$RUNNER_TEMP/s86-parent/mix.wav" | sha256sum -c -
+
+      - name: Apply exact B-only text overlay and reseal source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/seal_s86_source_quote.py seal \
+            --source "$RUNNER_TEMP/s86-parent/source.tar.gz" \
+            --parts "$RUNNER_TEMP/s86-parent/parts.json" \
+            --parts-output "$RUNNER_TEMP/s86-sealed/parts.json" \
+            --mix "$RUNNER_TEMP/s86-parent/mix.wav" \
+            --output "$RUNNER_TEMP/s86-sealed/source.tar.gz" \
+            --receipt "$RUNNER_TEMP/s86-sealed/source-receipt.json"
+          cp "$RUNNER_TEMP/s86-parent/mix.wav" "$RUNNER_TEMP/s86-sealed/mix.wav"
+          python3 - "$RUNNER_TEMP/s86-sealed/source.tar.gz" "$RUNNER_TEMP/s86-sealed/parts.json" <<'PY'
+          import hashlib, json, pathlib, sys
+          source, parts = map(pathlib.Path, sys.argv[1:])
+          data = json.loads(parts.read_text(encoding="utf-8"))
+          digest = hashlib.sha256(source.read_bytes()).hexdigest()
+          if data.get("sha256") != digest or data.get("bytes") != source.stat().st_size:
+              raise SystemExit("sealed parts.json does not bind the new source archive")
+          PY
+          test "$(sha256sum "$RUNNER_TEMP/s86-sealed/mix.wav" | cut -d ' ' -f1)" = "$PARENT_MIX_SHA256"
+
+      - name: Publish new source-only release without replacing its parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="S86-source-quote-${GITHUB_RUN_ID}"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Refusing to replace an existing release tag."
+            exit 1
+          fi
+          gh release create "$tag" \
+            "$RUNNER_TEMP/s86-sealed/source.tar.gz" \
+            "$RUNNER_TEMP/s86-sealed/source-receipt.json" \
+            "$RUNNER_TEMP/s86-sealed/parts.json" \
+            "$RUNNER_TEMP/s86-sealed/mix.wav" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "S86-B authentic readable quotation candidate" \
+            --notes "Hosted source-only candidate of an exact guarded BBC quotation panel. Not visually reviewed. Part timeline and frames are unchanged; package hash and byte count are rebound to the new archive. Mix is byte-identical to the immutable parent. No render or release approval."

@@ -1,0 +1,12 @@
+    if (it.quoteText) {
+      var qs = SRC(it.source);
+      if (it.quoteText !== qs.text) throw new Error("Source quotation differs from authenticated source text");
+      var qc = el("div", "agp-card", S.cam); pos(qc, it.x, it.y, it.w, it.h);
+      qc.style.background = "#f6f3e8"; qc.style.color = "#101c29"; qc.style.border = "3px solid #c8b889";
+      var qh = el("div", "", qc); qh.textContent = qs.credit + ", " + qs.date + " / SOURCE QUOTATION";
+      qh.style.cssText += ";left:28px;top:18px;right:28px;font-size:34px;line-height:1.2;font-family:" + L.mono + ";color:#101c29";
+      var qt = el("div", "", qc); qt.textContent = it.quoteText;
+      qt.style.cssText += ";left:28px;top:76px;right:28px;font-size:52px;line-height:1.16;white-space:normal;color:#101c29";
+      showAt(ctx, qc, it.at); hideAt(ctx, qc, it.endAt);
+      return qc;
+    }
