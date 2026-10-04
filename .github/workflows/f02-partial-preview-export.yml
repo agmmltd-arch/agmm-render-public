@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: f02-preview-export-37146440125
+  group: f02-preview-export-37201156544
   cancel-in-progress: false
 
 jobs:
@@ -18,9 +18,9 @@ jobs:
     timeout-minutes: 60
     env:
       GH_TOKEN: ${{ github.token }}
-      SOURCE_RUN_ID: '37146440125'
-      SOURCE_MASTER_ARTIFACT_ID: '11283198428'
-      SOURCE_REVIEW_ARTIFACT_ID: '11282993573'
+      SOURCE_RUN_ID: '37201156544'
+      SOURCE_MASTER_ARTIFACT_ID: '11303303946'
+      SOURCE_REVIEW_ARTIFACT_ID: '11303109540'
     steps:
       - name: Check out this export proposal revision
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -61,11 +61,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 .github/scripts/f02_preview_export.py prepare \
-            --master-dir downloads/F02-PARTIAL-MASTER-4K-37146440125 \
-            --review-dir downloads/F02-PARTIAL-REVIEW-1080-37146440125 \
+            --master-dir downloads/F02-PARTIAL-MASTER-4K-37201156544 \
+            --review-dir downloads/F02-PARTIAL-REVIEW-1080-37201156544 \
             --source validated-source.json --out-dir preview-export
 
-      - name: Create a new immutable preview release and verify every asset
+      - name: Create or verify the unique hash-pinned preview release
         shell: bash
         run: |
           set -euo pipefail
@@ -74,7 +74,7 @@ jobs:
       - name: Retain exact export receipt for root metadata adoption
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: F02-PREVIEW-EXPORT-RECEIPT-37146440125
+          name: F02-PREVIEW-EXPORT-RECEIPT-37201156544
           path: preview-export/HOSTED-PREVIEW.json
           if-no-files-found: error
           retention-days: 7

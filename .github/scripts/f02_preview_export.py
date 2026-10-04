@@ -20,19 +20,39 @@ import sys
 
 REPO = "agmmltd-arch/agmm-render-public"
 REPOSITORY_ID = 1397641626
-RUN_ID = 37146440125
-RUN_HEAD = "3be0bf2c26e2186710002796a80b1eda115c1d3f"
+RUN_ID = 37201156544
+RUN_HEAD = "6c076723bf9a804b1841036386841da404e39d10"
 RUN_WORKFLOW = ".github/workflows/agmm-f02-partial-assembly.yml"
-RUN_TITLE = "F02 partial mechanical assembly · 37146440125"
-SOURCE_PACKAGE_SHA = "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719"
-MASTER_SHA = "276ae17ca24d46c9b08508dc2cfaec00bc89ad6c1d3e4b96fd7d490e64c7c51e"
+RUN_TITLE = "F02 partial mechanical assembly · 37201156544"
+SOURCE_PACKAGE_SHA = "3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5"
+MASTER_SHA = "83b91592e1e5e3d43198323950667c172a8e483f0a03d42122858638bc702f39"
+MASTER_ARTIFACT_ID = 11303303946
+REVIEW_ARTIFACT_ID = 11303109540
+SOURCE_LINEAGE_ARTIFACT_ID = 11303513259
 EXPECTED_ARTIFACTS = {
-    11283198428: ("F02-PARTIAL-MASTER-4K-37146440125", 2849598139, "2026-10-04T19:36:03Z"),
-    11283018672: ("F02-PARTIAL-SEGMENT-LINEAGE-37146440125", 2894181372, "2026-10-04T19:35:44Z"),
-    11282993573: ("F02-PARTIAL-REVIEW-1080-37146440125", 737476170, "2026-10-04T19:36:22Z"),
+    MASTER_ARTIFACT_ID: ("F02-PARTIAL-MASTER-4K-37201156544", 2825276872, "2026-10-05T12:44:38Z",
+                 "sha256:fedc0d11b4d25fc22d5e2aaabfe003ded3a8ebda6afc503e629596161f4ab486"),
+    SOURCE_LINEAGE_ARTIFACT_ID: ("F02-PARTIAL-SEGMENT-LINEAGE-37201156544", 2806046667, "2026-10-05T12:44:17Z",
+                 "sha256:87391cbe94fae2b1a8b4b6c04c185b4dbbb43827455a5660013e6b22a6c6199a"),
+    REVIEW_ARTIFACT_ID: ("F02-PARTIAL-REVIEW-1080-37201156544", 727774779, "2026-10-05T12:45:00Z",
+                 "sha256:dc8de4e7f8ca63191ce8ce7997778095eebfc92d28c854aff059c70f4a4cee4a"),
 }
-MASTER_ARTIFACT_ID = 11283198428
-REVIEW_ARTIFACT_ID = 11282993573
+MASTER_BYTES = 2825104019
+REVIEW_BYTES = 727601219
+SOURCE_RELEASE = "F02-isolated-source-candidate-3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5"
+PARENT_RUN_ID = 37146440125
+PARENT_MASTER_SHA = "276ae17ca24d46c9b08508dc2cfaec00bc89ad6c1d3e4b96fd7d490e64c7c51e"
+PARENT_LINEAGE_ARTIFACT_ID = 11283018672
+REPLACEMENT_RUN_ID = 37200226622
+REPLACEMENT_HEAD_SHA = "b3b75a172f5b1030bedd62217f522d8a82652eea"
+REPLACEMENT_TAG = "F02-source-3f072ce0281b-seg01-02-51-52-20261004-r2"
+REPLACEMENT_SEGMENTS = {"01", "02", "51", "52"}
+REPLACEMENT_ARTIFACTS = {
+    "01": (11302970567, 23223478, "2026-10-04T12:01:59Z", "2026-10-05T12:01:57Z"),
+    "02": (11302669735, 42093090, "2026-10-04T12:07:17Z", "2026-10-05T12:07:15Z"),
+    "51": (11302783705, 34353674, "2026-10-04T12:03:27Z", "2026-10-05T12:03:26Z"),
+    "52": (11302584259, 29835085, "2026-10-04T11:59:51Z", "2026-10-05T11:59:50Z"),
+}
 MASTER_NAME = "F02-MASTER-4K.mp4"
 REVIEW_NAME = "F02-MASTER-1080-from-4K.mp4"
 MAX_RELEASE_ASSET_BYTES = 1_500_000_000
@@ -86,11 +106,11 @@ def validate_source(repository: dict, run: dict, jobs_doc: dict, artifacts_doc: 
     by_id = {a.get("id"): a for a in arts}
     if len(by_id) != len(arts) or set(by_id) != set(EXPECTED_ARTIFACTS):
         raise Refusal("source artifact IDs do not match pinned inventory")
-    for aid, (name, size, expires) in EXPECTED_ARTIFACTS.items():
+    for aid, (name, size, expires, digest) in EXPECTED_ARTIFACTS.items():
         a = by_id[aid]
         wr = a.get("workflow_run") or {}
         if (a.get("name") != name or a.get("size_in_bytes") != size or a.get("expired") is not False
-                or a.get("expires_at") != expires
+                or a.get("expires_at") != expires or a.get("digest") != digest
                 or wr.get("id") != RUN_ID or wr.get("head_sha") != RUN_HEAD
                 or wr.get("repository_id") != REPOSITORY_ID):
             raise Refusal(f"pinned source artifact metadata mismatch: {aid}")
@@ -104,6 +124,7 @@ def validate_source(repository: dict, run: dict, jobs_doc: dict, artifacts_doc: 
             "artifacts": [{"id": aid, "name": EXPECTED_ARTIFACTS[aid][0],
                            "size_in_bytes": EXPECTED_ARTIFACTS[aid][1],
                            "expires_at": EXPECTED_ARTIFACTS[aid][2],
+                           "digest": EXPECTED_ARTIFACTS[aid][3],
                            "created_at": by_id[aid]["created_at"]}
                           for aid in sorted(EXPECTED_ARTIFACTS)]}
 
@@ -119,10 +140,10 @@ def validate_source_receipt(source_run: dict) -> None:
     by_id = {a.get("id"): a for a in artifacts}
     if len(by_id) != len(artifacts) or set(by_id) != set(EXPECTED_ARTIFACTS):
         raise Refusal("validated source receipt artifact IDs mismatch")
-    for aid, (name, size, expires) in EXPECTED_ARTIFACTS.items():
+    for aid, (name, size, expires, digest) in EXPECTED_ARTIFACTS.items():
         a = by_id[aid]
         if (a.get("name") != name or a.get("size_in_bytes") != size
-                or a.get("expires_at") != expires):
+                or a.get("expires_at") != expires or a.get("digest") != digest):
             raise Refusal(f"validated source receipt metadata mismatch: {aid}")
 
 
@@ -173,22 +194,78 @@ def _json(path: Path) -> dict:
 
 def validate_lineage(lineage: dict) -> None:
     if (lineage.get("kind") != "f02_segment_lineage_manifest"
-            or lineage.get("source_release") != "F02-profit-qualifier-20261003"
-            or lineage.get("source_package_sha256") != SOURCE_PACKAGE_SHA
-            or lineage.get("parent_run_id") != 37125818648
-            or lineage.get("replacement_run_id") != 37143394055
+            or lineage.get("schema") != 2
+            or lineage.get("status") != "STAGED_FOR_MECHANICAL_ASSEMBLY"
+            or lineage.get("editorial_review") != "NOT_PERFORMED"
+            or lineage.get("release_approval") != "NOT_GRANTED"
             or lineage.get("apply_source_overlay") is not False
-            or lineage.get("release_approval") != "NOT_GRANTED"):
-        raise Refusal("lineage source or approval metadata mismatch")
+            or lineage.get("source_release") != SOURCE_RELEASE
+            or lineage.get("source_package_sha256") != SOURCE_PACKAGE_SHA
+            or lineage.get("parent_master_run_id") != PARENT_RUN_ID
+            or lineage.get("parent_master_sha256") != PARENT_MASTER_SHA
+            or lineage.get("parent_lineage_artifact_id") != PARENT_LINEAGE_ARTIFACT_ID
+            or lineage.get("replacement_run_id") != REPLACEMENT_RUN_ID
+            or lineage.get("replacement_tag") != REPLACEMENT_TAG
+            or lineage.get("expected_segments") != 75
+            or lineage.get("expected_frames") != 19548
+            or lineage.get("replacement_segments") != ["01", "02", "51", "52"]):
+        raise Refusal("lineage source, four-segment replacement, or approval metadata mismatch")
     rows = lineage.get("segment_provenance")
-    if not isinstance(rows, list) or len(rows) != 77:
-        raise Refusal("lineage must retain 75 parent entries and 2 replacements")
-    parent = [r for r in rows if r.get("provenance_role") == "parent"]
-    replacement = [r for r in rows if r.get("provenance_role") == "replacement"]
-    if (len(parent) != 75 or len(replacement) != 2
-            or {r.get("segment") for r in parent} != {f"{n:02d}" for n in range(1, 76)}
-            or {r.get("segment") for r in replacement} != {"51", "52"}):
-        raise Refusal("lineage does not prove 75 parent segments plus replacements 51/52")
+    if not isinstance(rows, list) or len(rows) != 75:
+        raise Refusal("lineage must contain exactly 75 active segment rows")
+    indexed = {}
+    for row in rows:
+        sid = row.get("segment")
+        if sid not in {f"{n:02d}" for n in range(1, 76)} or sid in indexed:
+            raise Refusal("lineage segment IDs are unknown or duplicated")
+        indexed[sid] = row
+    if set(indexed) != {f"{n:02d}" for n in range(1, 76)}:
+        raise Refusal("lineage does not cover the exact 75-segment grid")
+    superseded = lineage.get("superseded_current_master_segments")
+    if (not isinstance(superseded, list) or len(superseded) != 4
+            or {r.get("segment") for r in superseded} != REPLACEMENT_SEGMENTS
+            or any(type(r.get("prior_bytes")) is not int or r["prior_bytes"] <= 0
+                   or not isinstance(r.get("prior_sha256"), str) or not SHA_RE.fullmatch(r["prior_sha256"])
+                   for r in superseded)):
+        raise Refusal("lineage does not bind exactly four valid superseded current-master segments")
+    superseded_by_id = {r["segment"]: r for r in superseded}
+    for sid, row in indexed.items():
+        expected_role = "replacement" if sid in REPLACEMENT_SEGMENTS else "parent"
+        frames = 456 if sid == "75" else 258
+        t0 = round((int(sid) - 1) * 8.6, 1)
+        length = 15.2 if sid == "75" else 8.6
+        receipt = row.get("render_receipt") or {}
+        media_sha = row.get("hosted_media_sha256")
+        media_bytes = row.get("hosted_media_bytes")
+        if (row.get("provenance_role") != expected_role or row.get("t0") != t0
+                or row.get("len") != length or row.get("expected_frames") != frames
+                or not isinstance(media_sha, str) or not SHA_RE.fullmatch(media_sha)
+                or type(media_bytes) is not int or media_bytes <= 0
+                or receipt.get("status") != "PASS" or receipt.get("sha256") != media_sha
+                or receipt.get("bytes") != media_bytes or receipt.get("frames") != frames
+                or receipt.get("full_decode") != "PASS"
+                or (receipt.get("flicker") or {}).get("status") != "PASS"):
+            raise Refusal(f"lineage row source/hash/geometry check failed for SEG{sid}")
+        if expected_role == "parent":
+            if (row.get("preserved_from_master_run_id") != PARENT_RUN_ID
+                    or row.get("preserved_from_lineage_artifact_id") != PARENT_LINEAGE_ARTIFACT_ID):
+                raise Refusal(f"parent SEG{sid} provenance does not bind the pinned current master")
+        else:
+            aid, size, created, expires = REPLACEMENT_ARTIFACTS[sid]
+            expected_name = f"{REPLACEMENT_TAG}-SEG{sid}"
+            if (row.get("run_id") != REPLACEMENT_RUN_ID
+                    or row.get("code_commit") != REPLACEMENT_HEAD_SHA
+                    or row.get("tag") != REPLACEMENT_TAG
+                    or row.get("package_release") != SOURCE_RELEASE
+                    or row.get("package_sha256") != SOURCE_PACKAGE_SHA
+                    or row.get("artifact_id") != aid or row.get("artifact_name") != expected_name
+                    or row.get("artifact_size_in_bytes") != size
+                    or row.get("artifact_created_at") != created
+                    or row.get("artifact_expires_at") != expires
+                    or not isinstance(row.get("supersedes_current_master_sha256"), str)
+                    or not SHA_RE.fullmatch(row["supersedes_current_master_sha256"])
+                    or row["supersedes_current_master_sha256"] != superseded_by_id[sid]["prior_sha256"]):
+                raise Refusal(f"replacement SEG{sid} provenance does not bind the exact reviewed render artifact")
 
 
 def validate_integrity(master_dir: Path, review_dir: Path,
@@ -213,6 +290,8 @@ def validate_integrity(master_dir: Path, review_dir: Path,
             raise Refusal(f"integrity receipt has invalid {key}")
     if not isinstance(outputs.get("master_sha256"), str) or not SHA_RE.fullmatch(outputs["master_sha256"]):
         raise Refusal("integrity receipt has invalid master_sha256")
+    if outputs["master_bytes"] != MASTER_BYTES or outputs["derived_bytes"] != REVIEW_BYTES:
+        raise Refusal("master/proxy byte counts differ from the current hosted integrity log")
     if outputs["master_sha256"] != expected_master_sha:
         raise Refusal("F02 master hash differs from the terminal hosted receipt")
     master_receipt = _json(master_dir / "F02-PARTIAL-ASSEMBLY-RECEIPT.json")
@@ -224,8 +303,11 @@ def validate_integrity(master_dir: Path, review_dir: Path,
             or master_receipt.get("editorial_status") != "NOT_REVIEWED"
             or master_receipt.get("release_approval") != "NOT_GRANTED"
             or master_receipt.get("armed") is not False
-            or master_receipt.get("source_release") != "F02-profit-qualifier-20261003"
+            or master_receipt.get("source_release") != SOURCE_RELEASE
             or master_receipt.get("source_package_sha256") != SOURCE_PACKAGE_SHA
+            or master_receipt.get("parent_master_run_id") != PARENT_RUN_ID
+            or master_receipt.get("parent_master_sha256") != PARENT_MASTER_SHA
+            or master_receipt.get("replacement_segments") != ["01", "02", "51", "52"]
             or master_receipt.get("segments") != 75 or master_receipt.get("frames") != 19548
             or master_receipt.get("checks") != checks):
         raise Refusal("partial assembly receipt is not the exact unapproved mechanical result")
@@ -427,6 +509,17 @@ def publish_preview(preview_dir: Path) -> dict:
     receipt_sha = sha256(manifest_path)
     release_query = run_gh(["api", f"repos/{REPO}/releases/tags/{tag}"], capture=True)
     if release_query.returncode:
+        # Only native GitHub's confirmed 404 permits creation. Auth, transport,
+        # quota and server failures are not evidence that the release is absent.
+        try:
+            absent = json.loads(release_query.stdout)
+        except (ValueError, TypeError):
+            absent = {}
+        if (release_query.returncode != 1
+                or release_query.stderr.strip() != "gh: Not Found (HTTP 404)"
+                or absent.get("status") != "404"
+                or absent.get("message") != "Not Found"):
+            raise Refusal("release lookup failed without confirmed native HTTP 404; no create")
         created = run_gh(["release", "create", tag, "-R", REPO, "--target", RUN_HEAD,
                           "--title", f"F02 partial review preview {RUN_ID}",
                           "--notes", "Hosted mechanical verification only. Human audiovisual review NOT_REVIEWED; OCR NOT_RUN; release approval NOT_GRANTED."], capture=True)
