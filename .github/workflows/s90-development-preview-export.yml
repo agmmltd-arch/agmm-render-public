@@ -1,0 +1,76 @@
+name: S90 pinned hosted development preview export
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: s90-development-preview-export-37209820801
+  cancel-in-progress: false
+
+jobs:
+  export:
+    if: ${{ github.repository == 'agmmltd-arch/agmm-render-public' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: '37209820801'
+      SOURCE_ARTIFACT_ID: '11306780655'
+    steps:
+      - name: Check out the reviewed exporter revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Initialize runner-local export path
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/s90-preview-export"
+          printf 'WORKROOT=%s/s90-preview-export\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Verify public repository, exact successful render and artifact before bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "agmmltd-arch/agmm-render-public"
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_ACTIONS" = true
+          mkdir -p "$WORKROOT"
+          gh api "repos/$GITHUB_REPOSITORY" > "$WORKROOT/repository.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" > "$WORKROOT/run.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/jobs?per_page=100" > "$WORKROOT/jobs.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/artifacts?per_page=100" > "$WORKROOT/artifacts.json"
+          python3 .github/scripts/s90_preview_export.py validate-source \
+            --repository "$WORKROOT/repository.json" --run "$WORKROOT/run.json" \
+            --jobs "$WORKROOT/jobs.json" --artifacts "$WORKROOT/artifacts.json" \
+            --out "$WORKROOT/validated-source.json"
+
+      - name: Check hosted disk headroom before exact artifact transfer
+        run: python3 .github/scripts/s90_preview_export.py check-capacity --minimum-bytes 1000000000
+
+      - name: Download exact native artifact ZIP and verify its SHA before extraction
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$SOURCE_ARTIFACT_ID/zip" > "$WORKROOT/source-artifact.zip"
+          python3 .github/scripts/s90_preview_export.py extract-artifact \
+            --archive "$WORKROOT/source-artifact.zip" --source "$WORKROOT/validated-source.json" \
+            --out-dir "$WORKROOT/source-artifact"
+
+      - name: Verify source outputs and stage sanitized review-only export
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/s90_preview_export.py prepare \
+            --download-dir "$WORKROOT/source-artifact" \
+            --source "$WORKROOT/validated-source.json" \
+            --out-dir "$WORKROOT/release-payload"
+
+      - name: Create or verify immutable review-only release assets
+        run: python3 .github/scripts/s90_preview_export.py publish --export-dir "$WORKROOT/release-payload"
