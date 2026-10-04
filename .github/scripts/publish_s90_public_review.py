@@ -15,7 +15,7 @@ from pathlib import Path
 
 
 REPO = "agmmltd-arch/agmm-render-public"
-SCENE_SHA256 = "2e92ff94e6764379e941a2f924e21974c69dc7b8064013a6c3d0f9a8534269f7"
+SCENE_SHA256 = "fe631a9dfed40facb4e04c37618185a48f21e9f9046f33cb19b0c82624406234"
 FRAME_NAMES = ({f"B{i:02d}-{part}" for i in range(1, 17) for part in ("incoming", "late")} | {
     "B01-frame-zero", "B02-pre-reveal", "B02-reveal-onset",
     "B02-post-onset", "B02-reveal-complete",

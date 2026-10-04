@@ -140,7 +140,7 @@
     var card=sourceQuote(ctx,L,'THE REVEAL',{x:28,y:188,w:1024,h:980,size:132,align:'center',label:'CHANNEL 4 · STORY CONTEXT'});
     pos(card.body,62,390,900,160); card.body.style.fontSize='132px';
     var last=text(card.pane,'s90-source-quote-copy center short','CAME LAST',62,558,900,160,132);
-    var bar=el('div','',card.pane); pos(bar,338,746,404,10); bar.style.background='#f2b84b'; bar.style.transformOrigin='50% 50%';
+    var bar=el('div','',card.pane); pos(bar,338,746,404,10); bar.style.position='absolute'; bar.style.background='#f2b84b'; bar.style.transformOrigin='50% 50%';
     // The hook text is fully visible on frame zero; only the underline moves at the cut.
     ctx.tl.fromTo(bar,{scaleX:0},{scaleX:1,duration:.28,ease:'power2.out',immediateRender:false},B.from);
     return L;
@@ -152,8 +152,10 @@
     var quote=text(card.pane,'s90-source-quote-copy center short',"I'm not real.",62,356,848,480,112);
     quote.style.opacity='0'; quote.style.visibility='hidden';
     var revealAt=7.644;
-    ctx.tl.to(card.body,{opacity:0,scale:.96,duration:.12,ease:'power2.out',immediateRender:false},revealAt-.12);
-    ctx.tl.fromTo(quote,{opacity:0,scale:.94,visibility:'hidden'},{opacity:1,scale:1,visibility:'visible',duration:.24,ease:'power2.out',immediateRender:false},revealAt);
+    ctx.tl.set(card.body,{opacity:0,scale:.96},revealAt);
+    // At the locked word onset the reveal is crisp and complete; motion is a short scale settle only.
+    ctx.tl.set(quote,{opacity:1,scale:.97,visibility:'visible'},revealAt);
+    ctx.tl.to(quote,{scale:1,duration:.14,ease:'power2.out',immediateRender:false},revealAt);
     return L;
   };
   // 03 · the source's exact face/voice/movements wording becomes the evidence hierarchy.
