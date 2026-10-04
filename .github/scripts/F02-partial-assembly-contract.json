@@ -1,2170 +1,1183 @@
 {
-  "schema": 1,
-  "purpose": "F02 hosted partial segment assembly; mechanical integrity only; not editorial release approval.",
+  "schema": 2,
+  "purpose": "F02 bounded four-segment replacement from current master lineage; mechanical integrity only; not editorial release approval.",
   "film_id": "F02",
   "duration_seconds": 651.6,
   "fps": 30,
   "expected_segments": 75,
   "expected_frames": 19548,
   "composition": {
-    "sealed_source_release": "F02-profit-qualifier-20261003",
-    "sealed_source_package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
-    "sealed_source_package_bytes": 37951315,
-    "sealed_source_code_commit": "088d62de686272206a52cc166307672bdf37ac55",
+    "sealed_source_release": "F02-isolated-source-candidate-3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5",
+    "sealed_source_package_sha256": "3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5",
+    "sealed_source_package_bytes": 37971142,
+    "sealed_source_asset_id": 609677772,
+    "sealed_source_code_commit": null,
     "apply_source_overlay": false,
     "expected_repair_files": {
-      "film/film.js": "a3511296dc51da187c20bd7c523b1eb4d00ff6dddeeeea1dcb4f4ce33a95f691",
-      "film/film.css": "e3a7468c564569230a4efa83fae6edd45fc677a4a5548621f9a18219227cd974",
-      "film/sets_b.js": "9d548b35125934111243f78a6c6baa95d2e931eb219af372994cc8c8b4e5dd1c",
-      "film/img/openai-official.png": "6025a4347a8eaed17e31eaebf7834e33ec4af26cc7f59be586ac59ba5157fa1c"
+      "film/film.js": "f312bc6dee1a0061b6fd6d6fcddd45340a380af6d32ad648537c8e7c4aeb3e3f",
+      "film/sets_a.js": "a95e9df7557ab62b9708556cbddc8a586118ad03441b9a69b9104e7f4ff5fbd5"
     },
-    "changed_source_interval_seconds": [
-      436.4,
-      439.8
-    ]
-  },
-  "parent": {
-    "run_id": 37125818648,
-    "tag": "F02-craft-repaired-full-20261003-1420",
-    "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-    "package_release": "F02-craft-repair-20261003",
-    "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-    "accepted_run_conclusion": "failure only when exact failed job is macos-ocr; all 75 render jobs and assemble job must succeed."
-  },
-  "replacement": {
-    "run_id": 37143394055,
-    "tag": "F02-profit-qualifier-seg51-52-20261003",
-    "code_commit": "088d62de686272206a52cc166307672bdf37ac55",
-    "package_release": "F02-profit-qualifier-20261003",
-    "package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
-    "expected_segments": [
+    "changed_segment_ids": [
+      "01",
+      "02",
       "51",
       "52"
     ],
-    "source_seal_run": 37143329617
+    "changed_source_intervals_seconds": [
+      [
+        0.0,
+        15.9
+      ],
+      [
+        436.8,
+        439.75
+      ]
+    ],
+    "diagnostic_source": {
+      "release": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+      "package_sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+      "asset_id": 608687529,
+      "status": "REJECTED_BY_ROOT_SOURCE_CAPTURE_REVIEW"
+    },
+    "sealed_source_release_id": 402977719,
+    "qa_overlay": {
+      "release": "F02-r2c-landscape-4k-202609302152",
+      "release_id": 400428198,
+      "asset": "qa-overlay-r4e-seg12.tar.gz",
+      "asset_id": 601787380,
+      "asset_bytes": 77973,
+      "sha256": "76daca8d0d38c7bc26ca13dcc29a6e0da82f77f07c0f25028671b72f850e717f"
+    }
+  },
+  "parent_lineage": {
+    "run_id": 37146440125,
+    "workflow_path": ".github/workflows/agmm-f02-partial-assembly.yml",
+    "head_sha": "3be0bf2c26e2186710002796a80b1eda115c1d3f",
+    "conclusion": "success",
+    "master_sha256": "276ae17ca24d46c9b08508dc2cfaec00bc89ad6c1d3e4b96fd7d490e64c7c51e",
+    "source_release": "F02-profit-qualifier-20261003",
+    "source_package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
+    "artifact_id": 11283018672,
+    "artifact_name": "F02-PARTIAL-SEGMENT-LINEAGE-37146440125",
+    "artifact_size_in_bytes": 2894181372,
+    "artifact_digest": "sha256:f5ba866e104bda570ba1337a7a88cd256d7415e906e60fafd71fbf3c21b3c5b5",
+    "artifact_expires_at": "2026-10-04T19:35:44Z",
+    "preview_release_tag": "preview-F02-37146440125",
+    "preview_release_asset_id": 608451867,
+    "preview_release_asset_name": "HOSTED-PREVIEW.json",
+    "preview_release_asset_size": 176100,
+    "preview_release_asset_digest": "sha256:cc0d364aae718266ca2a955adfacdffa46fff02e12e6cbe3442f236fb9cbff5f",
+    "preview_master_sha256": "276ae17ca24d46c9b08508dc2cfaec00bc89ad6c1d3e4b96fd7d490e64c7c51e",
+    "preview_proxy_sha256": "c916c2e1b9a35853b3a355718aec83ce83787a5bc151088b29eea8878bbf85ce",
+    "expected_prior_lineage_parent_run_id": 37125818648,
+    "expected_prior_lineage_replacement_run_id": 37143394055,
+    "expected_prior_replacement_segments": [
+      "51",
+      "52"
+    ],
+    "artifact_created_at": "2026-10-03T19:36:03Z",
+    "preview_master_bytes": 2849432872,
+    "preview_proxy_bytes": 737310196
+  },
+  "replacement": {
+    "run_id": null,
+    "head_sha": null,
+    "tag": "F02-source-3f072ce0281b-seg01-02-51-52-20261004-r2",
+    "workflow_path": ".github/workflows/agmm-film.yml",
+    "package_release": "F02-isolated-source-candidate-3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5",
+    "package_sha256": "3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5",
+    "segments": [
+      "01",
+      "02",
+      "51",
+      "52"
+    ]
   },
   "authoritative_assembler": {
     "path": ".github/scripts/assemble_verify.py",
-    "sha256": "eac69b56c018c3b1b122d5e48a1ed962c3334e3ab91d04d155db6402e8f1dac6",
-    "source_commit": "088d62de686272206a52cc166307672bdf37ac55",
-    "source": "GitHub contents API text at the pinned F02 replacement workflow commit; matches hosted-patch source bytes."
+    "sha256": "eac69b56c018c3b1b122d5e48a1ed962c3334e3ab91d04d155db6402e8f1dac6"
   },
+  "source_capture_status": "NOT_REVIEWED",
+  "release_approval": "NOT_GRANTED",
   "segments": [
     {
       "i": "01",
       "t0": 0.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG01",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-      "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG01",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG01",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "lineage": "replacement",
+      "expected_current_sha256": "925e271f52b7d41500f040f0e4a6c25c640da141f0901d6e64d0c229840f2ffb",
+      "expected_current_bytes": 27936033,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": "F02-source-3f072ce0281b-seg01-02-51-52-20261004-r2-SEG01"
     },
     {
       "i": "02",
       "t0": 8.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG02",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-      "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG02",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG02",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "lineage": "replacement",
+      "expected_current_sha256": "615543b9b0008233dee5d8c93a76663607899c60fab32d0b8ea99ee12545f7d8",
+      "expected_current_bytes": 61501840,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": "F02-source-3f072ce0281b-seg01-02-51-52-20261004-r2-SEG02"
     },
     {
       "i": "03",
       "t0": 17.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG03",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG03",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG03",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "ae17104b9ad218d977c28253e1794e52ace53e23c4e60f1b0b087b3279737762",
+      "expected_current_bytes": 46946595,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "04",
       "t0": 25.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG04",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG04",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG04",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "1a7ffb780c8ad3b265e91099e8a2a627776eead811fea33db5a174e94895c43d",
+      "expected_current_bytes": 32123863,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "05",
       "t0": 34.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG05",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG05",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG05",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "071c2d575aebfd94a284abfb6e5307d30250ead881c437e481083c8a52721c93",
+      "expected_current_bytes": 35191991,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "06",
       "t0": 43.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG06",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG06",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG06",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "39b283b41d775d6a986d05df05342051a48331fbe63f8779ed4ced54191a9f45",
+      "expected_current_bytes": 46222281,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "07",
       "t0": 51.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG07",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG07",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG07",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "35f19ccc6c17b43107dda1c8111ac0139e076634d9573b3f049ae55a0bf6bc16",
+      "expected_current_bytes": 35488511,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "08",
       "t0": 60.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG08",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG08",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG08",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "e501e60b97e5cba44c7dcbf51c3885277e52136b1049be57e50b2265600ed1d4",
+      "expected_current_bytes": 41800514,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "09",
       "t0": 68.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG09",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG09",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG09",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "2d43cf166b61e8850903309f3d3d7bfd2225611a2b1af31579323948baa2317b",
+      "expected_current_bytes": 35915637,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "10",
       "t0": 77.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG10",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG10",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG10",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "e6b3cba4c6bbd248dd344129aaaf2c3a2f087375d24d85d2797aa6bd0f487a1f",
+      "expected_current_bytes": 28800616,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "11",
       "t0": 86.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG11",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG11",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG11",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "f494e8459141ce7d16cb7e296044399e4eb018bd303024b6e7cd809a9905e305",
+      "expected_current_bytes": 38469534,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "12",
       "t0": 94.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG12",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG12",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG12",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "0ee56dcdeab8f667abf275eac6c9f3bd0509e95069d3ac2824868ff0287cde02",
+      "expected_current_bytes": 35438883,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "13",
       "t0": 103.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG13",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG13",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG13",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "08a5fd448a8588b4ba56e6e99a1f4fde1fe2a3521f4cec550a4c0355be10ce62",
+      "expected_current_bytes": 31906656,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "14",
       "t0": 111.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG14",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG14",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG14",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "329826f85c779cc4412313f59b52811146a1a5832569d50a660ad1f343793891",
+      "expected_current_bytes": 25547965,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "15",
       "t0": 120.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG15",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG15",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG15",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "2fa73469a59de8151ea52c79ef89991dc27af02f83e5a1f4aaafafa18adbfc04",
+      "expected_current_bytes": 28875254,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "16",
       "t0": 129.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG16",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG16",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG16",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "85b5e1143fa0949dce323d6276de861eab392ba5152669ab067f241379645e5f",
+      "expected_current_bytes": 62927126,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "17",
       "t0": 137.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG17",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG17",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG17",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "d7690d8376dbf9f47fbe082f601221c64a78f2a8ce3a4dd421554802cadd4ef2",
+      "expected_current_bytes": 51728031,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "18",
       "t0": 146.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG18",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG18",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG18",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "96041d8c7a122e6dc86026c3df94477cb6d7e7d8aba489977c3a02a2b717dac4",
+      "expected_current_bytes": 55361887,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "19",
       "t0": 154.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG19",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG19",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG19",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "ff9ef0558de1560b01cdf29fed2731855fffab7696773aa2f9d01961f195718f",
+      "expected_current_bytes": 32302369,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "20",
       "t0": 163.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG20",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG20",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG20",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "9135e47c40582692ee531b48d952169c5e2b05e816ed9d7fe2cbaed7da7ae81f",
+      "expected_current_bytes": 20097453,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "21",
       "t0": 172.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG21",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG21",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG21",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "63dc052df21186ec17d5b75785d497382c73e6643282db891548801a17e5281d",
+      "expected_current_bytes": 31341182,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "22",
       "t0": 180.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG22",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG22",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG22",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "5ed32846e710f7bba2032ff55e938d469203665c0ef99298bfa7f0808d6eb295",
+      "expected_current_bytes": 32654042,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "23",
       "t0": 189.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG23",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG23",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG23",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "1e5aa0d57b4c80892472a3b6838873bc91d008724c92b9029a4c7518f1f3bca5",
+      "expected_current_bytes": 35493091,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "24",
       "t0": 197.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG24",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG24",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG24",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "618000bc406e3e128622792b88233be5c3176fdf1bf168f889a82a33927dd1a6",
+      "expected_current_bytes": 40679778,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "25",
       "t0": 206.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG25",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG25",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG25",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "a61bdf17d17098001b8e5f6e9268954c6bcf2a8f229dc56b83c38b21580a005b",
+      "expected_current_bytes": 39503209,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "26",
       "t0": 215.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG26",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG26",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG26",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "2f1c446eb7848c2f2056fa3f4efc24203933fc3dc2791df7632ed65d929037bb",
+      "expected_current_bytes": 44368383,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "27",
       "t0": 223.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG27",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG27",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG27",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "7532ab0f2851dd3d055a3a1a041d667ce0f0bc32b6af844df680d1ee4dc6ffc8",
+      "expected_current_bytes": 35710686,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "28",
       "t0": 232.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG28",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG28",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG28",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "64dc84bc61b0a64683a1ff6a02c97aa7048a212aa38b479e9d7af6fe4fdc9f61",
+      "expected_current_bytes": 27294170,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "29",
       "t0": 240.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG29",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG29",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG29",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "d61e21684df37633d94d1bc94d0d96268975a656d186507ca342d6937844d3ac",
+      "expected_current_bytes": 62235707,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "30",
       "t0": 249.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG30",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG30",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG30",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "9fa15ac08b739cec64858002454a788eab4d828fc1994ba1c152ae481f01f443",
+      "expected_current_bytes": 51880161,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "31",
       "t0": 258.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG31",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG31",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG31",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "a31189bcc1b690faaaa3229a556c532bbeb850012d8ec82c2b5d0a065c96c322",
+      "expected_current_bytes": 36202121,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "32",
       "t0": 266.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG32",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG32",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG32",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "25c7c61eec519c8218761c9bfaea726ab81394f7dd722b1537bd11e7a5bdba78",
+      "expected_current_bytes": 31430662,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "33",
       "t0": 275.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG33",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG33",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG33",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "8eefc77588861a0bf8e7d9e5d23789d55cfa869915731196df8873ea57ccce15",
+      "expected_current_bytes": 28311426,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "34",
       "t0": 283.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG34",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG34",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG34",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "b91f6a9d587805dacaab07b008431545e37b09a59a606db59a0682352d5f72d9",
+      "expected_current_bytes": 28877652,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "35",
       "t0": 292.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG35",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG35",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG35",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "dc43508a9385df56a940e3454a5a6551b30341582919a2f42b6a5a5672ccbb87",
+      "expected_current_bytes": 22821760,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "36",
       "t0": 301.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG36",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG36",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG36",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "08b83c4b667bee41e762fe99b41e459cc4b2524ef0ec3831f53130138db99b8d",
+      "expected_current_bytes": 39735953,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "37",
       "t0": 309.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG37",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG37",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG37",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "eac798fe520835edfdf73713e3bfe9b199b69f70a70aff497a7b1d780d77d378",
+      "expected_current_bytes": 23344575,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "38",
       "t0": 318.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG38",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG38",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG38",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "113d91933a67b98cb59416a11573daca7c05e63bc9b6031305cfc6131865163c",
+      "expected_current_bytes": 35387484,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "39",
       "t0": 326.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG39",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG39",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG39",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "8d5f5a5783c7d0f33adbb7303f2056e955d403b10823af96f2238bdf4a67e839",
+      "expected_current_bytes": 52938428,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "40",
       "t0": 335.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG40",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG40",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG40",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "ac70b5596ec2dcff1c0d60b0785e4728a70bb060cf37420c643457e669163494",
+      "expected_current_bytes": 52717889,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "41",
       "t0": 344.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG41",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG41",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG41",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "c8e6f97719f65cdfa969c9d7188b2d8068c66e9c7b4d32bf2476c9399a8273fd",
+      "expected_current_bytes": 47818561,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "42",
       "t0": 352.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG42",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG42",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG42",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "53c3ec92fffb5f0cbb9e75a73edb2a55808a501f5258ccea49d23f23e28bad10",
+      "expected_current_bytes": 49981451,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "43",
       "t0": 361.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG43",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG43",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG43",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "1c8cf6eb14ad2c962b5e7b6b61ffc21bac21bd5ffae5538a50514eefb2b55187",
+      "expected_current_bytes": 58149243,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "44",
       "t0": 369.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG44",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG44",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG44",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "25e530d68a3518abb0a63ea5a30889c4ddc66d98009f4764baf6229f040bb7a5",
+      "expected_current_bytes": 46895967,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "45",
       "t0": 378.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG45",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG45",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG45",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "be43dd2d2b9be988eac251f0ad61414ea9dc143e106e3afecab60f300ae88ffd",
+      "expected_current_bytes": 62849585,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "46",
       "t0": 387.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG46",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG46",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG46",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "da0511cda18b7389ab3633deb7dc567f7550c1f78b89748f5585495bb1793765",
+      "expected_current_bytes": 38087045,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "47",
       "t0": 395.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG47",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG47",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG47",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "ddcee7bfa0c85ba68d51919fa72d20b5ace8078c45b29cac5cb8c2a602ed738a",
+      "expected_current_bytes": 30772127,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "48",
       "t0": 404.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG48",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG48",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG48",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "e69b7a5144d9e367c39caa8809bf184fdc37a761bf24044a42f026dca6639cbe",
+      "expected_current_bytes": 20023971,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "49",
       "t0": 412.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG49",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG49",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG49",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "389607775ac1a01e8bca27e6d27926ba5e89d5371b05e8ef3393e09f17c85947",
+      "expected_current_bytes": 49323621,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "50",
       "t0": 421.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG50",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG50",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG50",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "67cc5e65f1452cbc5f24ebf9f6a739ac920e2284fecb1b829ace30664f1f0ed7",
+      "expected_current_bytes": 25784304,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "51",
       "t0": 430.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-profit-qualifier-seg51-52-20261003-SEG51",
-      "source_run": 37143394055,
-      "source_tag": "F02-profit-qualifier-seg51-52-20261003",
-      "source_package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
-      "source_code_commit": "088d62de686272206a52cc166307672bdf37ac55",
       "lineage": "replacement",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG51",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "replacement": {
-        "artifact_name": "F02-profit-qualifier-seg51-52-20261003-SEG51",
-        "run_id": 37143394055,
-        "tag": "F02-profit-qualifier-seg51-52-20261003",
-        "code_commit": "088d62de686272206a52cc166307672bdf37ac55",
-        "package_release": "F02-profit-qualifier-20261003",
-        "package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719"
-      },
-      "selected": {
-        "artifact_name": "F02-profit-qualifier-seg51-52-20261003-SEG51",
-        "run_id": 37143394055,
-        "tag": "F02-profit-qualifier-seg51-52-20261003",
-        "code_commit": "088d62de686272206a52cc166307672bdf37ac55",
-        "package_release": "F02-profit-qualifier-20261003",
-        "package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719"
-      }
+      "expected_current_sha256": "a13bda5ea6f2af253df80a897d340cba48fee7c77be605124b4f1d23abc35123",
+      "expected_current_bytes": 34341439,
+      "previous_provenance_role": "replacement",
+      "previous_run_id": 37143394055,
+      "previous_tag": "F02-profit-qualifier-seg51-52-20261003",
+      "previous_package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
+      "replacement_artifact_name": "F02-source-3f072ce0281b-seg01-02-51-52-20261004-r2-SEG51"
     },
     {
       "i": "52",
       "t0": 438.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-profit-qualifier-seg51-52-20261003-SEG52",
-      "source_run": 37143394055,
-      "source_tag": "F02-profit-qualifier-seg51-52-20261003",
-      "source_package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
-      "source_code_commit": "088d62de686272206a52cc166307672bdf37ac55",
       "lineage": "replacement",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG52",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "replacement": {
-        "artifact_name": "F02-profit-qualifier-seg51-52-20261003-SEG52",
-        "run_id": 37143394055,
-        "tag": "F02-profit-qualifier-seg51-52-20261003",
-        "code_commit": "088d62de686272206a52cc166307672bdf37ac55",
-        "package_release": "F02-profit-qualifier-20261003",
-        "package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719"
-      },
-      "selected": {
-        "artifact_name": "F02-profit-qualifier-seg51-52-20261003-SEG52",
-        "run_id": 37143394055,
-        "tag": "F02-profit-qualifier-seg51-52-20261003",
-        "code_commit": "088d62de686272206a52cc166307672bdf37ac55",
-        "package_release": "F02-profit-qualifier-20261003",
-        "package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719"
-      }
+      "expected_current_sha256": "a4933405a7ad69129acd8f94236771fd7c8e86110a430e3fc692d94f24bf9293",
+      "expected_current_bytes": 30011771,
+      "previous_provenance_role": "replacement",
+      "previous_run_id": 37143394055,
+      "previous_tag": "F02-profit-qualifier-seg51-52-20261003",
+      "previous_package_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
+      "replacement_artifact_name": "F02-source-3f072ce0281b-seg01-02-51-52-20261004-r2-SEG52"
     },
     {
       "i": "53",
       "t0": 447.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG53",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG53",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG53",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "addc49d9ce5d7a40852b582034c4959954596fd288cdbb6bc9d6a495bac2d819",
+      "expected_current_bytes": 26119427,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "54",
       "t0": 455.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG54",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG54",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG54",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "b34d39460180a1dc9413be9c62b8c4e5716cbc099c20135e5046b73efb249383",
+      "expected_current_bytes": 34599298,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "55",
       "t0": 464.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG55",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG55",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG55",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "b5ac2e67994a8324b61704e0f12dabaa88f134bacf7c8bf0d020522a6071900e",
+      "expected_current_bytes": 32505755,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "56",
       "t0": 473.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG56",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG56",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG56",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "5e4b98a8608787cc9bcd9d0476a44bc13aa63ea6d7bc0c4d1f792a3060edac8b",
+      "expected_current_bytes": 23854786,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "57",
       "t0": 481.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG57",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG57",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG57",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "e9d98c4b652beb0a718f1f06fc0b307a52a409e39f5f9dce1e26554ed5b7e8a4",
+      "expected_current_bytes": 27774978,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "58",
       "t0": 490.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG58",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG58",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG58",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "06816d5ef08f14d029c9003203da32948da3eb0ebf98dfd10b903481c04a1209",
+      "expected_current_bytes": 68343487,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "59",
       "t0": 498.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG59",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG59",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG59",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "d5e674ba79947c1f6bdfd5dc7ac90130f34835aabc145ae81a6d9cc5e9810a89",
+      "expected_current_bytes": 37367194,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "60",
       "t0": 507.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG60",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG60",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG60",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "59ab73b411e2c13ce9456455f637fc54adc8bfe6298bb598fa3903675436e18f",
+      "expected_current_bytes": 37259224,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "61",
       "t0": 516.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG61",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG61",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG61",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "f3e649684e814f782c296d69241b4f131ce64aef75654e32a5f736bb20751f44",
+      "expected_current_bytes": 29219279,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "62",
       "t0": 524.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG62",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG62",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG62",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "3ac7802bf4025df47c2c36535af6cb8c7bc97e2954ef643f933bad349f99edc0",
+      "expected_current_bytes": 51414565,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "63",
       "t0": 533.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG63",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG63",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG63",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "15f4699734931e1c5957aa74a66570edc4c9bf1c19994a40ae323961cb4de5d9",
+      "expected_current_bytes": 40375662,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "64",
       "t0": 541.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG64",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG64",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG64",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "d0042d94703ae8e891319f566ea88f1964908e4a83ee20763eb9999c7d91c8e9",
+      "expected_current_bytes": 18948652,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "65",
       "t0": 550.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG65",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG65",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG65",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "48fee9a1900920339170f2a731902fc96b0c40a6c7aa18341b35240084400fb0",
+      "expected_current_bytes": 50325391,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "66",
       "t0": 559.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG66",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG66",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG66",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "aff26a4c7109f25764f1f8aa039c701dd4ffefb358e7d33409e7c85810377f6b",
+      "expected_current_bytes": 35376128,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "67",
       "t0": 567.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG67",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG67",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG67",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "434cd8d45992c5de2919c1459be298daad30677f30156edf307cf77d33a424d0",
+      "expected_current_bytes": 33967452,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "68",
       "t0": 576.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG68",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG68",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG68",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "f86d4223ccfe4e06ba9411e4d98da81b8ee2b72269d4fa8a4a03bf1f51fa052c",
+      "expected_current_bytes": 25466562,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "69",
       "t0": 584.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG69",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG69",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG69",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "8b17bf731ef1bb1c776b963f1a8165e86f30f526c540f4133f14bf1ddee74920",
+      "expected_current_bytes": 33554402,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "70",
       "t0": 593.4,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG70",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG70",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG70",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "0fcedae7f0bf75f33e2d42235e6e12ecd3dfbac5a458515e656d5bbcdad2446b",
+      "expected_current_bytes": 49662520,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "71",
       "t0": 602.0,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG71",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG71",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG71",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "13ee815258d805a9f645a9ac726e303cc8bc50b37f72307c2b95a823589d441d",
+      "expected_current_bytes": 26845806,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "72",
       "t0": 610.6,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG72",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG72",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG72",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "4850b1c954f5d67e947bd982212e9fbf6a17f27236cd17200e6aad997bfe1326",
+      "expected_current_bytes": 27209433,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "73",
       "t0": 619.2,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG73",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG73",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG73",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "3735217e3373776f0451fe42953ceb55785bca615fda2b36b435b1ed25d456e8",
+      "expected_current_bytes": 22015778,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "74",
       "t0": 627.8,
       "len": 8.6,
       "frames": 258,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG74",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG74",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG74",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "7ded2e22491e124418bf041a7b623f0feebf931e020729d38f1f2f0136a3dc1e",
+      "expected_current_bytes": 19711945,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     },
     {
       "i": "75",
       "t0": 636.4,
       "len": 15.2,
       "frames": 456,
-      "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG75",
-      "source_run": 37125818648,
-      "source_tag": "F02-craft-repaired-full-20261003-1420",
-      "source_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
-      "source_code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
       "lineage": "parent",
-      "parent": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG75",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      },
-      "selected": {
-        "artifact_name": "F02-craft-repaired-full-20261003-1420-SEG75",
-        "run_id": 37125818648,
-        "tag": "F02-craft-repaired-full-20261003-1420",
-        "code_commit": "98e632224f2d436f251836c6e167f051aafd6078",
-        "package_release": "F02-craft-repair-20261003",
-        "package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f"
-      }
+      "expected_current_sha256": "1de6f2e637641bbd1e95254be26bc4d0b1ebad5436b3d13fd7568aa889d20ee2",
+      "expected_current_bytes": 55087014,
+      "previous_provenance_role": "parent",
+      "previous_run_id": 37125818648,
+      "previous_tag": "F02-craft-repaired-full-20261003-1420",
+      "previous_package_sha256": "359fe0f4b4b7ec3a3d42ef0fa74dc7db5ad70bd52e9b0724d2c1f97e2f1e057f",
+      "replacement_artifact_name": null
     }
-  ]
+  ],
+  "source_capture_review": {
+    "schema": "independent_source_candidate_visual_still_review",
+    "status": "ACCEPT_WITH_SCOPE_LIMITATIONS",
+    "scope": "74 published source-candidate stills only",
+    "receipt_path": ".github/receipts/F02-source-candidate-review.json",
+    "receipt_sha256": "86a79db1595ecff8f26dffbbf453cc91066bb7d44c5c25392a858277cd5558ef",
+    "capture_receipt_path": ".github/receipts/F02-source-candidate-capture.json",
+    "capture_receipt_sha256": "51578e3963be0d20cac0d5761b1487c5c490b2d9e9eec9768264f6f7ecd8e122",
+    "source_receipt_path": ".github/receipts/F02-source-candidate-source-receipt.json",
+    "source_receipt_sha256": "304c17e0182daecc74d9584e948737b1ca922341ae210d345daa3408906f4c1a",
+    "frame_publication_path": ".github/receipts/F02-source-candidate-frame-publication.json",
+    "frame_publication_sha256": "d365b76f5ffba9955897b9df15c6e38b53786177107b7614023f65f2d9ca02bb",
+    "capture_run_id": 37197470531,
+    "source_sha256": "3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5",
+    "source_head_sha": "e67188f26c2afeaf7ebb01b2696a756062d8c63c",
+    "source_release_id": 402977719,
+    "source_asset_id": 609677772,
+    "source_asset_bytes": 37971142,
+    "frame_publication_branch": "review-F02-opening-camera-extraction-candidate-37197470531",
+    "frame_publication_tip_sha": "7698be0e4c9b92446ea699488b456256fa71e041",
+    "frame_inventory_sha256": "9e9b51c97d2b5e0fcf4d0de75c3ed714656b7d2f848c3be601a7dff903ac68cd",
+    "verdict": "ACCEPT_WITH_SCOPE_LIMITATIONS",
+    "full_av_review": "OPEN",
+    "whole_video_approval": "NOT_GRANTED",
+    "release_approval": "NOT_GRANTED",
+    "owner_adoption": "NOT_ADOPTED"
+  },
+  "source_binding_state": "SOURCE_STILL_REVIEWED_RENDER_DEVELOPMENT_ONLY",
+  "dispatch": false
 }

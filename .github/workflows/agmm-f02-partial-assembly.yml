@@ -5,7 +5,15 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: Type ASSEMBLE-F02-MECHANICAL-ONLY to proceed on hosted Linux
+        description: Type ASSEMBLE-F02-MECHANICAL-ONLY for mechanical integrity only
+        required: true
+        type: string
+      replacement_run_id:
+        description: Exact successful agmm-film.yml run that rendered 01/02/51/52 from the independently reviewed source package
+        required: true
+        type: string
+      replacement_head_sha:
+        description: Exact 40-character head SHA from that completed renderer run
         required: true
         type: string
 
@@ -24,6 +32,8 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       CONFIRMATION: ${{ inputs.confirmation }}
+      REPLACEMENT_RUN_ID: ${{ inputs.replacement_run_id }}
+      REPLACEMENT_HEAD_SHA: ${{ inputs.replacement_head_sha }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -34,39 +44,56 @@ jobs:
           set -euo pipefail
           test "$CONFIRMATION" = "ASSEMBLE-F02-MECHANICAL-ONLY"
           test "$GITHUB_REPOSITORY" = "agmmltd-arch/agmm-render-public"
-          python3 .github/scripts/f02_partial_assembly.py validate-contract
+          python3 .github/scripts/f02_partial_assembly.py validate-contract \
+            --replacement-run-id "$REPLACEMENT_RUN_ID" --replacement-head-sha "$REPLACEMENT_HEAD_SHA"
 
       - name: Verify checked-out authoritative assembler source hash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           python3 .github/scripts/f02_partial_assembly.py verify-authoritative-helper \
-            --helper .github/scripts/assemble_verify.py
+            --helper .github/scripts/assemble_verify.py \
+            --replacement-run-id "$REPLACEMENT_RUN_ID" --replacement-head-sha "$REPLACEMENT_HEAD_SHA"
 
       - name: Capture exact run, job, artifact and release metadata
         run: |
           set -euo pipefail
-          python3 .github/scripts/f02_partial_assembly.py snapshot --repo "$GITHUB_REPOSITORY" --snapshots metadata
+          python3 .github/scripts/f02_partial_assembly.py snapshot --repo "$GITHUB_REPOSITORY" --snapshots metadata \
+            --replacement-run-id "$REPLACEMENT_RUN_ID" --replacement-head-sha "$REPLACEMENT_HEAD_SHA"
 
-      - name: Preflight run provenance, all render jobs, artifact expiry, and sealed releases
+      - name: Download and hash-check the small durable parent preview receipt
         run: |
           set -euo pipefail
-          python3 .github/scripts/f02_partial_assembly.py preflight --snapshots metadata
+          mkdir -p metadata/preview-download
+          gh release download preview-F02-37146440125 -R "$GITHUB_REPOSITORY" \
+            -p HOSTED-PREVIEW.json --dir metadata/preview-download
+          cp metadata/preview-download/HOSTED-PREVIEW.json metadata/parent-preview-receipt.json
+
+      - name: Preflight current lineage, source, replacement jobs/artifacts, hashes and expiry
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/f02_partial_assembly.py preflight --snapshots metadata \
+            --replacement-run-id "$REPLACEMENT_RUN_ID" --replacement-head-sha "$REPLACEMENT_HEAD_SHA"
 
       - name: Download and verify the sealed F02 source package
         run: |
           set -euo pipefail
           mkdir -p source-download
-          gh release download F02-profit-qualifier-20261003 -R "$GITHUB_REPOSITORY" -p source.tar.gz --dir source-download
+          SOURCE_RELEASE="$(python3 .github/scripts/f02_partial_assembly.py print-source-release \
+            --replacement-run-id "$REPLACEMENT_RUN_ID" --replacement-head-sha "$REPLACEMENT_HEAD_SHA")"
+          gh release download "$SOURCE_RELEASE" \
+            -R "$GITHUB_REPOSITORY" -p source.tar.gz --dir source-download
           python3 .github/scripts/f02_partial_assembly.py prepare-source \
-            --source-archive source-download/source.tar.gz \
-            --package-dir package
+            --source-archive source-download/source.tar.gz --package-dir package \
+            --replacement-run-id "$REPLACEMENT_RUN_ID" --replacement-head-sha "$REPLACEMENT_HEAD_SHA"
 
-      - name: Retain and stage all 75 original parts plus only replacement 51/52
+      - name: Retain 71 exact current-lineage segments and stage only replacements 01/02/51/52
         run: |
           set -euo pipefail
           python3 .github/scripts/f02_partial_assembly.py download-and-stage \
             --snapshots metadata --downloads downloads --lineage-dir lineage \
-            --segments-dir assembly/segments
+            --segments-dir assembly/segments \
+            --replacement-run-id "$REPLACEMENT_RUN_ID" --replacement-head-sha "$REPLACEMENT_HEAD_SHA"
 
       - name: Run verifier self-test on hosted Linux
         run: |
@@ -80,13 +107,15 @@ jobs:
           set -euo pipefail
           mkdir -p remote-final
           cp lineage/F02-LINEAGE.json remote-final/F02-LINEAGE.json
-          SEGS_JSON="$(python3 .github/scripts/f02_partial_assembly.py print-segments-json)"
+          SEGS_JSON="$(python3 .github/scripts/f02_partial_assembly.py print-segments-json \
+            --replacement-run-id "$REPLACEMENT_RUN_ID" --replacement-head-sha "$REPLACEMENT_HEAD_SHA")"
           python3 .github/scripts/assemble_verify.py \
             --segments-json "$SEGS_JSON" --duration 651.6 \
             --segments-dir assembly/segments --package-dir package \
             --output-dir remote-final --fid F02
           python3 .github/scripts/f02_partial_assembly.py final-receipt \
-            --lineage-dir lineage --output-dir remote-final
+            --lineage-dir lineage --output-dir remote-final \
+            --replacement-run-id "$REPLACEMENT_RUN_ID" --replacement-head-sha "$REPLACEMENT_HEAD_SHA"
           python3 .github/scripts/f02_partial_assembly.py refresh-sums --output-dir remote-final
 
       - name: Export segment-level lineage (originals remain separate from replacements)

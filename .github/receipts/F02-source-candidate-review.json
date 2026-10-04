@@ -1,0 +1,441 @@
+{
+  "kind": "independent_source_candidate_visual_still_review",
+  "reviewed_at_utc": "2026-10-04T11:29:50Z",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "workflow_run": {
+    "id": 37197470531,
+    "status": "completed",
+    "conclusion": "success",
+    "run_head_sha": "e67188f26c2afeaf7ebb01b2696a756062d8c63c"
+  },
+  "frame_publication": {
+    "branch": "review-F02-opening-camera-extraction-candidate-37197470531",
+    "branch_tip_sha": "7698be0e4c9b92446ea699488b456256fa71e041",
+    "tip_message": "F02 isolated printer source-candidate frames; NOT owner adoption or final-master approval",
+    "frame_count": 74,
+    "frame_inventory_sha256": "9e9b51c97d2b5e0fcf4d0de75c3ed714656b7d2f848c3be601a7dff903ac68cd",
+    "images_saved_locally": false
+  },
+  "browser_visual_check": {
+    "tool": "Chrome via CUA",
+    "unique_images_opened": 74,
+    "natural_dimensions": "1920x1080 for all 74",
+    "image_complete": true,
+    "current_src_matched_expected_raw_url": true
+  },
+  "verdict": {
+    "source_still_review": "ACCEPT_WITH_SCOPE_LIMITATIONS",
+    "full_av_review": "OPEN",
+    "whole_video_approval": "NOT_GRANTED",
+    "release_approval": "NOT_GRANTED",
+    "owner_adoption": "NOT_ADOPTED"
+  },
+  "observations": [
+    {
+      "checkpoint": "s03_post_cut.png",
+      "time_seconds": 5.3333333333,
+      "finding": "One clean headline/date/mark; prior ghost/double-text concern retracted after fresh exact-currentSrc inspection."
+    },
+    {
+      "checkpoint": "s05_cut.png and s05_post_cut.png",
+      "time_seconds": "10.300-10.333",
+      "finding": "Close crop places 700, resolution time, and source credit in focus; the preceding 2.3M/23-markets line is outside/cropped at the top in this close framing. No duplicate claim observed; whether transition preserves readable dwell requires motion review."
+    },
+    {
+      "checkpoint": "full_time_post.png",
+      "time_seconds": 13.8333333333,
+      "finding": "700 and FULL-TIME AGENTS label are clear and unobstructed."
+    },
+    {
+      "checkpoint": "people_fade_pre.png",
+      "time_seconds": 15.1666666667,
+      "finding": "700 label remains clear before the people fade."
+    },
+    {
+      "checkpoint": "profit_duplicate_pre.png, profit_duplicate_exact_439_5.png, profit_duplicate_edge_a.png, profit_duplicate_edge_b.png",
+      "time_seconds": "439.4667-439.8",
+      "finding": "One $40M / EXPECTED PROFIT, 2024 claim observed; no duplicated profit figure."
+    },
+    {
+      "checkpoint": "source_hold_post_frame.png",
+      "finding": "At the close source-page framing the 2.3M/markets line is partly clipped at the top; the 700 statement, resolution time and source credit are visible. Earlier wider paper-feed stills show the statistics. Stills do not establish how long each remains readable."
+    }
+  ],
+  "limits": [
+    "This is review of the 74 published source-candidate stills only, not continuous playback or every decoded frame.",
+    "No master playback, motion continuity, cut timing, audio, narration synchronization, thumbnail, or platform acceptance was reviewed.",
+    "No release/owner approval is granted."
+  ],
+  "frames": [
+    {
+      "name": "assistant_ai_next_frame.png",
+      "size": 1424434,
+      "sha": "8c1e8f6e2ea7fefdb8520715e19194ace5a35425"
+    },
+    {
+      "name": "assistant_ai_onset.png",
+      "size": 1425344,
+      "sha": "9294dd125f95f4303b2a1bf5b2e4535f3e313ed5"
+    },
+    {
+      "name": "assistant_phrase_end_post.png",
+      "size": 1425084,
+      "sha": "5a159fddc37cb47ffb025663f722c5f77a453f50"
+    },
+    {
+      "name": "assistant_phrase_end_pre.png",
+      "size": 1423389,
+      "sha": "b2b744794f6bcddbe388c23636e205b3aed2cb2c"
+    },
+    {
+      "name": "assistant_phrase_mid.png",
+      "size": 1426468,
+      "sha": "53637ccd1f601059eb072ca39159fe013156ef85"
+    },
+    {
+      "name": "camera_hold_early.png",
+      "size": 1301195,
+      "sha": "c532b49e2073c846005d51988081dfe4a32d8720"
+    },
+    {
+      "name": "camera_hold_late.png",
+      "size": 1301337,
+      "sha": "3027d73c437e564005e6ae8fcf47c667ae155e08"
+    },
+    {
+      "name": "camera_hold_mid.png",
+      "size": 1301307,
+      "sha": "94cd2e14ab8d3d17251229d4be2d309cd7f07ea6"
+    },
+    {
+      "name": "doing_onset.png",
+      "size": 1308890,
+      "sha": "8cc9186a32e5021581a421d56d5a626695c46a3d"
+    },
+    {
+      "name": "doing_onset_pre.png",
+      "size": 1308256,
+      "sha": "8de8e93f270ceed3043cd6756cea58f9d94db97c"
+    },
+    {
+      "name": "floor_handoff_post.png",
+      "size": 1421029,
+      "sha": "cb4fdf72e91250c16f62488796a4ad1d088aef34"
+    },
+    {
+      "name": "floor_second_shot_before.png",
+      "size": 2231839,
+      "sha": "8070af43358f73251601bb001d5bde03bd43021c"
+    },
+    {
+      "name": "floor_second_shot_cut.png",
+      "size": 2516030,
+      "sha": "f1d7b15cc97babd450652c5cbd806ceb92df2e37"
+    },
+    {
+      "name": "floor_second_shot_post.png",
+      "size": 2518679,
+      "sha": "997d8ab6307b0ad5689bf70f2d7ceddc56b464fe"
+    },
+    {
+      "name": "floor_second_shot_pre.png",
+      "size": 2252498,
+      "sha": "9184fdf2d9550ca7630a83b3bcb071c1446fb527"
+    },
+    {
+      "name": "forbes_headline_start.png",
+      "size": 290835,
+      "sha": "67b8c31e7f1920f691da6620a664385d5e138b25"
+    },
+    {
+      "name": "forbes_headline_to_next_shot.png",
+      "size": 1611132,
+      "sha": "5e4a54154ea1eeded6355055ba5bdbffff623731"
+    },
+    {
+      "name": "full_time_onset.png",
+      "size": 1493155,
+      "sha": "2d091eb21cceb9ba2d503e30b12a75a87fa4a2b7"
+    },
+    {
+      "name": "full_time_post.png",
+      "size": 1543748,
+      "sha": "9b242cab81784f1c74e7971336aa375c672acc65"
+    },
+    {
+      "name": "full_time_word_pre.png",
+      "size": 1479499,
+      "sha": "84a9e4fb708f8d3ea032e5f10fb53eb19475b25f"
+    },
+    {
+      "name": "klarna_name_end.png",
+      "size": 1253490,
+      "sha": "bb17bacf148f5ab657a29c83ba443b8f323edba3"
+    },
+    {
+      "name": "klarna_name_post.png",
+      "size": 1270989,
+      "sha": "3505a2403e66d002b3297095c74a132a10772321"
+    },
+    {
+      "name": "klarna_name_pre.png",
+      "size": 2340518,
+      "sha": "d304875c02fda8e5ced786b7adfdeeb914e1eb62"
+    },
+    {
+      "name": "klarna_wordmark_start.png",
+      "size": 1263541,
+      "sha": "03856a36761143e7c0fdbc1617699547b703cf90"
+    },
+    {
+      "name": "lift_pre_frame.png",
+      "size": 1308773,
+      "sha": "8e96669dbc9301801e9b20e9d185263fff78fc19"
+    },
+    {
+      "name": "of_word_pre.png",
+      "size": 1300759,
+      "sha": "16d62bce9233d305f76e20badbe4ccb7d9d93c4e"
+    },
+    {
+      "name": "opening_date_word.png",
+      "size": 1505344,
+      "sha": "ae3a5b8707bc8100dbdaede4ce025947176f75bb"
+    },
+    {
+      "name": "opening_source_headline_frame0.png",
+      "size": 1466781,
+      "sha": "9cc3a3eb4f5da82b85e70edd373634268ba56ad8"
+    },
+    {
+      "name": "paper_feed_complete.png",
+      "size": 1948740,
+      "sha": "8a48253c0350ffc1e4becd2856daf9757b150646"
+    },
+    {
+      "name": "paper_feed_early.png",
+      "size": 1529842,
+      "sha": "6ebe145a280cd0ff6a5230c839d84ebae1a5b185"
+    },
+    {
+      "name": "paper_feed_late.png",
+      "size": 1948954,
+      "sha": "8f3cae859f935651e79f7e4fcbd1a6520e31a398"
+    },
+    {
+      "name": "paper_feed_mid.png",
+      "size": 1947998,
+      "sha": "3b6a2c9b445955d9f1f02a1946c189e3bb81db73"
+    },
+    {
+      "name": "paper_feed_mid_seam.png",
+      "size": 1948069,
+      "sha": "d8a54b10cefc57614890c639c19d848587a14b60"
+    },
+    {
+      "name": "paper_feed_prestart.png",
+      "size": 1530050,
+      "sha": "dc6ada29d9800be23b179abdbf6fd0a00d691542"
+    },
+    {
+      "name": "paper_feed_start.png",
+      "size": 1529133,
+      "sha": "542b46362cfdb6635b074ff153d223e4d6999db8"
+    },
+    {
+      "name": "people_fade_post.png",
+      "size": 2238475,
+      "sha": "153f0042d60d4c72debc2879b8a38cfd2b8d6321"
+    },
+    {
+      "name": "people_fade_pre.png",
+      "size": 2214856,
+      "sha": "83263ed4c36db1831b3200b0dc7b7a56016ff3eb"
+    },
+    {
+      "name": "people_fade_start.png",
+      "size": 2231845,
+      "sha": "dedf4fa7055c0c2fd8781cf27925d385095ddff4"
+    },
+    {
+      "name": "printed_700_first_stress.png",
+      "size": 1307908,
+      "sha": "3f40548d658c73216a83419609e6dcc810482c6e"
+    },
+    {
+      "name": "printed_700_hold_13_033.png",
+      "size": 1307973,
+      "sha": "13e63987b9cd858a0b494577d6e07de9fc561595"
+    },
+    {
+      "name": "printed_700_hold_13_067.png",
+      "size": 1308796,
+      "sha": "27a392280b9845ecc6213d05aa76547b2eb96e1f"
+    },
+    {
+      "name": "printed_700_hold_early.png",
+      "size": 1308407,
+      "sha": "2d802ded54d5c9fe06a5f4e3d64b163fb48af9a0"
+    },
+    {
+      "name": "printed_700_hold_late.png",
+      "size": 1307897,
+      "sha": "3d3df38a03f1c7b103837ca2b8260994dac509d9"
+    },
+    {
+      "name": "printed_700_hold_mid.png",
+      "size": 1307533,
+      "sha": "0c0422fa7037655109ca24135cf028eace721dad"
+    },
+    {
+      "name": "printed_700_last_frame_pre_cut.png",
+      "size": 1307973,
+      "sha": "13e63987b9cd858a0b494577d6e07de9fc561595"
+    },
+    {
+      "name": "printed_700_next_frame.png",
+      "size": 1307681,
+      "sha": "4b4a380521064b7635ea895a8fcb62035d473d7a"
+    },
+    {
+      "name": "profit_duplicate_edge_a.png",
+      "size": 2318572,
+      "sha": "c1396c9dee6dc5aca6375b1f7eeed80bd06476b4"
+    },
+    {
+      "name": "profit_duplicate_edge_b.png",
+      "size": 1562301,
+      "sha": "3307af5e962916c02d2adacd251fa381a7358d44"
+    },
+    {
+      "name": "profit_duplicate_exact_439_5.png",
+      "size": 2321732,
+      "sha": "2d0bb3400fa1c89857806a80e9067bbfb32105f4"
+    },
+    {
+      "name": "profit_duplicate_pre.png",
+      "size": 2321696,
+      "sha": "e4d5f0df2c7d91fe14fa34ae4a6e2b6b451cbc62"
+    },
+    {
+      "name": "s01_pre_cut.png",
+      "size": 1492109,
+      "sha": "1b3a8a2789a1117689bb0e137c63ccfce8939a4f"
+    },
+    {
+      "name": "s02_cut.png",
+      "size": 1528722,
+      "sha": "f1ecb09adc7999353c46eee1e3b19cfa0623f92e"
+    },
+    {
+      "name": "s02_post_cut.png",
+      "size": 1528800,
+      "sha": "af434425ad304152e408ef2ede38ad1e549b10ab"
+    },
+    {
+      "name": "s03_cut.png",
+      "size": 1425808,
+      "sha": "90026b3747c56587b5052b2fe67f26aa36b4102c"
+    },
+    {
+      "name": "s03_post_cut.png",
+      "size": 1425660,
+      "sha": "c1646f2ce4aede2c80b07f3ee0f519f1526876a8"
+    },
+    {
+      "name": "s03_pre_cut.png",
+      "size": 1946628,
+      "sha": "6bcc4d83fe797951fe089aa1bd7ac12b7670c704"
+    },
+    {
+      "name": "s04_cut.png",
+      "size": 1425053,
+      "sha": "fc6bc3287480080dbdb06db84f225f0bf7328c63"
+    },
+    {
+      "name": "s04_post_cut.png",
+      "size": 1425046,
+      "sha": "b439574dad137ecdc1ce072807d13c024919896b"
+    },
+    {
+      "name": "s04_pre_cut.png",
+      "size": 1432994,
+      "sha": "2259d225c6e8860a4447dcfd4daa05e0b92af815"
+    },
+    {
+      "name": "s05_cut.png",
+      "size": 1308454,
+      "sha": "b2dd7c3fb0525c15ea224baeac1b4c5a357bfb9a"
+    },
+    {
+      "name": "s05_post_cut.png",
+      "size": 1308808,
+      "sha": "c5f5aa67d8b1d4befe74b0787b6d7ea194d9ec5e"
+    },
+    {
+      "name": "s05_pre_cut.png",
+      "size": 1425865,
+      "sha": "da1a9ca5d940c5886d7f76de8641db92729e270e"
+    },
+    {
+      "name": "segment51_40m_claim.png",
+      "size": 2202396,
+      "sha": "bc66e546747b9bfe4e95b68ad530652491fbcd5c"
+    },
+    {
+      "name": "segment51_40m_clear.png",
+      "size": 2257468,
+      "sha": "049fa6e437f93bb4e8d636b5960972a08394eb64"
+    },
+    {
+      "name": "segment51_52_transition.png",
+      "size": 1583417,
+      "sha": "9270f3b60549c00caf2d4f2838168b85e2831989"
+    },
+    {
+      "name": "segment52_close.png",
+      "size": 2191362,
+      "sha": "88c9e9fb6e723db282a2412e331cab94bf1758fc"
+    },
+    {
+      "name": "segment52_quality_line.png",
+      "size": 2118177,
+      "sha": "b5a72de7e30a4f3fda5252a69cfe321af108291f"
+    },
+    {
+      "name": "source_hold_post_frame.png",
+      "size": 1308043,
+      "sha": "3cb8a63bef40c43bd4ae01ab9abb77d960b54eba"
+    },
+    {
+      "name": "source_hold_pre_stress.png",
+      "size": 1301874,
+      "sha": "30a9ce1dcfa94e067581cfe46d97bdbaab58648d"
+    },
+    {
+      "name": "spoken_700_final_post.png",
+      "size": 1328348,
+      "sha": "a71f4e666df1007e0ecf876b1a8fd1082fff5fce"
+    },
+    {
+      "name": "spoken_700_final_pre.png",
+      "size": 1307886,
+      "sha": "69fe3b67896d72616000050aa5731bfbdba9d175"
+    },
+    {
+      "name": "work_word_onset.png",
+      "size": 1305230,
+      "sha": "3934d3a156ffe7a78aca963f04ed605edabee738"
+    },
+    {
+      "name": "work_word_post.png",
+      "size": 1304138,
+      "sha": "cd327a6232fc559f400859f1eec74b5d7daf92ab"
+    },
+    {
+      "name": "work_word_pre.png",
+      "size": 1306932,
+      "sha": "bd968b58688a2e6d01092e595a3632a186600c62"
+    }
+  ]
+}

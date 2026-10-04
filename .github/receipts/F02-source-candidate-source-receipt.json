@@ -1,0 +1,77 @@
+{
+  "candidate_builder_owner_source": {
+    "film/film.js": {
+      "sha256": "e2358c4c6e1072bb6a81d362cc6a341b3d884765f011f20b291ebcc4bade997b"
+    },
+    "film/sets_a.js": {
+      "sha256": "cf8747c798844d01d458c7b4b6dd495beb208985cdc7d21f3a307b217f7aa19e"
+    }
+  },
+  "candidate_class": "isolated_source_candidate",
+  "capture_class": "isolated_source_candidate_composition_only",
+  "changed_package_members": [
+    "SHA256SUMS.txt",
+    "film/film.js",
+    "film/sets_a.js"
+  ],
+  "editorial_status": "NOT_REVIEWED",
+  "kind": "f02-hosted-isolated-source-candidate-overlay",
+  "mix_logo_and_other_parent_members_byte_identical": true,
+  "overlay_files": {
+    "film/film.js": {
+      "bytes": 80710,
+      "sha256": "f312bc6dee1a0061b6fd6d6fcddd45340a380af6d32ad648537c8e7c4aeb3e3f"
+    },
+    "film/sets_a.js": {
+      "bytes": 40166,
+      "sha256": "a95e9df7557ab62b9708556cbddc8a586118ad03441b9a69b9104e7f4ff5fbd5"
+    }
+  },
+  "owner_adoption": "NOT_ADOPTED",
+  "parent_asset_bytes": 37951315,
+  "parent_asset_id": 608285956,
+  "parent_release": "F02-profit-qualifier-20261003",
+  "parent_release_id": 402632642,
+  "parent_source_sha256": "b216a14d62b2b5430234a411a1913207b41642071fc5985a11bbf09913d21719",
+  "preserved_package_members_byte_identical": [
+    "audio/mix.flac",
+    "film/core.js",
+    "film/ds/fonts/archivo-var.woff2",
+    "film/ds/fonts/dmmono-400-normal.woff2",
+    "film/ds/fonts/dmmono-500-normal.woff2",
+    "film/ds/fonts/instrumentserif-400-italic.woff2",
+    "film/ds/fonts/instrumentserif-400-normal.woff2",
+    "film/ds/fonts/spacegrotesk-var.woff2",
+    "film/ds/img/grain.png",
+    "film/ds/map.js",
+    "film/ds/vendor/gsap.min.js",
+    "film/ds/vendor/three.core.js",
+    "film/ds/vendor/three.module.js",
+    "film/film.css",
+    "film/img/aljazeera.svg",
+    "film/img/forbes.svg",
+    "film/img/klarna-badge.svg",
+    "film/img/klarna-wordmark-black.svg",
+    "film/img/openai-official.png",
+    "film/img/siemiatkowski.jpg",
+    "film/img/vice.svg",
+    "film/index.html",
+    "film/sets_b.js",
+    "film/sets_c.js",
+    "static_check.py"
+  ],
+  "prior_db1e_source": {
+    "asset_id": 608687529,
+    "release_id": 402725212,
+    "role": "diagnostic_only_not_candidate_input",
+    "sha256": "db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68",
+    "status": "REJECTED_BY_ROOT_SOURCE_CAPTURE_REVIEW",
+    "tag_name": "F02-source-overlay-db1e5e398ea2fcc14136554dbe54dea27f259178fdf30813bf144f32d1b3ad68"
+  },
+  "release_approval": "NOT_GRANTED",
+  "rendered_media_changed": false,
+  "repository": "agmmltd-arch/agmm-render-public",
+  "source_archive_bytes": 37971142,
+  "source_archive_sha256": "3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5",
+  "source_archive_tag": "F02-isolated-source-candidate-3f072ce0281b195f69b945cf7b76279e5e95efe71b794356953dbd51320c91d5"
+}

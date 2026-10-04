@@ -1,0 +1,455 @@
+{
+  "branch": "review-F02-opening-camera-extraction-candidate-37197470531",
+  "branch_tip_sha": "7698be0e4c9b92446ea699488b456256fa71e041",
+  "frame_count": 74,
+  "frame_inventory_sha256": "9e9b51c97d2b5e0fcf4d0de75c3ed714656b7d2f848c3be601a7dff903ac68cd",
+  "frames": [
+    {
+      "name": "assistant_ai_next_frame.png",
+      "path": "public-review/frames/assistant_ai_next_frame.png",
+      "sha": "8c1e8f6e2ea7fefdb8520715e19194ace5a35425",
+      "size": 1424434
+    },
+    {
+      "name": "assistant_ai_onset.png",
+      "path": "public-review/frames/assistant_ai_onset.png",
+      "sha": "9294dd125f95f4303b2a1bf5b2e4535f3e313ed5",
+      "size": 1425344
+    },
+    {
+      "name": "assistant_phrase_end_post.png",
+      "path": "public-review/frames/assistant_phrase_end_post.png",
+      "sha": "5a159fddc37cb47ffb025663f722c5f77a453f50",
+      "size": 1425084
+    },
+    {
+      "name": "assistant_phrase_end_pre.png",
+      "path": "public-review/frames/assistant_phrase_end_pre.png",
+      "sha": "b2b744794f6bcddbe388c23636e205b3aed2cb2c",
+      "size": 1423389
+    },
+    {
+      "name": "assistant_phrase_mid.png",
+      "path": "public-review/frames/assistant_phrase_mid.png",
+      "sha": "53637ccd1f601059eb072ca39159fe013156ef85",
+      "size": 1426468
+    },
+    {
+      "name": "camera_hold_early.png",
+      "path": "public-review/frames/camera_hold_early.png",
+      "sha": "c532b49e2073c846005d51988081dfe4a32d8720",
+      "size": 1301195
+    },
+    {
+      "name": "camera_hold_late.png",
+      "path": "public-review/frames/camera_hold_late.png",
+      "sha": "3027d73c437e564005e6ae8fcf47c667ae155e08",
+      "size": 1301337
+    },
+    {
+      "name": "camera_hold_mid.png",
+      "path": "public-review/frames/camera_hold_mid.png",
+      "sha": "94cd2e14ab8d3d17251229d4be2d309cd7f07ea6",
+      "size": 1301307
+    },
+    {
+      "name": "doing_onset.png",
+      "path": "public-review/frames/doing_onset.png",
+      "sha": "8cc9186a32e5021581a421d56d5a626695c46a3d",
+      "size": 1308890
+    },
+    {
+      "name": "doing_onset_pre.png",
+      "path": "public-review/frames/doing_onset_pre.png",
+      "sha": "8de8e93f270ceed3043cd6756cea58f9d94db97c",
+      "size": 1308256
+    },
+    {
+      "name": "floor_handoff_post.png",
+      "path": "public-review/frames/floor_handoff_post.png",
+      "sha": "cb4fdf72e91250c16f62488796a4ad1d088aef34",
+      "size": 1421029
+    },
+    {
+      "name": "floor_second_shot_before.png",
+      "path": "public-review/frames/floor_second_shot_before.png",
+      "sha": "8070af43358f73251601bb001d5bde03bd43021c",
+      "size": 2231839
+    },
+    {
+      "name": "floor_second_shot_cut.png",
+      "path": "public-review/frames/floor_second_shot_cut.png",
+      "sha": "f1d7b15cc97babd450652c5cbd806ceb92df2e37",
+      "size": 2516030
+    },
+    {
+      "name": "floor_second_shot_post.png",
+      "path": "public-review/frames/floor_second_shot_post.png",
+      "sha": "997d8ab6307b0ad5689bf70f2d7ceddc56b464fe",
+      "size": 2518679
+    },
+    {
+      "name": "floor_second_shot_pre.png",
+      "path": "public-review/frames/floor_second_shot_pre.png",
+      "sha": "9184fdf2d9550ca7630a83b3bcb071c1446fb527",
+      "size": 2252498
+    },
+    {
+      "name": "forbes_headline_start.png",
+      "path": "public-review/frames/forbes_headline_start.png",
+      "sha": "67b8c31e7f1920f691da6620a664385d5e138b25",
+      "size": 290835
+    },
+    {
+      "name": "forbes_headline_to_next_shot.png",
+      "path": "public-review/frames/forbes_headline_to_next_shot.png",
+      "sha": "5e4a54154ea1eeded6355055ba5bdbffff623731",
+      "size": 1611132
+    },
+    {
+      "name": "full_time_onset.png",
+      "path": "public-review/frames/full_time_onset.png",
+      "sha": "2d091eb21cceb9ba2d503e30b12a75a87fa4a2b7",
+      "size": 1493155
+    },
+    {
+      "name": "full_time_post.png",
+      "path": "public-review/frames/full_time_post.png",
+      "sha": "9b242cab81784f1c74e7971336aa375c672acc65",
+      "size": 1543748
+    },
+    {
+      "name": "full_time_word_pre.png",
+      "path": "public-review/frames/full_time_word_pre.png",
+      "sha": "84a9e4fb708f8d3ea032e5f10fb53eb19475b25f",
+      "size": 1479499
+    },
+    {
+      "name": "klarna_name_end.png",
+      "path": "public-review/frames/klarna_name_end.png",
+      "sha": "bb17bacf148f5ab657a29c83ba443b8f323edba3",
+      "size": 1253490
+    },
+    {
+      "name": "klarna_name_post.png",
+      "path": "public-review/frames/klarna_name_post.png",
+      "sha": "3505a2403e66d002b3297095c74a132a10772321",
+      "size": 1270989
+    },
+    {
+      "name": "klarna_name_pre.png",
+      "path": "public-review/frames/klarna_name_pre.png",
+      "sha": "d304875c02fda8e5ced786b7adfdeeb914e1eb62",
+      "size": 2340518
+    },
+    {
+      "name": "klarna_wordmark_start.png",
+      "path": "public-review/frames/klarna_wordmark_start.png",
+      "sha": "03856a36761143e7c0fdbc1617699547b703cf90",
+      "size": 1263541
+    },
+    {
+      "name": "lift_pre_frame.png",
+      "path": "public-review/frames/lift_pre_frame.png",
+      "sha": "8e96669dbc9301801e9b20e9d185263fff78fc19",
+      "size": 1308773
+    },
+    {
+      "name": "of_word_pre.png",
+      "path": "public-review/frames/of_word_pre.png",
+      "sha": "16d62bce9233d305f76e20badbe4ccb7d9d93c4e",
+      "size": 1300759
+    },
+    {
+      "name": "opening_date_word.png",
+      "path": "public-review/frames/opening_date_word.png",
+      "sha": "ae3a5b8707bc8100dbdaede4ce025947176f75bb",
+      "size": 1505344
+    },
+    {
+      "name": "opening_source_headline_frame0.png",
+      "path": "public-review/frames/opening_source_headline_frame0.png",
+      "sha": "9cc3a3eb4f5da82b85e70edd373634268ba56ad8",
+      "size": 1466781
+    },
+    {
+      "name": "paper_feed_complete.png",
+      "path": "public-review/frames/paper_feed_complete.png",
+      "sha": "8a48253c0350ffc1e4becd2856daf9757b150646",
+      "size": 1948740
+    },
+    {
+      "name": "paper_feed_early.png",
+      "path": "public-review/frames/paper_feed_early.png",
+      "sha": "6ebe145a280cd0ff6a5230c839d84ebae1a5b185",
+      "size": 1529842
+    },
+    {
+      "name": "paper_feed_late.png",
+      "path": "public-review/frames/paper_feed_late.png",
+      "sha": "8f3cae859f935651e79f7e4fcbd1a6520e31a398",
+      "size": 1948954
+    },
+    {
+      "name": "paper_feed_mid.png",
+      "path": "public-review/frames/paper_feed_mid.png",
+      "sha": "3b6a2c9b445955d9f1f02a1946c189e3bb81db73",
+      "size": 1947998
+    },
+    {
+      "name": "paper_feed_mid_seam.png",
+      "path": "public-review/frames/paper_feed_mid_seam.png",
+      "sha": "d8a54b10cefc57614890c639c19d848587a14b60",
+      "size": 1948069
+    },
+    {
+      "name": "paper_feed_prestart.png",
+      "path": "public-review/frames/paper_feed_prestart.png",
+      "sha": "dc6ada29d9800be23b179abdbf6fd0a00d691542",
+      "size": 1530050
+    },
+    {
+      "name": "paper_feed_start.png",
+      "path": "public-review/frames/paper_feed_start.png",
+      "sha": "542b46362cfdb6635b074ff153d223e4d6999db8",
+      "size": 1529133
+    },
+    {
+      "name": "people_fade_post.png",
+      "path": "public-review/frames/people_fade_post.png",
+      "sha": "153f0042d60d4c72debc2879b8a38cfd2b8d6321",
+      "size": 2238475
+    },
+    {
+      "name": "people_fade_pre.png",
+      "path": "public-review/frames/people_fade_pre.png",
+      "sha": "83263ed4c36db1831b3200b0dc7b7a56016ff3eb",
+      "size": 2214856
+    },
+    {
+      "name": "people_fade_start.png",
+      "path": "public-review/frames/people_fade_start.png",
+      "sha": "dedf4fa7055c0c2fd8781cf27925d385095ddff4",
+      "size": 2231845
+    },
+    {
+      "name": "printed_700_first_stress.png",
+      "path": "public-review/frames/printed_700_first_stress.png",
+      "sha": "3f40548d658c73216a83419609e6dcc810482c6e",
+      "size": 1307908
+    },
+    {
+      "name": "printed_700_hold_13_033.png",
+      "path": "public-review/frames/printed_700_hold_13_033.png",
+      "sha": "13e63987b9cd858a0b494577d6e07de9fc561595",
+      "size": 1307973
+    },
+    {
+      "name": "printed_700_hold_13_067.png",
+      "path": "public-review/frames/printed_700_hold_13_067.png",
+      "sha": "27a392280b9845ecc6213d05aa76547b2eb96e1f",
+      "size": 1308796
+    },
+    {
+      "name": "printed_700_hold_early.png",
+      "path": "public-review/frames/printed_700_hold_early.png",
+      "sha": "2d802ded54d5c9fe06a5f4e3d64b163fb48af9a0",
+      "size": 1308407
+    },
+    {
+      "name": "printed_700_hold_late.png",
+      "path": "public-review/frames/printed_700_hold_late.png",
+      "sha": "3d3df38a03f1c7b103837ca2b8260994dac509d9",
+      "size": 1307897
+    },
+    {
+      "name": "printed_700_hold_mid.png",
+      "path": "public-review/frames/printed_700_hold_mid.png",
+      "sha": "0c0422fa7037655109ca24135cf028eace721dad",
+      "size": 1307533
+    },
+    {
+      "name": "printed_700_last_frame_pre_cut.png",
+      "path": "public-review/frames/printed_700_last_frame_pre_cut.png",
+      "sha": "13e63987b9cd858a0b494577d6e07de9fc561595",
+      "size": 1307973
+    },
+    {
+      "name": "printed_700_next_frame.png",
+      "path": "public-review/frames/printed_700_next_frame.png",
+      "sha": "4b4a380521064b7635ea895a8fcb62035d473d7a",
+      "size": 1307681
+    },
+    {
+      "name": "profit_duplicate_edge_a.png",
+      "path": "public-review/frames/profit_duplicate_edge_a.png",
+      "sha": "c1396c9dee6dc5aca6375b1f7eeed80bd06476b4",
+      "size": 2318572
+    },
+    {
+      "name": "profit_duplicate_edge_b.png",
+      "path": "public-review/frames/profit_duplicate_edge_b.png",
+      "sha": "3307af5e962916c02d2adacd251fa381a7358d44",
+      "size": 1562301
+    },
+    {
+      "name": "profit_duplicate_exact_439_5.png",
+      "path": "public-review/frames/profit_duplicate_exact_439_5.png",
+      "sha": "2d0bb3400fa1c89857806a80e9067bbfb32105f4",
+      "size": 2321732
+    },
+    {
+      "name": "profit_duplicate_pre.png",
+      "path": "public-review/frames/profit_duplicate_pre.png",
+      "sha": "e4d5f0df2c7d91fe14fa34ae4a6e2b6b451cbc62",
+      "size": 2321696
+    },
+    {
+      "name": "s01_pre_cut.png",
+      "path": "public-review/frames/s01_pre_cut.png",
+      "sha": "1b3a8a2789a1117689bb0e137c63ccfce8939a4f",
+      "size": 1492109
+    },
+    {
+      "name": "s02_cut.png",
+      "path": "public-review/frames/s02_cut.png",
+      "sha": "f1ecb09adc7999353c46eee1e3b19cfa0623f92e",
+      "size": 1528722
+    },
+    {
+      "name": "s02_post_cut.png",
+      "path": "public-review/frames/s02_post_cut.png",
+      "sha": "af434425ad304152e408ef2ede38ad1e549b10ab",
+      "size": 1528800
+    },
+    {
+      "name": "s03_cut.png",
+      "path": "public-review/frames/s03_cut.png",
+      "sha": "90026b3747c56587b5052b2fe67f26aa36b4102c",
+      "size": 1425808
+    },
+    {
+      "name": "s03_post_cut.png",
+      "path": "public-review/frames/s03_post_cut.png",
+      "sha": "c1646f2ce4aede2c80b07f3ee0f519f1526876a8",
+      "size": 1425660
+    },
+    {
+      "name": "s03_pre_cut.png",
+      "path": "public-review/frames/s03_pre_cut.png",
+      "sha": "6bcc4d83fe797951fe089aa1bd7ac12b7670c704",
+      "size": 1946628
+    },
+    {
+      "name": "s04_cut.png",
+      "path": "public-review/frames/s04_cut.png",
+      "sha": "fc6bc3287480080dbdb06db84f225f0bf7328c63",
+      "size": 1425053
+    },
+    {
+      "name": "s04_post_cut.png",
+      "path": "public-review/frames/s04_post_cut.png",
+      "sha": "b439574dad137ecdc1ce072807d13c024919896b",
+      "size": 1425046
+    },
+    {
+      "name": "s04_pre_cut.png",
+      "path": "public-review/frames/s04_pre_cut.png",
+      "sha": "2259d225c6e8860a4447dcfd4daa05e0b92af815",
+      "size": 1432994
+    },
+    {
+      "name": "s05_cut.png",
+      "path": "public-review/frames/s05_cut.png",
+      "sha": "b2dd7c3fb0525c15ea224baeac1b4c5a357bfb9a",
+      "size": 1308454
+    },
+    {
+      "name": "s05_post_cut.png",
+      "path": "public-review/frames/s05_post_cut.png",
+      "sha": "c5f5aa67d8b1d4befe74b0787b6d7ea194d9ec5e",
+      "size": 1308808
+    },
+    {
+      "name": "s05_pre_cut.png",
+      "path": "public-review/frames/s05_pre_cut.png",
+      "sha": "da1a9ca5d940c5886d7f76de8641db92729e270e",
+      "size": 1425865
+    },
+    {
+      "name": "segment51_40m_claim.png",
+      "path": "public-review/frames/segment51_40m_claim.png",
+      "sha": "bc66e546747b9bfe4e95b68ad530652491fbcd5c",
+      "size": 2202396
+    },
+    {
+      "name": "segment51_40m_clear.png",
+      "path": "public-review/frames/segment51_40m_clear.png",
+      "sha": "049fa6e437f93bb4e8d636b5960972a08394eb64",
+      "size": 2257468
+    },
+    {
+      "name": "segment51_52_transition.png",
+      "path": "public-review/frames/segment51_52_transition.png",
+      "sha": "9270f3b60549c00caf2d4f2838168b85e2831989",
+      "size": 1583417
+    },
+    {
+      "name": "segment52_close.png",
+      "path": "public-review/frames/segment52_close.png",
+      "sha": "88c9e9fb6e723db282a2412e331cab94bf1758fc",
+      "size": 2191362
+    },
+    {
+      "name": "segment52_quality_line.png",
+      "path": "public-review/frames/segment52_quality_line.png",
+      "sha": "b5a72de7e30a4f3fda5252a69cfe321af108291f",
+      "size": 2118177
+    },
+    {
+      "name": "source_hold_post_frame.png",
+      "path": "public-review/frames/source_hold_post_frame.png",
+      "sha": "3cb8a63bef40c43bd4ae01ab9abb77d960b54eba",
+      "size": 1308043
+    },
+    {
+      "name": "source_hold_pre_stress.png",
+      "path": "public-review/frames/source_hold_pre_stress.png",
+      "sha": "30a9ce1dcfa94e067581cfe46d97bdbaab58648d",
+      "size": 1301874
+    },
+    {
+      "name": "spoken_700_final_post.png",
+      "path": "public-review/frames/spoken_700_final_post.png",
+      "sha": "a71f4e666df1007e0ecf876b1a8fd1082fff5fce",
+      "size": 1328348
+    },
+    {
+      "name": "spoken_700_final_pre.png",
+      "path": "public-review/frames/spoken_700_final_pre.png",
+      "sha": "69fe3b67896d72616000050aa5731bfbdba9d175",
+      "size": 1307886
+    },
+    {
+      "name": "work_word_onset.png",
+      "path": "public-review/frames/work_word_onset.png",
+      "sha": "3934d3a156ffe7a78aca963f04ed605edabee738",
+      "size": 1305230
+    },
+    {
+      "name": "work_word_post.png",
+      "path": "public-review/frames/work_word_post.png",
+      "sha": "cd327a6232fc559f400859f1eec74b5d7daf92ab",
+      "size": 1304138
+    },
+    {
+      "name": "work_word_pre.png",
+      "path": "public-review/frames/work_word_pre.png",
+      "sha": "bd968b58688a2e6d01092e595a3632a186600c62",
+      "size": 1306932
+    }
+  ],
+  "repository": "agmmltd-arch/agmm-render-public",
+  "run_head_sha": "e67188f26c2afeaf7ebb01b2696a756062d8c63c",
+  "source_run_id": 37197470531
+}
