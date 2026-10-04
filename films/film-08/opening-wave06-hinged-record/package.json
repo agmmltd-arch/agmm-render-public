@@ -1,0 +1,1 @@
+{"name":"film08-opening-wave06-hinged-record","private":true,"version":"0.0.1","scripts":{"lint":"hyperframes lint","check":"hyperframes check"},"devDependencies":{"hyperframes":"0.8.71"}}

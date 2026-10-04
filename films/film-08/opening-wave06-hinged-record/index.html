@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Film 08 customer first opening picture diagnostic Wave 06</title>
+  <script src="assets/gsap.min.js"></script>
+  <style>
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:100%; height:100%; overflow:hidden; }
+    body { font-family:system-ui,-apple-system,sans-serif; background:#171e23; color:#172530; }
+    #film08-root { position:relative; width:100%; height:100%; overflow:hidden; }
+    .scene { position:absolute; inset:0; overflow:hidden; perspective:1700px; background:radial-gradient(ellipse at 20% 4%, #526373, #273845 52%, #18252d 90%); }
+    .stage { position:absolute; inset:0; transform-style:preserve-3d; }
+    .desk { position:absolute; inset:0; background:linear-gradient(118deg, rgba(255,255,255,.13), transparent 31%), repeating-linear-gradient(177deg, transparent 0 44px, rgba(36,23,15,.055) 46px, transparent 48px 115px), linear-gradient(120deg,#c5b69e,#9d8a73 52%,#796850); box-shadow:inset 0 0 180px rgba(28,20,17,.48); }
+    .pool { position:absolute; left:900px; top:-250px; width:1250px; height:1000px; background:radial-gradient(ellipse,rgba(255,247,220,.33),transparent 67%); pointer-events:none; }
+    .phone { position:absolute; left:125px; top:64px; width:650px; height:930px; border:22px solid #152832; border-radius:62px; background:#152832; box-shadow:36px 45px 55px rgba(32,23,18,.42), inset 0 0 0 3px #5c6c70; transform:rotate(-5deg); overflow:hidden; }
+    .phone-screen { position:absolute; inset:8px; border-radius:36px; background:#eff2ed; overflow:hidden; }
+    .camera { position:absolute; top:12px; left:46%; width:76px; height:13px; border-radius:9px; background:#192e35; }
+    .phone-head { height:128px; padding:50px 30px 22px; border-bottom:2px solid #cdd8d3; background:#dce6df; color:#1c3841; font-size:42px; line-height:1.1; font-weight:800; }
+    .phone-meta { margin:25px 31px 32px; color:#43575d; font-size:42px; line-height:1.15; font-weight:800; }
+    .customer-msg { margin:0 28px; width:526px; min-height:260px; padding:28px 28px 32px; background:#fffefa; border-radius:8px 27px 27px 27px; box-shadow:0 4px 0 rgba(47,72,72,.11); color:#20333c; font-size:42px; line-height:1.17; font-weight:680; }
+    .customer-msg em { display:block; margin-top:22px; font-style:normal; color:#42595d; font-size:42px; line-height:1.15; font-weight:650; }
+    .reply { position:absolute; left:34px; right:26px; bottom:35px; padding:24px 25px 26px; background:#d9e5e1; border-left:8px solid #2b6b6d; border-radius:19px 5px 19px 19px; box-shadow:0 12px 17px rgba(17,40,40,.12); opacity:0; }
+    .reply-name { font-size:42px; line-height:1.1; color:#285864; font-weight:800; }
+    .reply-text { margin-top:18px; font-size:42px; line-height:1.15; font-weight:660; }
+    .binder { position:absolute; left:885px; top:153px; width:840px; height:710px; transform:rotate(4deg); transform-style:preserve-3d; filter:drop-shadow(35px 49px 35px rgba(29,18,13,.39)); }
+    .paper { position:absolute; inset:0; z-index:1; padding:50px 57px; background:repeating-linear-gradient(0deg,rgba(112,96,70,.022) 0 1px,transparent 1px 5px),linear-gradient(135deg,#fbf8ee,#f1ead9); border:4px solid #d4c8b1; box-shadow:inset 0 0 0 17px #ede8db; }
+    .paper-hole { position:absolute; left:18px; width:24px; height:24px; border-radius:50%; background:#aeb6ae; box-shadow:inset 2px 3px 4px rgba(0,0,0,.32); }
+    .paper-hole.one { top:125px; }.paper-hole.two { top:339px; }.paper-hole.three { top:553px; }
+    .ring { position:absolute; left:-13px; z-index:5; width:48px; height:91px; border:9px solid #aebbc0; border-right-color:transparent; border-radius:36px 0 0 36px; filter:drop-shadow(2px 5px 3px rgba(0,0,0,.4)); }
+    .ring.one { top:193px; }.ring.two { top:405px; }.ring.three { top:617px; }
+    .record-kicker { font-size:42px; line-height:1.1; font-weight:850; color:#596970; letter-spacing:.04em; }
+    .record-title { margin-top:31px; margin-bottom:21px; font-size:52px; line-height:1.08; font-weight:760; letter-spacing:-.02em; }
+    .record-row { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:13px 0; border-top:3px solid #b9c4c2; font-size:42px; line-height:1.1; font-weight:690; }
+    .record-row:last-of-type { border-bottom:3px solid #b9c4c2; }
+    .status { position:relative; display:flex; align-items:center; justify-content:center; width:202px; height:66px; flex:0 0 202px; font-size:42px; line-height:1; font-weight:850; letter-spacing:.02em; border-radius:7px; text-align:center; }
+    .complete { color:#23634e; background:#d9e9dd; }
+    .open { color:#9b2e25; background:#f2d6d0; }
+    .record-foot { position:absolute; bottom:45px; left:58px; right:58px; color:#627176; font-size:42px; line-height:1.05; }
+    .cover { position:absolute; inset:0; z-index:4; transform-origin:0 50%; transform-style:preserve-3d; color:#f3eedf; }
+    .cover-front,.cover-back { position:absolute; inset:0; padding:65px 67px; border:5px solid #142c39; backface-visibility:hidden; }
+    .cover-front { background:linear-gradient(125deg,#314957,#223a49 55%,#182d39); box-shadow:inset 18px 0 0 #0f2d3a,inset 25px 0 0 #57737c,12px 8px 8px rgba(0,0,0,.18); }
+    .cover-back { transform:rotateY(180deg); background:linear-gradient(110deg,#162f3b,#345361 52%,#223a49); box-shadow:inset 0 0 0 18px rgba(156,179,180,.12); }
+    .cover .record-kicker { color:#e3e9e4; }
+    .cover-rule { width:576px; height:4px; background:#9aaeb2; margin-top:42px; }
+    .cover-name { margin-top:39px; font-size:84px; line-height:.98; font-weight:750; letter-spacing:-.03em; }
+    .cover-sub { margin-top:30px; max-width:620px; font-size:42px; line-height:1.12; color:#d3e0de; }
+    .cover-band { position:absolute; right:0; bottom:75px; width:100%; height:33px; background:#b79c72; }
+    .mark-svg { position:absolute; left:-29px; top:-22px; width:260px; height:110px; overflow:visible; pointer-events:none; }
+    .mark-path { fill:none; stroke:#a74131; stroke-width:6px; stroke-linecap:round; }
+    .pencil { opacity:0; filter:drop-shadow(2px 4px 3px rgba(23,29,32,.38)); }
+    .fiction { position:absolute; right:58px; bottom:36px; z-index:10; color:#183039; background:rgba(242,233,215,.95); border:2px solid rgba(24,48,57,.35); padding:10px 15px; font-size:42px; line-height:1.05; font-weight:850; }
+    .row-focus { box-shadow:inset 0 0 0 5px rgba(43,107,109,.58); background:rgba(217,233,221,.5); }
+  </style>
+</head>
+<body>
+<main id="film08-root" data-composition-id="film08-opening-wave06" data-start="0" data-width="1920" data-height="1080" data-duration="12">
+  <section id="film08-scene" class="clip scene" data-start="0" data-duration="12" aria-label="Fictional customer status request answered from the current service record">
+    <div class="desk"></div><div class="pool"></div>
+    <div id="film08-stage" class="stage">
+      <div id="film08-phone" class="phone"><div class="phone-screen"><div class="camera"></div><div class="phone-head">Service desk</div><div class="phone-meta">Nia · Facilities</div><div class="customer-msg">Which checks are recorded complete? Which are still open?<em>Sent to service desk</em></div><div class="reply" id="film08-reply"><div class="reply-name">Tom · service desk</div><div class="reply-text"><span id="film08-answer-complete">Visual check: recorded complete.</span><br><span id="film08-answer-open">Controls review: still open.</span></div></div></div></div>
+      <div class="binder" id="film08-binder">
+        <div class="paper" id="film08-paper">
+          <div class="paper-hole one"></div><div class="paper-hole two"></div><div class="paper-hole three"></div>
+          <div class="record-kicker">CURRENT SERVICE RECORD</div><div class="record-title">Routine maintenance<br>checks</div>
+          <div class="record-row" id="film08-row-complete"><span>Visual check</span><span class="status complete">COMPLETE</span></div>
+          <div class="record-row" id="film08-row-open"><span>Controls review</span><span class="status open" id="film08-open-status">OPEN
+            <svg class="mark-svg" id="film08-mark-svg" viewBox="0 0 260 110" aria-hidden="true">
+              <path class="mark-path" id="film08-mark-path" d="M250 55 C250 81.5 196.3 103 130 103 C63.7 103 10 81.5 10 55 C10 28.5 63.7 7 130 7 C196.3 7 250 28.5 250 55 Z"/>
+              <g class="pencil" id="film08-pencil"><polygon points="-150,-8 -18,-8 0,0 -18,8 -150,8" fill="#2e4b58"/><polygon points="-3,-1 0,0 -3,1" fill="#332d26"/><rect x="-150" y="-8" width="18" height="16" rx="3" fill="#b67f64"/><path d="M-120 -7V7" stroke="#c9b476" stroke-width="3"/></g>
+            </svg>
+          </span></div>
+          <div class="record-foot">Recorded status only.</div>
+        </div>
+        <div class="ring one"></div><div class="ring two"></div><div class="ring three"></div>
+        <div class="cover" id="film08-cover">
+          <div class="cover-front"><div class="record-kicker">CURRENT SERVICE RECORD</div><div class="cover-rule"></div><div class="cover-name">Maintenance<br>record</div><div class="cover-sub">Check the current entries before answering Nia.</div><div class="cover-band"></div></div>
+          <div class="cover-back" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="fiction">ILLUSTRATIVE SCENARIO</div>
+    </div>
+  </section>
+</main>
+<script>
+  const tl=gsap.timeline({paused:true});
+  const markPath=document.querySelector('#film08-mark-path');
+  const pencil=document.querySelector('#film08-pencil');
+  const markLength=markPath.getTotalLength();
+  const draw={progress:0};
+  markPath.style.strokeDasharray=String(markLength);
+  markPath.style.strokeDashoffset=String(markLength);
+  const movePencil=()=>{
+    const distance=markLength*draw.progress;
+    const point=markPath.getPointAtLength(distance);
+    const tangent=markPath.getPointAtLength(Math.min(markLength,distance+1));
+    const angle=Math.atan2(tangent.y-point.y,tangent.x-point.x)*180/Math.PI;
+    pencil.setAttribute('transform',`translate(${point.x} ${point.y}) rotate(${angle})`);
+    markPath.style.strokeDashoffset=String(markLength-distance);
+  };
+  tl.set('#film08-reply',{opacity:0,y:45},0);
+  tl.set('#film08-pencil',{opacity:0},0);
+  tl.set('#film08-paper',{opacity:1},0);
+  tl.fromTo('#film08-phone',{x:-36,y:14,rotation:-8},{x:0,y:0,rotation:-5,duration:.8,ease:'power2.out'},0.06);
+  tl.to('#film08-cover',{rotationY:-166,x:-20,duration:1.55,ease:'power2.inOut'},1.68);
+  tl.set('#film08-pencil',{opacity:1},3.55);
+  tl.to(draw,{progress:1,duration:1.38,ease:'power1.inOut',onUpdate:movePencil},3.55);
+  tl.to('#film08-pencil',{opacity:0,duration:.18,ease:'none'},4.95);
+  tl.to('#film08-row-complete',{backgroundColor:'rgba(217,233,221,.5)',boxShadow:'inset 0 0 0 5px rgba(43,107,109,.58)',duration:.28,ease:'none'},5.05);
+  tl.to('#film08-row-open',{backgroundColor:'rgba(217,233,221,.5)',boxShadow:'inset 0 0 0 5px rgba(43,107,109,.58)',duration:.28,ease:'none'},5.38);
+  tl.to('#film08-reply',{opacity:1,y:0,duration:.58,ease:'power3.out'},5.92);
+  tl.to('#film08-answer-complete',{color:'#1f5f4d',duration:.24,ease:'none'},6.7);
+  tl.to('#film08-answer-open',{color:'#9b2e25',duration:.24,ease:'none'},7.08);
+  tl.to('#film08-stage',{scale:1.035,x:-18,y:-8,duration:3.9,ease:'power1.inOut'},7.65);
+  tl.to('#film08-row-complete',{y:-5,duration:.28,ease:'power1.out'},8.25);
+  tl.to('#film08-row-complete',{y:0,duration:.28,ease:'power1.in'},8.55);
+  tl.to('#film08-row-open',{y:-5,duration:.28,ease:'power1.out'},9.04);
+  tl.to('#film08-row-open',{y:0,duration:.28,ease:'power1.in'},9.34);
+  tl.to('#film08-phone',{rotation:-4.1,duration:.7,ease:'power1.inOut'},10.3);
+  window.__timelines['film08-opening-wave06']=tl;
+</script>
+</body>
+</html>

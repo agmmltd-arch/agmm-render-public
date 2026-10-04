@@ -1,0 +1,108 @@
+name: Film 08 Wave 06 hosted motion proof
+run-name: Film 08 Wave 06 proof for ${{ inputs.source_sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact 40-character commit in this repository containing the Wave06 composition
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      EXPECTED_REPO: agmmltd-arch/agmm-render-public
+      COMP_DIR: films/film-08/opening-wave06-hinged-record
+    steps:
+      - name: Reject missing, malformed, or wrong repository inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "$EXPECTED_REPO"
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ inputs.source_sha }}
+          persist-credentials: false
+      - name: Verify exact source commit and immutable source inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -d "$COMP_DIR"
+          cd "$COMP_DIR"
+          sha256sum -c SHA256SUMS.txt
+          python3 static_check.py
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.23.3
+          cache: npm
+          cache-dependency-path: films/film-08/opening-wave06-hinged-record/package-lock.json
+      - name: Install pinned render runtime and capture runner versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg libnss3 libatk-bridge2.0-0 libgbm1 libxkbcommon0 \
+            libasound2t64 libxcomposite1 libxdamage1 libxrandr2 libpango-1.0-0 libcairo2 fonts-liberation >/dev/null
+          cd "$COMP_DIR"
+          npm ci --no-audit --no-fund
+          node --version | tee "$GITHUB_WORKSPACE/node-version.txt"
+          npm exec -- hyperframes --version | tee "$GITHUB_WORKSPACE/hyperframes-version.txt"
+          ffmpeg -version | head -1 | tee "$GITHUB_WORKSPACE/ffmpeg-version.txt"
+          python3 --version | tee "$GITHUB_WORKSPACE/python-version.txt"
+      - name: Render silent 1080p motion proof
+        shell: bash
+        env:
+          HYPERFRAMES_NO_TELEMETRY: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/out"
+          cd "$COMP_DIR"
+          npm exec -- hyperframes render --fps 30 --workers 1 --quality high \
+            --output "$GITHUB_WORKSPACE/out/F08-W06-opening-proof-1080p.mp4" \
+            > "$GITHUB_WORKSPACE/out/render.log" 2>&1 || { tail -60 "$GITHUB_WORKSPACE/out/render.log"; exit 1; }
+      - name: Decode every frame and capture native review evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          VIDEO="$GITHUB_WORKSPACE/out/F08-W06-opening-proof-1080p.mp4"
+          ffmpeg -hide_banner -v error -i "$VIDEO" -f null -
+          mkdir -p "$GITHUB_WORKSPACE/out/native-frames"
+          for t in 0 1.65 1.72 2.40 3.20 3.50 3.55 3.90 4.50 4.90 5.10 5.45 5.95 6.50 7.60 8.25 9.05 10.30 11.50; do
+            name=${t/./p}
+            ffmpeg -hide_banner -loglevel error -y -ss "$t" -i "$VIDEO" -frames:v 1 \
+              "$GITHUB_WORKSPACE/out/native-frames/frame-${name}.png"
+          done
+          ffmpeg -hide_banner -loglevel error -y -i "$VIDEO" -vf "fps=2,scale=480:270,tile=4x6" -frames:v 1 \
+            "$GITHUB_WORKSPACE/out/contact-sheet-2fps.png"
+          ffprobe -v error -count_frames -show_streams -show_format -of json "$VIDEO" > "$GITHUB_WORKSPACE/out/ffprobe.json"
+          python3 .github/scripts/film08_wave06_verify.py \
+            --video "$VIDEO" --probe "$GITHUB_WORKSPACE/out/ffprobe.json" \
+            --source-sha "$SOURCE_SHA" --repo "$GITHUB_REPOSITORY" \
+            --output "$GITHUB_WORKSPACE/out/hosted-proof-manifest.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: F08-W06-hosted-motion-proof-${{ github.run_id }}
+          path: |
+            out/F08-W06-opening-proof-1080p.mp4
+            out/render.log
+            out/hosted-proof-manifest.json
+            out/ffprobe.json
+            out/contact-sheet-2fps.png
+            out/native-frames/*.png
+            node-version.txt
+            hyperframes-version.txt
+            ffmpeg-version.txt
+            python-version.txt
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
