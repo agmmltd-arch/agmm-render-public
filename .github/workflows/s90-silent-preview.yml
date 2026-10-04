@@ -136,7 +136,7 @@ jobs:
           cp prepared/INPUT-RECEIPT.json capture-pack/
           cp s90-stage/STAGING-RECEIPT.json capture-pack/
           test "$(find capture-pack -type f \( -name '*.mp4' -o -name '*.mov' -o -name '*.webm' -o -name '*.wav' -o -name '*.mp3' \) | wc -l | tr -d ' ')" = 0
-      - name: Build an exact 32-frame public review branch payload
+      - name: Build an exact 37-frame public review branch payload
         run: python3 .github/scripts/publish_s90_public_review.py capture-pack s90-public-review
       - name: Publish only the run-specific stills and hash-bound text receipts
         env:
@@ -167,10 +167,10 @@ jobs:
           prefix='s90-public-review/'
           receipt=json.load(open(prefix+'PUBLIC-REVIEW-RECEIPT.json'))
           frames={prefix+row['file'] for row in receipt['captures']}
-          assert len(frames)==32 and all(re.fullmatch(re.escape(prefix)+r'frames/[A-Za-z0-9._-]+\.png',p) for p in frames)
+          assert len(frames)==37 and all(re.fullmatch(re.escape(prefix)+r'frames/[A-Za-z0-9._-]+\.png',p) for p in frames)
           exact=frames|{prefix+n for n in ('CAPTURE-EVIDENCE.json','INPUT-RECEIPT.json','STAGING-RECEIPT.json','PUBLIC-REVIEW-RECEIPT.json','REVIEW-SHA256SUMS.txt')}
-          assert set(staged)==exact and len(staged)==37, f'public branch allowlist mismatch: {sorted(set(staged)^exact)}'
-          print('public review branch allowlist PASS: 32 PNG stills + 4 JSON receipts + checksum text')
+          assert set(staged)==exact and len(staged)==42, f'public branch allowlist mismatch: {sorted(set(staged)^exact)}'
+          print('public review branch allowlist PASS: 37 PNG stills + 4 JSON receipts + checksum text')
           PY
           git commit -m 'S90 silent development frames; NOT approval'
           gh auth setup-git
@@ -190,7 +190,7 @@ jobs:
           test "$(sha256sum "$RUNNER_TEMP/s90-b16-original/scenes.js" | cut -d' ' -f1)" = \
             a77a514b9de9c4e45941758615ebb7512c3630b95c9d5483742e8963a403eba9
           test "$(sha256sum prepared/project/s90-preview-a/scenes.js | cut -d' ' -f1)" = \
-            5e623b801272b1e5439cf4191ec6038a2a1787c3df455500b4f1fa39221a2290
+            2e92ff94e6764379e941a2f924e21974c69dc7b8064013a6c3d0f9a8534269f7
           node .github/scripts/check_s90_b16_geometry.mjs \
             --original-root="$RUNNER_TEMP/s90-b16-original" \
             --candidate-root=prepared/project/s90-preview-a

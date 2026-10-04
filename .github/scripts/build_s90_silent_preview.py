@@ -35,7 +35,7 @@ RUNTIME_PROOF_SHA256 = "de28d9725c166286e377cc972b73a344ad763cfd5dd7652800dcfcce
 SOURCE_MANIFEST_SHA256 = "1056bc10aa7a6b9d70a46d96d14139abe8e60ef3b7d8b82940c23061505c1e0b"
 SOURCE_REVIEW_SHA256 = "b0102274086343806a9f4aed0d0d5fae2dedcbeb52c5fc65e18b634990ba0953"
 WORDS_SHA256 = "a6d08fbb84c55f406457751213df0094561e55de1e1824faf66cd760845f3925"
-SCENES_SHA256 = "5e623b801272b1e5439cf4191ec6038a2a1787c3df455500b4f1fa39221a2290"
+SCENES_SHA256 = "2e92ff94e6764379e941a2f924e21974c69dc7b8064013a6c3d0f9a8534269f7"
 DELTA_SHA256 = "a6358970948829a231850f1d77f122de1210863c6f1865251e530c557db96857"
 PINNED_KIT3_SHA256 = "e0505dd3deca92e3a54c4473f7a37124e706d0a6647297eb87f149aef2e80762"
 PINNED_KIT3_CSS_SHA256 = "2182674e7c361aa73d5e92e8fe05ef3c1f0ae2fa20ce2c2eb26b20521d7d0bb6"
@@ -320,6 +320,15 @@ def build_spec(words_obj: dict, delta: dict) -> dict:
     }
 
 
+REVEAL_SAMPLES = (
+    ("B01-frame-zero", 0.0),
+    ("B02-pre-reveal", 7.633),
+    ("B02-reveal-onset", 7.644),
+    ("B02-post-onset", 7.667),
+    ("B02-reveal-complete", 7.933),
+)
+
+
 def capture_plan(beats: list[dict], parts_sha: str, source_sha: str, media_sha: str) -> dict:
     captures = []
     for beat in beats:
@@ -327,7 +336,21 @@ def capture_plan(beats: list[dict], parts_sha: str, source_sha: str, media_sha: 
         for suffix, when in (("incoming", start + 0.12), ("late", end - 0.08)):
             global_t = round(min(max(when, start + 0.02), end - 0.02), 6)
             captures.append({"name": f"{beat['id']}-{suffix}", "kind": "beat", "global": global_t, "local": global_t, "look": LOOK})
-    return {"version": 1, "short_id": "S90-silent-development", "source_sha256": source_sha, "parts_sha256": parts_sha, "media_identity_sha256": media_sha, "include_part_seams": True, "captures": captures}
+    # The existing B02-incoming row is already the exact 3.833s setup sample.
+    # Keep that single native capture; capture_short_package rejects duplicate
+    # timestamps. Add only five unique checks around the spoken reveal.
+    for name, when in REVEAL_SAMPLES:
+        captures.append({"name": name, "kind": "beat", "global": when, "local": when, "look": LOOK})
+    captures.sort(key=lambda row: (row["global"], row["name"]))
+    if len(captures) != 37 or len({row["name"] for row in captures}) != 37:
+        raise Refusal("expected the original 32 captures plus exactly five unique reveal samples")
+    if len({round(row["local"] * 1_000_000) for row in captures}) != 37:
+        raise Refusal("refusing duplicate local capture timestamps")
+    if sum(row["name"] == "B02-incoming" and row["global"] == 3.833 for row in captures) != 1:
+        raise Refusal("the original 3.833s B02 setup capture is missing or changed")
+    if any(not (3.713 <= when < 8.957) for name, when in REVEAL_SAMPLES if name.startswith("B02-")):
+        raise Refusal("a reveal sample escaped the B02 interval")
+    return {"version": 1, "short_id": "S90-silent-development", "source_sha256": source_sha, "parts_sha256": parts_sha, "media_identity_sha256": media_sha, "candidate_scene_sha256": SCENES_SHA256, "include_part_seams": True, "captures": captures}
 
 
 def stage(args: argparse.Namespace) -> None:
@@ -386,6 +409,7 @@ def stage(args: argparse.Namespace) -> None:
         "kind": "s90_silent_development_staging_receipt",
         "technical_status": "STAGED_ON_HOSTED_LINUX_FOR_CAPTURE_ONLY",
         "source_sha256": source_sha, "source_bytes": source_bytes,
+        "candidate_scene_sha256": SCENES_SHA256,
         "parts_sha256": parts_sha, "capture_plan_sha256": sha_bytes(plan_bytes), "media_identity_sha256": media_sha,
         "runtime_parent_release": PARENT_TAG, "runtime_parent_release_id": PARENT_RELEASE,
         "runtime_parent_asset_id": PARENT_ASSET, "runtime_parent_sha256": PARENT_ASSET_SHA256,

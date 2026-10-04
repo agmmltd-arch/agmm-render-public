@@ -134,20 +134,26 @@
     return x;
   }
 
-  // 01 · full source identity and the empty optical gate are already present on frame zero.
+  // 01 · promise the late reveal without showing its words; source identity stays on screen.
   A.scenes['s90-b01']=function(ctx,S,p,B){
-    var L=stage(ctx,S,B); el('div','s90-halo',L);
-    var sp=sourcePane(ctx,L,'claim-01.png',B.from,{x:46,y:204,w:988,h:1120});
-    var aperture=el('div','s90-aperture',L); pos(aperture,812,10,190,190);
-    var h=hero(L,'CHANNEL 4<br><em>AI PRESENTER</em>',68,34,86);
-    var mark=el('div','s90-ruler',L); pos(mark,28,210,8,1118);
-    ctx.tl.fromTo(mark,{scaleY:.25,transformOrigin:'50% 0%'},{scaleY:1,duration:2.1,ease:'power1.inOut',immediateRender:false},B.from+.22);
+    var L=stage(ctx,S,B); el('div','s90-turn',L);
+    var card=sourceQuote(ctx,L,'THE REVEAL',{x:28,y:188,w:1024,h:980,size:132,align:'center',label:'CHANNEL 4 · STORY CONTEXT'});
+    pos(card.body,62,390,900,160); card.body.style.fontSize='132px';
+    var last=text(card.pane,'s90-source-quote-copy center short','CAME LAST',62,558,900,160,132);
+    var bar=el('div','',card.pane); pos(bar,338,746,404,10); bar.style.background='#f2b84b'; bar.style.transformOrigin='50% 50%';
+    // The hook text is fully visible on frame zero; only the underline moves at the cut.
+    ctx.tl.fromTo(bar,{scaleX:0},{scaleX:1,duration:.28,ease:'power2.out',immediateRender:false},B.from);
     return L;
   };
-  // 02 · a large exact source quotation replaces the repeated full-page headline; attribution stays visible.
+  // 02 · hold the setup at the cut; reveal only the exact spoken words when “I'm” begins.
   A.scenes['s90-b02']=function(ctx,S,p,B){
     var L=stage(ctx,S,B); el('div','s90-turn',L);
-    sourceQuote(ctx,L,"Because I'm not real.",{size:112,align:'center',label:'PRESENTER · SOURCE QUOTATION'});
+    var card=sourceQuote(ctx,L,'ON LOCATION',{size:112,align:'center',label:'CHANNEL 4 · STORY CONTEXT'});
+    var quote=text(card.pane,'s90-source-quote-copy center short',"I'm not real.",62,356,848,480,112);
+    quote.style.opacity='0'; quote.style.visibility='hidden';
+    var revealAt=7.644;
+    ctx.tl.to(card.body,{opacity:0,scale:.96,duration:.12,ease:'power2.out',immediateRender:false},revealAt-.12);
+    ctx.tl.fromTo(quote,{opacity:0,scale:.94,visibility:'hidden'},{opacity:1,scale:1,visibility:'visible',duration:.24,ease:'power2.out',immediateRender:false},revealAt);
     return L;
   };
   // 03 · the source's exact face/voice/movements wording becomes the evidence hierarchy.

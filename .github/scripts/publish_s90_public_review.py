@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish only 32 hosted S90 stills and small hash-bound text receipts."""
+"""Publish only 37 hosted S90 stills and small hash-bound text receipts."""
 from __future__ import annotations
 
 import argparse
@@ -15,7 +15,11 @@ from pathlib import Path
 
 
 REPO = "agmmltd-arch/agmm-render-public"
-FRAME_NAMES = {f"B{i:02d}-{part}" for i in range(1, 17) for part in ("incoming", "late")}
+SCENE_SHA256 = "2e92ff94e6764379e941a2f924e21974c69dc7b8064013a6c3d0f9a8534269f7"
+FRAME_NAMES = ({f"B{i:02d}-{part}" for i in range(1, 17) for part in ("incoming", "late")} | {
+    "B01-frame-zero", "B02-pre-reveal", "B02-reveal-onset",
+    "B02-post-onset", "B02-reveal-complete",
+})
 INPUT_FIXED = {
     "CAPTURE-EVIDENCE.json", "INPUT-RECEIPT.json", "MEDIA-IDENTITIES.json",
     "SHA256SUMS.txt", "STAGING-RECEIPT.json", "receipts/s90-preview-a.json",
@@ -91,25 +95,37 @@ def validate_capture_receipts(evidence: dict, input_receipt: dict, staging: dict
             or staging.get("production_or_release_approval") != "NOT_GRANTED"):
         raise Refusal("staging receipt scope or exact input binding mismatch")
     captures = evidence.get("captures")
-    if not isinstance(captures, list) or len(captures) != 32:
-        raise Refusal("expected exactly 32 named storyboard-development stills")
-    if {row.get("name") for row in captures} != FRAME_NAMES or len({row.get("name") for row in captures}) != 32:
-        raise Refusal("capture names differ from all 16 incoming/late S90 beat windows")
+    if staging.get("candidate_scene_sha256") != SCENE_SHA256:
+        raise Refusal("staging receipt candidate scene SHA256 does not match the exact reviewed scene")
+    if not isinstance(captures, list) or len(captures) != 37:
+        raise Refusal("expected exactly 37 named stills: 32 beat windows plus five unique reveal samples")
+    if {row.get("name") for row in captures} != FRAME_NAMES or len({row.get("name") for row in captures}) != 37:
+        raise Refusal("capture names differ from the exact 37-name source-review set")
+    by_name = {row["name"]: row for row in captures}
+    expected_times = {
+        "B01-frame-zero": 0.0, "B02-incoming": 3.833,
+        "B02-pre-reveal": 7.633, "B02-reveal-onset": 7.644,
+        "B02-post-onset": 7.667, "B02-reveal-complete": 7.933,
+    }
+    if any(by_name[name].get("global") != when for name, when in expected_times.items()):
+        raise Refusal("frame-zero/setup/reveal timing samples differ from the locked voice word clock")
+    if len({round(float(row.get("local", -1)) * 1_000_000) for row in captures}) != 37:
+        raise Refusal("capture receipt contains duplicate timestamps")
     if any(row.get("look") != "s90-preview-a" or row.get("width") != 1080 or row.get("height") != 1920 for row in captures):
         raise Refusal("capture look or dimensions differ from the bounded native composition")
     return captures
 
 
 def expected_output_paths(rows: list[dict]) -> set[str]:
-    if len(rows) != 32:
-        raise Refusal("public review output requires exactly 32 captures")
+    if len(rows) != 37:
+        raise Refusal("public review output requires exactly 37 captures")
     frames = set()
     for row in rows:
         rel = row.get("file")
         if not isinstance(rel, str) or not re.fullmatch(r"frames/[A-Za-z0-9._-]+\.png", rel):
             raise Refusal("unsafe output capture path")
         frames.add(rel)
-    if len(frames) != 32:
+    if len(frames) != 37:
         raise Refusal("public review frame paths are duplicated")
     return frames | OUTPUT_JSON | {"REVIEW-SHA256SUMS.txt"}
 
@@ -150,7 +166,7 @@ def publish_pack(capture_pack: Path, output: Path) -> dict:
         raise Refusal("single-part receipt does not match exact capture evidence")
     part_captures = part_receipt.get("captures")
     if not isinstance(part_captures, list) or {row.get("name") for row in part_captures} != FRAME_NAMES:
-        raise Refusal("single-part receipt does not contain all 32 named captures")
+        raise Refusal("single-part receipt does not contain all 37 named captures")
     part_by_name = {row["name"]: row for row in part_captures}
     for row in captures:
         part_row = part_by_name[row["name"]]
@@ -197,7 +213,7 @@ def publish_pack(capture_pack: Path, output: Path) -> dict:
         "capture_count": len(rows), "captures": rows,
         "editorial_status": "NOT_REVIEWED", "storyboard_approval": "NOT_GRANTED",
         "rights_status": "NOT_ASSESSED", "production_release": "NOT_AUTHORIZED",
-        "scope": "32 hosted PNG stills and bound text receipts only; no source archive, source PNGs, media identity list, audio, or assembled master",
+        "scope": "37 hosted PNG stills and bound text receipts only; no source archive, source PNGs, media identity list, audio, or assembled master",
     }
     write_json(output / "PUBLIC-REVIEW-RECEIPT.json", review)
     exact_output = expected_output_paths(rows)
@@ -207,8 +223,8 @@ def publish_pack(capture_pack: Path, output: Path) -> dict:
         sums.append(f"{digest(path.read_bytes())}  {path.relative_to(output).as_posix()}")
     (output / "REVIEW-SHA256SUMS.txt").write_text("\n".join(sums) + "\n")
     exact_tree(output, exact_output, "public review output")
-    if len(sums) != 36:
-        raise Refusal("public review payload must contain exactly 32 PNGs and four JSON receipts")
+    if len(sums) != 41:
+        raise Refusal("public review payload must contain exactly 37 PNGs and four JSON receipts")
     return review
 
 

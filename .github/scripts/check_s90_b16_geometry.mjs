@@ -10,7 +10,7 @@ import { pathToFileURL } from 'node:url';
 export const TIMES = Object.freeze([52.767, 58.027]);
 export const MIN_CLEARANCE_PX = 4;
 export const ORIGINAL_SCENES_SHA256 = 'a77a514b9de9c4e45941758615ebb7512c3630b95c9d5483742e8963a403eba9';
-export const CANDIDATE_SCENES_SHA256 = '5e623b801272b1e5439cf4191ec6038a2a1787c3df455500b4f1fa39221a2290';
+export const CANDIDATE_SCENES_SHA256 = '2e92ff94e6764379e941a2f924e21974c69dc7b8064013a6c3d0f9a8534269f7';
 
 const EXPECTED_TEXT = Object.freeze({
   cta: 'FOLLOW FOR ONE REAL AI STORY A DAY, AND WHAT IT MEANS FOR YOUR BUSINESS',
@@ -201,7 +201,7 @@ async function main() {
   ]);
   const hash = data => createHash('sha256').update(data).digest('hex');
   if (hash(originalBytes) !== ORIGINAL_SCENES_SHA256) bad('original scene source is not the authenticated a77a514b baseline');
-  if (hash(candidateBytes) !== CANDIDATE_SCENES_SHA256) bad('candidate scene source is not the exact isolated Buzz one-line change');
+  if (hash(candidateBytes) !== CANDIDATE_SCENES_SHA256) bad('candidate scene source does not match the exact reviewed S90 development bytes');
   const playwrightEntry = process.env.S90_PLAYWRIGHT_ENTRY;
   if (!playwrightEntry) bad('S90_PLAYWRIGHT_ENTRY is required; run only in the hosted Linux workflow');
   const { chromium } = await import(pathToFileURL(path.resolve(playwrightEntry)).href);
