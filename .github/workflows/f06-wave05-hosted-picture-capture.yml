@@ -128,12 +128,47 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git -C "$PRIVATE_CHECKOUT" rev-parse HEAD)" = "$PRIVATE_MEDIA_HEAD_SHA"
-          test "$(git -C "$PRIVATE_CHECKOUT" rev-parse HEAD:$RELEASE_INPUT)" = "$PRIVATE_MEDIA_GIT_BLOB_SHA"
-          test "$(git -C "$PRIVATE_CHECKOUT" ls-files | wc -l | tr -d ' ')" = 2
+          actual_head="$(git -C "$PRIVATE_CHECKOUT" rev-parse HEAD)"
+          if [[ "$actual_head" != "$PRIVATE_MEDIA_HEAD_SHA" ]]; then
+            echo "private commit mismatch: expected=$PRIVATE_MEDIA_HEAD_SHA actual=$actual_head" >&2
+            exit 1
+          fi
+          actual_blob="$(git -C "$PRIVATE_CHECKOUT" rev-parse "HEAD:$RELEASE_INPUT" 2>/dev/null || true)"
+          if [[ "$actual_blob" != "$PRIVATE_MEDIA_GIT_BLOB_SHA" ]]; then
+            echo "private image blob mismatch: path=$RELEASE_INPUT expected=$PRIVATE_MEDIA_GIT_BLOB_SHA actual=${actual_blob:-MISSING}" >&2
+            exit 1
+          fi
+          python3 - "$PRIVATE_CHECKOUT" "$SOURCE_ARCHIVE" "$RELEASE_INPUT" <<'PY'
+          import pathlib,sys
+          root=pathlib.Path(sys.argv[1]).resolve()
+          expected={sys.argv[2],sys.argv[3]}
+          actual=set(); symlinks=[]; special=[]
+          for path in root.rglob('*'):
+              rel=path.relative_to(root)
+              if rel.parts and rel.parts[0]=='.git':
+                  continue
+              if path.is_symlink():
+                  symlinks.append(rel.as_posix())
+              elif path.is_file():
+                  actual.add(rel.as_posix())
+              elif not path.is_dir():
+                  special.append(rel.as_posix())
+          missing=sorted(expected-actual); unexpected=sorted(actual-expected)
+          if symlinks or special or missing or unexpected:
+              print('private physical checkout path-set mismatch',file=sys.stderr)
+              print(f'missing_allowlisted_paths={missing}',file=sys.stderr)
+              print(f'unexpected_files={unexpected}',file=sys.stderr)
+              print(f'symlinks_refused={sorted(symlinks)}',file=sys.stderr)
+              print(f'special_files_refused={sorted(special)}',file=sys.stderr)
+              raise SystemExit(1)
+          PY
           mkdir -p "$WORKROOT" "$PROJECT_ROOT" "$EVIDENCE"
           cp "$PRIVATE_CHECKOUT/$SOURCE_ARCHIVE" "$WORKROOT/source.tar.gz"
-          test "$(sha256sum "$WORKROOT/source.tar.gz" | cut -d ' ' -f1)" = "$SOURCE_ARCHIVE_SHA256"
+          actual_archive_sha="$(sha256sum "$WORKROOT/source.tar.gz" | cut -d ' ' -f1)"
+          if [[ "$actual_archive_sha" != "$SOURCE_ARCHIVE_SHA256" ]]; then
+            echo "private base archive SHA-256 mismatch: path=$SOURCE_ARCHIVE expected=$SOURCE_ARCHIVE_SHA256 actual=$actual_archive_sha" >&2
+            exit 1
+          fi
           python3 - "$WORKROOT/source.tar.gz" "$PROJECT_ROOT" <<'PY'
           import pathlib,sys,tarfile
           archive=pathlib.Path(sys.argv[1]); root=pathlib.Path(sys.argv[2]).resolve(); seen=set()
