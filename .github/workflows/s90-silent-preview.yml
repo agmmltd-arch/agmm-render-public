@@ -1,0 +1,158 @@
+name: S90 silent storyboard development preview
+run-name: S90 silent storyboard preview
+
+# Hosted Linux still capture only; pushes a run-specific review branch, never a release or social post.
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: s90-silent-storyboard-development-preview
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_RUN_ID: ${{ github.run_id }}
+      S90_HOSTED_PREVIEW: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: d9c59b7ead62dd87a0d42abc58d40af9d24c2ed4
+          path: engine
+          persist-credentials: false
+      - name: Pin the existing capture contract
+        run: |
+          set -euo pipefail
+          test "$(git -C engine rev-parse HEAD)" = d9c59b7ead62dd87a0d42abc58d40af9d24c2ed4
+          test "$(git -C engine rev-parse HEAD:.github/scripts/capture_short_package.py)" = 65f9b89f126c6113a91061a2f1f361954c96a0ae
+          test "$(git -C engine rev-parse HEAD:.github/scripts/render_short_package.py)" = 754099346a84c5bd305f5684ef24399a53bd9697
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+      - name: Confirm the exact public runtime parent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "agmmltd-arch/agmm-render-public"
+          mkdir -p "$RUNNER_TEMP/s90"
+          gh api "repos/$GITHUB_REPOSITORY" > "$RUNNER_TEMP/s90/repository.json"
+          python3 .github/scripts/build_s90_silent_preview.py verify-repository \
+            --metadata "$RUNNER_TEMP/s90/repository.json"
+          gh api "repos/$GITHUB_REPOSITORY/releases/400657643" > "$RUNNER_TEMP/s90/parent-release.json"
+          python3 .github/scripts/build_s90_silent_preview.py verify-release \
+            --metadata "$RUNNER_TEMP/s90/parent-release.json"
+      - name: Download and verify only the pinned generic runtime parent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download S86-r2-source-202610010547 -R "$GITHUB_REPOSITORY" \
+            -p source.tar.gz -D "$RUNNER_TEMP/s90"
+          test "$(find "$RUNNER_TEMP/s90" -maxdepth 1 -type f -name 'source.tar.gz' | wc -l | tr -d ' ')" = 1
+          mv "$RUNNER_TEMP/s90/source.tar.gz" "$RUNNER_TEMP/s90/runtime-parent.tar.gz"
+          test -s "$RUNNER_TEMP/s90/runtime-parent.tar.gz"
+      - name: Stage pinned source assets and silent native composition
+        id: stage
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/build_s90_silent_preview.py stage \
+            --parent-release-metadata "$RUNNER_TEMP/s90/parent-release.json" \
+            --parent-archive "$RUNNER_TEMP/s90/runtime-parent.tar.gz" \
+            --candidate s90-development-input/S90-scene-prototype-luna \
+            --output s90-stage
+          python3 - <<'PY'
+          import json, pathlib
+          receipt=json.loads(pathlib.Path("s90-stage/STAGING-RECEIPT.json").read_text())
+          with open(__import__("os").environ["GITHUB_OUTPUT"], "a") as out:
+              for key in ("source_sha256", "parts_sha256", "capture_plan_sha256", "media_identity_sha256"):
+                  out.write(f"{key}={receipt[key]}\n")
+          PY
+      - name: Validate the sealed package with the existing capture-only contract
+        run: |
+          set -euo pipefail
+          python3 engine/.github/scripts/capture_short_package.py prepare \
+            --source s90-stage/source.tar.gz --parts s90-stage/parts.json \
+            --plan s90-stage/capture-plan.json --output prepared \
+            --source-sha256 '${{ steps.stage.outputs.source_sha256 }}' \
+            --parts-sha256 '${{ steps.stage.outputs.parts_sha256 }}' \
+            --capture-plan-sha256 '${{ steps.stage.outputs.capture_plan_sha256 }}' \
+            --media-identity-sha256 '${{ steps.stage.outputs.media_identity_sha256 }}'
+      - name: Capture two native snapshots for each of the 16 beats
+        run: |
+          set -euo pipefail
+          mkdir -p raw-snapshots captured
+          look=s90-preview-a
+          (cd "prepared/project/$look" && python3 static_check.py) > "captured/$look.static-check.log" 2>&1
+          npx --yes hyperframes@0.8.71 snapshot "prepared/project/$look" \
+            --at "$(python3 -c 'import json; print(json.load(open("prepared/CAPTURE-MANIFEST.json"))["by_look"][0]["times_csv"])')" \
+            --no-end --describe false --no-browser-gpu --timeout 180000 \
+            --output "$GITHUB_WORKSPACE/raw-snapshots/$look" \
+            > "captured/$look.snapshot.log" 2>&1
+          python3 engine/.github/scripts/capture_short_package.py collect \
+            --manifest prepared/CAPTURE-MANIFEST.json --look "$look" \
+            --snapshots "raw-snapshots/$look" --output "captured/$look" \
+            --log "captured/$look.snapshot.log"
+          cp "captured/$look.static-check.log" "captured/$look/static-check.log"
+      - name: Bind a compact still-only development evidence pack
+        run: |
+          set -euo pipefail
+          python3 engine/.github/scripts/capture_short_package.py bundle \
+            --manifest prepared/CAPTURE-MANIFEST.json \
+            --media-identities prepared/MEDIA-IDENTITIES.json \
+            --captured captured --output capture-pack
+          cp prepared/INPUT-RECEIPT.json capture-pack/
+          cp s90-stage/STAGING-RECEIPT.json capture-pack/
+          test "$(find capture-pack -type f \( -name '*.mp4' -o -name '*.mov' -o -name '*.webm' -o -name '*.wav' -o -name '*.mp3' \) | wc -l | tr -d ' ')" = 0
+      - name: Build an exact 32-frame public review branch payload
+        run: python3 .github/scripts/publish_s90_public_review.py capture-pack s90-public-review
+      - name: Publish only the run-specific stills and hash-bound text receipts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'AGMM hosted evidence'
+          git config user.email 'evidence@users.noreply.github.com'
+          branch="review-S90-silent-preview-$GITHUB_RUN_ID"
+          git checkout --orphan "$branch"
+          git rm -rf --cached . >/dev/null
+          git add s90-public-review/frames/*.png \
+            s90-public-review/CAPTURE-EVIDENCE.json \
+            s90-public-review/INPUT-RECEIPT.json \
+            s90-public-review/STAGING-RECEIPT.json \
+            s90-public-review/PUBLIC-REVIEW-RECEIPT.json \
+            s90-public-review/REVIEW-SHA256SUMS.txt
+          python3 - <<'PY'
+          import json, re, subprocess
+          staged = {}
+          rows = subprocess.check_output(['git','ls-files','--stage','-z'], text=True).split('\0')
+          for row in rows:
+              if not row: continue
+              metadata,path=row.split('\t',1)
+              mode=metadata.split()[0]
+              assert mode=='100644' and path not in staged, f'non-regular or duplicate staged path: {path}'
+              staged[path]=mode
+          prefix='s90-public-review/'
+          receipt=json.load(open(prefix+'PUBLIC-REVIEW-RECEIPT.json'))
+          frames={prefix+row['file'] for row in receipt['captures']}
+          assert len(frames)==32 and all(re.fullmatch(re.escape(prefix)+r'frames/[A-Za-z0-9._-]+\.png',p) for p in frames)
+          exact=frames|{prefix+n for n in ('CAPTURE-EVIDENCE.json','INPUT-RECEIPT.json','STAGING-RECEIPT.json','PUBLIC-REVIEW-RECEIPT.json','REVIEW-SHA256SUMS.txt')}
+          assert set(staged)==exact and len(staged)==37, f'public branch allowlist mismatch: {sorted(set(staged)^exact)}'
+          print('public review branch allowlist PASS: 32 PNG stills + 4 JSON receipts + checksum text')
+          PY
+          git commit -m 'S90 silent development frames; NOT approval'
+          gh auth setup-git
+          git push origin "HEAD:refs/heads/$branch"

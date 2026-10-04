@@ -1,0 +1,1153 @@
+{
+  "words": [
+    {
+      "word": "Channel",
+      "start": 0.0,
+      "end": 0.218,
+      "paragraph": "P01",
+      "emphasis": true
+    },
+    {
+      "word": "4",
+      "start": 0.328,
+      "end": 0.437,
+      "paragraph": "P01",
+      "emphasis": true
+    },
+    {
+      "word": "aired",
+      "start": 1.092,
+      "end": 1.31,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 1.31,
+      "end": 1.398,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "whole",
+      "start": 1.42,
+      "end": 1.529,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "dispatches",
+      "start": 1.638,
+      "end": 2.293,
+      "paragraph": "P01",
+      "emphasis": true
+    },
+    {
+      "word": "fronted",
+      "start": 2.621,
+      "end": 2.948,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "by",
+      "start": 2.948,
+      "end": 3.058,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 3.167,
+      "end": 3.178,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "reporter",
+      "start": 3.167,
+      "end": 3.604,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "on",
+      "start": 3.713,
+      "end": 3.724,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "location.",
+      "start": 3.713,
+      "end": 4.368,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "And",
+      "start": 4.805,
+      "end": 4.914,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "at",
+      "start": 5.023,
+      "end": 5.111,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 5.132,
+      "end": 5.22,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "very",
+      "start": 5.242,
+      "end": 5.46,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "end,",
+      "start": 5.46,
+      "end": 5.788,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 6.006,
+      "end": 6.115,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "reporter",
+      "start": 6.224,
+      "end": 6.661,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "said,",
+      "start": 6.661,
+      "end": 6.989,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "I'm",
+      "start": 7.644,
+      "end": 7.753,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "not",
+      "start": 7.863,
+      "end": 7.972,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "real.",
+      "start": 7.972,
+      "end": 8.299,
+      "paragraph": "P01",
+      "emphasis": false
+    },
+    {
+      "word": "Channel",
+      "start": 8.957,
+      "end": 9.175,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "4",
+      "start": 9.284,
+      "end": 9.372,
+      "paragraph": "P02",
+      "emphasis": true
+    },
+    {
+      "word": "says,",
+      "start": 9.394,
+      "end": 9.721,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 9.83,
+      "end": 10.049,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "presenter's",
+      "start": 10.049,
+      "end": 10.486,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "face,",
+      "start": 10.595,
+      "end": 10.922,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "voice",
+      "start": 11.141,
+      "end": 11.468,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 11.578,
+      "end": 11.796,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "movements",
+      "start": 11.796,
+      "end": 12.342,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "were",
+      "start": 12.56,
+      "end": 12.779,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "all",
+      "start": 12.779,
+      "end": 12.997,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "made",
+      "start": 12.997,
+      "end": 13.325,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "with",
+      "start": 13.543,
+      "end": 13.762,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "AI,",
+      "start": 13.871,
+      "end": 14.308,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "without",
+      "start": 14.854,
+      "end": 15.181,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 15.181,
+      "end": 15.29,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "single",
+      "start": 15.29,
+      "end": 15.618,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "frame",
+      "start": 15.727,
+      "end": 16.055,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "of",
+      "start": 16.273,
+      "end": 16.492,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "real",
+      "start": 16.492,
+      "end": 16.71,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "world",
+      "start": 16.819,
+      "end": 17.038,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "filming.",
+      "start": 17.038,
+      "end": 17.474,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Then",
+      "start": 18.348,
+      "end": 18.566,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "came",
+      "start": 18.676,
+      "end": 18.785,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 18.894,
+      "end": 19.003,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "line.",
+      "start": 19.003,
+      "end": 19.331,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Some",
+      "start": 19.877,
+      "end": 20.095,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "of",
+      "start": 20.095,
+      "end": 20.204,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "you",
+      "start": 20.204,
+      "end": 20.314,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "might",
+      "start": 20.423,
+      "end": 20.641,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "have",
+      "start": 20.641,
+      "end": 20.75,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "guessed.",
+      "start": 20.75,
+      "end": 21.187,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "I",
+      "start": 21.733,
+      "end": 21.842,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "don't",
+      "start": 21.952,
+      "end": 22.17,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "exist.",
+      "start": 22.17,
+      "end": 22.716,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "I",
+      "start": 23.262,
+      "end": 23.371,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "wasn't",
+      "start": 23.371,
+      "end": 23.699,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "on",
+      "start": 23.699,
+      "end": 23.808,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "location",
+      "start": 23.808,
+      "end": 24.354,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "reporting",
+      "start": 24.463,
+      "end": 24.9,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "this",
+      "start": 24.9,
+      "end": 25.119,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "story.",
+      "start": 25.119,
+      "end": 25.555,
+      "paragraph": "P02",
+      "emphasis": false
+    },
+    {
+      "word": "Channel",
+      "start": 25.995,
+      "end": 26.214,
+      "paragraph": "P03",
+      "emphasis": true
+    },
+    {
+      "word": "4",
+      "start": 26.214,
+      "end": 26.301,
+      "paragraph": "P03",
+      "emphasis": true
+    },
+    {
+      "word": "did",
+      "start": 26.323,
+      "end": 26.432,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 26.541,
+      "end": 26.552,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "on",
+      "start": 26.541,
+      "end": 26.651,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "purpose,",
+      "start": 26.651,
+      "end": 27.306,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "and",
+      "start": 27.633,
+      "end": 27.743,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "its",
+      "start": 27.743,
+      "end": 27.852,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "head",
+      "start": 27.852,
+      "end": 27.961,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "of",
+      "start": 28.07,
+      "end": 28.158,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "news,",
+      "start": 28.179,
+      "end": 28.507,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "Louisa",
+      "start": 28.835,
+      "end": 29.162,
+      "paragraph": "P03",
+      "emphasis": true
+    },
+    {
+      "word": "Compton,",
+      "start": 29.271,
+      "end": 29.708,
+      "paragraph": "P03",
+      "emphasis": true
+    },
+    {
+      "word": "said",
+      "start": 30.145,
+      "end": 30.363,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 30.363,
+      "end": 30.473,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "showed",
+      "start": 30.473,
+      "end": 30.691,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "how",
+      "start": 30.691,
+      "end": 30.909,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "easy",
+      "start": 30.909,
+      "end": 31.237,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 31.237,
+      "end": 31.346,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "is",
+      "start": 31.346,
+      "end": 31.565,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 31.565,
+      "end": 31.674,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "hoodwink",
+      "start": 31.783,
+      "end": 32.111,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "audiences",
+      "start": 32.22,
+      "end": 32.766,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "with",
+      "start": 33.093,
+      "end": 33.312,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "content",
+      "start": 33.421,
+      "end": 33.858,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "they",
+      "start": 33.967,
+      "end": 34.186,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "have",
+      "start": 34.186,
+      "end": 34.295,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "no",
+      "start": 34.295,
+      "end": 34.513,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "way",
+      "start": 34.513,
+      "end": 34.732,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "of",
+      "start": 34.732,
+      "end": 34.841,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "verifying.",
+      "start": 34.841,
+      "end": 35.496,
+      "paragraph": "P03",
+      "emphasis": false
+    },
+    {
+      "word": "If",
+      "start": 35.896,
+      "end": 36.005,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 36.005,
+      "end": 36.092,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "was",
+      "start": 36.114,
+      "end": 36.223,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "that",
+      "start": 36.223,
+      "end": 36.442,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "hard",
+      "start": 36.442,
+      "end": 36.66,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 36.769,
+      "end": 36.878,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "spot",
+      "start": 36.878,
+      "end": 37.097,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "in",
+      "start": 37.097,
+      "end": 37.206,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 37.206,
+      "end": 37.315,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "documentary,",
+      "start": 37.315,
+      "end": 38.08,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "picture",
+      "start": 38.516,
+      "end": 38.844,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "your",
+      "start": 38.844,
+      "end": 38.953,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "accounts",
+      "start": 39.062,
+      "end": 39.39,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "team",
+      "start": 39.39,
+      "end": 39.608,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "on",
+      "start": 39.608,
+      "end": 39.718,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 39.718,
+      "end": 39.729,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "quick",
+      "start": 39.718,
+      "end": 39.936,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "video",
+      "start": 39.936,
+      "end": 40.264,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "call",
+      "start": 40.264,
+      "end": 40.482,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "with",
+      "start": 40.482,
+      "end": 40.7,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 40.7,
+      "end": 40.788,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "supplier",
+      "start": 40.81,
+      "end": 41.246,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "who",
+      "start": 41.465,
+      "end": 41.683,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "wants",
+      "start": 41.683,
+      "end": 41.902,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 41.902,
+      "end": 42.011,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "change",
+      "start": 42.011,
+      "end": 42.229,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "their",
+      "start": 42.229,
+      "end": 42.448,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "bank",
+      "start": 42.448,
+      "end": 42.666,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "details.",
+      "start": 42.666,
+      "end": 43.212,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "Agree",
+      "start": 43.977,
+      "end": 44.195,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "one",
+      "start": 44.304,
+      "end": 44.413,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "rule",
+      "start": 44.523,
+      "end": 44.741,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "this",
+      "start": 44.741,
+      "end": 44.959,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "week.",
+      "start": 44.959,
+      "end": 45.287,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "Any",
+      "start": 45.724,
+      "end": 45.942,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "change",
+      "start": 45.942,
+      "end": 46.27,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "to",
+      "start": 46.27,
+      "end": 46.379,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "bank",
+      "start": 46.379,
+      "end": 46.597,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "details",
+      "start": 46.597,
+      "end": 47.143,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "gets",
+      "start": 47.362,
+      "end": 47.58,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "confirmed",
+      "start": 47.689,
+      "end": 48.235,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "by",
+      "start": 48.345,
+      "end": 48.563,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "calling",
+      "start": 48.563,
+      "end": 48.891,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 49.0,
+      "end": 49.011,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "number",
+      "start": 49.0,
+      "end": 49.327,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "you",
+      "start": 49.327,
+      "end": 49.437,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "already",
+      "start": 49.546,
+      "end": 49.873,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "hold,",
+      "start": 49.983,
+      "end": 50.31,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "never",
+      "start": 50.856,
+      "end": 51.075,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "one",
+      "start": 51.075,
+      "end": 51.293,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "from",
+      "start": 51.293,
+      "end": 51.511,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "the",
+      "start": 51.511,
+      "end": 51.621,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "message.",
+      "start": 51.621,
+      "end": 52.057,
+      "paragraph": "P04",
+      "emphasis": false
+    },
+    {
+      "word": "Follow",
+      "start": 52.647,
+      "end": 52.866,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 52.975,
+      "end": 53.193,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "one",
+      "start": 53.302,
+      "end": 53.63,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "real",
+      "start": 53.848,
+      "end": 54.285,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "AI",
+      "start": 54.722,
+      "end": 54.94,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "story",
+      "start": 55.05,
+      "end": 55.486,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "a",
+      "start": 55.486,
+      "end": 55.596,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "day.",
+      "start": 55.596,
+      "end": 55.923,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "And",
+      "start": 56.251,
+      "end": 56.36,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "what",
+      "start": 56.469,
+      "end": 56.578,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "it",
+      "start": 56.578,
+      "end": 56.688,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "means",
+      "start": 56.688,
+      "end": 57.124,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "for",
+      "start": 57.124,
+      "end": 57.234,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "your",
+      "start": 57.234,
+      "end": 57.452,
+      "paragraph": "P05",
+      "emphasis": false
+    },
+    {
+      "word": "business.",
+      "start": 57.561,
+      "end": 58.107,
+      "paragraph": "P05",
+      "emphasis": false
+    }
+  ],
+  "tempo_factor": 0.9157387866394001
+}

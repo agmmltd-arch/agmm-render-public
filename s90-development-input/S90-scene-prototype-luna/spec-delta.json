@@ -1,0 +1,429 @@
+{
+  "schema": "s90-isolated-storyboard-development-delta-v1",
+  "story_id": "S90",
+  "status": "DEVELOPMENT_CANDIDATE_NEEDS_ROOT_STORYBOARD_EYES",
+  "approval": {
+    "concept_direction": "Concept 2, root-selected development direction only",
+    "storyboard": "NOT_APPROVED",
+    "maker_self_approval": false,
+    "render_authorized": false,
+    "release_authorized": false,
+    "hosted_development_preview": "NOT_READY; authenticated Linux kit parent/package and caption-safe composition remain unverified"
+  },
+  "creative_signature": "The real source warning about unverifiable content transforms into a physical trusted-number route. The outgoing call is initiated; the payment latch remains held until actual confirmation, which this short does not depict.",
+  "source_identity": {
+    "url": "https://www.channel4.com/press/news/channel-4-makes-tv-history-britains-first-ai-presenter",
+    "publisher": "Channel 4",
+    "document_type": "News Release",
+    "title": "Channel 4 makes TV history with Britain’s first AI presenter",
+    "date": "20 October 2025",
+    "visible_credit": "Source: Channel 4, News Release, 20 October 2025",
+    "manifest_path": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-hosted-source-pack-proposal/ROOT-SUCCESS-manifest.json",
+    "manifest_sha256": "1056bc10aa7a6b9d70a46d96d14139abe8e60ef3b7d8b82940c23061505c1e0b",
+    "source_plan_sha256": "da81ea62eeb36ddfab4b63b748894b567e2268c105d00e82d83638fed4c939d5",
+    "root_review_path": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-hosted-source-pack-proposal/ROOT-SOURCE-ASSET-REVIEW.json",
+    "root_review_run": 37163208994,
+    "root_review_status": "ACCEPTED_FOR_STORYBOARD_DEVELOPMENT_ONLY",
+    "remote_asset_base": "https://raw.githubusercontent.com/agmmltd-arch/agmm-render-public/review-S90-source-pack-37163208994/public-review/S90/37163208994/",
+    "staging_status": "NOT_STAGED_LOCALLY; fetch and hash only on verified hosted Linux producer",
+    "expected_asset_sha256": {
+      "header-channel4.png": "68e0fe034a1d19287860980257ba3198466615ef35461f6c03a621853217c3e1",
+      "release-title.png": "16d620b2751341564993930f399f3c40b159ee9422e01232a12eec876719b040",
+      "release-date.png": "3b9687a05dfff7de55da5c651e7dcad6971157bf098bf8ffd76ffbc83774ed7f",
+      "claim-01.png": "e928774c014db8915e48e084852a79fa21a9e52aa331322389065cea1d98addc",
+      "claim-02.png": "e928774c014db8915e48e084852a79fa21a9e52aa331322389065cea1d98addc",
+      "claim-03.png": "eaec2a1abaa5eb045a3b035adf12e4477425f78d2a94dead249fa258a6d0389c",
+      "claim-04.png": "62be8e54a4dc28c673e0c13dbaa21d4bed17e4756eda7fb32295fd7df530cfc9",
+      "claim-05.png": "bcf2eadb98a481a0e5ae65cc877558a510347eed973893959c733bfa94b819dd",
+      "claim-06.png": "a6b590e8e66a30ffed9b2fc94a204f53b3d78a5813821ca06dea113730fa7034",
+      "claim-07.png": "470a92e078b4f2cc574358b9c3d6505090d235ee1b78187259c7e71bdf96476e",
+      "claim-08.png": "90eb906abea2dbd00ae348d7f80bbf466f89fc099a195a219d1fb97ca3d25523"
+    },
+    "source_words_42px_note": "No source-word pixel size is claimed. Each complete authenticated crop uses object-fit:contain with no zoom or clipped words; hosted Linux must read asset dimensions, then the actual composed preview must establish readability.",
+    "credit_font_design_px": 42
+  },
+  "locked_inputs": {
+    "script_path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/shorts/scripts-v2/S90.md",
+    "script_sha256": "a8006145cc4610be0abfd70f6e8355e6f6f64780064afe7a7834b49f33360055",
+    "voice_words_path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/shorts/voice/S90/S90.words.json",
+    "voice_words_sha256": "a6d08fbb84c55f406457751213df0094561e55de1e1824faf66cd760845f3925",
+    "duration_seconds": 58.107,
+    "concepts_path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/kit/specs/S90/CONCEPTS.md",
+    "concepts_sha256": "f9dbe134e9824f81dad439ab8ce7e7ccc3a5625ae273507688f91ae401483719"
+  },
+  "source_usage": {
+    "claim_01_and_02_same_paragraph_sha256": "3bb430e3c2f977ccefea65be9ac548154c5343724b731cc4e340ef1ef8e6e967",
+    "claim_02_is_independent_corroboration": false,
+    "claim_02_crop_referenced": false,
+    "claim_08_is_speaker_introduction_not_contact_credits": true,
+    "presenter_photo_or_clip_used": false,
+    "publisher_mark_scope": "native Channel 4 source pane only, beats B01-B10; absent B11-B16",
+    "advice_attribution": "AGMM original practical advice, never attributed to Channel 4"
+  },
+  "signature_invariant": {
+    "call_state": "outgoing_call_started_only",
+    "latch_state_after_call": "PAYMENT_HELD",
+    "confirmation_depicted": false,
+    "answered_call_depicted": false,
+    "payment_release_depicted": false,
+    "message_number_path": "blocked"
+  },
+  "beats": [
+    {
+      "id": "B01",
+      "from": 0.0,
+      "to": 3.713,
+      "anchor_word": "Channel",
+      "scene": "s90-b01",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-01.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain; no guessed magnification, panning, or hidden source words. Hosted asset dimensions and root review of the composed frame determine whether readable.",
+      "event": "At frame zero the authentic Channel 4 mark, release title/date, claim crop and empty viewfinder are all present. The evidence does not pretend to be programme footage.",
+      "sound": {
+        "kind": "paper",
+        "at": 0.24,
+        "pan": -0.45,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B02",
+      "from": 3.713,
+      "to": 8.957,
+      "anchor_word": "on",
+      "scene": "s90-b02",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-05.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain; no guessed magnification, panning, or hidden source words. Hosted asset dimensions and root review of the composed frame determine whether readable.",
+      "event": "Keep the entire “Because I’m not real” crop inside the source pane. Rotate the separate empty viewfinder in the lower field.",
+      "sound": {
+        "kind": "shutter",
+        "at": 3.953,
+        "pan": 0.38,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B03",
+      "from": 8.957,
+      "to": 14.854,
+      "anchor_word": "Channel",
+      "scene": "s90-b03",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-03.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain; no guessed magnification, panning, or hidden source words. Hosted asset dimensions and root review of the composed frame determine whether readable.",
+      "event": "Keep the full face/voice/movements claim beneath three rails that arrive one at a time in the clear band above the source page.",
+      "sound": {
+        "kind": "click",
+        "at": 9.197,
+        "pan": -0.3,
+        "gain": 0.16,
+        "secondary": [
+          {
+            "kind": "click",
+            "at": 9.62,
+            "pan": -0.48,
+            "gain": 0.12
+          },
+          {
+            "kind": "click",
+            "at": 10.04,
+            "pan": 0.02,
+            "gain": 0.12
+          }
+        ]
+      }
+    },
+    {
+      "id": "B04",
+      "from": 14.854,
+      "to": 18.348,
+      "anchor_word": "without",
+      "scene": "s90-b04",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-03.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain; no guessed magnification, panning, or hidden source words. Hosted asset dimensions and root review of the composed frame determine whether readable.",
+      "event": "Move a constructed perforation strip below the full “without a single frame” crop; do not make fake footage.",
+      "sound": {
+        "kind": "printer",
+        "at": 15.094,
+        "pan": 0.42,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B05",
+      "from": 18.348,
+      "to": 21.733,
+      "anchor_word": "Then",
+      "scene": "s90-b05",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-04.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain; no guessed magnification, panning, or hidden source words. Hosted asset dimensions and root review of the composed frame determine whether readable.",
+      "event": "Keep the full quote crop. Draw a border around its window and grow the proof line in the blank lower field.",
+      "sound": {
+        "kind": "paper",
+        "at": 18.588,
+        "pan": -0.42,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B06",
+      "from": 21.733,
+      "to": 25.995,
+      "anchor_word": "I",
+      "scene": "s90-b06",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-04.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain; no guessed magnification, panning, or hidden source words. Hosted asset dimensions and root review of the composed frame determine whether readable.",
+      "event": "Keep the complete quote fixed while the three rails withdraw from the top band; do not insert a synthetic presenter.",
+      "sound": {
+        "kind": "press",
+        "at": 21.973,
+        "pan": 0.32,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B07",
+      "from": 25.995,
+      "to": 28.835,
+      "anchor_word": "Channel",
+      "scene": "s90-b07",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-06.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain; no guessed magnification, panning, or hidden source words. Hosted asset dimensions and root review of the composed frame determine whether readable.",
+      "event": "Keep the full paragraph and date visible. Sweep the proof ruler in the left gutter outside the source page.",
+      "sound": {
+        "kind": "stamp",
+        "at": 26.235,
+        "pan": 0.42,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B08",
+      "from": 28.835,
+      "to": 31.783,
+      "anchor_word": "Louisa",
+      "scene": "s90-b08",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-08.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain; no guessed magnification, panning, or hidden source words. Hosted asset dimensions and root review of the composed frame determine whether readable.",
+      "event": "Keep the native speaker-introduction crop intact. A separate speaker-role tab and narrow tick enter below the page.",
+      "sound": {
+        "kind": "paper",
+        "at": 29.075,
+        "pan": -0.38,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B09",
+      "from": 31.783,
+      "to": 35.896,
+      "anchor_word": "hoodwink",
+      "scene": "s90-b09",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-07.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain in a slightly shorter window to reserve a separate credit band; no guessed magnification or hidden words. Hosted dimensions and root review determine readability.",
+      "event": "Keep the complete warning paragraph above a separately reserved publisher-credit band. The empty aperture and proof marker turn below the source page.",
+      "sound": {
+        "kind": "click",
+        "at": 32.023,
+        "pan": 0.35,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B10",
+      "from": 35.896,
+      "to": 38.516,
+      "anchor_word": "If",
+      "scene": "s90-b10",
+      "source_assets": [
+        "img/s90-source-pack/header-channel4.png",
+        "img/s90-source-pack/release-title.png",
+        "img/s90-source-pack/release-date.png",
+        "img/s90-source-pack/claim-07.png"
+      ],
+      "source_window": "Complete authentic crop fitted with object-fit:contain; no guessed magnification, panning, or hidden source words. Hosted asset dimensions and root review of the composed frame determine whether readable.",
+      "event": "Keep the complete documentary evidence visible while a blank paper tray opens below the page. Publisher material leaves at the next cut.",
+      "sound": {
+        "kind": "seam",
+        "at": 36.136,
+        "pan": -0.35,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B11",
+      "from": 38.516,
+      "to": 43.977,
+      "anchor_word": "picture",
+      "scene": "s90-b11",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "With all Channel 4 material gone, build one generic accounts workstation and a supplier change request. No names, values, account digits, caller image or simulated speech. A physical latch reads PAYMENT HELD.",
+      "sound": {
+        "kind": "paper",
+        "at": 41.72,
+        "pan": 0.44,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B12",
+      "from": 43.977,
+      "to": 45.724,
+      "anchor_word": "Agree",
+      "scene": "s90-b12",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "Rotate a large one-rule plate beside the request. Keep the blank request and held latch in view; no claim of measured security outcome.",
+      "sound": {
+        "kind": "press",
+        "at": 44.217,
+        "pan": -0.4,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B13",
+      "from": 45.724,
+      "to": 47.362,
+      "anchor_word": "Any",
+      "scene": "s90-b13",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "Separate the change slip from the message path; the payment latch remains shut. The form stays free of real or invented account details.",
+      "sound": {
+        "kind": "paper",
+        "at": 45.964,
+        "pan": 0.4,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B14",
+      "from": 47.362,
+      "to": 50.856,
+      "anchor_word": "gets",
+      "scene": "s90-b14",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "Connect the handset only to the saved-contact tile. Lift it and begin an outgoing call, but keep the pending latch closed and label the state CALL STARTED. No answer, confirmation, or automatic release.",
+      "sound": {
+        "kind": "phone",
+        "at": 47.602,
+        "pan": -0.42,
+        "gain": 0.16,
+        "secondary": [
+          {
+            "kind": "phone",
+            "at": 49.22,
+            "pan": 0.36,
+            "gain": 0.12
+          }
+        ]
+      }
+    },
+    {
+      "id": "B15",
+      "from": 50.856,
+      "to": 52.647,
+      "anchor_word": "never",
+      "scene": "s90-b15",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "A message-origin route stops at a red physical barrier. The trusted route remains available, but the call has not been answered and the payment is still pending.",
+      "sound": {
+        "kind": "click",
+        "at": 51.096,
+        "pan": 0.42,
+        "gain": 0.16
+      }
+    },
+    {
+      "id": "B16",
+      "from": 52.647,
+      "to": 58.107,
+      "anchor_word": "Follow",
+      "scene": "s90-b16",
+      "source_assets": [],
+      "source_window": "none",
+      "event": "Keep the change pending. Remove all Channel 4 evidence and branding. Show the exact spoken follow CTA plus the audit URL; no resolved transaction or call-success sound.",
+      "sound": {
+        "kind": "paper",
+        "at": 52.887,
+        "pan": -0.36,
+        "gain": 0.16
+      }
+    }
+  ],
+  "sound_design": {
+    "total_cues": 19,
+    "rate_per_minute": 19.62,
+    "design_only_not_rendered_or_heard": true,
+    "all_gains_linear_max": 0.16,
+    "all_pan_values_nonzero": true,
+    "no_music_or_noise_bed_selected": true,
+    "no_glitch_or_zap": true,
+    "stereo_pan_must_be_confirmed_in_mix": true
+  },
+  "required_root_review": [
+    "actual asset staging hashes and source crop boundaries",
+    "all 16 scene frames and seams against P1 reference sheet",
+    "no overlap of source-bearing text with rails/highlights",
+    "call stays unanswered and latch visibly held",
+    "CTA wording/link and publisher mark absent after B10",
+    "pilot-level motion, visual density and composition review",
+    "whether complete source excerpts are readable in the actual hosted composition; no pixel-size claim is made",
+    "caption safe-area against source panes and all proposed object/text positions in actual kit-composed frames"
+  ],
+  "unresolved": [
+    "rights review remains required; pack rights status NOT_ASSESSED",
+    "no source assets downloaded or staged locally",
+    "actual storyboard is not submitted or approved",
+    "no rendered frames or audio reviewed",
+    "P1 / assigned reference not viewed in this task",
+    "caption-safe composition has not been established; current build_short defaults captions around y=1290, near the evidence panels"
+  ]
+}
