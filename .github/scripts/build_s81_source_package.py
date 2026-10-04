@@ -371,14 +371,19 @@ def resolve_logo_discovery(brand_zip: Path, discovery_path: Path) -> dict:
         raise Refusal("official logo discovery helper is unavailable")
     discovery_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(discovery_module)
-    actual = discovery_module.discover_archive(brand_zip)
     try:
         supplied = json.loads(discovery_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         raise Refusal("hosted official-logo discovery receipt is missing or invalid") from None
+    requested_member = supplied.get("selected_member") if isinstance(supplied, dict) else None
+    try:
+        actual = discovery_module.discover_archive(brand_zip, selected_member=requested_member
+            if isinstance(supplied, dict) and supplied.get("status") == "EXPLICIT_APPROVED_SQUARE_SVG_SELECTED" else None)
+    except discovery_module.Refusal as exc:
+        raise Refusal(str(exc)) from None
     if supplied != actual:
         raise Refusal("official-logo discovery receipt does not bind to the downloaded ZIP metadata")
-    if actual.get("status") != "UNIQUE_SQUARE_SVG_DISCOVERED" or not actual.get("selected_member"):
+    if actual.get("status") not in {"UNIQUE_SQUARE_SVG_DISCOVERED", "EXPLICIT_APPROVED_SQUARE_SVG_SELECTED"} or not actual.get("selected_member"):
         raise Refusal("official logo package did not yield exactly one structurally suitable square SVG; human review required")
     return actual
 

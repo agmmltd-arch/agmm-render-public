@@ -26,6 +26,14 @@ MAX_UNCOMPRESSED_BYTES = 80_000_000
 MAX_SVG_BYTES = 1_000_000
 SQUARE_MIN = 0.98
 SQUARE_MAX = 1.02
+# Exact archive/member observation from hosted run 37220614882. Only the
+# black monoblossom is admitted for S81's paper/white scene background.
+APPROVED_EXPLICIT_SELECTIONS = {
+    "b2c4cd1e86bbe76bdc4946a72d014efa455240c177f4878fd68cc9b88c71d2ec": {
+        "member": "OpenAI-logos(new)/SVGs/OpenAI-black-monoblossom.svg",
+        "member_bytes": 2969,
+    },
+}
 
 class Refusal(Exception):
     pass
@@ -67,7 +75,7 @@ def _viewbox_candidate(data: bytes) -> tuple[bool, dict]:
     return is_square, {"reason": "square_viewbox" if is_square else "not_square_viewbox",
                        "view_box": values, "aspect_ratio": round(ratio, 6)}
 
-def discover_bytes(data: bytes) -> dict:
+def discover_bytes(data: bytes, selected_member: str | None = None) -> dict:
     if not data or len(data) > MAX_ARCHIVE_BYTES:
         raise Refusal("official brand ZIP is empty or exceeds the 25 MB bound")
     try:
@@ -108,25 +116,43 @@ def discover_bytes(data: bytes) -> dict:
             row["svg_metadata"] = metadata
             if candidate:
                 square_svgs.append(name)
-        status = "UNIQUE_SQUARE_SVG_DISCOVERED" if len(square_svgs) == 1 else "REFUSED_NO_UNIQUE_SQUARE_SVG"
+        package_sha256 = hashlib.sha256(data).hexdigest()
+        selected = None
+        selection_method = "unique_structural_candidate"
+        if selected_member is not None:
+            approved = APPROVED_EXPLICIT_SELECTIONS.get(package_sha256)
+            if not approved or selected_member != approved["member"]:
+                raise Refusal("explicit logo member is not allowlisted for this exact official package SHA-256")
+            matching = [row for row in members if row["name"] == selected_member]
+            if (selected_member not in square_svgs or len(matching) != 1
+                    or matching[0].get("bytes") != approved["member_bytes"]):
+                raise Refusal("allowlisted logo member is missing or no longer has its observed eligible structure and size")
+            selected = selected_member
+            status = "EXPLICIT_APPROVED_SQUARE_SVG_SELECTED"
+            selection_method = "exact_package_sha256_member_allowlist"
+        else:
+            status = "UNIQUE_SQUARE_SVG_DISCOVERED" if len(square_svgs) == 1 else "REFUSED_NO_UNIQUE_SQUARE_SVG"
+            if len(square_svgs) == 1:
+                selected = square_svgs[0]
         return {"kind": "s81_official_logo_zip_metadata_discovery", "status": status,
-                "package_sha256": hashlib.sha256(data).hexdigest(), "package_bytes": len(data),
+                "package_sha256": package_sha256, "package_bytes": len(data),
                 "candidate_rule": {"source": "official OpenAI Logos 2025 ZIP", "required_root": "svg",
                                    "view_box_aspect_ratio": [SQUARE_MIN, SQUARE_MAX],
                                    "reason": "S81 candidate uses an OpenAI company-identification mark in a square image slot",
                                    "human_visual_review": "OPEN"},
-                "selected_member": square_svgs[0] if len(square_svgs) == 1 else None,
+                "selected_member": selected,
+                "selection_method": selection_method,
                 "eligible_members": square_svgs, "members": members,
                 "rights": {"guidelines_url": "https://openai.com/brand/", "review": "OPEN",
                            "use": "unmodified company identification only; no endorsement or permission claim"}}
 
-def discover_archive(path: Path) -> dict:
+def discover_archive(path: Path, selected_member: str | None = None) -> dict:
     require_hosted_linux()
     try:
         size = path.stat().st_size
         if size <= 0 or size > MAX_ARCHIVE_BYTES:
             raise Refusal("official brand ZIP is empty or exceeds the 25 MB bound")
-        return discover_bytes(path.read_bytes())
+        return discover_bytes(path.read_bytes(), selected_member=selected_member)
     except OSError:
         raise Refusal("official brand ZIP is unavailable to the hosted discovery step") from None
 
@@ -134,9 +160,10 @@ def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--archive", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--select-member", help="select only a member explicitly allowlisted for this exact package SHA-256")
     args = p.parse_args()
     try:
-        receipt = discover_archive(args.archive)
+        receipt = discover_archive(args.archive, selected_member=args.select_member)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n", encoding="utf-8")
         print(json.dumps(receipt, sort_keys=True))

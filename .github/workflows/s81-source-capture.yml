@@ -82,7 +82,8 @@ jobs:
           open('openai-brand-package.zip','wb').write(data)
           PY
           python3 .github/scripts/discover_openai_logo.py \
-            --archive openai-brand-package.zip --output openai-logo-discovery.json
+            --archive openai-brand-package.zip --output openai-logo-discovery.json \
+            --select-member 'OpenAI-logos(new)/SVGs/OpenAI-black-monoblossom.svg'
           python3 .github/scripts/build_s81_source_package.py \
             --payload .github/s81-candidate \
             --runtime-proof .github/s81-runtime-parent-proof.json \
@@ -167,7 +168,7 @@ jobs:
           receipt=json.load(open('public-review/S81-SOURCE-STAGING-RECEIPT.json'))
           logo=json.load(open('public-review/S81-LOGO-DISCOVERY.json'))
           import hashlib
-          assert logo.get('status')=='UNIQUE_SQUARE_SVG_DISCOVERED' and len(logo.get('eligible_members',[]))==1
+          assert logo.get('status')=='EXPLICIT_APPROVED_SQUARE_SVG_SELECTED' and logo.get('package_sha256')=='b2c4cd1e86bbe76bdc4946a72d014efa455240c177f4878fd68cc9b88c71d2ec' and logo.get('selected_member')=='OpenAI-logos(new)/SVGs/OpenAI-black-monoblossom.svg' and len(logo.get('eligible_members',[]))==2
           assert receipt['logo']['member']==logo['selected_member']
           assert receipt['logo']['package_sha256']==logo['package_sha256']
           assert receipt['logo']['discovery_receipt_sha256']==hashlib.sha256(open('public-review/S81-LOGO-DISCOVERY.json','rb').read()).hexdigest()
