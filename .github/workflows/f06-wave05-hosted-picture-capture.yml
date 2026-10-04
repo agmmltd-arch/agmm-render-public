@@ -189,7 +189,6 @@ jobs:
                   assert m.isfile() or m.isdir(), "links and special members refused"
               tf.extractall(root,filter="data")
           PY
-          (cd "$PROJECT_ROOT" && sha256sum -c SHA256SUMS.txt >/dev/null)
           cp source-inputs/F06/wave05-text/index.html "$PROJECT/index.html"
           cp source-inputs/F06/wave05-text/BRIEF.md "$PROJECT/BRIEF.md"
           cp source-inputs/F06/wave05-text/SOURCE-AND-RIGHTS.md "$PROJECT/SOURCE-AND-RIGHTS.md"

@@ -181,8 +181,20 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p remote-evidence/stills remote-evidence/motion
-          npx --yes hyperframes@0.8.62 check --json --at "$AT" > remote-evidence/check.json
-          npx --yes hyperframes@0.8.62 snapshot --at "$AT" --no-end -o remote-evidence/stills
+          if npx --yes hyperframes@0.8.62 check --json --at "$AT" > remote-evidence/check.json; then
+            echo "FILM05_CHECK_COMMAND_PASS"
+          else
+            status=$?
+            echo "FILM05_CHECK_COMMAND_FAILED exit=$status"
+            python3 - <<'CHECKJSON'
+          from pathlib import Path
+          p=Path('remote-evidence/check.json')
+          print(p.read_text()[:20000] if p.exists() else 'check JSON was not produced')
+          CHECKJSON
+            exit "$status"
+          fi
+          npx --yes hyperframes@0.8.62 snapshot --at "$AT" --no-end -o remote-evidence/stills || { status=$?; echo "FILM05_SNAPSHOT_COMMAND_FAILED exit=$status"; exit "$status"; }
+          echo "FILM05_SNAPSHOT_COMMAND_PASS"
           python3 - <<'PY'
           from pathlib import Path
           files=sorted(Path('remote-evidence/stills').glob('*.png'))
