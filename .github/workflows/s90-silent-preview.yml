@@ -190,7 +190,7 @@ jobs:
           test "$(sha256sum "$RUNNER_TEMP/s90-b16-original/scenes.js" | cut -d' ' -f1)" = \
             a77a514b9de9c4e45941758615ebb7512c3630b95c9d5483742e8963a403eba9
           test "$(sha256sum prepared/project/s90-preview-a/scenes.js | cut -d' ' -f1)" = \
-            5b476328cee03f6225817e2dff5f9e6cb0e5cbf5532fbc20f7682490ba6d9afe
+            5e623b801272b1e5439cf4191ec6038a2a1787c3df455500b4f1fa39221a2290
           node .github/scripts/check_s90_b16_geometry.mjs \
             --original-root="$RUNNER_TEMP/s90-b16-original" \
             --candidate-root=prepared/project/s90-preview-a
