@@ -13,6 +13,8 @@ REPO = "agmmltd-arch/agmm-render-public"
 RENDER_RUN_ID = 37171852324
 RENDER_HEAD_SHA = "fddd199eecae2a4774bfc9f7c041320619cfce0f"
 SOURCE_SHA256 = "666a90579d57f2bd5c2abed41e55b5dad3fff790f93707d79b2929bddf1c93b6"
+PARTS_SHA256 = "e995d9d0354b808714bf89e2a082a98200a8ef92733d1896181635dfecffbb88"
+MIX_SHA256 = "0c252cdf6e412fc2ccadcdb29b940d6a23b7c527276ebf79da468b7f633df436"
 INPUT_ARTIFACT_ID = 11291104171
 INPUT_ARTIFACT_NAME = "S86-quote-final-20261004-EXACT-INPUT"
 INPUT_ARTIFACT_SIZE = 27276224
@@ -162,9 +164,10 @@ def read_bound_input_receipt(input_zip):
             raise ValueError("INPUT-RECEIPT.json must be a bounded TEXT file")
         receipt = json.loads(archive.read(info).decode("utf-8"))
     if (receipt.get("kind") != "agmm_short_exact_input_receipt"
-            or receipt.get("technical_status") != "INPUT_IDENTITY_PASS"
-            or receipt.get("source_sha256") != SOURCE_SHA256):
-        raise ValueError("source identity does not match the pinned S86 source")
+            or receipt.get("source_sha256") != SOURCE_SHA256
+            or receipt.get("parts_sha256") != PARTS_SHA256
+            or receipt.get("mix_sha256") != MIX_SHA256):
+        raise ValueError("source/parts/mix identity does not match the pinned S86 input")
     return receipt, archive_namelist_safe(input_zip)
 
 
