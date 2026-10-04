@@ -9,6 +9,7 @@ import {
   receiptText,
   receiptUrlOrRedacted,
   safeReceiptError,
+  matchesExpectedSourceTitle,
   sanitizeReceiptUrl,
   tagSourceUrl
 } from "./source_url_guard.mjs";
@@ -76,7 +77,7 @@ async function openSource(url, expectedHosts, titleTest) {
   assertTaggedSourceNavigation(finalUrl, url, expectedHosts);
   if (!expectedHosts.includes(finalHost)) throw new Error("source redirected outside the exact allowlisted hosts: " + finalUrl);
   const title = await page.title();
-  if (!titleTest.test(title)) throw new Error("source title did not match: " + title);
+  if (!matchesExpectedSourceTitle(title, titleTest)) throw new Error("source title did not match: " + title);
   return { page, title: receiptText(title), finalUrl, canonicalUrl: url, requestedUrl, requestedHost, finalHost, status: response.status(), allowedHosts: expectedHosts, navigationUrls };
 }
 
@@ -228,7 +229,7 @@ try {
   const bbc = await openSource(
     "https://www.bbc.com/news/articles/cjrgrxgexjro",
     ["www.bbc.com"],
-    /BBC News/i
+    /How an AI app is improving NHS wait times in the West Midlands/i
   );
   const bbcBody = await bbc.page.locator("body").innerText();
   const bbcNormalized = normalize(bbcBody);
@@ -264,6 +265,7 @@ try {
   receipt.status = "SOURCE_TEXT_AND_TRUST_LOGOS_CAPTURED_NEEDS_INDEPENDENT_EYES";
 } catch (error) {
     receipt.failure = safeReceiptError(error);
+    console.error("S83 source capture failed: " + receipt.failure);
 } finally {
   await fs.writeFile(path.join(out, "SOURCE-CAPTURE-RECEIPT.json"), JSON.stringify(receipt, null, 2) + "\n");
   if (browser) await browser.close();

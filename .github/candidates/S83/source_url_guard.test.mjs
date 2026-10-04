@@ -5,6 +5,7 @@ import {
   assertSafeMarkUrl,
   assertTaggedSourceNavigation,
   hasAccessibleBrandIdentity,
+  matchesExpectedSourceTitle,
   receiptText,
   safeReceiptError,
   sanitizeReceiptUrl,
@@ -69,6 +70,17 @@ test("requires accessible brand identity and never treats an image URL as proof"
   assert.equal(hasAccessibleBrandIdentity({ title: "Walsall Healthcare NHS Trust logo" }, pattern), true);
   assert.equal(hasAccessibleBrandIdentity({ owner_link_aria_label: "Walsall Healthcare home" }, pattern), true);
   assert.equal(hasAccessibleBrandIdentity({ alt: "Hospital logo", src: "https://walsallhealthcare.nhs.uk/logo.png" }, pattern), false);
+});
+
+test("matches the live BBC primary article title and rejects the old publisher-name predicate", () => {
+  const liveTitle = "How an AI app is improving NHS wait times in the West Midlands";
+  assert.equal(matchesExpectedSourceTitle(liveTitle,
+    /How an AI app is improving NHS wait times in the West Midlands/i), true);
+  assert.equal(matchesExpectedSourceTitle(liveTitle, /BBC News/i), false);
+  assert.equal(matchesExpectedSourceTitle("BBC News - unrelated article",
+    /How an AI app is improving NHS wait times in the West Midlands/i), false);
+  assert.equal(matchesExpectedSourceTitle("",
+    /How an AI app is improving NHS wait times in the West Midlands/i), false);
 });
 
 test("rejects credential-bearing navigation and mark URLs", () => {

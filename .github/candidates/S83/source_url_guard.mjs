@@ -124,3 +124,7 @@ export function hasAccessibleBrandIdentity(imageMetadata, identityPattern) {
     imageMetadata.owner_link_title
   ].filter(Boolean).some(value => identity.test(value));
 }
+
+export function matchesExpectedSourceTitle(title, titlePattern) {
+  return typeof title === "string" && titlePattern.test(title);
+}
