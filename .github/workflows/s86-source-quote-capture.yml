@@ -11,10 +11,10 @@ jobs:
     timeout-minutes: 45
     env:
       GH_TOKEN: ${{ github.token }}
-      RELEASE: S86-source-quote-37170308578
-      SOURCE_SHA256: 8a9a09aadbb5502640e01f14059936d84b53d3d61be9a3f1cea0a81d0d7681c1
-      PARTS_SHA256: e443a9bb32b1ba5bdf0f785296a2484e8480904f13a3a64748ac04ece7e65790
-      PLAN_SHA256: a473d455d8385e364fe0f9fd9f7a0f537d8ddfaa80be3dd3d716d56761a7661f
+      RELEASE: S86-source-quote-37171207319
+      SOURCE_SHA256: 666a90579d57f2bd5c2abed41e55b5dad3fff790f93707d79b2929bddf1c93b6
+      PARTS_SHA256: e995d9d0354b808714bf89e2a082a98200a8ef92733d1896181635dfecffbb88
+      PLAN_SHA256: d28e8b4ad4006c89e136b04d0e3499da921883c2f9b97ab258e28291e1542e86
       MEDIA_IDENTITY_SHA256: 6f9464e534981c16d6e6a451d0759799347b553df468fe5ee6f74812dcbfe32c
       TAG: S86-r2-focused-source-frames
       HYPERFRAMES_NO_TELEMETRY: '1'
@@ -50,13 +50,13 @@ jobs:
           assert release['tag_name'] == os.environ['RELEASE']
           assets = {a['name']: a for a in release['assets']}
           expected = {
-              'source.tar.gz': (608952518, 9817811, 'sha256:' + os.environ['SOURCE_SHA256']),
-              'parts.json': (608952521, 699, 'sha256:' + os.environ['PARTS_SHA256']),
-              'mix.wav': (608952519, 17452902, 'sha256:0c252cdf6e412fc2ccadcdb29b940d6a23b7c527276ebf79da468b7f633df436'),
+              'source.tar.gz': (608971395, 9817800, 'sha256:' + os.environ['SOURCE_SHA256']),
+              'parts.json': (608971394, 699, 'sha256:' + os.environ['PARTS_SHA256']),
+              'mix.wav': (608971392, 17452902, 'sha256:0c252cdf6e412fc2ccadcdb29b940d6a23b7c527276ebf79da468b7f633df436'),
           }
           assert set(assets) == set(expected) | {'source-receipt.json'}, 'sealed source release asset set changed'
           receipt = assets['source-receipt.json']
-          assert (receipt['id'], receipt['size'], receipt['digest']) == (608952520, 56219, 'sha256:62ac06bd1aad859b24013b1c76aa21e2b76cd793fe71f70f8984baadc113c635')
+          assert (receipt['id'], receipt['size'], receipt['digest']) == (608971391, 56219, 'sha256:ef1db9c644b0e4c59f5d087deb2e858e052f4c98f56dad3cdc630378c2d5f26f')
           for name, (asset_id, size, digest) in expected.items():
               asset = assets[name]
               assert (asset['id'], asset['size'], asset['digest']) == (asset_id, size, digest), f'{name} identity changed'
