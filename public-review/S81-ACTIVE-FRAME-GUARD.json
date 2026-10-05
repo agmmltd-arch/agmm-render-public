@@ -1,0 +1,105 @@
+{
+  "kind": "s81_active_frame_content_guard",
+  "status": "PASS",
+  "snapshot_log_checked": true,
+  "checked": [
+    {
+      "name": "albanese-response",
+      "sha256": "443c68afa4e48a6831575cb1e7f8c1fa807ef25389d3ea1c24a8da7324cfd0b1",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "august-discovery",
+      "sha256": "2851e3dd0c470882fd91af334184405d120e253404719787d16dfe5fc55ce46b",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "cta-audit-link",
+      "sha256": "aebacbc1c0b7b5bd5e00b247ba71bb459f0d12cc7328e0540fff6cbff62a03aa",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "cta-follow-start",
+      "sha256": "6011bcb987fbcefa68349a314ec306b6c5ca94d8b0e99ab56a1ab9a4634335bb",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "hook-frame-zero",
+      "sha256": "dd8fdecabc94afb50f281800f40d6eaa56dbde2203b619adacffb1ad159868e7",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2077866,
+      "hero_ink_samples": 14282
+    },
+    {
+      "name": "lesson-route-fold",
+      "sha256": "99bf0ecba4ad434bd8a8c930fcf9cd23f6cf16898b6dda93296b39c83985baec",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "once-daily-monitoring",
+      "sha256": "5c0046bc990da8c095867742023b66ef18827f434c9bac1686c98c5b4744e6bd",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "openai-internal-evaluation",
+      "sha256": "0a5fc96e15cb30f3da6587c0f6afaa06645f31ba425cc903128be744752ec34d",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "portal-description",
+      "sha256": "eb5a2d02335a42b913f2d15a2fd645d573aa400fd53148c8f04fa8900275ada2",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "privacy-line-start",
+      "sha256": "42a06f01d9ff30bf5dbb0881726e845ce66e40ee448ad5600ea60c1906f2ade2",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "privacy-qualification",
+      "sha256": "e7eba8e9e5374f3f054e5da234760f6bb243d22fe94070db8f73b43e0cb646c8",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "privacy-qualification-settled",
+      "sha256": "8b044036d574744fa2db23ed376c94915bcf6e3a71df0e4c2fe3706aa2e763f5",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "september-email",
+      "sha256": "d43dcf8ed780661f39f189edfd6c4f365422599d6d41accfe7e80c98229867ef",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    },
+    {
+      "name": "unintended-actions-quote",
+      "sha256": "d4cfbad0a179976fb0f70a06e9a9b259cc1c1b9898cd1d485705d2ecd8ace1cb",
+      "sampled_colors": 128,
+      "nonpaper_pixels": 2083200,
+      "hero_ink_samples": null
+    }
+  ]
+}
