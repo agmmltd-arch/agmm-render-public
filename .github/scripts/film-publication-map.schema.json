@@ -1,0 +1,444 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Protected hosted film publication inputs",
+  "type": "object",
+  "required": [
+    "schema",
+    "channel_id",
+    "films",
+    "posted"
+  ],
+  "properties": {
+    "schema": {
+      "const": "agmm-longform-hosted-publication-map-v1"
+    },
+    "channel_id": {
+      "const": "UChbp0G1KDjCnruAhxfmzEXg"
+    },
+    "films": {
+      "type": "object",
+      "properties": {
+        "F02": {
+          "type": "object",
+          "required": [
+            "film_id",
+            "status",
+            "target_date",
+            "channel_id",
+            "post_id",
+            "master_sha256",
+            "thumbnail_sha256",
+            "master_created_at",
+            "artifact_prefix",
+            "artifact",
+            "native_files"
+          ],
+          "properties": {
+            "film_id": {
+              "const": "F02"
+            },
+            "status": {
+              "const": "Ready to post"
+            },
+            "target_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "channel_id": {
+              "const": "UChbp0G1KDjCnruAhxfmzEXg"
+            },
+            "post_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "master_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "thumbnail_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "master_created_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "artifact_prefix": {
+              "type": "string",
+              "minLength": 1
+            },
+            "artifact": {
+              "type": "object",
+              "required": [
+                "source_run_id",
+                "name",
+                "master_sha256"
+              ],
+              "properties": {
+                "source_run_id": {
+                  "type": "string",
+                  "pattern": "^[0-9]{6,}$"
+                },
+                "name": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9._-]{1,120}$"
+                },
+                "master_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "additionalProperties": false
+            },
+            "native_files": {
+              "type": "object",
+              "required": [
+                "approval",
+                "review",
+                "rights",
+                "metadata",
+                "script",
+                "thumbnail_approval"
+              ],
+              "properties": {
+                "approval": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "review": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "rights": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "metadata": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "script": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "thumbnail_approval": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "F07": {
+          "type": "object",
+          "required": [
+            "film_id",
+            "status",
+            "target_date",
+            "channel_id",
+            "post_id",
+            "master_sha256",
+            "thumbnail_sha256",
+            "master_created_at",
+            "artifact_prefix",
+            "artifact",
+            "native_files"
+          ],
+          "properties": {
+            "film_id": {
+              "const": "F07"
+            },
+            "status": {
+              "const": "Ready to post"
+            },
+            "target_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "channel_id": {
+              "const": "UChbp0G1KDjCnruAhxfmzEXg"
+            },
+            "post_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "master_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "thumbnail_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "master_created_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "artifact_prefix": {
+              "type": "string",
+              "minLength": 1
+            },
+            "artifact": {
+              "type": "object",
+              "required": [
+                "source_run_id",
+                "name",
+                "master_sha256"
+              ],
+              "properties": {
+                "source_run_id": {
+                  "type": "string",
+                  "pattern": "^[0-9]{6,}$"
+                },
+                "name": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9._-]{1,120}$"
+                },
+                "master_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "additionalProperties": false
+            },
+            "native_files": {
+              "type": "object",
+              "required": [
+                "approval",
+                "review",
+                "rights",
+                "metadata",
+                "script",
+                "thumbnail_approval"
+              ],
+              "properties": {
+                "approval": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "review": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "rights": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "metadata": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "script": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "thumbnail_approval": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "posted": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "film_id",
+          "master_sha256",
+          "video_id"
+        ],
+        "properties": {
+          "film_id": {
+            "enum": [
+              "F02",
+              "F07"
+            ]
+          },
+          "master_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "video_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{11}$"
+          }
+        }
+      }
+    }
+  }
+}

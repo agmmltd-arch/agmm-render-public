@@ -191,8 +191,41 @@ def public_url(page) -> str:
     return ""
 
 
-def studio_state(page, video_id: str, title: str) -> str:
+def observed_studio_channel_id(current_url: str, channel_links: list[str]) -> str:
+    observed = set()
+    for value in [current_url, *channel_links]:
+        match = re.search(r"/channel/([A-Za-z0-9_-]+)", value or "")
+        if match:
+            observed.add(match.group(1))
+    if observed != {CHANNEL_ID}:
+        raise RuntimeError(f"current Studio tab does not prove the target channel: {sorted(observed)}")
+    return CHANNEL_ID
+
+
+def current_studio_channel(page) -> str:
+    links = page.locator('a[href*="/channel/"]').evaluate_all("els => els.map(e => e.href)")
+    return observed_studio_channel_id(page.url, links)
+
+
+def guarded_studio_action(page, expected_channel_id: str, action):
+    """Check current, non-navigated Studio identity immediately before a side effect."""
+    actual = current_studio_channel(page)
+    if actual != expected_channel_id:
+        raise RuntimeError("Studio channel changed before a publication side effect")
+    return action()
+
+
+def verified_studio_channel(page) -> str:
     page.goto(LONGFORM_TAB, wait_until="domcontentloaded", timeout=60_000)
+    time.sleep(5)
+    ok, detail = signed_in(page)
+    if not ok:
+        raise RuntimeError("target Studio channel is not authenticated: " + detail)
+    return current_studio_channel(page)
+
+
+def studio_state(page, video_id: str, title: str) -> str:
+    verified_studio_channel(page)
     for _ in range(40):
         if page.locator("ytcp-video-row").count():
             break
@@ -203,7 +236,6 @@ def studio_state(page, video_id: str, title: str) -> str:
           if (/\\bDraft\\b/.test(t)) return 'DRAFT'; if (/\\bUnlisted\\b/.test(t)) return 'UNLISTED'; return 'UNKNOWN'; };
           const rows=[...document.querySelectorAll('ytcp-video-row')];
           for (const row of rows) { const a=row.querySelector('a[href*="/video/"]'); if (a&&a.href.includes(vid)) return read(row); }
-          for (const row of rows) if (title&&row.innerText.includes(title)) return read(row);
           return 'ROW_NOT_FOUND'; }""", [video_id,title])
 
 
@@ -343,6 +375,7 @@ def publish(args, ctx, page, evidence: Path) -> dict:
         raise RuntimeError("approval is not a PASS for this exact cloud run")
     title = metadata["snippet"]["title"]
     description = metadata["snippet"]["description"]
+    selected_channel = verified_studio_channel(page)
     page.goto("https://www.youtube.com/upload", wait_until="domcontentloaded", timeout=60_000)
     time.sleep(7)
     ok, detail = signed_in(page)
@@ -352,7 +385,7 @@ def publish(args, ctx, page, evidence: Path) -> dict:
     file_input = page.locator('input[type="file"][accept*="video"], ytcp-uploads-file-picker input[type="file"]').first
     if not file_input.count():
         raise RuntimeError("Studio video file input did not render")
-    file_input.set_input_files(str(args.video), timeout=30_000)
+    guarded_studio_action(page, selected_channel, lambda: file_input.set_input_files(str(args.video), timeout=30_000))
     if not wait_details(page):
         raise RuntimeError("Studio details step did not open")
     if norm(fill_box(page, "title", title)) != norm(title):
@@ -379,7 +412,8 @@ def publish(args, ctx, page, evidence: Path) -> dict:
         release_state = {"visibility":"PUBLIC"}
     wait_publish_enabled(page)
     page.screenshot(path=str(evidence / ("03-schedule-ready.png" if schedule_at else "03-public-ready.png")))
-    page.locator("ytcp-button#done-button").first.click(timeout=10_000, force=True)
+    publish_button = page.locator("ytcp-button#done-button").first
+    guarded_studio_action(page, selected_channel, lambda: publish_button.click(timeout=10_000, force=True))
     wait_upload_complete(page)
     time.sleep(15)
     url = public_url(page)
@@ -411,6 +445,7 @@ def publish(args, ctx, page, evidence: Path) -> dict:
         if state == "PUBLIC": break
         time.sleep(20); state = studio_state(page, video_id, title)
     if state != "PUBLIC": raise RuntimeError(f"Studio reports {state}, not PUBLIC")
+    actual_channel_id = verified_studio_channel(page)
     payload = {}
     for _ in range(8):
         try:
@@ -431,6 +466,7 @@ def publish(args, ctx, page, evidence: Path) -> dict:
         "thumbnail_sha256": sha256(args.thumbnail), "studio_state": state,
         "oembed": {k: payload.get(k) for k in ("author_name", "title", "thumbnail_url")},
         "studio_thumbnail_mean_abs_distance": round(distance, 2),
+        "channel_id": actual_channel_id,
         "verified_at": datetime.now(timezone.utc).isoformat(),
     }
 

@@ -1,0 +1,122 @@
+name: Hosted YouTube film public post
+on:
+  workflow_run:
+    workflows: [AGMM film segments render]
+    types: [completed]
+permissions:
+  actions: read
+  contents: write
+concurrency:
+  group: youtube-film-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == 'agmmltd-arch/agmm-render-public' && github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-24.04
+    environment: youtube-production
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Checkout protected text source at its actual main commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: main
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: protected
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with: {python-version: '3.12'}
+      - name: Install exact route runtime
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.55.0 Pillow==11.3.0
+          python -m playwright install --with-deps chromium
+      - name: Verify source workflow run and select its exact protected map row
+        id: select
+        env:
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          PRIVATE_HEAD=$(git -C protected rev-parse HEAD)
+          export PRIVATE_HEAD
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" > source-run.json
+          python -c 'import json,os,pathlib,datetime,zoneinfo; d=json.loads(pathlib.Path("source-run.json").read_text()); assert d["id"]==int(os.environ["SOURCE_RUN_ID"]) and d["status"]=="completed" and d["conclusion"]=="success" and d["repository"]["full_name"]=="agmmltd-arch/agmm-render-public" and d["head_repository"]["full_name"]=="agmmltd-arch/agmm-render-public" and d["head_branch"]=="main" and d["name"]=="AGMM film segments render"; p=json.loads(pathlib.Path("protected/v2/autoposter/films/hosted-publication-inputs-v1.json").read_text()); assert p["channel_id"]=="UChbp0G1KDjCnruAhxfmzEXg"; today=datetime.datetime.now(zoneinfo.ZoneInfo("Europe/London")).date().isoformat(); rows=[x for x in (p.get("films") or {}).values() if x.get("artifact",{}).get("source_run_id")==str(d["id"])]; assert len(rows)==1; r=rows[0]; assert r["film_id"] in ("F02","F07") and r["status"]=="Ready to post" and r["target_date"]==today and r["channel_id"]==p["channel_id"] and r["artifact"]["name"] and r["artifact"]["master_sha256"]==r["master_sha256"]; pathlib.Path("selection.json").write_text(json.dumps({"film_id":r["film_id"],"target_date":r["target_date"],"artifact":r["artifact"],"master_sha256":r["master_sha256"],"private_source_commit":os.environ["PRIVATE_HEAD"],"public_source_head":d["head_sha"],"source_run_id":d["id"]},indent=2)); f=open(os.environ["GITHUB_OUTPUT"],"a"); f.write("film_id="+r["film_id"]+"\ntarget_date="+r["target_date"]+"\nartifact_name="+r["artifact"]["name"]+"\nprivate_head="+os.environ["PRIVATE_HEAD"]+"\n"); f.close()'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+          name: ${{ steps.select.outputs.artifact_name }}
+          path: artifacts
+      - name: Validate protected approval, AV, rights, metadata and package bytes
+        env:
+          INPUT_COMMIT: ${{ steps.select.outputs.private_head }}
+          FILM: ${{ steps.select.outputs.film_id }}
+          TARGET_DATE: ${{ steps.select.outputs.target_date }}
+        run: |
+          set -euo pipefail
+          python .github/scripts/film_public_post.py prepare --source protected --commit "$INPUT_COMMIT" --film-id "$FILM" --target-date "$TARGET_DATE" --artifact-root artifacts --output request.json
+          python -c 'import json,pathlib; r=json.loads(pathlib.Path("request.json").read_text()); pathlib.Path("metadata.json").write_text(json.dumps({"snippet":{"title":r["title"],"description":r["description"]},"status":{"containsSyntheticMedia":bool(r["metadata"].get("altered_content"))}})); pathlib.Path("approval.json").write_text(json.dumps(r["approval"])); pathlib.Path("route.env").write_text("PACKAGE="+r["package_dir"]+"\nMASTER="+r["master_sha256"]+"\nRUN="+r["source_run_id"]+"\n")'
+          cat route.env >> "$GITHUB_ENV"
+          mkdir -p route-state
+          cp selection.json route-state/selection.json
+          cp request.json route-state/request.json
+          cp source-run.json route-state/source-run.json
+      - name: Atomically create a public durable no-retry claim
+        id: claim
+        env:
+          FILM: ${{ steps.select.outputs.film_id }}
+        run: |
+          set -euo pipefail
+          python -c 'import json,os,pathlib; r=json.loads(pathlib.Path("request.json").read_text()); c={"schema":"agmm-youtube-one-shot-claim-v1","film_id":r["film_id"],"master_sha256":r["master_sha256"],"protected_source_commit":r["source_commit"],"public_source_head":json.loads(pathlib.Path("selection.json").read_text())["public_source_head"],"source_run_id":r["source_run_id"],"workflow_run_id":os.environ["GITHUB_RUN_ID"],"state":"CLAIMED_BEFORE_SINGLE_UPLOAD","automatic_retry":"PROHIBITED"}; pathlib.Path("claim.json").write_text(json.dumps(c,sort_keys=True)); pathlib.Path("route-state/claim.json").write_text(json.dumps(c,indent=2))'
+          python -c 'import subprocess,json,base64,pathlib,os,sys; p=pathlib.Path("claim.json"); dest="repos/"+os.environ["GITHUB_REPOSITORY"]+"/contents/status/youtube-claims/"+os.environ["FILM"]+"-"+os.environ["MASTER"]+".json"; data={"message":"Claim one-shot YouTube upload "+os.environ["FILM"],"content":base64.b64encode(p.read_bytes()).decode()}; x=subprocess.run(["gh","api",dest,"--method","PUT","--input","-"],input=json.dumps(data),text=True,capture_output=True); print(x.stderr,file=sys.stderr); raise SystemExit(x.returncode)'
+      - name: Attempt one YouTube Studio publish
+        id: studio
+        env:
+          AGMM_YOUTUBE_STORAGE_STATE: ${{ secrets.AGMM_YOUTUBE_STORAGE_STATE }}
+        run: |
+          set -euo pipefail
+          python -c 'import os,pathlib; p=pathlib.Path("storage-state.json"); p.write_text(os.environ["AGMM_YOUTUBE_STORAGE_STATE"]); p.chmod(0o600)'
+          python .github/scripts/youtube_studio_cloud_upload.py --mode publish --storage-state storage-state.json --video "$PACKAGE/video.mp4" --thumbnail "$PACKAGE/thumbnail.jpg" --metadata metadata.json --approval approval.json --expected-sha256 "$MASTER" --source-run-id "$RUN" --out provider-result.json --evidence evidence
+      - name: Export canonical receipt after verified PUBLIC
+        id: receipt
+        if: steps.studio.outcome == 'success'
+        run: |
+          set -euo pipefail
+          python .github/scripts/film_public_post.py export --request request.json --provider-result provider-result.json --output "$PACKAGE/receipts/youtube.json"
+          cp "$PACKAGE/receipts/youtube.json" route-state/youtube-public-receipt.json
+          python -c 'import json,pathlib; r=json.loads(pathlib.Path("provider-result.json").read_text()); assert r["overall"]=="PUBLIC_VERIFIED" and r["studio_state"]=="PUBLIC"; pathlib.Path("route-state/provider-public-proof.json").write_text(json.dumps(r,indent=2))'
+      - name: Commit durable receipt for posted_cards ingestion
+        id: persist
+        if: steps.receipt.outcome == 'success'
+        env:
+          FILM: ${{ steps.select.outputs.film_id }}
+        run: |
+          set -euo pipefail
+          python -c 'import subprocess,json,base64,pathlib,os,sys; p=pathlib.Path("route-state/youtube-public-receipt.json"); dest="repos/"+os.environ["GITHUB_REPOSITORY"]+"/contents/status/youtube-public-receipts/"+os.environ["FILM"]+"-"+os.environ["MASTER"]+".json"; data={"message":"Record verified public YouTube receipt "+os.environ["FILM"],"content":base64.b64encode(p.read_bytes()).decode()}; x=subprocess.run(["gh","api",dest,"--method","PUT","--input","-"],input=json.dumps(data),text=True,capture_output=True); print(x.stderr,file=sys.stderr); raise SystemExit(x.returncode)'
+      - name: Preserve route evidence and classify uncertain uploads
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p route-state
+          python -c 'import json,os,pathlib; claimed=pathlib.Path("route-state/claim.json").exists(); public=pathlib.Path("route-state/youtube-public-receipt.json").exists(); d={"schema":"agmm-youtube-route-run-state-v1","run_id":int(os.environ["GITHUB_RUN_ID"]),"claim_created":claimed,"public_receipt_verified":public,"durable_receipt_committed":"${{ steps.persist.outcome }}","manual_reconciliation_required":bool(claimed and (not public or "${{ steps.persist.outcome }}"!="success")),"automatic_retry":"PROHIBITED" if claimed and not public else "NOT_CLAIMED","steps":{"claim":"${{ steps.claim.outcome }}","studio":"${{ steps.studio.outcome }}","receipt":"${{ steps.receipt.outcome }}","persist":"${{ steps.persist.outcome }}"}}; pathlib.Path("route-state/ROUTE-RUN-STATE.json").write_text(json.dumps(d,indent=2))'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: youtube-route-evidence-${{ github.event.workflow_run.id }}
+          path: |
+            route-state/*.json
+            provider-result.json
+            evidence/*.png
+            evidence/studio-thumbnail.jpg
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Remove temporary Studio storage state
+        if: always()
+        run: python3 -c 'from pathlib import Path; p=Path("storage-state.json"); p.unlink() if p.exists() else None'
