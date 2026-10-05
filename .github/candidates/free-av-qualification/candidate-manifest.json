@@ -1,0 +1,176 @@
+{
+  "candidate_files": {
+    ".github/candidates/free-av-qualification/README.md": "c5dd14d778e07948ac4216da8d3f315d444f7418b7126adaea6b3203d8e50b23",
+    ".github/scripts/av_free_qualification/hosted_av_qualification.py": "da8d26533f9c079c561be782fbd5d4c2c11d0af56228d5248fb61b4bf42c0f61",
+    ".github/scripts/av_free_qualification/qualification.py": "9f3c01cf3ed5e8c5728720f88b58fd40665fdf544dc10a6f637d2919e4e12a81",
+    ".github/scripts/av_free_qualification/run_hosted_qualification.py": "5572d2853a164dbba3cf40714ad8a954eb0c06d9ae9222fced0e90e8261bd1dd",
+    ".github/scripts/av_free_qualification/test_qualification.py": "1111bf694548bdfe1a7b70cff31b9a205f59ff9bd7ca5facc2cdfd99694094f2",
+    ".github/scripts/av_free_qualification/verify_candidate.py": "9baefcbe802b8641003d6eb0af3f5513ae014a9848565df79a8e09e2dab5adf0",
+    ".github/workflows/free-av-qualification.yml": "a5fd7e7eb66ed4ff5cf5a68b39dd5ba524b03195d62bfc071dfd237bab8f076c"
+  },
+  "candidate_id": "free-av-qualification-20261005",
+  "known_unavailable_controls": [
+    "P1 historical r6 hosted bytes",
+    "original P2/P3 defective mixes",
+    "F01 rainbed",
+    "P1 ambience low-pass control"
+  ],
+  "model": {
+    "api": "GenerateContent",
+    "free_eligibility": "Google pricing lists standard input/output as Free; account quota determined by one bounded run",
+    "id": "gemini-3.8-flash",
+    "media_input": "Gemini Files API full MP4 file_data",
+    "video_sampling": "documented default 1 fps; full audio+video MP4 supplied"
+  },
+  "official_docs": {
+    "api_reference": "https://ai.google.dev/api/generate-content",
+    "checked": "2026-10-05",
+    "pricing": "https://ai.google.dev/gemini-api/docs/pricing",
+    "video": "https://ai.google.dev/gemini-api/docs/generate-content/video-understanding"
+  },
+  "provider_policy": {
+    "fallback": false,
+    "max_generate_content_calls": 6,
+    "one_per_blind_item": true,
+    "paid_or_vertex": false,
+    "partial_completed_results_preserved": true,
+    "quota_refusal_terminal": true,
+    "raw_response_saved_and_fsynced_before_result": true,
+    "response_complete_only_if_finishReason_STOP": true,
+    "retry_count": 0
+  },
+  "publication_map": {
+    "branch": "candidate-free-av-qualification-20261005",
+    "destinations": [
+      {
+        "operation": "create",
+        "path": ".github/candidates/free-av-qualification/README.md",
+        "preimage": {
+          "state": "absent"
+        }
+      },
+      {
+        "operation": "create",
+        "path": ".github/candidates/free-av-qualification/candidate-manifest.json",
+        "preimage": {
+          "state": "absent"
+        }
+      },
+      {
+        "operation": "create",
+        "path": ".github/scripts/av_free_qualification/hosted_av_qualification.py",
+        "preimage": {
+          "state": "absent"
+        }
+      },
+      {
+        "operation": "create",
+        "path": ".github/scripts/av_free_qualification/qualification.py",
+        "preimage": {
+          "state": "absent"
+        }
+      },
+      {
+        "operation": "create",
+        "path": ".github/scripts/av_free_qualification/run_hosted_qualification.py",
+        "preimage": {
+          "state": "absent"
+        }
+      },
+      {
+        "operation": "create",
+        "path": ".github/scripts/av_free_qualification/test_qualification.py",
+        "preimage": {
+          "state": "absent"
+        }
+      },
+      {
+        "operation": "create",
+        "path": ".github/scripts/av_free_qualification/verify_candidate.py",
+        "preimage": {
+          "state": "absent"
+        }
+      },
+      {
+        "operation": "create",
+        "path": ".github/workflows/free-av-qualification.yml",
+        "preimage": {
+          "state": "absent"
+        }
+      }
+    ],
+    "expected_public_head_sha": "9b09b908cbc82cf0e8290af9f8d410832414cd2e",
+    "expected_public_tree_sha": "9f97d0554e57e614ccc030857cd4f449edc65b00",
+    "repository": "agmmltd-arch/agmm-render-public"
+  },
+  "qualification_scope": "Six blind whole-video audiovisual calibration stimuli: full positives P1-r7/P2-corrected-audio-v2/P3-corrected-audio-v2 plus three severe synthetic audio controls derived from full P1 video; not general qualification or release approval.",
+  "runtime_gates": {
+    "billing_disabled": "true",
+    "extra_quota_human_gate": false,
+    "free_only": "1",
+    "free_tier": "true",
+    "github_actions_normalized_values": [
+      "true",
+      "1"
+    ],
+    "host": "GitHub Actions Ubuntu Linux",
+    "project_id": "gen-lang-client-0105607923",
+    "secret_name": "AGMM_GEMINI_FREE_REVIEW_KEY",
+    "secret_value_accessed": false
+  },
+  "schema": "free-av-qualification-candidate/v1",
+  "source_lineage": {
+    "P1_FINAL_web": {
+      "bytes": 38040764,
+      "duration_s": 58.9,
+      "lineage_text": {
+        "lines": [
+          3,
+          88,
+          114
+        ],
+        "path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/pilot/build/P1/BUILD-NOTES.md",
+        "sha256": "e3a725fafdde1414cbdd187f9828cf0f8421326a494db2da3cd0d5b0cf5ad3e8"
+      },
+      "sha256": "0ed30928dcd77ba3fbc565e832a0e31064c11a2f308e3d0a863956cc07f3277e"
+    },
+    "P2_corrected_audio_v2": {
+      "bytes": 237283443,
+      "duration_s": 59.7,
+      "sha256": "1d6ec1c4a20eb1a3b8f1c7e21d96712b823f1b8532b6750b5fd964af47d17226"
+    },
+    "P3_corrected_audio_v2": {
+      "bytes": 48825636,
+      "duration_s": 58.4,
+      "sha256": "ef449e83f2b8c6b7f75e836cd9bcc0e65a231efc8e7f264f58f602d660ab391b"
+    },
+    "audio_calibration_text": {
+      "lines": {
+        "P1_r6_r7": [
+          19,
+          21
+        ],
+        "P2_P3_original_faults": [
+          22,
+          23
+        ],
+        "mix2_completed_checks": [
+          25,
+          104,
+          105
+        ]
+      },
+      "path": "/Users/samwall/alfred/builds/video-program-2026-09-23/v2/sound/v2/CALIBRATION.md",
+      "sha256": "f208a42f527eb45e61ec0d8700c13a6258007dfc04f93ffc4ac5a2ef7c935c8d"
+    },
+    "human_project_confirmation": {
+      "contains_secret_value": false,
+      "path": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/BUILD/FREE-REVIEW-PROJECT-HUMAN-CONFIRMATION.json",
+      "sha256": "e37eefc6e0144ccb70c7917ffe2f4f059b154b902975a5482a3dfbe966b15c1c"
+    }
+  },
+  "tests": {
+    "count": 9,
+    "execution": "workflow unittest command semantics via RAM import; no local writes/network/API/media/credentials"
+  }
+}

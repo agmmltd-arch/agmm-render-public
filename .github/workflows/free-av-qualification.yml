@@ -1,0 +1,48 @@
+name: Free audiovisual reviewer qualification
+on:
+  workflow_dispatch:
+    inputs:
+      expected_candidate_commit:
+        description: Exact installed main commit SHA to test (must equal this workflow run's github.sha)
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+      - name: Verify exact candidate commit, current-main preimage and complete runtime closure
+        env:
+          EXPECTED_CANDIDATE_COMMIT: ${{ inputs.expected_candidate_commit }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+        run: python3 -B .github/scripts/av_free_qualification/verify_candidate.py
+      - name: Run isolated synthetic negative controls and zero-I/O gates
+        run: cd .github/scripts/av_free_qualification && python3 -B -m unittest -v test_qualification.py
+      - name: Confirm hosted tools
+        run: |
+          command -v ffmpeg
+          command -v ffprobe
+          ffmpeg -version | head -n 1
+      - name: Run one bounded blind audiovisual panel
+        env:
+          GITHUB_ACTIONS: "true"
+          FLEET_FREE_ONLY: "1"
+          AGMM_GEMINI_FREE_PROJECT_ID: "gen-lang-client-0105607923"
+          AGMM_GEMINI_BILLING_DISABLED: "true"
+          AGMM_GEMINI_FREE_TIER: "true"
+          AGMM_GEMINI_FREE_REVIEW_KEY: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY }}
+        run: python3 -B .github/scripts/av_free_qualification/run_hosted_qualification.py
+      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
+        if: always() && hashFiles('qualification-results/**') != ''
+        with:
+          name: free-av-qualification-results
+          path: qualification-results/
+          retention-days: 1
+          if-no-files-found: error
