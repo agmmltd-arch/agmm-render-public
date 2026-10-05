@@ -1,0 +1,35 @@
+name: P2 hosted source integrity diagnostic
+on:
+  workflow_dispatch:
+    inputs:
+      expected_commit:
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Check exact installed closure and parent
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: |
+          python3 -B -c 'import os,json,hashlib,subprocess,pathlib; git=lambda *a:subprocess.check_output(["git",*a],text=True).strip(); m=json.loads(pathlib.Path(".github/candidates/p2-source-diagnostic/candidate-manifest.json").read_text()); assert os.environ["GITHUB_SHA"]==os.environ["EXPECTED_COMMIT"]==git("rev-parse","HEAD"); assert git("rev-parse","HEAD^")==m["parent_sha"] and git("rev-parse","HEAD^^{tree}")==m["parent_tree"]; parent=set(git("ls-tree","-r","--name-only","HEAD^").splitlines()); assert not parent.intersection(m["create_paths"]); assert set(git("diff","--name-only","HEAD^","HEAD").splitlines())==set(m["create_paths"]); assert json.loads(subprocess.check_output(["gh","api","repos/"+os.environ["GITHUB_REPOSITORY"]+"/git/ref/heads/main"]))["object"]["sha"]==git("rev-parse","HEAD"); assert all(hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()==h for p,h in m["files"].items())'
+      - name: Measure two complete hosted streams without saving media
+        run: python3 -B .github/scripts/p2_source_diagnostic/measure_p2.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always() && hashFiles('p2-source-results/receipt.json') != ''
+        with:
+          name: p2-hosted-source-integrity
+          path: p2-source-results/receipt.json
+          if-no-files-found: error
+          retention-days: 1
