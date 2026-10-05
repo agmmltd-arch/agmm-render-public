@@ -26,6 +26,8 @@ def measure(label,url,opener):
     if not block:break
     count+=len(block);digest.update(block)
     if count>PIN_BYTES+(1<<20):raise ValueError("response exceeds source bound")
+ except urllib.error.HTTPError as exc:
+  row.update(http_status=exc.code,final_url=exc.geturl(),content_type=exc.headers.get("Content-Type"),content_length=exc.headers.get("Content-Length"),error_type=type(exc).__name__,error=str(exc)[:250])
  except Exception as exc:row.update(error_type=type(exc).__name__,error=str(exc)[:250])
  row.update(bytes=count,sha256=digest.hexdigest(),elapsed_s=round(time.monotonic()-start,3))
  row["exact_match"]=not row.get("error") and count==PIN_BYTES and row["sha256"]==PIN_SHA
