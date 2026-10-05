@@ -69,7 +69,7 @@
     .evidence-turn{perspective:1800px}
     .turnover{position:absolute;left:74px;right:74px;top:420px;height:940px;transform-style:preserve-3d;transform-origin:center;box-shadow:0 28px 72px rgba(23,45,60,.2)}
     .face{position:absolute;inset:0;backface-visibility:hidden;background:var(--caption);border:2px solid rgba(23,45,60,.18);overflow:hidden}
-    .face-back{transform:rotateY(180deg);display:grid;grid-template-columns:1fr 1fr}
+    .face-back{transform:rotateY(180deg);display:none;grid-template-columns:1fr 1fr}
     .source-note{position:absolute;inset:64px 58px;padding:74px 62px;background:#fbf9f3;border-left:10px solid var(--blue);display:flex;flex-direction:column;justify-content:center;gap:58px}
     .source-note .source-tag{position:absolute;top:12px;left:62px;right:62px;font:700 46px/1.12 Arial,sans-serif;color:var(--blue)}
     .source-note blockquote{font:700 66px/1.12 Georgia,serif;color:var(--ink);margin:0}
@@ -79,7 +79,7 @@
     .ledger-column h2{font:700 44px/1.05 Arial,sans-serif;letter-spacing:.3px;margin:0 0 38px;min-height:104px}
     .ledger-column .claim{font:700 52px/1.08 Georgia,serif;color:var(--blue)}
     .ledger-column .source-tag{position:absolute;left:40px;right:40px;bottom:50px}
-    .evidence-state{position:absolute;left:30px;right:30px;top:680px;border:4px dashed var(--red);padding:33px 18px;text-align:center;color:var(--red);font:700 42px/1.08 Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center}
+    .evidence-state{position:absolute;left:30px;right:30px;top:560px;border:4px dashed var(--red);padding:33px 18px;text-align:center;color:var(--red);font:700 42px/1.08 Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center}
     .blank-field{position:absolute;left:60px;right:60px;top:540px;height:220px;border-bottom:3px solid var(--rule);border-top:3px solid rgba(23,45,60,.14)}
     .s6 .worksheet{position:absolute;left:116px;right:96px;top:400px;height:910px;padding:60px 65px}
     .s6 .worksheet h2{font:700 66px/1 Georgia,serif;margin:0 0 60px}
@@ -1299,8 +1299,14 @@
       .fromTo('.s3 .proof', { x: -420, rotation: -6, opacity: 0 }, { x: 0, rotation: 0, opacity: 1, duration: .58, ease: 'power3.out' }, 18.619)
       .fromTo('.s3 .route-line', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: .55, ease: 'power2.inOut' }, 23.6)
       .fromTo('.s3 .trust', { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: .42, stagger: .24, ease: 'power3.out' }, 23.75)
-      .fromTo('.turnover', { y: 100, rotation: -2, scale: .96 }, { y: 0, rotation: 0, scale: 1, duration: .58, ease: 'power3.out' }, 28.457)
-      .fromTo('.turnover', { rotationY: 0 }, { rotationY: 180, duration: .78, ease: 'power2.inOut' }, 34.533)
+      .set('.turnover', { y: 100, rotation: -2, scale: .96, rotationY: 0 }, 28.457)
+      .to('.turnover', { y: 0, rotation: 0, scale: 1, duration: .58, ease: 'power3.out' }, 28.457)
+      .set('.face-front', { display: 'block' }, 28.457)
+      .set('.face-back', { display: 'none' }, 28.457)
+      .to('.turnover', { rotationY: 180, duration: .78, ease: 'power2.inOut' }, 34.533)
+      .set('.face-front', { display: 'none' }, 34.923)
+      .set('.face-back', { display: 'grid' }, 34.923)
+      .set('.face-back', { display: 'none' }, 44.901)
       .fromTo('.evidence-state', { scale: .78, opacity: 0, rotation: 8 }, { scale: 1, opacity: 1, rotation: 0, duration: .45, ease: 'back.out(1.04)' }, 40.15)
       .fromTo('.s6 .worksheet', { x: -210, rotation: -5 }, { x: 0, rotation: 2, duration: .55, ease: 'power3.out' }, 44.901)
       .fromTo('.s6 .field', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: .3, stagger: .12, ease: 'power2.out' }, 46.1)

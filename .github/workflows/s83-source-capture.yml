@@ -47,7 +47,7 @@ jobs:
     timeout-minutes: 40
     env:
       GH_REPO: agmmltd-arch/agmm-render-public
-      S83_PARENT: 440d0714ca6e9b10d97518fe197a371c4b3edc9d
+      S83_PARENT: 2fe381ab18796b0366a543fffdecd2e1a97c0b63
       CANDIDATE: .github/candidates/S83
       EXPECTED_PUBLIC_HEAD_SHA: ${{ inputs.expected_public_head_sha }}
       CANDIDATE_MANIFEST_SHA256: ${{ inputs.candidate_manifest_sha256 }}

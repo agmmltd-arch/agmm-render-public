@@ -1,0 +1,159 @@
+{
+  "schema": "agmm-s83-actual-layout-repair-map-v1",
+  "status": "BRANCH_CANDIDATE_READY_FOR_ROOT_REVIEW",
+  "repository": "agmmltd-arch/agmm-render-public",
+  "branch": "candidate-s83-actual-layout-20261005",
+  "base_main": "2fe381ab18796b0366a543fffdecd2e1a97c0b63",
+  "base_tree": "776af9d19169e35eacdb4c02a838903a7563057b",
+  "base_commit_date": "2026-10-05T00:59:02Z",
+  "candidate_manifest_sha256": "5e4c64640b3aa3c1e60ceef2413cce09cb96acb073d4919b2c17d20da873fa7f",
+  "candidate_text_hashes_sha256": "36a04976fed45f481c27f10d3aec3d18d7be3b8eed5f84125226ee8883d6eb59",
+  "candidate_text_file_count": 50,
+  "changed_target_count": 8,
+  "targets": [
+    {
+      "path": ".github/candidates/S83/CANDIDATE-MANIFEST.json",
+      "operation": "update",
+      "preimage": {
+        "blob_sha1": "a8c2d3cb6837acb08e00cec2d7d316715c4d307b",
+        "bytes": 9669,
+        "sha256": "fae670b35f33fd843f10c0c7d1d567b3bf5be244191bf0e8e292cb19b6af7c85"
+      },
+      "proposed": {
+        "bytes": 9669,
+        "sha256": "5e4c64640b3aa3c1e60ceef2413cce09cb96acb073d4919b2c17d20da873fa7f",
+        "blob_sha1": "7abdd4d18a2b99956ab87fda36c6541479c71c13"
+      }
+    },
+    {
+      "path": ".github/candidates/S83/CANDIDATE-MANIFEST.sha256",
+      "operation": "update",
+      "preimage": {
+        "blob_sha1": "22b49cece2f7aa88ff26a1bbdf8df318b8e61e30",
+        "bytes": 90,
+        "sha256": "9b88124cc70ae4958f5aa46c20f996daf717768386a5e81557b3dc2c56d7c245"
+      },
+      "proposed": {
+        "bytes": 90,
+        "sha256": "68e2b27bc3aeab4952dce0a451ce2245e0e9b9c9e92fa7b442757389d77d9a3b",
+        "blob_sha1": "15cbef8eb6a323c3acb9793cd36e28df3df1a321"
+      }
+    },
+    {
+      "path": ".github/candidates/S83/CANDIDATE-TEXT-HASHES.txt",
+      "operation": "update",
+      "preimage": {
+        "blob_sha1": "fd802d48f08524a26d8234796d5d29982f9eac67",
+        "bytes": 4461,
+        "sha256": "f4c1f48c80c5135c46f55d073b2a848e072ef6c0fa602c7cb60aeafd7c33adec"
+      },
+      "proposed": {
+        "bytes": 4461,
+        "sha256": "36a04976fed45f481c27f10d3aec3d18d7be3b8eed5f84125226ee8883d6eb59",
+        "blob_sha1": "21e42434312c4624f1ac39d48665f3ccd16698dc"
+      }
+    },
+    {
+      "path": ".github/candidates/S83/PARENT-IDENTITY.json",
+      "operation": "update",
+      "preimage": {
+        "blob_sha1": "db702feeca021aa365295cc28d765c82ec94021a",
+        "bytes": 1519,
+        "sha256": "3dbfc6290cb57c35dbb8affe9f5d2a0a0303768a5025a192f91bfc001a3cc936"
+      },
+      "proposed": {
+        "bytes": 1519,
+        "sha256": "5fce5422e3fc718c6f06f07b6b23201bcf90ac97b37ae95bab28e53c9012d4a0",
+        "blob_sha1": "50dfba4b919f62e5dd21ed32105eaa7bc1af6882"
+      }
+    },
+    {
+      "path": ".github/candidates/S83/index.html",
+      "operation": "update",
+      "preimage": {
+        "blob_sha1": "42f405ddb71659c24172453041ffe2daccd634ec",
+        "bytes": 41351,
+        "sha256": "b0c092b51b49ab917a8add1f6b5333f61e9b1ee2e101afe3dc964e13d694c2c0"
+      },
+      "proposed": {
+        "bytes": 41644,
+        "sha256": "fa79b65731cd96880b956e8983557ea85a3d98f946505ab6639adeb14fbad20f",
+        "blob_sha1": "32a6730bbbd8638557eb798128ad6f444920a0d2"
+      }
+    },
+    {
+      "path": ".github/candidates/S83/s83-source-capture.workflow.yml",
+      "operation": "update",
+      "preimage": {
+        "blob_sha1": "e341474b11c0ae3e1c70d9fd1b9ee86580eb101d",
+        "bytes": 28477,
+        "sha256": "62776e35801a67532551f170f0c889c967a1b33fa24bbf66548b4ded49fd6a03"
+      },
+      "proposed": {
+        "bytes": 28477,
+        "sha256": "279c6e5e91086c57168279241d34dac849cf78e08a4c350d140a67ab8e1037dd",
+        "blob_sha1": "6fc9473d18607ac864d3f3baea61cf8ffaceac78"
+      }
+    },
+    {
+      "path": ".github/candidates/S83/test_s83_layout_regressions.py",
+      "operation": "update",
+      "preimage": {
+        "blob_sha1": "e92d9c62db5b94d6ca4ed5a2c69df266b418016a",
+        "bytes": 5003,
+        "sha256": "61b8bbcddfdec1e6b43149319058e0015eef02429e97b344457703f8102c41be"
+      },
+      "proposed": {
+        "bytes": 7213,
+        "sha256": "9327654c1da3cdd6a0048beb6669cb55c9fb3c595cbcbe39f67281f48909decf",
+        "blob_sha1": "8332ce790d5de4af4d9eb1cc14c2a3c559ed4e5d"
+      }
+    },
+    {
+      "path": ".github/workflows/s83-source-capture.yml",
+      "operation": "update",
+      "preimage": {
+        "blob_sha1": "e341474b11c0ae3e1c70d9fd1b9ee86580eb101d",
+        "bytes": 28477,
+        "sha256": "62776e35801a67532551f170f0c889c967a1b33fa24bbf66548b4ded49fd6a03"
+      },
+      "proposed": {
+        "bytes": 28477,
+        "sha256": "279c6e5e91086c57168279241d34dac849cf78e08a4c350d140a67ab8e1037dd",
+        "blob_sha1": "6fc9473d18607ac864d3f3baea61cf8ffaceac78"
+      }
+    }
+  ],
+  "runtime_pins": {
+    ".github/workflows/agmm-short-capture.yml": "3cb41404efec5fed821510b8d8717b8188221891",
+    ".github/scripts/capture_short_package.py": "65f9b89f126c6113a91061a2f1f361954c96a0ae",
+    ".github/scripts/render_short_package.py": "754099346a84c5bd305f5684ef24399a53bd9697",
+    ".github/workflows/agmm-short-package.yml": "2e8c6e21409e0bdaaf80356d8b02b71bd4c5491b",
+    "tools/agmm-kit-mirror/sound/v2/audio_core.py": "9a0aaee6f0676677efff34d25fdcf79d9537cb16",
+    "tools/agmm-kit-mirror/sound/v2/audio_rules.json": "e00afb1410d4ae9278be24ccb3811972a62e7b17",
+    "tools/agmm-kit-mirror/sound/v2/mix2.py": "623521fb087ce296fe3895f6c23205c49976b837",
+    "tools/agmm-kit-mirror/sound/v2/voice_chain.py": "ea817bb829f4ffd68b2abdaacb1a8128731d4b21",
+    "tools/agmm-kit-mirror/sound/library.json": "ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05"
+  },
+  "diagnostic_run": 37249599493,
+  "diagnostic_artifact": 11320801239,
+  "actual_error_count": 3,
+  "regression_tests": {
+    "result": "10 tests passed in memory",
+    "negative_case": "actual run37249599493 three layout collisions rejected",
+    "overlap_waivers": false
+  },
+  "repair_rationale": {
+    "faces": "Only front face displayable before edge-on midpoint. Timeline baseline and to tweens set deterministic seeks; face display handoff at 34.923 seconds/90 degrees; rear face hidden at clip end.",
+    "rear_state": "Evidence status box top560, computed height about164.72px, fits existing blank-field y540..760; footer remains in bottom50px zone."
+  },
+  "preserved": {
+    "duration_seconds": 56.533333,
+    "end_frame": 1696,
+    "source_clock": 56.533333,
+    "audio_cta_privacy_facts_unchanged": true,
+    "private_inputs_unchanged": true,
+    "dispatch": "NOT_PERFORMED",
+    "approval": "NOT_GRANTED"
+  }
+}

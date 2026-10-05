@@ -85,6 +85,29 @@ class S83LayoutRegressionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "zero errors"):
             validate(old)
 
+    def test_actual_37249599493_errors_are_rejected(self):
+        report = {"layout": {"ok": False, "errorCount": 3, "findings": [
+            {"severity": "error", "code": "content_overlap", "selector": "div.source-note > div:nth-of-type(1)", "containerSelector": "article.face.face-back > div:nth-of-type(1) > h2:nth-of-type(1)", "firstSeen": 28.579, "lastSeen": 44.927},
+            {"severity": "error", "code": "content_overlap", "selector": "div.source-note > div:nth-of-type(1)", "containerSelector": "article.face.face-back > div:nth-of-type(2) > h2:nth-of-type(1)", "firstSeen": 28.579, "lastSeen": 44.927},
+            {"severity": "error", "code": "content_overlap", "selector": "div.evidence-state > span:nth-of-type(2)", "containerSelector": "article.face.face-back > div:nth-of-type(2) > div:nth-of-type(3)", "firstSeen": 40.31, "lastSeen": 44.927}]}, "runtime": {"findings": []}}
+        with self.assertRaisesRegex(ValueError, "zero errors"):
+            validate(report)
+
+    def test_face_turn_handoff_is_seek_safe_at_edge(self):
+        for part in (".face-back{transform:rotateY(180deg);display:none;", ".set('.turnover', { y: 100, rotation: -2, scale: .96, rotationY: 0 }, 28.457)", ".set('.face-front', { display: 'block' }, 28.457)", ".set('.face-back', { display: 'none' }, 28.457)", ".to('.turnover', { rotationY: 180, duration: .78, ease: 'power2.inOut' }, 34.533)", ".set('.face-front', { display: 'none' }, 34.923)", ".set('.face-back', { display: 'grid' }, 34.923)", ".set('.face-back', { display: 'none' }, 44.901)"):
+            self.assertIn(part, self.html)
+        self.assertNotIn(".fromTo('.turnover'", self.html)
+
+    def test_rear_status_fits_existing_field_clear_of_footer(self):
+        self.assertRegex(self.html, r"\.blank-field\s*\{[^}]*top:540px;height:220px")
+        self.assertRegex(self.html, r"\.evidence-state\s*\{[^}]*top:560px")
+        self.assertRegex(self.html, r"\.ledger-column \.source-tag\s*\{[^}]*bottom:50px")
+        height = 2*42*1.08+2*33+2*4
+        self.assertGreaterEqual(560,540)
+        self.assertLess(560+height,540+220)
+        self.assertNotIn("data-layout-allow-overlap",self.html)
+        self.assertNotIn("allow-overlap",self.html)
+
     def test_clean_hosted_layout_report_passes(self):
         validate(clean_report())
 
@@ -119,7 +142,7 @@ class S83LayoutRegressionTests(unittest.TestCase):
 
     def test_text_zones_are_separated_without_overlap_waivers(self):
         self.assertRegex(self.html, r"\.source-note \.source-tag\s*\{[^}]*position:absolute;[^}]*top:12px")
-        self.assertRegex(self.html, r"\.evidence-state\s*\{[^}]*top:680px")
+        self.assertRegex(self.html, r"\.evidence-state\s*\{[^}]*top:560px")
         self.assertNotIn("data-layout-allow-overlap", self.html)
         self.assertNotIn("allow-overlap", self.html)
 
