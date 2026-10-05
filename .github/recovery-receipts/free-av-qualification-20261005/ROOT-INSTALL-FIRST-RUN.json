@@ -1,0 +1,18 @@
+{
+  "installed_commit": "4b57377e3bd03695f3c10147caf4a3352dafb88f",
+  "parent": "9b09b908cbc82cf0e8290af9f8d410832414cd2e",
+  "candidate_commit": "e505a121bad7817d23a68f7580ff82fa61ca87a4",
+  "manifest_sha256": "796a51ed807f22917c066b1a37c382f868859dbb0ccdbed9f8ebcf55d61e56b1",
+  "exact_all_create_changes": 8,
+  "root_independent_tests": 9,
+  "actual_hosted_tests": 9,
+  "native_run_id": 37252199755,
+  "native_created_at": "2026-10-05T01:38:13Z",
+  "conclusion": "failure",
+  "failure": "FFmpeg absent; stopped at command -v ffmpeg before media/provider",
+  "actual_provider_calls": 0,
+  "qualified_reviewer": false,
+  "release_approval": "NOT_GRANTED",
+  "local_writes": 0,
+  "repair_card": "Install FFmpeg on hosted Ubuntu, exact update preimage map and real runtime tests before changed dispatch"
+}
