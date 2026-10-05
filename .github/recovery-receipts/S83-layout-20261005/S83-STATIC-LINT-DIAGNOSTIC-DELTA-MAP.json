@@ -1,0 +1,65 @@
+{
+  "schema": "agmm-s83-static-lint-diagnostic-delta-map-v1",
+  "observed_public_main": "4b57377e3bd03695f3c10147caf4a3352dafb88f",
+  "observed_tree": "c620c13e33a4cec8b2aa2d73e4474304de810a3c",
+  "source_candidate_parent": "9b09b908cbc82cf0e8290af9f8d410832414cd2e",
+  "failure_run": 37251397845,
+  "failure_job": 111579590786,
+  "failure_evidence": "42 core and 12 HyperFrames tests passed; pinned lint exited nonzero before capture; JSON not retained; exact lint finding unknown.",
+  "repair": "Preserve JSON, stderr, exit status as TEXT artifact, then fail closed before browser capture.",
+  "preimages": [
+    {
+      "path": ".github/candidates/S83/CANDIDATE-MANIFEST.json",
+      "git_blob_sha1": "7abdd4d18a2b99956ab87fda36c6541479c71c13",
+      "postimage_sha256": "ce6a220d07247a52116344470be4b2e57eab9114f95594e941657d3cc766fa3b",
+      "bytes": 9669
+    },
+    {
+      "path": ".github/candidates/S83/CANDIDATE-MANIFEST.sha256",
+      "git_blob_sha1": "15cbef8eb6a323c3acb9793cd36e28df3df1a321",
+      "postimage_sha256": "de501c518a94b80951d5b886b3345a794ca27be856c3ba907febd828eb637e78",
+      "bytes": 90
+    },
+    {
+      "path": ".github/candidates/S83/CANDIDATE-TEXT-HASHES.sha256",
+      "git_blob_sha1": null,
+      "postimage_sha256": "3a1469f85a25756eec89e702e9d58ad3622eb9c2d28097be05e561032051e279",
+      "bytes": 92
+    },
+    {
+      "path": ".github/candidates/S83/CANDIDATE-TEXT-HASHES.txt",
+      "git_blob_sha1": "21e42434312c4624f1ac39d48665f3ccd16698dc",
+      "postimage_sha256": "f0f4f779cf4eb90103eff68e43b09bba1aef73431ce521adcf1b3b309d1d7326",
+      "bytes": 4461
+    },
+    {
+      "path": ".github/candidates/S83/PARENT-IDENTITY.json",
+      "git_blob_sha1": "50dfba4b919f62e5dd21ed32105eaa7bc1af6882",
+      "postimage_sha256": "d7e5e376fd16795049c60dc1437b90722eefc18511042bae0724c3746cd96fff",
+      "bytes": 1519
+    },
+    {
+      "path": ".github/candidates/S83/s83-source-capture.workflow.yml",
+      "git_blob_sha1": "6fc9473d18607ac864d3f3baea61cf8ffaceac78",
+      "postimage_sha256": "94a203b22c66be28ada8288e979e776584f1d691df2a5b8f5c08cc3656cb83b7",
+      "bytes": 29601
+    },
+    {
+      "path": ".github/candidates/S83/test_s83_hyperframes_runtime.py",
+      "git_blob_sha1": "bf9657dfb0982b6928212730cf9c57765d81fadc",
+      "postimage_sha256": "7db7022eeea160fcba24a89a21e04aac493d3d74a9098412250b44c617595859",
+      "bytes": 17261
+    },
+    {
+      "path": ".github/workflows/s83-source-capture.yml",
+      "git_blob_sha1": "6fc9473d18607ac864d3f3baea61cf8ffaceac78",
+      "postimage_sha256": "94a203b22c66be28ada8288e979e776584f1d691df2a5b8f5c08cc3656cb83b7",
+      "bytes": 29601
+    }
+  ],
+  "manifest_sha256": "ce6a220d07247a52116344470be4b2e57eab9114f95594e941657d3cc766fa3b",
+  "text_hashes_sha256": "f0f4f779cf4eb90103eff68e43b09bba1aef73431ce521adcf1b3b309d1d7326",
+  "dispatch": "NOT_PERFORMED",
+  "main_write": "NOT_PERFORMED",
+  "approval": "NOT_GRANTED"
+}

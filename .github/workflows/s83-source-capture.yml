@@ -47,7 +47,7 @@ jobs:
     timeout-minutes: 40
     env:
       GH_REPO: agmmltd-arch/agmm-render-public
-      S83_PARENT: 2fe381ab18796b0366a543fffdecd2e1a97c0b63
+      S83_PARENT: 4b57377e3bd03695f3c10147caf4a3352dafb88f
       CANDIDATE: .github/candidates/S83
       EXPECTED_PUBLIC_HEAD_SHA: ${{ inputs.expected_public_head_sha }}
       CANDIDATE_MANIFEST_SHA256: ${{ inputs.candidate_manifest_sha256 }}
@@ -113,15 +113,6 @@ jobs:
           python3 -c 'import json,os; assert json.load(open("PROTECTED-INPUTS.json"))["private_tree_binding"]["commit"] == os.environ["EXPECTED_PRIVATE_INPUT_COMMIT"]'
           python3 -m unittest -v test_validate_s83_source_clock.py test_verify_protected_input_manifest.py test_guard_review_artifact.py test_capture_hyperframes_diagnostic.py test_s83_review_export.py test_s83_layout_regressions.py
           python3 -m unittest -v test_s83_hyperframes_runtime.py
-          static_tree="$RUNNER_TEMP/s83-static-tree"
-          mkdir -p "$static_tree/assets"
-          install -m 0644 index.html "$static_tree/index.html"
-          install -m 0644 assets/gsap.min.js "$static_tree/assets/gsap.min.js"
-          # Static-only stand-ins satisfy file-presence lint; no source marks or media are read here.
-          printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>' > "$static_tree/assets/wht-mark.png"
-          cp "$static_tree/assets/wht-mark.png" "$static_tree/assets/rwt-mark.png"
-          npx --yes hyperframes@0.8.71 lint "$static_tree" --json > "$RUNNER_TEMP/s83-static-lint.json"
-          python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["errorCount"] == 0, d' "$RUNNER_TEMP/s83-static-lint.json"
           node --test source_url_guard.test.mjs
           python3 -m unittest -v test_cue_pan_map.py
           python3 validate_cue_pan_map.py MIX-SPEC.json MIX-CUE-PAN-MAP.json index.html
@@ -132,6 +123,37 @@ jobs:
           test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/v2/voice_chain.py")" = ea817bb829f4ffd68b2abdaacb1a8128731d4b21
           test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/library.json")" = ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05
           test "$(git rev-parse "$GITHUB_SHA:.github/scripts/render_short_package.py")" = 754099346a84c5bd305f5684ef24399a53bd9697
+      - name: Run and preserve pre-capture HyperFrames static lint
+        id: static_lint
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          static_tree="$RUNNER_TEMP/s83-static-tree"
+          mkdir -p "$static_tree/assets"
+          install -m 0644 index.html "$static_tree/index.html"
+          install -m 0644 assets/gsap.min.js "$static_tree/assets/gsap.min.js"
+          # Static-only stand-ins satisfy file-presence lint; no source marks or media are read here.
+          printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>' > "$static_tree/assets/wht-mark.png"
+          cp "$static_tree/assets/wht-mark.png" "$static_tree/assets/rwt-mark.png"
+          lint_exit=0
+          npx --yes hyperframes@0.8.71 lint "$static_tree" --json > "$RUNNER_TEMP/s83-static-lint.json" 2> "$RUNNER_TEMP/s83-static-lint-stderr.txt" || lint_exit=$?
+          printf 'exit_code=%s\n' "$lint_exit" > "$RUNNER_TEMP/s83-static-lint-status.txt"
+          if [[ "$lint_exit" == 0 ]]; then python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["errorCount"] == 0, d' "$RUNNER_TEMP/s83-static-lint.json"; else test -s "$RUNNER_TEMP/s83-static-lint.json"; fi
+      - name: Upload pre-capture static lint TEXT diagnostics
+        if: always() && steps.static_lint.outcome != 'skipped'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: s83-static-lint-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/s83-static-lint.json
+            ${{ runner.temp }}/s83-static-lint-stderr.txt
+            ${{ runner.temp }}/s83-static-lint-status.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Fail closed after preserving static lint findings
+        if: always() && steps.static_lint.outcome == 'failure'
+        run: exit 1
       - name: Install pinned browser capture dependencies
         run: |
           set -euo pipefail
