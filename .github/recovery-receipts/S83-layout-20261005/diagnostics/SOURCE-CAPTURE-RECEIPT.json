@@ -1,0 +1,229 @@
+{
+  "schema": "agmm-s83-hosted-source-capture-v1",
+  "story_id": "S83",
+  "status": "SOURCE_TEXT_AND_TRUST_LOGOS_CAPTURED_NEEDS_INDEPENDENT_EYES",
+  "host": "public agmm-render-public Ubuntu Actions runner",
+  "navigation_policy": {
+    "required_query": {
+      "utm_source": "qa",
+      "utm_campaign": "qa_release_audit"
+    },
+    "enforcement": "Every main-frame navigation must contain each exact value once; strip only these two keys when comparing redirect identity to its canonical source URL.",
+    "off_source_or_untagged_navigation": "BLOCKED"
+  },
+  "items": [
+    {
+      "file": "assets/wht-mark.png",
+      "publisher": "Walsall Healthcare NHS Trust",
+      "evidence": {
+        "requested_url": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/?utm_source=qa&utm_campaign=qa_release_audit",
+        "canonical_source_url": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/",
+        "final_url": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/?utm_source=qa&utm_campaign=qa_release_audit",
+        "navigation_urls": [
+          "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/?utm_source=qa&utm_campaign=qa_release_audit"
+        ],
+        "requested_host": "www.walsallhealthcare.nhs.uk",
+        "final_host": "www.walsallhealthcare.nhs.uk",
+        "allowed_hosts": [
+          "www.walsallhealthcare.nhs.uk"
+        ],
+        "page_title": "New digital Ambient Voice Technology (AVT) - Walsall Healthcare NHS Trust",
+        "selector": "page.locator(\"header img\").nth(0)",
+        "src": "https://www.walsallhealthcare.nhs.uk/wp-content/uploads/2024/06/Walsall-Healthcare-NHS-Trust-300px.png",
+        "current_src": "https://www.walsallhealthcare.nhs.uk/wp-content/uploads/2024/06/Walsall-Healthcare-NHS-Trust-300px.png",
+        "alt": "Walsall Healthcare NHS Trust Logo",
+        "title": null,
+        "aria_label": null,
+        "owner_link_aria_label": null,
+        "owner_link_title": null,
+        "identity_basis": "accessible alt/title/aria-label on the header image or its linked logo; src/currentSrc are recorded but never used as brand proof",
+        "natural_width": 150,
+        "natural_height": 59,
+        "identity_match_count": 1
+      },
+      "bytes": 6438,
+      "sha256": "f94ae27c58a47a9ef0f708a3614b0302bbd96c1aef7d6e8436130e2fb2a70b59"
+    },
+    {
+      "type": "verified-source-text",
+      "publisher": "Walsall Healthcare NHS Trust",
+      "requested_url": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/?utm_source=qa&utm_campaign=qa_release_audit",
+      "canonical_source_url": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/",
+      "url": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/?utm_source=qa&utm_campaign=qa_release_audit",
+      "navigation_urls": [
+        "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/?utm_source=qa&utm_campaign=qa_release_audit"
+      ],
+      "requested_host": "www.walsallhealthcare.nhs.uk",
+      "final_host": "www.walsallhealthcare.nhs.uk",
+      "allowed_hosts": [
+        "www.walsallhealthcare.nhs.uk"
+      ],
+      "title": "New digital Ambient Voice Technology (AVT) - Walsall Healthcare NHS Trust",
+      "status": 200,
+      "publication_date": "25 August 2026",
+      "verified_excerpts": [
+        "less than four minutes per patient",
+        "reviewed, edited where necessary and approved"
+      ]
+    },
+    {
+      "file": "assets/rwt-mark.png",
+      "publisher": "The Royal Wolverhampton NHS Trust",
+      "evidence": {
+        "requested_url": "https://www.royalwolverhampton.nhs.uk/?utm_source=qa&utm_campaign=qa_release_audit",
+        "canonical_source_url": "https://www.royalwolverhampton.nhs.uk/",
+        "final_url": "https://royalwolverhampton.nhs.uk/?utm_source=qa&utm_campaign=qa_release_audit",
+        "navigation_urls": [
+          "https://www.royalwolverhampton.nhs.uk/?utm_source=qa&utm_campaign=qa_release_audit"
+        ],
+        "requested_host": "www.royalwolverhampton.nhs.uk",
+        "final_host": "royalwolverhampton.nhs.uk",
+        "allowed_hosts": [
+          "www.royalwolverhampton.nhs.uk",
+          "royalwolverhampton.nhs.uk"
+        ],
+        "page_title": "Home - The Royal Wolverhampton NHS Trust",
+        "selector": "page.locator(\"header img\").nth(1)",
+        "src": "https://royalwolverhampton.nhs.uk/wp-content/themes/wolverhampton/dist/img/the-royal-wolverhampton-logo.svg",
+        "current_src": "https://royalwolverhampton.nhs.uk/wp-content/themes/wolverhampton/dist/img/the-royal-wolverhampton-logo.svg",
+        "alt": "The Royal Wolverhampton NHS Trust Logo",
+        "title": null,
+        "aria_label": null,
+        "owner_link_aria_label": null,
+        "owner_link_title": "Go to Homepage",
+        "identity_basis": "accessible alt/title/aria-label on the header image or its linked logo; src/currentSrc are recorded but never used as brand proof",
+        "natural_width": 300,
+        "natural_height": 81,
+        "identity_match_count": 1
+      },
+      "bytes": 6637,
+      "sha256": "0f677ab44bd53e897539be3bb166882141f9211ff05cf1223a2de399acb933aa"
+    },
+    {
+      "type": "official-page-identity",
+      "publisher": "The Royal Wolverhampton NHS Trust",
+      "requested_url": "https://www.royalwolverhampton.nhs.uk/?utm_source=qa&utm_campaign=qa_release_audit",
+      "canonical_source_url": "https://www.royalwolverhampton.nhs.uk/",
+      "url": "https://royalwolverhampton.nhs.uk/?utm_source=qa&utm_campaign=qa_release_audit",
+      "navigation_urls": [
+        "https://www.royalwolverhampton.nhs.uk/?utm_source=qa&utm_campaign=qa_release_audit"
+      ],
+      "requested_host": "www.royalwolverhampton.nhs.uk",
+      "final_host": "royalwolverhampton.nhs.uk",
+      "allowed_hosts": [
+        "www.royalwolverhampton.nhs.uk",
+        "royalwolverhampton.nhs.uk"
+      ],
+      "title": "Home - The Royal Wolverhampton NHS Trust",
+      "status": 200
+    },
+    {
+      "type": "verified-source-text",
+      "publisher": "BBC News",
+      "requested_url": "https://www.bbc.com/news/articles/cjrgrxgexjro?utm_source=qa&utm_campaign=qa_release_audit",
+      "canonical_source_url": "https://www.bbc.com/news/articles/cjrgrxgexjro",
+      "url": "https://www.bbc.com/news/articles/cjrgrxgexjro?utm_source=qa&utm_campaign=qa_release_audit",
+      "navigation_urls": [
+        "https://www.bbc.com/news/articles/cjrgrxgexjro?utm_source=qa&utm_campaign=qa_release_audit"
+      ],
+      "requested_host": "www.bbc.com",
+      "final_host": "www.bbc.com",
+      "allowed_hosts": [
+        "www.bbc.com"
+      ],
+      "title": "How an AI app is improving NHS wait times in the West Midlands",
+      "status": 200,
+      "publication_date": "15 July 2026",
+      "clarification_date": "24 July 2026",
+      "verified_excerpts": [
+        "saving him six minutes per consultation",
+        "evidence for this has not yet been published"
+      ],
+      "media_captured": false
+    }
+  ],
+  "logo_discovery": [
+    {
+      "publisher": "Walsall Healthcare NHS Trust",
+      "requested_url": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/?utm_source=qa&utm_campaign=qa_release_audit",
+      "final_url": "https://www.walsallhealthcare.nhs.uk/news/2026/08/25/new-digital-ambient-voice-technology-avt/?utm_source=qa&utm_campaign=qa_release_audit",
+      "header_image_count": 1,
+      "header_images_truncated": false,
+      "header_images": [
+        {
+          "index": 0,
+          "selector": "page.locator(\"header img\").nth(0)",
+          "alt": "Walsall Healthcare NHS Trust Logo",
+          "title": null,
+          "aria_label": null,
+          "owner_link_aria_label": null,
+          "owner_link_title": null,
+          "src": "https://www.walsallhealthcare.nhs.uk/wp-content/uploads/2024/06/Walsall-Healthcare-NHS-Trust-300px.png",
+          "current_src": "https://www.walsallhealthcare.nhs.uk/wp-content/uploads/2024/06/Walsall-Healthcare-NHS-Trust-300px.png",
+          "natural_width": 150,
+          "natural_height": 59,
+          "visible": true
+        }
+      ],
+      "identity_match_count": 1
+    },
+    {
+      "publisher": "The Royal Wolverhampton NHS Trust",
+      "requested_url": "https://www.royalwolverhampton.nhs.uk/?utm_source=qa&utm_campaign=qa_release_audit",
+      "final_url": "https://royalwolverhampton.nhs.uk/?utm_source=qa&utm_campaign=qa_release_audit",
+      "header_image_count": 3,
+      "header_images_truncated": false,
+      "header_images": [
+        {
+          "index": 0,
+          "selector": "page.locator(\"header img\").nth(0)",
+          "alt": "Care Colleagues Collaboration Communities Logo",
+          "title": null,
+          "aria_label": null,
+          "owner_link_aria_label": null,
+          "owner_link_title": "Go to Homepage",
+          "src": "https://royalwolverhampton.nhs.uk/wp-content/themes/wolverhampton/dist/img/cccc-logo.svg",
+          "current_src": "https://royalwolverhampton.nhs.uk/wp-content/themes/wolverhampton/dist/img/cccc-logo.svg",
+          "natural_width": 300,
+          "natural_height": 129,
+          "visible": true
+        },
+        {
+          "index": 1,
+          "selector": "page.locator(\"header img\").nth(1)",
+          "alt": "The Royal Wolverhampton NHS Trust Logo",
+          "title": null,
+          "aria_label": null,
+          "owner_link_aria_label": null,
+          "owner_link_title": "Go to Homepage",
+          "src": "https://royalwolverhampton.nhs.uk/wp-content/themes/wolverhampton/dist/img/the-royal-wolverhampton-logo.svg",
+          "current_src": "https://royalwolverhampton.nhs.uk/wp-content/themes/wolverhampton/dist/img/the-royal-wolverhampton-logo.svg",
+          "natural_width": 300,
+          "natural_height": 81,
+          "visible": true
+        },
+        {
+          "index": 2,
+          "selector": "page.locator(\"header img\").nth(2)",
+          "alt": "The Royal Wolverhampton NHS Trust Logo",
+          "title": null,
+          "aria_label": null,
+          "owner_link_aria_label": null,
+          "owner_link_title": "Go to the homepage",
+          "src": "https://royalwolverhampton.nhs.uk/wp-content/themes/wolverhampton/dist/img/the-royal-wolverhampton-logo.svg",
+          "current_src": "https://royalwolverhampton.nhs.uk/wp-content/themes/wolverhampton/dist/img/the-royal-wolverhampton-logo.svg",
+          "natural_width": 300,
+          "natural_height": 81,
+          "visible": false
+        }
+      ],
+      "identity_match_count": 1
+    }
+  ],
+  "rights": {
+    "status": "NOT_ASSESSED",
+    "restriction": "Trust logo PNGs are limited to this source-review artifact. Permission for this public review copy and any downstream use is not verified. Do not include them in a public master/site/post or imply endorsement until rights are assessed and approved."
+  },
+  "render_approval": "NOT_GRANTED",
+  "release_approval": "NOT_GRANTED"
+}

@@ -1,0 +1,111 @@
+{
+  "run": 37249599493,
+  "head": "2fe381ab18796b0366a543fffdecd2e1a97c0b63",
+  "created_at": "2026-10-05T00:59:09Z",
+  "completed_at": "2026-10-05T01:00:26Z",
+  "status": "FAILED_SOURCE_LAYOUT_3_COLLISIONS",
+  "artifact": 11320801239,
+  "runtime": {
+    "errorCount": 0,
+    "findings": [],
+    "infoCount": 0,
+    "ok": true,
+    "warningCount": 0
+  },
+  "actual_layout_errors": [
+    {
+      "bbox": {
+        "height": 107.52,
+        "width": 664.36,
+        "x": 206,
+        "y": 495
+      },
+      "code": "content_overlap",
+      "containerSelector": "article.face.face-back > div:nth-of-type(1) > h2:nth-of-type(1)",
+      "dataAttributes": {},
+      "firstSeen": 28.579,
+      "fixHint": "Give each block its own zone, or mark intentional layering with data-layout-allow-overlap.",
+      "heldMs": 16347.999999999998,
+      "lastSeen": 44.927,
+      "message": "Two text blocks overlap and may render unreadable.",
+      "occurrences": 134,
+      "rect": {
+        "bottom": 602.52,
+        "height": 107.52,
+        "left": 206,
+        "right": 870.36,
+        "top": 495,
+        "width": 664.36
+      },
+      "selector": "div.source-note > div:nth-of-type(1)",
+      "severity": "error",
+      "sourceFile": "index.html",
+      "text": "BBC NEWS \ufffd CLARIFICATION \ufffd 24 JULY 2026",
+      "time": 28.579
+    },
+    {
+      "bbox": {
+        "height": 107.52,
+        "width": 664.36,
+        "x": 206,
+        "y": 495
+      },
+      "code": "content_overlap",
+      "containerSelector": "article.face.face-back > div:nth-of-type(2) > h2:nth-of-type(1)",
+      "dataAttributes": {},
+      "firstSeen": 28.579,
+      "fixHint": "Give each block its own zone, or mark intentional layering with data-layout-allow-overlap.",
+      "heldMs": 16347.999999999998,
+      "lastSeen": 44.927,
+      "message": "Two text blocks overlap and may render unreadable.",
+      "occurrences": 134,
+      "rect": {
+        "bottom": 602.52,
+        "height": 107.52,
+        "left": 206,
+        "right": 870.36,
+        "top": 495,
+        "width": 664.36
+      },
+      "selector": "div.source-note > div:nth-of-type(1)",
+      "severity": "error",
+      "sourceFile": "index.html",
+      "text": "BBC NEWS \ufffd CLARIFICATION \ufffd 24 JULY 2026",
+      "time": 28.579
+    },
+    {
+      "bbox": {
+        "height": 51,
+        "width": 236.02,
+        "x": 663.56,
+        "y": 1181.36
+      },
+      "code": "content_overlap",
+      "containerSelector": "article.face.face-back > div:nth-of-type(2) > div:nth-of-type(3)",
+      "dataAttributes": {},
+      "firstSeen": 40.31,
+      "fixHint": "Give each block its own zone, or mark intentional layering with data-layout-allow-overlap.",
+      "heldMs": 4616.999999999997,
+      "lastSeen": 44.927,
+      "message": "Two text blocks overlap and may render unreadable.",
+      "occurrences": 39,
+      "rect": {
+        "bottom": 1232.36,
+        "height": 51,
+        "left": 663.56,
+        "right": 899.58,
+        "top": 1181.36,
+        "width": 236.02
+      },
+      "selector": "div.evidence-state > span:nth-of-type(2)",
+      "severity": "error",
+      "sourceFile": "index.html",
+      "text": "PUBLISHED",
+      "time": 40.31
+    }
+  ],
+  "source_stills": "SKIPPED",
+  "mix_render": "NOT_ENABLED",
+  "full_av_approval": "NOT_GRANTED",
+  "local_writes": 0
+}

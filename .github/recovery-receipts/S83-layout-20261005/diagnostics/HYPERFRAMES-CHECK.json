@@ -1,0 +1,506 @@
+{
+  "_meta": {
+    "updateAvailable": false,
+    "version": "0.8.71"
+  },
+  "contrast": {
+    "checked": 42,
+    "enabled": true,
+    "errorCount": 0,
+    "findings": [],
+    "infoCount": 0,
+    "ok": true,
+    "passed": 42,
+    "samples": [
+      3.141,
+      15.704,
+      28.267,
+      40.83,
+      53.393
+    ],
+    "warningCount": 0
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "layout": {
+    "duration": 56.533333,
+    "errorCount": 3,
+    "findings": [
+      {
+        "bbox": {
+          "height": 107.52,
+          "width": 664.36,
+          "x": 206,
+          "y": 495
+        },
+        "code": "content_overlap",
+        "containerSelector": "article.face.face-back > div:nth-of-type(1) > h2:nth-of-type(1)",
+        "dataAttributes": {},
+        "firstSeen": 28.579,
+        "fixHint": "Give each block its own zone, or mark intentional layering with data-layout-allow-overlap.",
+        "heldMs": 16347.999999999998,
+        "lastSeen": 44.927,
+        "message": "Two text blocks overlap and may render unreadable.",
+        "occurrences": 134,
+        "rect": {
+          "bottom": 602.52,
+          "height": 107.52,
+          "left": 206,
+          "right": 870.36,
+          "top": 495,
+          "width": 664.36
+        },
+        "selector": "div.source-note > div:nth-of-type(1)",
+        "severity": "error",
+        "sourceFile": "index.html",
+        "text": "BBC NEWS \ufffd CLARIFICATION \ufffd 24 JULY 2026",
+        "time": 28.579
+      },
+      {
+        "bbox": {
+          "height": 107.52,
+          "width": 664.36,
+          "x": 206,
+          "y": 495
+        },
+        "code": "content_overlap",
+        "containerSelector": "article.face.face-back > div:nth-of-type(2) > h2:nth-of-type(1)",
+        "dataAttributes": {},
+        "firstSeen": 28.579,
+        "fixHint": "Give each block its own zone, or mark intentional layering with data-layout-allow-overlap.",
+        "heldMs": 16347.999999999998,
+        "lastSeen": 44.927,
+        "message": "Two text blocks overlap and may render unreadable.",
+        "occurrences": 134,
+        "rect": {
+          "bottom": 602.52,
+          "height": 107.52,
+          "left": 206,
+          "right": 870.36,
+          "top": 495,
+          "width": 664.36
+        },
+        "selector": "div.source-note > div:nth-of-type(1)",
+        "severity": "error",
+        "sourceFile": "index.html",
+        "text": "BBC NEWS \ufffd CLARIFICATION \ufffd 24 JULY 2026",
+        "time": 28.579
+      },
+      {
+        "bbox": {
+          "height": 51,
+          "width": 236.02,
+          "x": 663.56,
+          "y": 1181.36
+        },
+        "code": "content_overlap",
+        "containerSelector": "article.face.face-back > div:nth-of-type(2) > div:nth-of-type(3)",
+        "dataAttributes": {},
+        "firstSeen": 40.31,
+        "fixHint": "Give each block its own zone, or mark intentional layering with data-layout-allow-overlap.",
+        "heldMs": 4616.999999999997,
+        "lastSeen": 44.927,
+        "message": "Two text blocks overlap and may render unreadable.",
+        "occurrences": 39,
+        "rect": {
+          "bottom": 1232.36,
+          "height": 51,
+          "left": 663.56,
+          "right": 899.58,
+          "top": 1181.36,
+          "width": 236.02
+        },
+        "selector": "div.evidence-state > span:nth-of-type(2)",
+        "severity": "error",
+        "sourceFile": "index.html",
+        "text": "PUBLISHED",
+        "time": 40.31
+      },
+      {
+        "bbox": {
+          "height": 383.91,
+          "width": 600.04,
+          "x": 597.98,
+          "y": 1078.05
+        },
+        "code": "container_overflow",
+        "containerRect": {
+          "bottom": 1920,
+          "height": 1920,
+          "left": 0,
+          "right": 1080,
+          "top": 0,
+          "width": 1080
+        },
+        "containerSelector": "section[data-start=\"0\"]",
+        "dataAttributes": {},
+        "firstSeen": 3.141,
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "heldMs": 0,
+        "lastSeen": 3.141,
+        "message": "Element extends outside a clipping layout container.",
+        "occurrences": 1,
+        "overflow": {
+          "right": 118.02
+        },
+        "rect": {
+          "bottom": 1461.95,
+          "height": 383.91,
+          "left": 597.98,
+          "right": 1198.02,
+          "top": 1078.05,
+          "width": 600.04
+        },
+        "selector": "div.paper-edge",
+        "severity": "info",
+        "sourceFile": "index.html",
+        "time": 3.141
+      },
+      {
+        "bbox": {
+          "height": 383.91,
+          "width": 600.04,
+          "x": 597.98,
+          "y": 1078.05
+        },
+        "code": "panel_out_of_canvas",
+        "containerRect": {
+          "bottom": 1920,
+          "height": 1920,
+          "left": 0,
+          "right": 1080,
+          "top": 0,
+          "width": 1080
+        },
+        "containerSelector": "#root",
+        "dataAttributes": {},
+        "firstSeen": 3.141,
+        "fixHint": "Move the panel inward, or mark intentional off-canvas animation with data-layout-allow-overflow.",
+        "heldMs": 0,
+        "lastSeen": 3.141,
+        "message": "Painted panel extends outside the composition canvas.",
+        "occurrences": 1,
+        "overflow": {
+          "right": 118.02
+        },
+        "rect": {
+          "bottom": 1461.95,
+          "height": 383.91,
+          "left": 597.98,
+          "right": 1198.02,
+          "top": 1078.05,
+          "width": 600.04
+        },
+        "selector": "div.paper-edge",
+        "severity": "info",
+        "sourceFile": "index.html",
+        "text": "",
+        "time": 3.141
+      },
+      {
+        "bbox": {
+          "height": 81.74,
+          "width": 431.83,
+          "x": 0,
+          "y": 394.81
+        },
+        "code": "content_overlap",
+        "containerSelector": "div.name",
+        "dataAttributes": {},
+        "firstSeen": 18.72,
+        "fixHint": "Give each block its own zone, or mark intentional layering with data-layout-allow-overlap.",
+        "heldMs": 0,
+        "lastSeen": 18.72,
+        "message": "Two text blocks overlap and may render unreadable.",
+        "occurrences": 1,
+        "rect": {
+          "bottom": 476.55,
+          "height": 81.74,
+          "left": 0,
+          "right": 431.83,
+          "top": 394.81,
+          "width": 431.83
+        },
+        "selector": "article.paper.proof > div:nth-of-type(1)",
+        "severity": "info",
+        "sourceFile": "index.html",
+        "text": "BBC NEWS \ufffd 15 JULY 2026",
+        "time": 18.72
+      },
+      {
+        "bbox": {
+          "height": 90.66,
+          "width": 504.18,
+          "x": 0,
+          "y": 456.81
+        },
+        "code": "content_overlap",
+        "containerSelector": "article.paper.proof > blockquote:nth-of-type(1)",
+        "dataAttributes": {},
+        "firstSeen": 18.72,
+        "fixHint": "Give each block its own zone, or mark intentional layering with data-layout-allow-overlap.",
+        "heldMs": 0,
+        "lastSeen": 18.72,
+        "message": "Two text blocks overlap and may render unreadable.",
+        "occurrences": 1,
+        "rect": {
+          "bottom": 547.47,
+          "height": 90.66,
+          "left": 0,
+          "right": 504.18,
+          "top": 456.81,
+          "width": 504.18
+        },
+        "selector": "div.name",
+        "severity": "info",
+        "sourceFile": "index.html",
+        "text": "Dr Mohammed Jamil Aslam",
+        "time": 18.72
+      },
+      {
+        "bbox": {
+          "height": 198.26,
+          "width": 80.75,
+          "x": 508.9,
+          "y": 719.23
+        },
+        "code": "content_overlap",
+        "containerSelector": "div.claim",
+        "dataAttributes": {},
+        "firstSeen": 34.943,
+        "fixHint": "Give each block its own zone, or mark intentional layering with data-layout-allow-overlap.",
+        "heldMs": 0,
+        "lastSeen": 34.943,
+        "message": "Two text blocks overlap and may render unreadable.",
+        "occurrences": 1,
+        "rect": {
+          "bottom": 917.49,
+          "height": 198.26,
+          "left": 508.9,
+          "right": 589.65,
+          "top": 719.23,
+          "width": 80.75
+        },
+        "selector": "div.source-note > blockquote:nth-of-type(1)",
+        "severity": "info",
+        "sourceFile": "index.html",
+        "text": "evidence for this has not yet been published",
+        "time": 34.943
+      }
+    ],
+    "infoCount": 5,
+    "ok": false,
+    "samples": [
+      3.141,
+      9.422,
+      15.704,
+      21.985,
+      28.267,
+      34.548,
+      40.83,
+      47.111,
+      53.393
+    ],
+    "tolerance": 2,
+    "totalIssueCount": 8,
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "truncated": false,
+    "warningCount": 0
+  },
+  "lint": {
+    "errorCount": 0,
+    "filesScanned": 1,
+    "findings": [
+      {
+        "bbox": {
+          "height": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "code": "studio_missing_editable_id",
+        "dataAttributes": {},
+        "fixHint": "Add a stable, human-readable id such as id=\"hero-title\" or id=\"scene-1-card\" to every timeline-visible element you want agents or Studio to edit.",
+        "message": "<section class=\"s1\" data-start=\"0\" data-track-index=\"0\"> has no id, so Studio cannot use a stable edit target for its timeline and canvas controls.",
+        "selector": "[data-composition-id]",
+        "severity": "warning",
+        "sourceFile": "<runner-path>/.github/candidates/S83/index.html",
+        "time": 0
+      },
+      {
+        "bbox": {
+          "height": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "code": "studio_missing_editable_id",
+        "dataAttributes": {},
+        "fixHint": "Add a stable, human-readable id such as id=\"hero-title\" or id=\"scene-1-card\" to every timeline-visible element you want agents or Studio to edit.",
+        "message": "<section class=\"s2\" data-start=\"7.815\" data-track-index=\"1\"> has no id, so Studio cannot use a stable edit target for its timeline and canvas controls.",
+        "selector": "[data-composition-id]",
+        "severity": "warning",
+        "sourceFile": "<runner-path>/.github/candidates/S83/index.html",
+        "time": 0
+      },
+      {
+        "bbox": {
+          "height": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "code": "studio_missing_editable_id",
+        "dataAttributes": {},
+        "fixHint": "Add a stable, human-readable id such as id=\"hero-title\" or id=\"scene-1-card\" to every timeline-visible element you want agents or Studio to edit.",
+        "message": "<section class=\"s3\" data-start=\"18.619\" data-track-index=\"2\"> has no id, so Studio cannot use a stable edit target for its timeline and canvas controls.",
+        "selector": "[data-composition-id]",
+        "severity": "warning",
+        "sourceFile": "<runner-path>/.github/candidates/S83/index.html",
+        "time": 0
+      },
+      {
+        "bbox": {
+          "height": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "code": "studio_missing_editable_id",
+        "dataAttributes": {},
+        "fixHint": "Add a stable, human-readable id such as id=\"hero-title\" or id=\"scene-1-card\" to every timeline-visible element you want agents or Studio to edit.",
+        "message": "<section class=\"evidence-turn\" data-start=\"28.457\" data-track-index=\"3\"> has no id, so Studio cannot use a stable edit target for its timeline and canvas controls.",
+        "selector": "[data-composition-id]",
+        "severity": "warning",
+        "sourceFile": "<runner-path>/.github/candidates/S83/index.html",
+        "time": 0
+      },
+      {
+        "bbox": {
+          "height": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "code": "studio_missing_editable_id",
+        "dataAttributes": {},
+        "fixHint": "Add a stable, human-readable id such as id=\"hero-title\" or id=\"scene-1-card\" to every timeline-visible element you want agents or Studio to edit.",
+        "message": "<section class=\"s6\" data-start=\"44.901\" data-track-index=\"5\"> has no id, so Studio cannot use a stable edit target for its timeline and canvas controls.",
+        "selector": "[data-composition-id]",
+        "severity": "warning",
+        "sourceFile": "<runner-path>/.github/candidates/S83/index.html",
+        "time": 0
+      },
+      {
+        "bbox": {
+          "height": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "code": "studio_missing_editable_id",
+        "dataAttributes": {},
+        "fixHint": "Add a stable, human-readable id such as id=\"hero-title\" or id=\"scene-1-card\" to every timeline-visible element you want agents or Studio to edit.",
+        "message": "<section class=\"s7\" data-start=\"50.935\" data-track-index=\"6\"> has no id, so Studio cannot use a stable edit target for its timeline and canvas controls.",
+        "selector": "[data-composition-id]",
+        "severity": "warning",
+        "sourceFile": "<runner-path>/.github/candidates/S83/index.html",
+        "time": 0
+      },
+      {
+        "bbox": {
+          "height": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "code": "duplicate_media_discovery_risk",
+        "dataAttributes": {},
+        "fixHint": "Avoid duplicated media nodes that can be discovered twice during compilation.",
+        "message": "Detected 3 matching img entries with the same source/start/duration.",
+        "selector": "[data-composition-id]",
+        "severity": "warning",
+        "sourceFile": "<runner-path>/.github/candidates/S83/index.html",
+        "time": 0
+      },
+      {
+        "bbox": {
+          "height": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "code": "gsap_repeated_fromto_without_baseline",
+        "dataAttributes": {},
+        "fixHint": "Add `immediateRender: false` to the destination vars of each future fromTo, or set a safe resting state with an earlier `tl.set(\".turnover\", { ... }, 0)`. Pre-first-tween seeks must not inherit whichever fromTo call happened to author last.",
+        "message": "2 tl.fromTo() calls target \".turnover\" with no stable baseline. The last-authored fromTo \"from\" values become the element's resting state for any seek before the first tween actually runs, because GSAP applies fromTo from-values at authoring time (immediateRender), not at tween position.",
+        "selector": ".turnover",
+        "severity": "warning",
+        "sourceFile": "<runner-path>/.github/candidates/S83/index.html",
+        "time": 0
+      },
+      {
+        "bbox": {
+          "height": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "code": "composition_file_too_large",
+        "dataAttributes": {},
+        "fixHint": "Split coherent scenes or layers into separate .html files under compositions/, then mount them from the parent with data-composition-src so each file stays small enough to inspect, revise, and validate independently.",
+        "message": "This HTML composition file has 1231 lines. Smaller sub-compositions are easier to read, iterate on, and diff.",
+        "selector": "[data-composition-id]",
+        "severity": "warning",
+        "sourceFile": "<runner-path>/.github/candidates/S83/index.html",
+        "time": 0
+      },
+      {
+        "bbox": {
+          "height": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "code": "nested_structure_needs_subcomposition",
+        "dataAttributes": {},
+        "fixHint": "Move <section> and its contents into a sub-composition file and mount it with data-composition-src.",
+        "message": "<section> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "[data-composition-id]",
+        "severity": "warning",
+        "sourceFile": "<runner-path>/.github/candidates/S83/index.html",
+        "time": 0
+      }
+    ],
+    "infoCount": 0,
+    "ok": true,
+    "warningCount": 10
+  },
+  "motion": {
+    "enabled": false,
+    "errorCount": 0,
+    "findings": [],
+    "infoCount": 0,
+    "ok": true,
+    "samples": 0,
+    "warningCount": 0
+  },
+  "ok": false,
+  "runtime": {
+    "errorCount": 0,
+    "findings": [],
+    "infoCount": 0,
+    "ok": true,
+    "warningCount": 0
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "findingFiles": [],
+    "times": []
+  },
+  "strict": false
+}

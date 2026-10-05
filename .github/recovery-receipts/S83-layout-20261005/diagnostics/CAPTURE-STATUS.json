@@ -1,0 +1,16 @@
+{
+  "schema": "agmm-s83-capture-status-v1",
+  "story_id": "S83",
+  "status": "SOURCE_CAPTURED_CHECK_OR_STILLS_FAILED",
+  "source_step": "success",
+  "check_step": "failure",
+  "stills_step": "skipped",
+  "review_scope": "ONE_DAY_GITHUB_ACTIONS_ARTIFACT",
+  "review_retention_days": 1,
+  "artifact_access_limit": "Access follows the public repository's GitHub Actions artifact permissions; no private access restriction is asserted.",
+  "rights_status": "NOT_ASSESSED",
+  "public_review_copy_permission": "NOT_ASSESSED",
+  "raw_assets_written_to_public_git": false,
+  "render_approval": "NOT_GRANTED",
+  "release_approval": "NOT_GRANTED"
+}
