@@ -1,0 +1,16 @@
+{
+  "schema": "agmm-p2-hosted-diagnostic-v1",
+  "parent_sha": "f3a1f16179716d0ff44baf2cdd15376c585ecbcc",
+  "parent_tree": "401c6b64efa38a3214b74789dc64e09db6318be7",
+  "create_paths": [
+    ".github/candidates/p2-source-diagnostic/candidate-manifest.json",
+    ".github/scripts/p2_source_diagnostic/measure_p2.py",
+    ".github/workflows/p2-source-diagnostic.yml"
+  ],
+  "files": {
+    ".github/scripts/p2_source_diagnostic/measure_p2.py": "5f9f4b2c63102f21715a150fa9e38f1fe33ecbe1b2861204860ba9998aa5b453",
+    ".github/workflows/p2-source-diagnostic.yml": "f1568f8574520a12529ac946b926088969c0d6f7eb5d8f3f96fe826538c73ab7"
+  },
+  "provider_calls": 0,
+  "scope": "two hosted complete-stream integrity measurements; no saved media or review"
+}
