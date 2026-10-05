@@ -1,7 +1,7 @@
 {
   "kind": "s81_production_candidate_result",
   "status": "SOURCE_CORRECTION_DRAFT_ROOT_19_STILL_REVIEW_REQUIRED",
-  "finding": "Run 37233356865 failed root picture review. This candidate addresses the exact header, phrase caption, scene-entry subject, and date-card findings from the 19 viewed actual captures.",
+  "finding": "Run 37238009845 failed root picture review on four exact defects: Guardian strong markup rendered literally, NON-PUBLIC and NOTIFICATION split within words, and lesson control entered beyond the left frame edge. This source draft corrects those defects.",
   "duration_s": 56.365,
   "capture_count": 19,
   "capture_plan_sha256": "33e553d9a831278ef3f1137397f8864ef744839aca0cdef825b6b16d4339210d",
@@ -9,8 +9,8 @@
   "changed": [
     {
       "path": "candidate/scenes.js",
-      "sha256": "9ab6a399032313bc0223bddcd8a90a7bae2806799d6862b453705a8f13611375",
-      "change": "Separated source header and credit bands; 42px authored type floor; high-contrast visible phrase cards; subject-visible scene entries; safe lower band; reflowed date cards."
+      "sha256": "9131a9c0a77516f4e45fdee770b718e75b7eed556e0f5112525f942ee28dcebd",
+      "change": "Real Guardian strong node; whole-word NON-PUBLIC lines; EMAIL NOTICE heading; bounded lesson-control entry with 20px safe-inset clearance. Frame 09 credit left unchanged."
     },
     {
       "path": "repo-overlay/.github/scripts/build_s81_source_package.py",
@@ -38,16 +38,19 @@
   ],
   "checks": {
     "picture_source_guard": "PASS",
-    "unittests": "PASS; 13 source/active-frame tests and 4 payload story/sound tests",
+    "source_active_frame_tests": "PASS; 14 tests; synthetic PNGs only",
+    "targeted_source_correction_tests": "PASS; 7 tests",
+    "payload_story_sound_tests": "PASS; 5 tests",
     "node_check": "PASS",
-    "payload_manifest": "PASS; final digest bound below"
+    "payload_manifest": "PASS; 18 UTF-8 text files",
+    "silent_spec": "PASS; 158 locked words; 56.365s; 19 capture plan preserved"
   },
   "review_gates": {
-    "actual_capture": "NOT_RUN",
-    "root_picture_review": "PENDING",
+    "corrected_hosted_capture": "NOT_RUN",
+    "actual_picture_verdict": "ROOT_REVIEW_REQUIRED",
     "motion_audio_review": "NOT_PERFORMED",
     "approval": "NOT_GRANTED",
-    "publication": "NOT_REQUESTED"
+    "publication": "NOT_AUTHORIZED"
   },
   "media_operations": {
     "read": false,
@@ -59,11 +62,18 @@
     "listen": false,
     "upload": false
   },
-  "next_action": "Root reviews the exact corrected source and 19-point plan, then decides whether to dispatch one private still-only capture. No full render, audio processing, readiness claim, or release follows from static PASS.",
+  "next_action": "Root reviews this exact source packet and decides whether to admit one corrected private 19-still capture. No full render, audio processing, release, or publication follows from static PASS.",
   "opening_provenance": {
     "native_main": "41bf913ffeadc9f54d8e5b90d0be42c59af0a430",
     "actual_source_commit": "c8e11bb0ce89e692aafe428df2b46ec917ed27b0",
     "native_scene_sha256": "045a9f74d976055573057a9833eebd6d6a8a54030b9fb5ca7f787bef2273645b",
     "frame_zero_parent_title_portal_mark_visible_and_moving": true
+  },
+  "second_root_review": {
+    "run_id": 37238009845,
+    "head": "d699d3837647a142afffb595c96b8249d3a0fb68",
+    "verdict": "SOURCE_SET_FAIL",
+    "receipt": "ROOT-SECOND-ACTUAL-19-FRAME-REVIEW.json",
+    "frames_viewed": 19
   }
 }

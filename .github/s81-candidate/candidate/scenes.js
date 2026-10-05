@@ -141,7 +141,7 @@
     var proof = el("div", "s81-evidence", breach);
     var gate = el("div", "s81-boundary", proof);
     el("div", "s81-file public", gate, "PUBLIC\nFILES");
-    el("div", "s81-file private", gate, "NON‑PUBLIC\nFILES");
+    el("div", "s81-file private", gate, "NON-\nPUBLIC\nFILES");
     var bq = el("div", "s81-quote", proof);
     bq.textContent = "The agent ‘infiltrated’ a statistics portal containing ‘non-sensitive’ Medicare data. He said it involved ‘public and non-public files.’";
     el("div", "s81-illustration-note", breach, "RE-TYPED SOURCE WORDING · NOT A SCREENSHOT");
@@ -172,7 +172,7 @@
     var months = el("div", "s81-calendar", timeline);
     var m1 = el("div", "s81-monthcard", months); el("div", "s81-monthname", m1, "PORTAL ACTIVITY"); el("div", "s81-monthnumber", m1, "JUN"); el("div", "s81-monthnote", m1, "JUNE\nPORTAL ACTIVITY");
     var m2 = el("div", "s81-monthcard", months); el("div", "s81-monthname", m2, "DISCOVERY"); el("div", "s81-monthnumber", m2, "AUG"); el("div", "s81-monthnote", m2, "AUGUST\nOPENAI SAYS IT FOUND OUT");
-    var m3 = el("div", "s81-monthcard", months); el("div", "s81-monthname", m3, "NOTIFICATION"); el("div", "s81-monthnumber", m3, "10"); el("div", "s81-monthnote", m3, "10 SEPTEMBER\nEMAIL TO A GOVERNMENT ADDRESS");
+    var m3 = el("div", "s81-monthcard", months); el("div", "s81-monthname", m3, "EMAIL NOTICE"); el("div", "s81-monthnumber", m3, "10"); el("div", "s81-monthnote", m3, "10 SEPTEMBER\nEMAIL TO A GOVERNMENT ADDRESS");
     [m1,m2,m3].forEach(function (m, i) { tl.fromTo(m, { y: 100, rotation: i === 1 ? -5 : 4, autoAlpha: 0 }, { y: 0, rotation: 0, autoAlpha: 1, duration: .28, ease: "back.out(1.02)" }, 29.2 + i * .24); });
     enter(tl, timeline, 29.20, 34.50, 0, 32, "power2.out");
 
@@ -181,7 +181,9 @@
     el("div", "s81-mail-slot", mailbox);
     var letter = el("div", "s81-letter", mailbox);
     el("div", "s81-once", guardian, "MONITORED\nONCE A DAY");
-    el("div", "s81-monitorquote", guardian, "The general Australian government email address <strong>“is monitored once a day.”</strong>");
+    var monitorquote = el("div", "s81-monitorquote", guardian);
+    monitorquote.appendChild(document.createTextNode("The general Australian government email address "));
+    el("strong", "", monitorquote, "“is monitored once a day.”");
     tl.fromTo(letter, { y: -150, rotation: -5 }, { y: 0, rotation: 0, duration: .48, ease: "bounce.out" }, 34.50);
     tl.fromTo(guardian.querySelector(".s81-once"), { scale: .72 }, { scale: 1, duration: .32, ease: "back.out(1.1)" }, 34.86);
     enter(tl, guardian, 34.50, 37.753, 0, 28, "power2.out");
@@ -218,7 +220,8 @@
     el("div", "s81-control-number", control2, "02 · ALERT");
     el("div", "s81-control-icon", control2, "24h");
     el("div", "s81-control-label", control2, "Who hears within the day?");
-    tl.fromTo(control1, { x: -80, autoAlpha: 1 }, { x: 0, autoAlpha: 1, duration: .4, ease: "power2.out", immediateRender: false }, 46.60);
+    var lessonEntryX = Math.min(24, 64 - 20);
+    tl.fromTo(control1, { x: -lessonEntryX, autoAlpha: 1 }, { x: 0, autoAlpha: 1, duration: .4, ease: "power2.out", immediateRender: false }, 46.60);
     tl.fromTo(control2, { x: 80, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: .4, ease: "power2.out" }, 46.88);
     tl.fromTo(controls.querySelector(".s81-link"), { scaleX: .05, transformOrigin: "0 50%" }, { scaleX: 1, duration: .36, ease: "power2.out" }, 47.16);
     enter(tl, lesson, 46.60, 51.60, 0, 28, "power2.out");

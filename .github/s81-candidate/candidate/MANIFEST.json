@@ -1,16 +1,16 @@
 {
   "candidate_files": {
     "PICTURE-CORRECTION-CARD.md": {
-      "bytes": 3329,
-      "sha256": "2688fd8d1083778fe8b6ecee919bda821eb8909e732ae4583ab48fb4de590710"
+      "bytes": 2339,
+      "sha256": "35e23a49e1b867cab0e733901d36c4e6a011657fcd1986f9a97b4b5341a5c48a"
     },
     "RESULT.json": {
-      "bytes": 2867,
-      "sha256": "22201bc72b00fc9bcdf47abf18b6ec24bdc645a5a90a6b37d212aca41da0e4c3"
+      "bytes": 3340,
+      "sha256": "b27f71e508795db50992ee4e5053bedc6823b9a1d7d8b6bb216a10b70f895185"
     },
     "TEST-OUTPUT.txt": {
-      "bytes": 555,
-      "sha256": "596ce73fb77ff7d81be592a261fc6e3b525e3ff9824cc47f0dd5af92213c5673"
+      "bytes": 677,
+      "sha256": "40a2ab81d58c62424c3fd843f2bfa726349f7303f74f36ddfab97c910178140e"
     },
     "capture-plan-source.json": {
       "bytes": 3696,
@@ -21,8 +21,8 @@
       "sha256": "157ab9ad2ddf4fee977c28642a7a2763416a2c172021ed0ae9b2db4a9554fa3d"
     },
     "scenes.js": {
-      "bytes": 23709,
-      "sha256": "9ab6a399032313bc0223bddcd8a90a7bae2806799d6862b453705a8f13611375"
+      "bytes": 23862,
+      "sha256": "9131a9c0a77516f4e45fdee770b718e75b7eed556e0f5112525f942ee28dcebd"
     },
     "selected-sound-assets.json": {
       "bytes": 9920,
@@ -33,20 +33,20 @@
       "sha256": "9c90c9d650486a0be75da9b3b8682598a510c7a5e70bae53e3730a977b142466"
     },
     "spec-delta.json": {
-      "bytes": 2246,
-      "sha256": "130edcfabb279a271f280b7d6d62f4f4945b3b3237b354d4a5feab287c8b581a"
+      "bytes": 2497,
+      "sha256": "80d2497201e3f1e358adf326c6726b68de59c056b465b80d19ef9bf02f03b459"
     },
     "spec.json": {
       "bytes": 1888,
       "sha256": "02fc9522e7e46800c2254ad4eeefa240c08e5033a686e98a7411e7225c4ba3e2"
     },
     "storyboard-and-sound.md": {
-      "bytes": 10907,
-      "sha256": "904ce43c7299593be2b50efa637ea8974db1fe9a1f26fdcf540d7f647d1a6733"
+      "bytes": 10099,
+      "sha256": "f466ee315b8d1772d046b8b248b8553f0cd19d63920283655f8b167a370a7681"
     },
     "tests/test_s81_story_sound.py": {
-      "bytes": 3882,
-      "sha256": "e58aec65ad716ace5bd8f61a65502b3b7e42cb8190a8f7940bdc6608ca96ebb5"
+      "bytes": 4763,
+      "sha256": "2f7c956326a2fbd85d34ea503fc1885f0eec094c89f1d513f41eb17d9ba8f664"
     }
   },
   "inputs": {
@@ -99,11 +99,13 @@
     "visual_capture": "NOT_RUN",
     "voice_listening_and_namecheck": "OPEN"
   },
-  "scope": "Fresh isolated correction to candidate/scenes.js and the source-only caption builder; no media or locked word-clock/capture-plan changes.",
-  "status": "SECOND_PICTURE_SOURCE_DRAFT_ROOT_STILLS_REQUIRED",
+  "scope": "Isolated source/text corrections to candidate/scenes.js and deterministic guards; no media, locked word-clock, narration, or capture-plan changes.",
+  "status": "THIRD_PICTURE_SOURCE_DRAFT_ROOT_STILLS_REQUIRED",
   "validation": {
     "json_parse": true,
     "node_syntax": true,
-    "unit_tests": true
+    "source_active_frame_tests": true,
+    "payload_story_sound_tests": true,
+    "corrected_hosted_capture": false
   }
 }

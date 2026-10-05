@@ -62,6 +62,18 @@ class StoryAndSoundTests(unittest.TestCase):
         self.assertIn("AGMM ILLUSTRATION · NOT A QUOTE", SCENE)
         self.assertNotIn("s81-sheet", SCENE)
 
+    def test_second_actual_picture_review_repairs_quote_labels_and_bounded_entry(self):
+        self.assertIn('document.createTextNode("The general Australian government email address ")', SCENE)
+        self.assertIn('el("strong", "", monitorquote, "“is monitored once a day.”");', SCENE)
+        self.assertNotIn('s81-monitorquote", guardian, "The general Australian government email address <strong>', SCENE)
+        line_break = chr(92) + "n"
+        self.assertIn("\"NON-" + line_break + "PUBLIC" + line_break + "FILES\"", SCENE)
+        self.assertNotIn("\"NON‑PUBLIC" + line_break + "FILES\"", SCENE)
+        self.assertIn('m3, "EMAIL NOTICE"', SCENE)
+        self.assertNotIn('m3, "NOTIFICATION"', SCENE)
+        self.assertIn('var lessonEntryX = Math.min(24, 64 - 20);', SCENE)
+        self.assertIn('tl.fromTo(control1, { x: -lessonEntryX, autoAlpha: 1 }', SCENE)
+
     def test_existing_provisional_mix_and_rights_are_unchanged(self):
         self.assertEqual(MIX["voice"]["src"], "../media/voice/S81.wav")
         self.assertEqual(MIX["music"]["src"], "../media/music/neon-noir.mp3")

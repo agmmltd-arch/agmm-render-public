@@ -127,15 +127,29 @@ def validate_picture_source_text(source: str) -> None:
         'enter(tl, context, 18.40, 24.667',
         'enter(tl, guardian, 34.50, 37.753',
         'enter(tl, lesson, 46.60, 51.60',
-        'tl.fromTo(control1, { x: -80, autoAlpha: 1 }',
+        'document.createTextNode("The general Australian government email address ")',
+        'el("strong", "", monitorquote, "“is monitored once a day.”");',
+        'el("div", "s81-monthname", m3, "EMAIL NOTICE")',
+        'el("div", "s81-file private", gate, "NON-\\nPUBLIC\\nFILES")',
+        'var lessonEntryX = Math.min(24, 64 - 20);',
+        'tl.fromTo(control1, { x: -lessonEntryX, autoAlpha: 1 }',
         'tl.fromTo(node, { autoAlpha: 1, x: x || 0, y: y || 0 }',
         'bottom:760px',
     )
+    if 'el("div", "s81-file private", gate, "NON‑PUBLIC\\nFILES")' in source:
+        raise ValueError("NON-PUBLIC must break at its hyphen, not inside the word")
+    if 'el("div", "s81-monthname", m3, "NOTIFICATION")' in source:
+        raise ValueError("notification heading must wrap between whole words")
+    entry = re.search(r"var lessonEntryX = Math\.min\((\d+),\s*64\s*-\s*(\d+)\);", source)
+    if not entry or int(entry.group(2)) < 20 or int(entry.group(1)) > 44:
+        raise ValueError("lesson entrance must be statically bounded within the 64px safe inset")
     missing = [snippet for snippet in required if snippet not in source]
     if missing:
         raise ValueError(f"S81 source misses caption/header/subject-safe-zone correction: {missing}")
     if 'background:"+C.paper+"!important;color:"+C.ink+"!important' not in source:
         raise ValueError("S81 phrase captions must use the fixed high-contrast paper/ink palette")
+    if 'el("div", "s81-monitorquote", guardian, "The general Australian government email address <strong>' in source:
+        raise ValueError("Guardian quote must construct a real strong element, not display markup text")
     # All authored readable CSS text is 42px or larger, excluding the 124px hero rule.
     sizes = [int(value) for value in re.findall(r"font:700\s+(\d+)px", source)]
     if not sizes or min(sizes) < 42:

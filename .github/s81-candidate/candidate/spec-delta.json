@@ -3,7 +3,7 @@
   "assets_or_media_changed": false,
   "base_sources_sha256": "9c90c9d650486a0be75da9b3b8682598a510c7a5e70bae53e3730a977b142466",
   "base_spec_sha256": "02fc9522e7e46800c2254ad4eeefa240c08e5033a686e98a7411e7225c4ba3e2",
-  "candidate_scene_sha256": "9ab6a399032313bc0223bddcd8a90a7bae2806799d6862b453705a8f13611375",
+  "candidate_scene_sha256": "9131a9c0a77516f4e45fdee770b718e75b7eed556e0f5112525f942ee28dcebd",
   "candidate_sources_sha256": "9c90c9d650486a0be75da9b3b8682598a510c7a5e70bae53e3730a977b142466",
   "candidate_spec_sha256": "02fc9522e7e46800c2254ad4eeefa240c08e5033a686e98a7411e7225c4ba3e2",
   "canonical_scene_sha256": "7400b9321cd13f5dea7f29f6b54fac55266e103a54fba8316369b93635125298",
@@ -14,7 +14,8 @@
     "existing provisional mix specification, sound selections and official mark use remain unchanged and unauditioned",
     "CTA title is settled before Follow at 51.834s; audit URL entrance starts at 52.02s and finishes by 52.37s, with a separate settled 52.4s capture",
     "second root-eye correction: 42px minimum authored type, separated header/source bands, high-contrast four-word phrase captions, subject-visible scene starts, caption-safe lower band, and reflowed calendar headings/rule; no word-clock, capture-time, narration, claim, privacy, or CTA changes",
-    "restores the exact native-approved frame-zero parent/title/portal/mark visibility and motion semantics verified at main 41bf and source commit c8e11; adds negative regressions for hidden parent/title and delayed motion"
+    "restores the exact native-approved frame-zero parent/title/portal/mark visibility and motion semantics verified at main 41bf and source commit c8e11; adds negative regressions for hidden parent/title and delayed motion",
+    "third root review correction against run 37238009845: real Guardian strong node, whole-word NON-PUBLIC label, EMAIL NOTICE heading, and 20px-clear bounded left control entry; frame 09 source credit untouched after root confirmed it was visible"
   ],
   "kind": "s81_candidate_spec_delta",
   "spec_changes": [],

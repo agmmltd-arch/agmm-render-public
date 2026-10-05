@@ -57,23 +57,23 @@
   "required_files": [
     {
       "path": "candidate/MANIFEST.json",
-      "bytes": 4302,
-      "sha256": "c5dbfd51c9e43bf6eab09b566d12bd80a15f00721b36ad5cd2e42a31d27c90f1"
+      "bytes": 4403,
+      "sha256": "195af17208a23ed03972494e6621430e127610b8d37a20cc9e94493d72351189"
     },
     {
       "path": "candidate/PICTURE-CORRECTION-CARD.md",
-      "bytes": 3329,
-      "sha256": "2688fd8d1083778fe8b6ecee919bda821eb8909e732ae4583ab48fb4de590710"
+      "bytes": 2339,
+      "sha256": "35e23a49e1b867cab0e733901d36c4e6a011657fcd1986f9a97b4b5341a5c48a"
     },
     {
       "path": "candidate/RESULT.json",
-      "bytes": 2867,
-      "sha256": "22201bc72b00fc9bcdf47abf18b6ec24bdc645a5a90a6b37d212aca41da0e4c3"
+      "bytes": 3340,
+      "sha256": "b27f71e508795db50992ee4e5053bedc6823b9a1d7d8b6bb216a10b70f895185"
     },
     {
       "path": "candidate/TEST-OUTPUT.txt",
-      "bytes": 555,
-      "sha256": "596ce73fb77ff7d81be592a261fc6e3b525e3ff9824cc47f0dd5af92213c5673"
+      "bytes": 677,
+      "sha256": "40a2ab81d58c62424c3fd843f2bfa726349f7303f74f36ddfab97c910178140e"
     },
     {
       "path": "candidate/capture-plan-source.json",
@@ -87,8 +87,8 @@
     },
     {
       "path": "candidate/scenes.js",
-      "bytes": 23709,
-      "sha256": "9ab6a399032313bc0223bddcd8a90a7bae2806799d6862b453705a8f13611375"
+      "bytes": 23862,
+      "sha256": "9131a9c0a77516f4e45fdee770b718e75b7eed556e0f5112525f942ee28dcebd"
     },
     {
       "path": "candidate/selected-sound-assets.json",
@@ -102,8 +102,8 @@
     },
     {
       "path": "candidate/spec-delta.json",
-      "bytes": 2246,
-      "sha256": "130edcfabb279a271f280b7d6d62f4f4945b3b3237b354d4a5feab287c8b581a"
+      "bytes": 2497,
+      "sha256": "80d2497201e3f1e358adf326c6726b68de59c056b465b80d19ef9bf02f03b459"
     },
     {
       "path": "candidate/spec.json",
@@ -112,13 +112,13 @@
     },
     {
       "path": "candidate/storyboard-and-sound.md",
-      "bytes": 10907,
-      "sha256": "904ce43c7299593be2b50efa637ea8974db1fe9a1f26fdcf540d7f647d1a6733"
+      "bytes": 10099,
+      "sha256": "f466ee315b8d1772d046b8b248b8553f0cd19d63920283655f8b167a370a7681"
     },
     {
       "path": "candidate/tests/test_s81_story_sound.py",
-      "bytes": 3882,
-      "sha256": "e58aec65ad716ace5bd8f61a65502b3b7e42cb8190a8f7940bdc6608ca96ebb5"
+      "bytes": 4763,
+      "sha256": "2f7c956326a2fbd85d34ea503fc1885f0eec094c89f1d513f41eb17d9ba8f664"
     },
     {
       "path": "voice-text/S81.RESULT.json",

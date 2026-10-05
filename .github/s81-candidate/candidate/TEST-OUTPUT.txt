@@ -1,13 +1,17 @@
-python3 -m unittest discover -s frame0-hook-correction-candidate/tests -v
-Ran 13 tests in 60.820s
+python3 -m unittest discover -s tests -v
+Ran 14 tests in 63.150s
 OK
 
-python3 -m unittest discover -s frame0-hook-correction-candidate/payload/candidate/tests -v
-Ran 4 tests in 0.001s
+python3 -m unittest tests/test_s81_picture_correction.py -v
+Ran 7 tests
+OK
+
+python3 -m unittest discover -s payload/candidate/tests -v
+Ran 5 tests
 OK
 
 node --check candidate/scenes.js: PASS
-picture source guard: PASS
-payload manifest: PASS; 18 UTF-8 text files
-builder-generated silent spec: PASS; 158 locked words; 56.365s; 19 capture plan preserved
+source picture guard: PASS
+payload manifest and builder silent-spec validation: PASS; 18 UTF-8 text files; 158 locked words; 56.365s; 19 capture names/times preserved
 Scope: source/text and synthetic PNG guard tests only. No candidate media rendered, decoded, copied, hashed, archived, or listened to.
+Corrected hosted still capture: NOT RUN. Root admission, motion/audio approval, AV review, and release remain open.
