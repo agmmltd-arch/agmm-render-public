@@ -1,0 +1,26 @@
+{
+  "run_id": 37251397845,
+  "created_at": "2026-10-05T01:25:53Z",
+  "updated_at": "2026-10-05T01:26:14Z",
+  "head_sha": "9b09b908cbc82cf0e8290af9f8d410832414cd2e",
+  "status": "completed",
+  "conclusion": "failure",
+  "manifest_sha256": "5e4c64640b3aa3c1e60ceef2413cce09cb96acb073d4919b2c17d20da873fa7f",
+  "root_native_source_closure_check": {
+    "files": 50,
+    "runtime_pins": 9,
+    "changes": 9,
+    "layout_tests": 10,
+    "negative_guards": 3
+  },
+  "hosted_unit_tests_passed": 54,
+  "failed_step": "Validate exact root-published candidate and public runtime blobs",
+  "actual_failure": "HyperFrames static lint exited1; redirected JSON not preserved because source_capture was skipped",
+  "lint_findings": "UNAVAILABLE; do not invent",
+  "source_capture": "NOT_REACHED",
+  "master": "NOT_PRODUCED",
+  "full_av_approval": "NOT_GRANTED",
+  "publication": "NOT_REQUESTED",
+  "next": "Repair early failure diagnostics and investigate actual lint findings before minimum source correction",
+  "local_writes": 0
+}
