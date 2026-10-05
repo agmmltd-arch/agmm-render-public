@@ -8,7 +8,7 @@ class T(unittest.TestCase):
   x=self.res();f(x)
   with self.assertRaises(ValueError):validate_public_result(self.req(),x)
  def test_review_predates_master(self):
-  with self.assertRaises(ValueError): validate_approval_freshness({"approved_at":"2026-10-05T00:30:00+01:00"},{"reviewed_at":"2026-10-05T00:00:00+01:00"},"2026-10-04T23:30:00+01:00")
+  with self.assertRaises(ValueError): validate_approval_freshness({"approved_at":"2026-10-05T00:30:00+01:00"},{"reviewed_at":"2026-10-05T00:00:00+01:00"},"2026-10-05T00:30:00+01:00")
  def test_approval_before_review(self):
   with self.assertRaises(ValueError): validate_approval_freshness({"approved_at":"2026-10-04T23:30:00+01:00"},{"reviewed_at":"2026-10-05T00:00:00+01:00"},"2026-10-04T22:00:00+01:00")
  def test_future_approval(self):
