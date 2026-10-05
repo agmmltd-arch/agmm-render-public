@@ -80,30 +80,36 @@ class QualificationTests(unittest.TestCase):
   self.assertEqual(sum(x["expected"]=="synthetic-severe-audio-defect" for x in labels.values()),3)
 
  def test_main_commit_validator_accepts_only_exact_installed_native_preimage(self):
-  files={p:("source:"+p).encode() for p in (
+  paths=[
    ".github/scripts/av_free_qualification/qualification.py",
    ".github/scripts/av_free_qualification/hosted_av_qualification.py",
    ".github/scripts/av_free_qualification/run_hosted_qualification.py",
    ".github/scripts/av_free_qualification/test_qualification.py",
    ".github/scripts/av_free_qualification/verify_candidate.py",
    ".github/workflows/free-av-qualification.yml",
-   ".github/candidates/free-av-qualification/README.md")}
-  dest=[{"path":p,"operation":"create","preimage":{"state":"absent"}} for p in list(files)+[".github/candidates/free-av-qualification/candidate-manifest.json"]]
+   ".github/candidates/free-av-qualification/README.md",
+   ".github/candidates/free-av-qualification/candidate-manifest.json"]
+  files={p:("source:"+p).encode() for p in paths[:-1]}
+  parent_entries={p:{"git_blob_sha":format(i+1,"040x"),"mode":"100644"} for i,p in enumerate(paths)}
+  dest=[{"path":p,"operation":"update","preimage":{"state":"blob",**parent_entries[p]}} for p in paths]
   manifest={"publication_map":{"expected_public_head_sha":"parent","expected_public_tree_sha":"parent-tree","destinations":dest},"candidate_files":{p:hashlib.sha256(b).hexdigest() for p,b in files.items()}}
-  args=(manifest,"candidate","candidate","refs/heads/main","candidate","candidate-tree","parent","parent-tree","candidate","candidate-tree",set(),set(files)|{dest[-1]["path"]},files)
+  args=(manifest,"candidate","candidate","refs/heads/main","candidate","candidate-tree","parent","parent-tree","candidate","candidate-tree",parent_entries,set(paths),files)
   self.assertTrue(vc.verify_snapshot(*args))
-  for changes in ({"remote_main":"moved"},{"head":"different"},{"ref":"refs/heads/staging"},{"parent":"wrong"},{"parent_tree":"wrong"}):
+  for changes in ({"remote_main":"moved"},{"head":"different"},{"ref":"refs/heads/staging"},{"parent":"wrong"},{"parent_tree":"wrong"},{"remote_tree":"wrong"}):
    changed=list(args);values=list(changed)
-   for key,value in changes.items():values[{"remote_main":8,"head":4,"ref":3,"parent":6,"parent_tree":7}[key]]=value
+   for key,value in changes.items():values[{"remote_main":8,"head":4,"ref":3,"parent":6,"parent_tree":7,"remote_tree":9}[key]]=value
    with self.assertRaises(vc.Refused):vc.verify_snapshot(*values)
-  changed_paths=set(args[10])|{dest[0]["path"]}
-  changed=list(args);changed[10]=changed_paths
+  changed_entries=dict(parent_entries);changed_entries[paths[0]]={"git_blob_sha":"f"*40,"mode":"100644"}
+  changed=list(args);changed[10]=changed_entries
   with self.assertRaises(vc.Refused):vc.verify_snapshot(*changed)
   tampered=dict(manifest);tampered["publication_map"]=dict(manifest["publication_map"])
-  tampered["publication_map"]["destinations"]=[dict(x) for x in dest]
-  tampered["publication_map"]["destinations"][0]["preimage"]={"state":"exists"}
+  tampered_dest=[dict(x) for x in dest];tampered_dest[0]=dict(dest[0],preimage={"state":"blob","git_blob_sha":"f"*40,"mode":"100644"})
+  tampered["publication_map"]["destinations"]=tampered_dest
   with self.assertRaises(vc.Refused):vc.verify_snapshot(tampered,*args[1:])
-
+  create_map=dict(manifest);create_map["publication_map"]=dict(manifest["publication_map"])
+  create_dest=[dict(x) for x in dest];create_dest[0]=dict(dest[0],operation="create",preimage={"state":"absent"})
+  create_map["publication_map"]["destinations"]=create_dest
+  with self.assertRaises(vc.Refused):vc.verify_snapshot(create_map,*args[1:])
  def test_prompt_withholds_labels(self):
   p=av.PROMPT.lower()
   for word in ("p1","p2","p3","positive","negative","pumping-injected","noise-injected"):self.assertNotIn(word,p)

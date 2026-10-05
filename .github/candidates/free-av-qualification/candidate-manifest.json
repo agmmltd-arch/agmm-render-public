@@ -1,12 +1,12 @@
 {
   "candidate_files": {
-    ".github/candidates/free-av-qualification/README.md": "c5dd14d778e07948ac4216da8d3f315d444f7418b7126adaea6b3203d8e50b23",
+    ".github/candidates/free-av-qualification/README.md": "4e0074b0bed0c07ba56e5b688d02e01a604bcbd2f2711b5e88664cc645afe0e9",
     ".github/scripts/av_free_qualification/hosted_av_qualification.py": "da8d26533f9c079c561be782fbd5d4c2c11d0af56228d5248fb61b4bf42c0f61",
     ".github/scripts/av_free_qualification/qualification.py": "9f3c01cf3ed5e8c5728720f88b58fd40665fdf544dc10a6f637d2919e4e12a81",
     ".github/scripts/av_free_qualification/run_hosted_qualification.py": "5572d2853a164dbba3cf40714ad8a954eb0c06d9ae9222fced0e90e8261bd1dd",
-    ".github/scripts/av_free_qualification/test_qualification.py": "1111bf694548bdfe1a7b70cff31b9a205f59ff9bd7ca5facc2cdfd99694094f2",
-    ".github/scripts/av_free_qualification/verify_candidate.py": "9baefcbe802b8641003d6eb0af3f5513ae014a9848565df79a8e09e2dab5adf0",
-    ".github/workflows/free-av-qualification.yml": "a5fd7e7eb66ed4ff5cf5a68b39dd5ba524b03195d62bfc071dfd237bab8f076c"
+    ".github/scripts/av_free_qualification/test_qualification.py": "3e1a4e25c02c9eaf843672d129f1377df944e45ac84959254a675b9e856ca593",
+    ".github/scripts/av_free_qualification/verify_candidate.py": "c702aaef95ee5784a2b9e92cf012df65ac22305b48ff1b2299e068fa488e38ac",
+    ".github/workflows/free-av-qualification.yml": "b7fbc1a8ec22de42db4368c6dc0a002b2716f6fe63a273153a1049a7dbcd7c0e"
   },
   "candidate_id": "free-av-qualification-20261005",
   "known_unavailable_controls": [
@@ -43,64 +43,80 @@
     "branch": "candidate-free-av-qualification-20261005",
     "destinations": [
       {
-        "operation": "create",
+        "operation": "update",
         "path": ".github/candidates/free-av-qualification/README.md",
         "preimage": {
-          "state": "absent"
+          "git_blob_sha": "9b1a635c111bda073a54252404af06514bf9ebea",
+          "mode": "100644",
+          "state": "blob"
         }
       },
       {
-        "operation": "create",
+        "operation": "update",
         "path": ".github/candidates/free-av-qualification/candidate-manifest.json",
         "preimage": {
-          "state": "absent"
+          "git_blob_sha": "5537a5a7643821eb70a598b629f1c9aacdd6fa45",
+          "mode": "100644",
+          "state": "blob"
         }
       },
       {
-        "operation": "create",
+        "operation": "update",
         "path": ".github/scripts/av_free_qualification/hosted_av_qualification.py",
         "preimage": {
-          "state": "absent"
+          "git_blob_sha": "646d5bbb7ff2b1562d4253b5ff5a04e68249462d",
+          "mode": "100644",
+          "state": "blob"
         }
       },
       {
-        "operation": "create",
+        "operation": "update",
         "path": ".github/scripts/av_free_qualification/qualification.py",
         "preimage": {
-          "state": "absent"
+          "git_blob_sha": "24eb1e1bdacd2b0da1f2506a3c039eeedcc30291",
+          "mode": "100644",
+          "state": "blob"
         }
       },
       {
-        "operation": "create",
+        "operation": "update",
         "path": ".github/scripts/av_free_qualification/run_hosted_qualification.py",
         "preimage": {
-          "state": "absent"
+          "git_blob_sha": "adbe0a0d033b9816baf9c7f414b12bab35bd7e35",
+          "mode": "100644",
+          "state": "blob"
         }
       },
       {
-        "operation": "create",
+        "operation": "update",
         "path": ".github/scripts/av_free_qualification/test_qualification.py",
         "preimage": {
-          "state": "absent"
+          "git_blob_sha": "dc096f162fcd1cfc42fe9ad4731211ffe829f924",
+          "mode": "100644",
+          "state": "blob"
         }
       },
       {
-        "operation": "create",
+        "operation": "update",
         "path": ".github/scripts/av_free_qualification/verify_candidate.py",
         "preimage": {
-          "state": "absent"
+          "git_blob_sha": "653f9043b91dd6774f20ca72a6e3fbe6e19c929e",
+          "mode": "100644",
+          "state": "blob"
         }
       },
       {
-        "operation": "create",
+        "operation": "update",
         "path": ".github/workflows/free-av-qualification.yml",
         "preimage": {
-          "state": "absent"
+          "git_blob_sha": "86fe61035f255eb1e261d4dbe899873a6e175602",
+          "mode": "100644",
+          "state": "blob"
         }
       }
     ],
-    "expected_public_head_sha": "9b09b908cbc82cf0e8290af9f8d410832414cd2e",
-    "expected_public_tree_sha": "9f97d0554e57e614ccc030857cd4f449edc65b00",
+    "expected_public_head_sha": "4b57377e3bd03695f3c10147caf4a3352dafb88f",
+    "expected_public_tree_sha": "c620c13e33a4cec8b2aa2d73e4474304de810a3c",
     "repository": "agmmltd-arch/agmm-render-public"
   },
   "qualification_scope": "Six blind whole-video audiovisual calibration stimuli: full positives P1-r7/P2-corrected-audio-v2/P3-corrected-audio-v2 plus three severe synthetic audio controls derived from full P1 video; not general qualification or release approval.",

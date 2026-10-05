@@ -25,6 +25,10 @@ jobs:
         run: python3 -B .github/scripts/av_free_qualification/verify_candidate.py
       - name: Run isolated synthetic negative controls and zero-I/O gates
         run: cd .github/scripts/av_free_qualification && python3 -B -m unittest -v test_qualification.py
+      - name: Install FFmpeg on hosted runner
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
       - name: Confirm hosted tools
         run: |
           command -v ffmpeg
