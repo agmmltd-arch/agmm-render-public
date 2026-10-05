@@ -1,0 +1,13 @@
+{
+  "workflow": "s83-source-capture.yml",
+  "run_id": 37249599493,
+  "created_at": "2026-10-05T00:59:09Z",
+  "head": "2fe381ab18796b0366a543fffdecd2e1a97c0b63",
+  "native_status_observed": "in_progress",
+  "source_only": true,
+  "produce_development_preview": false,
+  "candidate_manifest_sha256": "fae670b35f33fd843f10c0c7d1d567b3bf5be244191bf0e8e292cb19b6af7c85",
+  "dispatch_count": 1,
+  "full_av_approval": "NOT_GRANTED",
+  "local_writes": 0
+}
