@@ -2,8 +2,8 @@
   "schema": "agmm-s83-mix-runtime-dependencies-v1",
   "status": "PUBLIC_RUNTIME_PINS_RECONFIRMED_S83_SOURCE_AND_REVIEW_ROUTE_CANDIDATE_READY",
   "observed_public_repository": "agmmltd-arch/agmm-render-public",
-  "observed_public_main_commit": "cd9aa32a6c219f356ec54da61858c294f5e76a9c",
-  "observed_at_utc": "2026-10-04T21:59:21Z",
+  "observed_public_main_commit": "440d0714ca6e9b10d97518fe197a371c4b3edc9d",
+  "observed_at_utc": "2026-10-05T00:34:21Z",
   "runner": {
     "os": "ubuntu-24.04",
     "architecture": "x86_64",

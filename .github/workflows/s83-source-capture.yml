@@ -47,7 +47,7 @@ jobs:
     timeout-minutes: 40
     env:
       GH_REPO: agmmltd-arch/agmm-render-public
-      S83_PARENT: cd9aa32a6c219f356ec54da61858c294f5e76a9c
+      S83_PARENT: 440d0714ca6e9b10d97518fe197a371c4b3edc9d
       CANDIDATE: .github/candidates/S83
       EXPECTED_PUBLIC_HEAD_SHA: ${{ inputs.expected_public_head_sha }}
       CANDIDATE_MANIFEST_SHA256: ${{ inputs.candidate_manifest_sha256 }}
@@ -111,7 +111,7 @@ jobs:
           PY
           python3 verify_protected_input_manifest.py PROTECTED-INPUTS.json
           python3 -c 'import json,os; assert json.load(open("PROTECTED-INPUTS.json"))["private_tree_binding"]["commit"] == os.environ["EXPECTED_PRIVATE_INPUT_COMMIT"]'
-          python3 -m unittest -v test_validate_s83_source_clock.py test_verify_protected_input_manifest.py test_guard_review_artifact.py test_capture_hyperframes_diagnostic.py test_s83_review_export.py
+          python3 -m unittest -v test_validate_s83_source_clock.py test_verify_protected_input_manifest.py test_guard_review_artifact.py test_capture_hyperframes_diagnostic.py test_s83_review_export.py test_s83_layout_regressions.py
           python3 -m unittest -v test_s83_hyperframes_runtime.py
           static_tree="$RUNNER_TEMP/s83-static-tree"
           mkdir -p "$static_tree/assets"
@@ -155,6 +155,7 @@ jobs:
           set -euo pipefail
           python3 "$CANDIDATE/capture_hyperframes_diagnostic.py" --candidate "$CANDIDATE" \
             --json-output "$RUNNER_TEMP/s83-check.json" --diagnostic-output "$RUNNER_TEMP/s83-check-diagnostic.json"
+          python3 "$CANDIDATE/assert_s83_layout.py" "$RUNNER_TEMP/s83-check.json"
       - name: Capture the 37 frozen review stills with failure diagnostics
         id: hfstills
         if: steps.hfcheck.outcome == 'success'

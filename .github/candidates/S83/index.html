@@ -71,7 +71,7 @@
     .face{position:absolute;inset:0;backface-visibility:hidden;background:var(--caption);border:2px solid rgba(23,45,60,.18);overflow:hidden}
     .face-back{transform:rotateY(180deg);display:grid;grid-template-columns:1fr 1fr}
     .source-note{position:absolute;inset:64px 58px;padding:74px 62px;background:#fbf9f3;border-left:10px solid var(--blue);display:flex;flex-direction:column;justify-content:center;gap:58px}
-    .source-note .source-tag{font:700 46px/1.12 Arial,sans-serif;color:var(--blue)}
+    .source-note .source-tag{position:absolute;top:12px;left:62px;right:62px;font:700 46px/1.12 Arial,sans-serif;color:var(--blue)}
     .source-note blockquote{font:700 66px/1.12 Georgia,serif;color:var(--ink);margin:0}
     .source-attribution{font:700 42px/1.12 Arial,sans-serif;color:var(--ink)}
     .ledger-column{padding:55px 40px;position:relative}
@@ -79,7 +79,7 @@
     .ledger-column h2{font:700 44px/1.05 Arial,sans-serif;letter-spacing:.3px;margin:0 0 38px;min-height:104px}
     .ledger-column .claim{font:700 52px/1.08 Georgia,serif;color:var(--blue)}
     .ledger-column .source-tag{position:absolute;left:40px;right:40px;bottom:50px}
-    .evidence-state{position:absolute;left:30px;right:30px;top:385px;border:4px dashed var(--red);padding:33px 18px;text-align:center;color:var(--red);font:700 42px/1.08 Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center}
+    .evidence-state{position:absolute;left:30px;right:30px;top:680px;border:4px dashed var(--red);padding:33px 18px;text-align:center;color:var(--red);font:700 42px/1.08 Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center}
     .blank-field{position:absolute;left:60px;right:60px;top:540px;height:220px;border-bottom:3px solid var(--rule);border-top:3px solid rgba(23,45,60,.14)}
     .s6 .worksheet{position:absolute;left:116px;right:96px;top:400px;height:910px;padding:60px 65px}
     .s6 .worksheet h2{font:700 66px/1 Georgia,serif;margin:0 0 60px}
@@ -1289,7 +1289,7 @@
       .fromTo('.s1 .metric .qualifier', { x: 54, opacity: 0 }, { x: 0, opacity: 1, duration: .44, ease: 'power3.out' }, .06)
       .fromTo('.s2 .phone', { x: -240, rotation: -14 }, { x: 0, rotation: 0, duration: .54, ease: 'power3.out' }, 7.815)
       .fromTo('.s2 .note', { x: 340, rotation: 11 }, { x: 0, rotation: 2, duration: .62, ease: 'power4.out' }, 8.2)
-      .fromTo('.s2 .note .line', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: .34, stagger: .19, ease: 'power2.out' }, 9.1)
+      .fromTo('.s2 .note blockquote', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: .34, ease: 'power2.out' }, 9.1)
       .fromTo('.s2 .review', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: .32, ease: 'power3.out' }, 13.674)
       .fromTo('.s2 .edit', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: .32, ease: 'power3.out' }, 14.582)
       .fromTo('.s2 .approve', { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: .32, ease: 'power3.out' }, 15.894)
