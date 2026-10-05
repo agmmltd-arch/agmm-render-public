@@ -16,8 +16,28 @@ on:
         required: true
         default: 04b48f467025d86ffcdb54d933717682b0e84903
         type: string
+      produce_development_preview:
+        description: Enable private-input mix/render only after source-still review; leave false for the first source-only capture
+        required: true
+        default: false
+        type: boolean
+      reviewed_source_frames_sha256:
+        description: Normalized digest of the exact 37 PNGs independently reviewed for this candidate and public commit; required only when produce_development_preview is true
+        required: false
+        default: ''
+        type: string
+      reviewed_source_manifest_sha256:
+        description: Candidate manifest SHA256 bound to the independent 37-frame review receipt
+        required: false
+        default: ''
+        type: string
+      reviewed_source_public_head_sha:
+        description: Public source commit SHA bound to the independent 37-frame review receipt
+        required: false
+        default: ''
+        type: string
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: s83-protected-production
   cancel-in-progress: false
@@ -27,7 +47,7 @@ jobs:
     timeout-minutes: 40
     env:
       GH_REPO: agmmltd-arch/agmm-render-public
-      S83_PARENT: c8e11bb0ce89e692aafe428df2b46ec917ed27b0
+      S83_PARENT: cd9aa32a6c219f356ec54da61858c294f5e76a9c
       CANDIDATE: .github/candidates/S83
       EXPECTED_PUBLIC_HEAD_SHA: ${{ inputs.expected_public_head_sha }}
       CANDIDATE_MANIFEST_SHA256: ${{ inputs.candidate_manifest_sha256 }}
@@ -91,7 +111,7 @@ jobs:
           PY
           python3 verify_protected_input_manifest.py PROTECTED-INPUTS.json
           python3 -c 'import json,os; assert json.load(open("PROTECTED-INPUTS.json"))["private_tree_binding"]["commit"] == os.environ["EXPECTED_PRIVATE_INPUT_COMMIT"]'
-          python3 -m unittest -v test_validate_s83_source_clock.py test_verify_protected_input_manifest.py test_guard_review_artifact.py
+          python3 -m unittest -v test_validate_s83_source_clock.py test_verify_protected_input_manifest.py test_guard_review_artifact.py test_capture_hyperframes_diagnostic.py test_s83_review_export.py
           python3 -m unittest -v test_s83_hyperframes_runtime.py
           static_tree="$RUNNER_TEMP/s83-static-tree"
           mkdir -p "$static_tree/assets"
@@ -111,7 +131,153 @@ jobs:
           test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/v2/mix2.py")" = 623521fb087ce296fe3895f6c23205c49976b837
           test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/v2/voice_chain.py")" = ea817bb829f4ffd68b2abdaacb1a8128731d4b21
           test "$(git rev-parse "$GITHUB_SHA:tools/agmm-kit-mirror/sound/library.json")" = ddaf188c42e87d6a8d7b42e17f4433e0b5ef0a05
+          test "$(git rev-parse "$GITHUB_SHA:.github/scripts/render_short_package.py")" = 754099346a84c5bd305f5684ef24399a53bd9697
+      - name: Install pinned browser capture dependencies
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.1
+          npx playwright install --with-deps chromium
+      - name: Verify exact source text and capture identified Trust logo imgs
+        id: source_capture
+        run: node "$CANDIDATE/source_capture.mjs"
+      - name: Stage approved source marks into temporary composition
+        if: steps.source_capture.outcome == 'success'
+        run: |
+          set -euo pipefail
+          mkdir -p "$CANDIDATE/assets"
+          install -m 0644 "$S83_CAPTURE_DIR/assets/wht-mark.png" "$CANDIDATE/assets/wht-mark.png"
+          install -m 0644 "$S83_CAPTURE_DIR/assets/rwt-mark.png" "$CANDIDATE/assets/rwt-mark.png"
+      - name: Run HyperFrames check and preserve bounded failure diagnostics
+        id: hfcheck
+        if: steps.source_capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python3 "$CANDIDATE/capture_hyperframes_diagnostic.py" --candidate "$CANDIDATE" \
+            --json-output "$RUNNER_TEMP/s83-check.json" --diagnostic-output "$RUNNER_TEMP/s83-check-diagnostic.json"
+      - name: Capture the 37 frozen review stills with failure diagnostics
+        id: hfstills
+        if: steps.hfcheck.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python3 "$CANDIDATE/capture_hyperframes_diagnostic.py" --candidate "$CANDIDATE" --snapshot \
+            --json-output "$RUNNER_TEMP/s83-snapshot.json" --diagnostic-output "$RUNNER_TEMP/s83-snapshot-diagnostic.json" \
+            --at "0,0.12,0.35,0.7,1.2,7.775,7.835,7.875,13.2,18.579,18.639,18.679,23.5,28.417,28.477,28.517,33.1,34.493,34.553,34.593,35.313,37.825,37.885,37.925,41.2,44.861,44.921,44.961,48,50.895,50.955,50.995,53,56.3,56.45,56.50,56.53" \
+            --no-end --describe false --no-browser-gpu --timeout 180000 --output "$S83_STILLS_DIR"
+      - name: Build and validate bounded source-only diagnostics packet
+        if: always() && steps.source_capture.outcome != 'skipped'
+        env:
+          SOURCE_OUTCOME: ${{ steps.source_capture.outcome }}
+          CHECK_OUTCOME: ${{ steps.hfcheck.outcome }}
+          STILLS_OUTCOME: ${{ steps.hfstills.outcome }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$S83_REVIEW_DIR"
+          python3 "$CANDIDATE/hosted_receipt.py" --sources "$S83_CAPTURE_DIR" --stills "$S83_STILLS_DIR" \
+            --check "$RUNNER_TEMP/s83-check.json" --manifest "$CANDIDATE/CANDIDATE-MANIFEST.json" --head "$GITHUB_SHA" \
+            --diagnostics "$RUNNER_TEMP" --output "$S83_REVIEW_DIR" \
+            --source-outcome "${SOURCE_OUTCOME:-skipped}" --check-outcome "${CHECK_OUTCOME:-skipped}" \
+            --stills-outcome "${STILLS_OUTCOME:-skipped}"
+          python3 "$CANDIDATE/guard_review_artifact.py" "$S83_REVIEW_DIR"
+      - name: Upload bounded source-only diagnostic packet
+        if: always() && steps.source_capture.outcome != 'skipped'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: s83-source-diagnostics-${{ github.run_id }}
+          path: ${{ runner.temp }}/s83-review/
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Publish exact source-only still packet to a unique review branch
+        if: steps.hfstills.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          repo_dir="$RUNNER_TEMP/s83-review-git"
+          git clone --no-checkout "https://github.com/$GH_REPO.git" "$repo_dir"
+          git -C "$repo_dir" checkout --orphan "review-S83-source-$GITHUB_RUN_ID-a$GITHUB_RUN_ATTEMPT"
+          git -C "$repo_dir" read-tree --empty
+          mkdir -p "$repo_dir/public-review/S83-$GITHUB_RUN_ID-a$GITHUB_RUN_ATTEMPT/frames"
+          dest="$repo_dir/public-review/S83-$GITHUB_RUN_ID-a$GITHUB_RUN_ATTEMPT"
+          cp "$S83_REVIEW_DIR"/still-frame-*.png "$dest/frames/"
+          cp "$S83_REVIEW_DIR/SOURCE-CAPTURE-RECEIPT.json" "$dest/"
+          cp "$S83_REVIEW_DIR/CAPTURE-STATUS.json" "$dest/"
+          cp "$S83_REVIEW_DIR/HYPERFRAMES-CHECK.json" "$dest/"
+          cp "$S83_REVIEW_DIR/SOURCE-FRAMES-BINDING.json" "$dest/"
+          python3 - "$dest" "$S83_REVIEW_DIR/SOURCE-FRAMES-BINDING.json" "$GITHUB_WORKSPACE/$CANDIDATE/CANDIDATE-MANIFEST.json" "$GITHUB_SHA" <<'PY'
+          import hashlib,json,pathlib,sys
+          root=pathlib.Path(sys.argv[1]); frames=sorted((root/'frames').glob('still-frame-*.png'))
+          if len(frames)!=37 or any(p.is_symlink() or not p.is_file() for p in frames): raise SystemExit('source branch requires exactly 37 regular PNGs')
+          status=json.loads((root/'CAPTURE-STATUS.json').read_text())
+          if status.get('story_id')!='S83' or status.get('status')!='SOURCE_CHECK_AND_STILLS_CAPTURED_NEEDS_INDEPENDENT_EYES': raise SystemExit('source review status is not complete/unreviewed')
+          binding=json.loads(pathlib.Path(sys.argv[2]).read_text()); manifest_sha=hashlib.sha256(pathlib.Path(sys.argv[3]).read_bytes()).hexdigest()
+          if binding.get('schema')!='agmm-s83-source-frames-binding-v1' or binding.get('candidate_manifest_sha256')!=manifest_sha or binding.get('source_public_head_sha')!=sys.argv[4]: raise SystemExit('source-frame review binding belongs to another candidate/head')
+          listed=binding.get('frames',[]); expected_names=[f'still-frame-{i:02d}.png' for i in range(37)]
+          if [x.get('name') for x in listed]!=expected_names or [p.name for p in frames]!=expected_names: raise SystemExit('source-frame binding inventory mismatch')
+          canonical=[]
+          for item,p in zip(listed,frames):
+            digest=hashlib.sha256(p.read_bytes()).hexdigest()
+            if item.get('sha256')!=digest or item.get('bytes')!=p.stat().st_size: raise SystemExit('public source-frame bytes differ from reviewed binding: '+p.name)
+            canonical.append(f'{digest}  {p.name}\n')
+          if binding.get('frames_sha256')!=hashlib.sha256(''.join(canonical).encode()).hexdigest(): raise SystemExit('source-frame digest mismatch')
+          rows=[]
+          for p in sorted(root.rglob('*')):
+            if p.is_file(): rows.append(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(root).as_posix()}')
+          (root/'SHA256SUMS.txt').write_text('\n'.join(rows)+'\n')
+          index={'schema':'agmm-s83-durable-source-review-v1','story_id':'S83','run_id':int(__import__('os').environ['GITHUB_RUN_ID']),'capture_count':37,'source_frame_binding':binding,'full_av_review':'OPEN','rights':'NOT_ASSESSED','release_approval':'NOT_GRANTED','ready':'NOT_GRANTED','files':[{'name':p.relative_to(root).as_posix(),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(root.rglob('*')) if p.is_file()]}
+          (root/'DURABLE-SOURCE-INDEX.json').write_text(json.dumps(index,indent=2,sort_keys=True)+'\n')
+          PY
+          git -C "$repo_dir" add public-review
+          python3 - "$repo_dir" <<'PY'
+          import pathlib,subprocess,sys
+          repo=pathlib.Path(sys.argv[1]); names=set(subprocess.check_output(['git','-C',str(repo),'diff','--cached','--name-only'],text=True).splitlines())
+          base=f'public-review/S83-{__import__("os").environ["GITHUB_RUN_ID"]}-a{__import__("os").environ["GITHUB_RUN_ATTEMPT"]}/'
+          expected={base+'SOURCE-CAPTURE-RECEIPT.json',base+'CAPTURE-STATUS.json',base+'HYPERFRAMES-CHECK.json',base+'SOURCE-FRAMES-BINDING.json',base+'SHA256SUMS.txt',base+'DURABLE-SOURCE-INDEX.json'}
+          expected|={base+'frames/still-frame-%02d.png'%i for i in range(37)}
+          if names!=expected: raise SystemExit('durable source branch inventory mismatch')
+          PY
+          git -C "$repo_dir" -c user.name='AGMM hosted source review' -c user.email='evidence@users.noreply.github.com' commit -m "S83 source review stills; independent review open"
+          git -C "$repo_dir" push origin "HEAD:refs/heads/review-S83-source-$GITHUB_RUN_ID-a$GITHUB_RUN_ATTEMPT"
+
+      - name: Fail closed on source check or still-capture outcomes after saving diagnostics
+        if: always() && steps.source_capture.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          test "${{ steps.source_capture.outcome }}" = success
+          test "${{ steps.hfcheck.outcome }}" = success
+          test "${{ steps.hfstills.outcome }}" = success
+      - name: Bind explicit reviewed source packet before private production inputs
+        id: source_review_binding
+        if: inputs.produce_development_preview
+        env:
+          REVIEWED_SOURCE_FRAMES_SHA256: ${{ inputs.reviewed_source_frames_sha256 }}
+          REVIEWED_SOURCE_MANIFEST_SHA256: ${{ inputs.reviewed_source_manifest_sha256 }}
+          REVIEWED_SOURCE_PUBLIC_HEAD_SHA: ${{ inputs.reviewed_source_public_head_sha }}
+        run: |
+          set -euo pipefail
+          test "${{ steps.source_capture.outcome }}" = success
+          test "${{ steps.hfcheck.outcome }}" = success
+          test "${{ steps.hfstills.outcome }}" = success
+          [[ "$REVIEWED_SOURCE_FRAMES_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$REVIEWED_SOURCE_MANIFEST_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$REVIEWED_SOURCE_PUBLIC_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          python3 - "$S83_REVIEW_DIR/SOURCE-FRAMES-BINDING.json" "$CANDIDATE/CANDIDATE-MANIFEST.json" "$GITHUB_SHA" "$REVIEWED_SOURCE_FRAMES_SHA256" "$REVIEWED_SOURCE_MANIFEST_SHA256" "$REVIEWED_SOURCE_PUBLIC_HEAD_SHA" <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          binding=json.loads(Path(sys.argv[1]).read_text())
+          manifest_sha=hashlib.sha256(Path(sys.argv[2]).read_bytes()).hexdigest()
+          if (binding.get('frames_sha256'),binding.get('candidate_manifest_sha256'),binding.get('source_public_head_sha')) != tuple(sys.argv[4:7]):
+              raise SystemExit('source frames do not match the independently reviewed frame/manifest/head receipt')
+          if binding.get('candidate_manifest_sha256') != manifest_sha or binding.get('source_public_head_sha') != sys.argv[3]:
+              raise SystemExit('reviewed source receipt belongs to another candidate or public commit')
+          print('REVIEWED_SOURCE_BINDING_MATCH',binding['frames_sha256'],manifest_sha,sys.argv[3])
+          PY
       - name: Checkout exact private Git input tree using the existing read-only deploy key
+        if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: agmmltd-arch/agmm-video-render
@@ -141,6 +307,7 @@ jobs:
             protected-inputs/S83/sound/library/paper_page/paper_page_08.wav
             protected-inputs/S83/sound/library/paper_page/paper_page_10.wav
       - name: Verify native private Git blobs, bytes, and release SHA256 on Ubuntu
+        if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success'
         run: |
           set -euo pipefail
           cd "$CANDIDATE"
@@ -155,9 +322,11 @@ jobs:
           done < <(python3 -c 'import json; print("\n".join(json.dumps(x) for x in json.load(open("PROTECTED-INPUTS.json"))["assets"]))')
           cd "$GITHUB_WORKSPACE"
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success'
         with:
           python-version: '3.12.8'
       - name: Install pinned numerical dependency and FFmpeg package
+        if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success'
         run: |
           set -euo pipefail
           printf '%s\n' 'numpy==2.2.6 --hash=sha256:fd83c01228a688733f1ded5201c678f0c53ecc1006ffbc404db9f7a899ac6249' > "$RUNNER_TEMP/s83-requirements.txt"
@@ -174,51 +343,77 @@ jobs:
           p.write_text(json.dumps({'schema':'agmm-s83-runtime-receipt-v1','status':'PINNED_RUNTIME_READY','public_commit':os.environ['GITHUB_SHA'],'runner_image_version':os.environ.get('ImageVersion'),'runner_image_os':os.environ.get('ImageOS'),'python':'3.12.8','numpy':'2.2.6','ffmpeg_package':'7:6.1.1-3ubuntu5','approval':'NOT_GRANTED'},indent=2)+'\n')
           PY
       - name: Bind exact source PCM to canonical word clock
+        if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success'
         run: |
           set -euo pipefail
           cd "$CANDIDATE"
           python3 validate_s83_source_clock.py --wav inputs/S83.wav --timings CANONICAL-WORD-TIMINGS.json --protected-inputs PROTECTED-INPUTS.json --output "$S83_RECEIPTS/SOURCE-CLOCK-RECEIPT.json"
       - name: Render private mix on the hosted runner
+        if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success'
         run: |
           set -euo pipefail
           cd "$GITHUB_WORKSPACE/$CANDIDATE"
           python3 "$GITHUB_WORKSPACE/tools/agmm-kit-mirror/sound/v2/mix2.py" render MIX-SPEC.json --out "$S83_MIX_DIR"
           python3 summarize_s83_mix.py --manifest "$S83_MIX_DIR/mix_manifest.json" --master "$S83_MIX_DIR/master.wav" --output "$S83_RECEIPTS/MIX-QUALITY-RECEIPT.json"
           cd "$GITHUB_WORKSPACE"
-      - name: Install pinned browser capture dependencies
+
+      - name: Render and mux the single S83 1080 development review master
+        id: render_master
+        if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success'
         run: |
           set -euo pipefail
-          npm install --no-save playwright@1.55.1
-          npx playwright install --with-deps chromium
-      - name: Verify exact source text and capture identified Trust logo imgs
-        run: node "$CANDIDATE/source_capture.mjs"
-      - name: Stage approved source marks into temporary composition
+          mkdir -p "$RUNNER_TEMP/s83-render/renders" "$RUNNER_TEMP/s83-render/final"
+          npx --yes hyperframes@0.8.71 render -c "$GITHUB_WORKSPACE/$CANDIDATE/index.html" --fps 30 --workers 2 \
+            --quality high --player-ready-timeout 180000 --protocol-timeout 600000 \
+            --output "$RUNNER_TEMP/s83-render/S83-raw.mp4" > "$RUNNER_TEMP/s83-render/render.log" 2>&1 || { tail -60 "$RUNNER_TEMP/s83-render/render.log"; exit 1; }
+          cat > "$RUNNER_TEMP/s83-render/parts.json" <<'JSON'
+          {"parts":[{"look":"S83","file":"S83.mp4","out":"S83","off":0,"dur":56.533333}],"frames":1696}
+          JSON
+          PARTS_SHA=$(sha256sum "$RUNNER_TEMP/s83-render/parts.json" | cut -d' ' -f1)
+          MIX_SHA=$(sha256sum "$S83_MIX_DIR/master.wav" | cut -d' ' -f1)
+          python3 - "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_SHA" "$EXPECTED_PRIVATE_INPUT_COMMIT" "$PARTS_SHA" "$MIX_SHA" "$S83_RECEIPTS" <<'PY'
+          import json,os,sys,hashlib
+          run,attempt,head,private,parts,mix,receipts=sys.argv[1:]
+          tag=f'S83-development-review-{run}-a{attempt}'
+          obj={'kind':'agmm_short_assembly_source_receipt','source_run':{'id':int(run),'tag':tag,'head_sha':head},'binding':{'parts_sha256':parts,'mix_sha256':mix,'render_4k':False,'private_input_commit':private},'private_input_verification_sha256':hashlib.sha256(open(receipts+'/PROTECTED-INPUT-VERIFICATION.json','rb').read()).hexdigest()}
+          open(os.path.join(receipts,'ASSEMBLY-SOURCE-RECEIPT.json'),'w').write(json.dumps(obj,indent=2)+'\n')
+          PY
+          cd "$RUNNER_TEMP/s83-render"
+          python3 "$GITHUB_WORKSPACE/.github/scripts/render_short_package.py" cap-part --input S83-raw.mp4 --output renders/S83.mp4 --resolution 1080 --receipt renders/S83.cap.json
+          python3 "$GITHUB_WORKSPACE/.github/scripts/render_short_package.py" verify-part --video renders/S83.mp4 --resolution 1080 --duration 56.533333 --output renders/S83.verify.json
+          python3 "$GITHUB_WORKSPACE/.github/scripts/render_short_package.py" assemble --parts parts.json --mix "$S83_MIX_DIR/master.wav" --parts-sha256 "$PARTS_SHA" --mix-sha256 "$MIX_SHA" --renders renders --source-receipt "$S83_RECEIPTS/ASSEMBLY-SOURCE-RECEIPT.json" --output final
+          test -s final/FINAL.mp4
+          grep -q '"editorial_status": "NOT_REVIEWED"' final/TECHNICAL-EVIDENCE.json
+          grep -q '"publication_status": "NOT_REQUESTED"' final/TECHNICAL-EVIDENCE.json
+          echo "parts_sha=$PARTS_SHA" >> "$GITHUB_OUTPUT"
+          echo "mix_sha=$MIX_SHA" >> "$GITHUB_OUTPUT"
+      - name: Prepare sanitized public review release payload bound to all inputs
+        id: preview_payload
+        if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success'
         run: |
           set -euo pipefail
-          mkdir -p "$CANDIDATE/assets"
-          install -m 0644 "$S83_CAPTURE_DIR/assets/wht-mark.png" "$CANDIDATE/assets/wht-mark.png"
-          install -m 0644 "$S83_CAPTURE_DIR/assets/rwt-mark.png" "$CANDIDATE/assets/rwt-mark.png"
-      - name: Check composition and capture the 37 frozen review stills
+          TAG="S83-development-review-$GITHUB_RUN_ID-a$GITHUB_RUN_ATTEMPT"
+          python3 "$GITHUB_WORKSPACE/$CANDIDATE/prepare_s83_review_export.py" \
+            --final "$RUNNER_TEMP/s83-render/final/FINAL.mp4" \
+            --evidence "$RUNNER_TEMP/s83-render/final/TECHNICAL-EVIDENCE.json" \
+            --protected "$S83_RECEIPTS/PROTECTED-INPUT-VERIFICATION.json" \
+            --manifest "$GITHUB_WORKSPACE/$CANDIDATE/CANDIDATE-MANIFEST.json" \
+            --source-packet "$S83_REVIEW_DIR" --parts "$RUNNER_TEMP/s83-render/parts.json" \
+            --mix "$S83_MIX_DIR/master.wav" --mix-receipt "$S83_RECEIPTS/MIX-QUALITY-RECEIPT.json" \
+            --clock-receipt "$S83_RECEIPTS/SOURCE-CLOCK-RECEIPT.json" \
+            --head "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" --tag "$TAG" \
+            --output "$RUNNER_TEMP/s83-review-release"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+      - name: Publish only after exact draft preview inventory is verified
+        if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success' && steps.preview_payload.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          npx --yes hyperframes@0.8.71 check "$CANDIDATE" --json > "$RUNNER_TEMP/s83-check.json"
-          npx --yes hyperframes@0.8.71 snapshot "$CANDIDATE" --at "0,0.12,0.35,0.7,1.2,7.775,7.835,7.875,13.2,18.579,18.639,18.679,23.5,28.417,28.477,28.517,33.1,34.493,34.553,34.593,35.313,37.825,37.885,37.925,41.2,44.861,44.921,44.961,48,50.895,50.955,50.995,53,56.3,56.45,56.50,56.53" --no-end --describe false --no-browser-gpu --timeout 180000 --output "$S83_STILLS_DIR"
-      - name: Build sanitized bounded review packet and attach text receipts
-        run: |
-          set -euo pipefail
-          python3 "$CANDIDATE/hosted_receipt.py" --sources "$S83_CAPTURE_DIR" --stills "$S83_STILLS_DIR" --check "$RUNNER_TEMP/s83-check.json" --output "$S83_REVIEW_DIR" --source-outcome success --check-outcome success --stills-outcome success
-          python3 "$CANDIDATE/seal_s83_production_packet.py" --packet "$S83_REVIEW_DIR" --receipts "$S83_RECEIPTS"
-          python3 "$CANDIDATE/guard_review_artifact.py" "$S83_REVIEW_DIR"
-      - name: Delete all protected inputs, mix outputs, and temp media before upload
+          python3 "$GITHUB_WORKSPACE/$CANDIDATE/publish_s83_review_release.py" \
+            --payload "$RUNNER_TEMP/s83-review-release" --tag "${{ steps.preview_payload.outputs.tag }}" --head "$GITHUB_SHA"
+      - name: Delete private inputs, intermediate mix, and raw renderer outputs
         if: always()
         run: |
           set -euo pipefail
-          rm -rf "$GITHUB_WORKSPACE/private-s83-inputs" "$GITHUB_WORKSPACE/$CANDIDATE/inputs" "$S83_MIX_DIR" "$S83_STILLS_DIR" "$S83_CAPTURE_DIR"
-      - name: Upload bounded source and text review packet
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: s83-protected-source-review-${{ github.run_id }}
-          path: ${{ runner.temp }}/s83-review/
-          retention-days: 1
-          compression-level: 0
-          if-no-files-found: error
+          rm -rf "$GITHUB_WORKSPACE/private-s83-inputs" "$GITHUB_WORKSPACE/$CANDIDATE/inputs" "$S83_MIX_DIR" "$S83_CAPTURE_DIR" "$S83_STILLS_DIR" "$RUNNER_TEMP/s83-render/S83-raw.mp4" "$RUNNER_TEMP/s83-render/renders"

@@ -1,9 +1,9 @@
 {
   "schema": "agmm-s83-mix-runtime-dependencies-v1",
-  "status": "PUBLIC_RUNTIME_PINNED_PRIVATE_GIT_TREE_BOUND_HOSTED_RUN_PENDING",
+  "status": "PUBLIC_RUNTIME_PINS_RECONFIRMED_S83_SOURCE_AND_REVIEW_ROUTE_CANDIDATE_READY",
   "observed_public_repository": "agmmltd-arch/agmm-render-public",
-  "observed_public_main_commit": "c8e11bb0ce89e692aafe428df2b46ec917ed27b0",
-  "observed_at_utc": "2026-10-04T20:45:45Z",
+  "observed_public_main_commit": "cd9aa32a6c219f356ec54da61858c294f5e76a9c",
+  "observed_at_utc": "2026-10-04T21:59:21Z",
   "runner": {
     "os": "ubuntu-24.04",
     "architecture": "x86_64",
@@ -83,11 +83,11 @@
   "protected_input_manifest": "PROTECTED-INPUTS.json binds the 18 exact private Git blob IDs and source release IDs, sizes, digests, and runtime paths.",
   "public_output_policy": "The one-day Actions artifact contains only allowlisted sanitized clock/mix/source receipts and bounded source stills. The separate authorized tagged public in-review preview release may contain the single mixed programme master with NOT_REVIEWED labels and all approval gates open. Raw voice and individual stems remain private.",
   "public_mix_preview_route": {
-    "status": "AUTHORIZED_ROUTE_AVAILABLE_INTEGRATION_OPEN",
+    "status": "IMPLEMENTED_IN_ISOLATED_CANDIDATE_NOT_PUBLISHED_OR_RUN",
     "authorization_receipt": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-durable-review-export-luna/ROOT-PUBLIC-PREVIEW-AUTHORIZATION.json",
-    "native_exporter": "/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-durable-review-export-luna/candidate/s90_preview_export.py and its published workflow; root owns integration",
+    "native_exporter": "prepare_s83_review_export.py + publish_s83_review_release.py; exact source/mix/private input bindings and draft-release inventory checks; no publication executed by this worker",
     "scope": "Single mixed S83 in-review preview master plus sanitized receipts in a tagged public preview prerelease. Keep raw voice and stems private. Label NOT_REVIEWED; AV/craft/Ready/release approval remain open.",
-    "implementation_state": "S83 workflow currently deletes master before durable export. Integrate into the same run and verify exact release asset SHA256/size before review handoff. Do not rerender a successfully exported mix.",
+    "implementation_state": "Same hosted run retains the verified mixed master until a single 1080 render is assembled, creates a sanitized four-file review payload, and publishes only after the draft release inventory and tag/head are verified. Raw voice/stems and the WAV mix are never exported.",
     "actions_artifact": "No mix, stems, or raw media in one-day Actions artifact."
   }
 }

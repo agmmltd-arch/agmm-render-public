@@ -3,6 +3,7 @@
 import hashlib
 import json
 import pathlib
+import re
 import sys
 
 BASE_FILES = {"SOURCE-CAPTURE-RECEIPT.json", "CAPTURE-STATUS.json", "SHA256SUMS.txt"}
@@ -62,6 +63,14 @@ def validate_packet(directory):
             raise ValueError("mix receipt must keep audio review and approval open and exclude media")
         if clock.get("audio_review") != "NOT_PERFORMED_BY_VALIDATOR":
             raise ValueError("source-clock receipt must not claim audio review")
+    for name in ("CHECK-DIAGNOSTIC.JSON", "SNAPSHOT-DIAGNOSTIC.JSON"):
+        if name in actual:
+            diagnostic=json.loads((root/name).read_text())
+            if diagnostic.get("schema") != "agmm-s83-hyperframes-check-diagnostic-v1" or diagnostic.get("approval") != "NOT_GRANTED":
+                raise ValueError("HyperFrames diagnostic schema/status mismatch")
+            if len((root/name).read_bytes())>100_000:
+                raise ValueError("HyperFrames diagnostic exceeds byte cap")
+            allowed.add(name)
     if "HYPERFRAMES-CHECK.json" in actual:
         try:
             json.loads((root / "HYPERFRAMES-CHECK.json").read_text())
@@ -72,8 +81,13 @@ def validate_packet(directory):
         if "HYPERFRAMES-CHECK.json" in actual:
             raise ValueError("packet cannot contain both check JSON and raw check output")
         allowed.add("HYPERFRAMES-CHECK-OUTPUT.txt")
+    if "SOURCE-FRAMES-BINDING.json" in actual:
+        allowed.add("SOURCE-FRAMES-BINDING.json")
+    present_logos=actual & LOGO_FILES
+    if present_logos and present_logos != LOGO_FILES:
+        raise ValueError("source mark files must be omitted or present as the exact pair")
     if source_ok:
-        allowed |= LOGO_FILES
+        allowed |= present_logos
     if full_ok:
         if not source_ok or status.get("check_step") != "success" or status.get("stills_step") != "success":
             raise ValueError("full-capture status lacks successful source/check/stills outcomes")
@@ -82,8 +96,27 @@ def validate_packet(directory):
         frames = {name for name in actual if name.startswith("still-frame-") and name.endswith(".png")}
         if len(frames) != 37:
             raise ValueError(f"full review packet needs exactly 37 stills; found {len(frames)}")
+        if "SOURCE-FRAMES-BINDING.json" not in actual:
+            raise ValueError("full review packet lacks its normalized source-frame binding")
+        binding=json.loads((root/"SOURCE-FRAMES-BINDING.json").read_text())
+        expected_names=[f"still-frame-{i:02d}.png" for i in range(37)]
+        rows=binding.get("frames")
+        if (binding.get("schema")!="agmm-s83-source-frames-binding-v1" or binding.get("story_id")!="S83"
+                or binding.get("frame_count")!=37 or not re.fullmatch(r"[0-9a-f]{64}",str(binding.get("candidate_manifest_sha256","")))
+                or not re.fullmatch(r"[0-9a-f]{40}",str(binding.get("source_public_head_sha","")))
+                or not isinstance(rows,list) or [x.get("name") for x in rows]!=expected_names):
+            raise ValueError("source-frame binding identity/inventory mismatch")
+        expected_rows=[]
+        for item in rows:
+            path=root/item["name"]
+            if path.is_symlink() or not path.is_file() or item.get("bytes")!=path.stat().st_size or item.get("sha256")!=hashlib.sha256(path.read_bytes()).hexdigest():
+                raise ValueError("source-frame binding differs from exact PNG bytes: "+str(item.get("name")))
+            expected_rows.append(f"{item['sha256']}  {item['name']}\n")
+        frame_digest=hashlib.sha256("".join(expected_rows).encode()).hexdigest()
+        if binding.get("frames_sha256")!=frame_digest:
+            raise ValueError("source-frame normalized digest mismatch")
         allowed |= frames
-    elif any(name.startswith("still-") for name in actual):
+    elif any(name.startswith("still-") for name in actual) or "SOURCE-FRAMES-BINDING.json" in actual:
         raise ValueError("partial/failed capture must not include a partial still set")
     if actual != allowed:
         raise ValueError("review packet file allowlist mismatch: " + repr(sorted(actual ^ allowed)))
@@ -103,7 +136,10 @@ def validate_packet(directory):
     if sums != expected_sums:
         raise ValueError("SHA256SUMS does not exactly bind all packet files")
     return {"files": len(actual), "bytes": sum(p.stat().st_size for p in entries),
-            "source_status": receipt.get("status"), "capture_status": status.get("status")}
+            "source_status": receipt.get("status"), "capture_status": status.get("status"),
+            "source_frames_sha256": binding.get("frames_sha256") if full_ok else None,
+            "candidate_manifest_sha256": binding.get("candidate_manifest_sha256") if full_ok else None,
+            "source_public_head_sha": binding.get("source_public_head_sha") if full_ok else None}
 
 
 def main():

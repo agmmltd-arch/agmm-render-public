@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import pathlib
+import re
 import shutil
 
 EXPECTED_ASSETS = {
@@ -16,12 +17,15 @@ def main():
     p.add_argument("--sources", required=True)
     p.add_argument("--stills", required=True)
     p.add_argument("--check", required=True)
+    p.add_argument("--manifest", required=True)
+    p.add_argument("--head", required=True)
+    p.add_argument("--diagnostics", required=True)
     p.add_argument("--output", required=True)
     p.add_argument("--source-outcome", required=True)
     p.add_argument("--check-outcome", required=True)
     p.add_argument("--stills-outcome", required=True)
     a = p.parse_args()
-    src, stills, check, out = map(pathlib.Path, (a.sources, a.stills, a.check, a.output))
+    src, stills, check, manifest, diagnostics, out = map(pathlib.Path, (a.sources, a.stills, a.check, a.manifest, a.diagnostics, a.output))
     out.mkdir(parents=True, exist_ok=True)
     receipt_path = src / "SOURCE-CAPTURE-RECEIPT.json"
     if receipt_path.is_file():
@@ -32,6 +36,13 @@ def main():
                    "rights": {"status": "NOT_ASSESSED", "restriction": "No Trust mark permission is inferred."}}
     status = receipt.get("status")
     (out / "SOURCE-CAPTURE-RECEIPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
+    for name in ("s83-check-diagnostic.json", "s83-snapshot-diagnostic.json"):
+        item=diagnostics/name
+        if item.is_file() and not item.is_symlink():
+            data=item.read_bytes()
+            if len(data)>100_000: raise SystemExit("refusing oversized runtime diagnostic: "+name)
+            json.loads(data)
+            shutil.copyfile(item,out/name.upper().replace("S83-",""))
     if check.is_file():
         try:
             json.loads(check.read_text())
@@ -42,14 +53,19 @@ def main():
         actual = {p.name for p in (src / "assets").iterdir() if p.is_file()}
         if actual != EXPECTED_ASSETS:
             raise SystemExit("refusing unexpected source media allowlist: " + repr(sorted(actual)))
-        for name in sorted(EXPECTED_ASSETS):
-            shutil.copyfile(src / "assets" / name, out / name)
+        if actual != EXPECTED_ASSETS:
+            raise SystemExit("refusing unexpected source mark inventory: "+repr(sorted(actual)))
+        # Keep the two source marks in runner temp for the render; public packets
+        # carry the derivative stills, not standalone Trust logo image files.
         if a.check_outcome == "success" and a.stills_outcome == "success":
-            frames = [p for p in stills.iterdir() if p.is_file() and p.suffix.lower() == ".png"]
-            if len(frames) != 37:
-                raise SystemExit("expected 37 named/stitch-bound PNG captures, found " + str(len(frames)))
-            for frame in sorted(frames):
-                shutil.copyfile(frame, out / ("still-" + frame.name))
+            entries=list(stills.iterdir())
+            frames=[p for p in entries if p.suffix.lower()==".png"]
+            if len(frames) != 37 or any(p.is_symlink() or not p.is_file() for p in entries):
+                raise SystemExit("expected exactly 37 regular PNG capture files, found " + str(len(frames)))
+            # Snapshot filenames differ across HyperFrames minor releases. Freeze a stable
+            # numeric review packet order from the renderer's lexical frame sequence.
+            for index, frame in enumerate(sorted(frames)):
+                shutil.copyfile(frame, out / f"still-frame-{index:02d}.png")
             final_status = "SOURCE_CHECK_AND_STILLS_CAPTURED_NEEDS_INDEPENDENT_EYES"
         else:
             final_status = "SOURCE_CAPTURED_CHECK_OR_STILLS_FAILED"
@@ -71,6 +87,17 @@ def main():
         "render_approval": "NOT_GRANTED",
         "release_approval": "NOT_GRANTED"
     }, indent=2) + "\n")
+    if final_status == "SOURCE_CHECK_AND_STILLS_CAPTURED_NEEDS_INDEPENDENT_EYES":
+        frames=sorted(p for p in out.glob("still-frame-*.png") if p.is_file() and not p.is_symlink())
+        if len(frames)!=37 or manifest.is_symlink() or not manifest.is_file() or not re.fullmatch(r"[0-9a-f]{40}",a.head):
+            raise SystemExit("cannot seal an exact 37-frame source binding")
+        entries=[{"name":p.name,"bytes":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()} for p in frames]
+        canonical="".join(f"{item['sha256']}  {item['name']}\n" for item in entries).encode()
+        binding={"schema":"agmm-s83-source-frames-binding-v1","story_id":"S83",
+                 "candidate_manifest_sha256":hashlib.sha256(manifest.read_bytes()).hexdigest(),
+                 "source_public_head_sha":a.head,
+                 "frame_count":37,"frames_sha256":hashlib.sha256(canonical).hexdigest(),"frames":entries}
+        (out/"SOURCE-FRAMES-BINDING.json").write_text(json.dumps(binding,indent=2,sort_keys=True)+"\n")
     rows = []
     for f in sorted(out.iterdir()):
         if f.is_file():

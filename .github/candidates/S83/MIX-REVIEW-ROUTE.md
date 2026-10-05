@@ -1,17 +1,19 @@
-# OPEN conditional task: durable in-review mix preview
+# S83 durable developmental AV review route
 
-## Authorization and route
+## Authorization and boundary
 
-Sam has explicitly authorized public, durable in-review content previews, including held previews. The recorded authorization is `/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-durable-review-export-luna/ROOT-PUBLIC-PREVIEW-AUTHORIZATION.json`; it covers preview storage and sharing only, not AV/craft approval, Ready, arming, social posting, or publication approval. Root has identified the native durable preview exporter as the approved route for an S83 mixed programme review master. No new key is required for the public repository route.
+Sam authorized durable public in-review previews, including held previews. The recorded authorization is `/Users/samwall/alfred/builds/video-autonomy-2026-10-02/S90-durable-review-export-luna/ROOT-PUBLIC-PREVIEW-AUTHORIZATION.json`. It covers preview storage only: it does not grant AV/craft approval, Ready, arming, social posting or release approval. Raw source audio and individual stems remain private.
 
-The route is a unique, tagged public GitHub preview prerelease with a sanitized checksum/technical receipt. Mark the master and prerelease notes `NOT_REVIEWED` / in-review; state that audio and AV review remain OPEN, Ready is NOT_GRANTED, and release approval is NOT_GRANTED. Public preview storage does not confer any review or publication approval. Keep raw S83 voice and every individual stem private; export only the single mixed master and safe text receipts.
+## Candidate implementation
 
-## Current implementation state
+The isolated S83 candidate now contains a same-run Ubuntu route in `s83-source-capture.workflow.yml`. HyperFrames source check and 37 still captures run before private checkout or mixing. The bounded check wrapper retains sanitized JSON plus stderr/exit diagnostics when the browser fails; the one-day packet records them before any protected checkout. `produce_development_preview` defaults to `false`, so the first source capture ends with stills and receipts only. It emits a normalized exact-37-PNG digest bound to the candidate-manifest SHA256 and public source-head SHA, independent of run metadata. A later private-mix/render route requires all three values in an independent review receipt and compares them to the newly captured frame packet before protected checkout. Missing, extra, or changed PNGs or a changed candidate/head fail before private-media work.
 
-The S83 candidate renders `master.wav` on public Ubuntu but currently deletes it before any durable preview release is created. Root publisher/preview-export integration is an OPEN separate conditional task. Root owns this integration with the existing native exporter and current publication workflow; do not duplicate root publisher work. Bind the exact in-run master SHA256, byte length, source input/spec/runtime identities, preview tag/release, and exported asset identity in one sanitized receipt. Verify the released asset metadata/hash against the source master before making the reviewer handoff. Do not rerender after a successful transfer simply to recover a review copy.
-
-The existing one-day Actions artifact remains limited to bounded source captures/stills and four sanitized text receipts. It must not include the master, raw inputs, or stems.
+Only after the source-review binding succeeds does the workflow check out and verify the exact 18 protected inputs, bind the source clock, mix on Ubuntu, render one 1080 picture, and mux it with the single mixed master using the public `render_short_package.py` helper pinned to blob `754099346a84c5bd305f5684ef24399a53bd9697`. The export helper binds source capture, reviewed-frame digest, source clock, parts and mix hashes, the exact `MIX-QUALITY-RECEIPT.json`, the 18-input verification receipt, candidate manifest, final MP4 and technical receipt. It creates a draft prerelease, verifies exact asset names, SHA256, size and source-head tag, then publishes it. Only the mixed `FINAL.mp4` and three sanitized text files can enter the release; voice, SFX, stems and standalone WAV remain private.
 
 ## Status
 
-`OPEN — DURABLE PREVIEW EXPORT NOT YET INTEGRATED INTO S83 HOSTED RUN`. Public preview storage is authorized within the scope above; the remaining work is to bind the exact S83 render to the existing preview exporter and verify the uploaded asset.
+`IMPLEMENTED IN ISOLATED CANDIDATE; NOT PUBLISHED OR DISPATCHED`. The current native public main observed for rebinding is `cd9aa32a6c219f356ec54da61858c294f5e76a9c`; all nine public/helper runtime blobs in the candidate's parent receipt matched that tree. Root owns final review, guarded publication and any Actions dispatch.
+
+No S83 render, mix result, or new source capture is established by this local work. The latest native run `37233648257` passed source-text/logo capture but failed at the browser check; GitHub cleanup destroyed its diagnostics, so the exact exception is unrecoverable. The candidate's next run will retain bounded diagnostics before any protected checkout or mix.
+
+Technical checks and a durable preview do not establish subjective quality. Full continuous AV, source/craft, rights, and independent-review gates remain open; status must remain `NOT_REVIEWED`, `OPEN`, and `NOT_GRANTED` until the proper reviewer acts.

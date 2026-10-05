@@ -117,6 +117,64 @@ class RuntimeContractTests(unittest.TestCase):
             self.assertEqual((runner/"s83-static-tree/index.html").read_bytes(),(candidate/"index.html").read_bytes())
             self.assertEqual((runner/f"s83-static-tree/{GSAP_PATH}").read_bytes(),(candidate/GSAP_PATH).read_bytes())
             self.assertTrue((runner/"s83-static-tree/assets/wht-mark.png").is_file())
+    def test_source_browser_diagnostics_precede_private_checkout_and_mix(self):
+        workflow=(ROOT/"s83-source-capture.workflow.yml").read_text()
+        browser=workflow.index("name: Run HyperFrames check and preserve bounded failure diagnostics")
+        artifact=workflow.index("name: Upload bounded source-only diagnostic packet")
+        boundary=workflow.index("name: Bind explicit reviewed source packet before private production inputs")
+        private=workflow.index("name: Checkout exact private Git input tree using the existing read-only deploy key")
+        mix=workflow.index("name: Render private mix on the hosted runner")
+        self.assertLess(browser,artifact); self.assertLess(artifact,boundary); self.assertLess(boundary,private); self.assertLess(private,mix)
+        self.assertIn("continue-on-error: true",workflow[browser:artifact])
+        self.assertIn("capture_hyperframes_diagnostic.py",workflow[browser:artifact])
+        self.assertIn("if: always() && steps.source_capture.outcome != 'skipped'",workflow[workflow.index("name: Build and validate bounded source-only diagnostics packet"):artifact])
+        self.assertNotRegex(workflow, r"(?m)^    env:\n(?:.*\n){0,12}.*GH_TOKEN")
+        self.assertRegex(workflow, r"(?s)name: Publish only after exact draft preview inventory is verified.*?env:\n\s+GH_TOKEN: \$\{\{ github.token \}\}")
+
+    def test_private_media_route_defaults_off_and_requires_exact_reviewed_packet_hash(self):
+        workflow=(ROOT/"s83-source-capture.workflow.yml").read_text()
+        self.assertRegex(workflow,r"(?s)produce_development_preview:.*?default: false\s+type: boolean")
+        bind=workflow.split("name: Bind explicit reviewed source packet before private production inputs",1)[1].split("name: Checkout exact private Git input tree",1)[0]
+        for token in ("if: inputs.produce_development_preview", "REVIEWED_SOURCE_FRAMES_SHA256",
+                      "steps.source_capture.outcome", "steps.hfcheck.outcome", "steps.hfstills.outcome",
+                      "SOURCE-FRAMES-BINDING.json", "reviewed_source_manifest_sha256",
+                      "reviewed_source_public_head_sha", "tuple(sys.argv[4:7])"):
+            self.assertIn(token,bind)
+        private=workflow[workflow.index("      - name: Checkout exact private Git input tree"):workflow.index("      - name: Delete private inputs")]
+        gated=("name: Checkout exact private Git input tree", "name: Verify native private Git blobs",
+               "uses: actions/setup-python@", "name: Install pinned numerical dependency",
+               "name: Bind exact source PCM", "name: Render private mix", "name: Render and mux",
+               "name: Prepare sanitized public review", "name: Publish only after")
+        steps=re.split(r"(?m)^      - ",private)
+        for segment in steps:
+            if segment and any(token in segment.splitlines()[0] for token in gated):
+                self.assertIn("if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success'",segment[:500])
+        self.assertIn("if: inputs.produce_development_preview && steps.source_review_binding.outcome == 'success' && steps.preview_payload.outcome == 'success'",private)
+
+    def test_source_review_orphan_commit_stages_only_the_exact_public_packet(self):
+        workflow=(ROOT/"s83-source-capture.workflow.yml").read_text()
+        self.assertRegex(workflow,r"git -C \"\$repo_dir\" checkout --orphan[^\n]+\n\s+git -C \"\$repo_dir\" read-tree --empty")
+        with tempfile.TemporaryDirectory() as td:
+            repo=Path(td)
+            def git(*args):
+                return subprocess.run(["git","-C",str(repo),*args],capture_output=True,text=True,check=True).stdout.strip()
+            git("init","-q"); git("config","user.name","Synthetic"); git("config","user.email","synthetic@example.test")
+            (repo/"unrelated-main.txt").write_text("synthetic existing main content")
+            git("add","unrelated-main.txt"); git("commit","-qm","synthetic main")
+            git("checkout","--orphan","review-S83-source-synthetic-a1")
+            self.assertIn("unrelated-main.txt",git("diff","--cached","--name-only"))
+            git("read-tree","--empty")
+            base=repo/"public-review/S83-synthetic-a1"; (base/"frames").mkdir(parents=True)
+            (base/"frames/still-frame-00.png").write_bytes(b"synthetic PNG signature only\x89PNG\r\n\x1a\n")
+            (base/"CAPTURE-STATUS.json").write_text('{"story_id":"S83"}\n')
+            git("add","public-review")
+            staged=set(git("diff","--cached","--name-only").splitlines())
+            expected={"public-review/S83-synthetic-a1/frames/still-frame-00.png","public-review/S83-synthetic-a1/CAPTURE-STATUS.json"}
+            self.assertEqual(staged,expected)
+            git("commit","-qm","synthetic source review packet")
+            tree=set(git("ls-tree","-r","--name-only","HEAD").splitlines())
+            self.assertEqual(tree,expected)
+
     def test_workflow_double_candidate_prefix_is_rejected(self):
         workflow=(ROOT/"s83-source-capture.workflow.yml").read_text().replace('install -m 0644 index.html','install -m 0644 $CANDIDATE/index.html')
         with self.assertRaisesRegex(ValueError,"source paths drifted"): validate_workflow_staging_paths(ROOT,workflow)
