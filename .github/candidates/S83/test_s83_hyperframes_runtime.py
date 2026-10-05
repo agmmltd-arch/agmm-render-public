@@ -117,6 +117,19 @@ class RuntimeContractTests(unittest.TestCase):
             self.assertEqual((runner/"s83-static-tree/index.html").read_bytes(),(candidate/"index.html").read_bytes())
             self.assertEqual((runner/f"s83-static-tree/{GSAP_PATH}").read_bytes(),(candidate/GSAP_PATH).read_bytes())
             self.assertTrue((runner/"s83-static-tree/assets/wht-mark.png").is_file())
+    def test_pre_capture_lint_diagnostics_upload_before_fail_closed(self):
+        workflow=(ROOT/"s83-source-capture.workflow.yml").read_text()
+        a=workflow.index("name: Run and preserve pre-capture HyperFrames static lint")
+        b=workflow.index("name: Upload pre-capture static lint TEXT diagnostics")
+        c=workflow.index("name: Fail closed after preserving static lint findings")
+        d=workflow.index("name: Install pinned browser capture dependencies")
+        self.assertLess(a,b); self.assertLess(b,c); self.assertLess(c,d)
+        block=workflow[a:d]
+        for token in ("hyperframes@0.8.71 lint","--json","s83-static-lint.json","s83-static-lint-stderr.txt","s83-static-lint-status.txt","if-no-files-found: error","run: exit 1"):
+            self.assertIn(token,block)
+        self.assertIn("if: always() && steps.static_lint.outcome != 'skipped'",block)
+        self.assertNotIn("--ignore",block); self.assertNotIn("|| true",block)
+
     def test_source_browser_diagnostics_precede_private_checkout_and_mix(self):
         workflow=(ROOT/"s83-source-capture.workflow.yml").read_text()
         browser=workflow.index("name: Run HyperFrames check and preserve bounded failure diagnostics")
