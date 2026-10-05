@@ -99,8 +99,8 @@
         }
       }
     ],
-    "expected_public_head_sha": "2fe381ab18796b0366a543fffdecd2e1a97c0b63",
-    "expected_public_tree_sha": "776af9d19169e35eacdb4c02a838903a7563057b",
+    "expected_public_head_sha": "9b09b908cbc82cf0e8290af9f8d410832414cd2e",
+    "expected_public_tree_sha": "9f97d0554e57e614ccc030857cd4f449edc65b00",
     "repository": "agmmltd-arch/agmm-render-public"
   },
   "qualification_scope": "Six blind whole-video audiovisual calibration stimuli: full positives P1-r7/P2-corrected-audio-v2/P3-corrected-audio-v2 plus three severe synthetic audio controls derived from full P1 video; not general qualification or release approval.",
