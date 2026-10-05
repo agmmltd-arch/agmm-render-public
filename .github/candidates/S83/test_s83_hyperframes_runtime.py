@@ -117,18 +117,38 @@ class RuntimeContractTests(unittest.TestCase):
             self.assertEqual((runner/"s83-static-tree/index.html").read_bytes(),(candidate/"index.html").read_bytes())
             self.assertEqual((runner/f"s83-static-tree/{GSAP_PATH}").read_bytes(),(candidate/GSAP_PATH).read_bytes())
             self.assertTrue((runner/"s83-static-tree/assets/wht-mark.png").is_file())
-    def test_pre_capture_lint_diagnostics_upload_before_fail_closed(self):
+    def test_pre_capture_lint_step_executes_and_fails_closed(self):
+        import textwrap
         workflow=(ROOT/"s83-source-capture.workflow.yml").read_text()
         a=workflow.index("name: Run and preserve pre-capture HyperFrames static lint")
-        b=workflow.index("name: Upload pre-capture static lint TEXT diagnostics")
-        c=workflow.index("name: Fail closed after preserving static lint findings")
-        d=workflow.index("name: Install pinned browser capture dependencies")
-        self.assertLess(a,b); self.assertLess(b,c); self.assertLess(c,d)
-        block=workflow[a:d]
-        for token in ("hyperframes@0.8.71 lint","--json","s83-static-lint.json","s83-static-lint-stderr.txt","s83-static-lint-status.txt","if-no-files-found: error","run: exit 1"):
-            self.assertIn(token,block)
-        self.assertIn("if: always() && steps.static_lint.outcome != 'skipped'",block)
-        self.assertNotIn("--ignore",block); self.assertNotIn("|| true",block)
+        b=workflow.index("      - name: Upload pre-capture static lint TEXT diagnostics",a)
+        body=workflow[a:b].split("        run: |\n",1)[1]
+        shell=textwrap.dedent(body)
+        def run_case(lint_output=None, lint_exit=0, fail_install=False):
+            with tempfile.TemporaryDirectory() as td:
+                root=Path(td); temp=root/"runner"; temp.mkdir(); bin_dir=root/"bin"; bin_dir.mkdir()
+                if lint_output is not None:
+                    npx=bin_dir/"npx"; npx.write_text("#!/bin/sh\nprintf '%s\\n' '"+lint_output+"'\necho lint-stderr >&2\nexit "+str(lint_exit)+"\n"); npx.chmod(0o755)
+                if fail_install:
+                    inst=bin_dir/"install"; inst.write_text("#!/bin/sh\necho install-stderr >&2\nexit 23\n"); inst.chmod(0o755)
+                env=os.environ.copy(); env.update(CANDIDATE=str(ROOT),RUNNER_TEMP=str(temp),PATH=str(bin_dir)+os.pathsep+env["PATH"])
+                result=subprocess.run(["bash","-euo","pipefail","-c",shell],env=env,capture_output=True,text=True)
+                return result,temp
+        failed,temp=run_case('{"errorCount":1}',1)
+        self.assertEqual(failed.returncode,1,failed.stderr)
+        self.assertIn('"errorCount":1',(temp/"s83-static-lint.json").read_text())
+        self.assertIn("exit_code=1",(temp/"s83-static-lint-status.txt").read_text())
+        self.assertIn("lint-stderr",(temp/"s83-static-lint-stderr.txt").read_text())
+        badjson,temp=run_case('{"errorCount":1}',0)
+        self.assertNotEqual(badjson.returncode,0)
+        self.assertIn("exit_code=0",(temp/"s83-static-lint-status.txt").read_text())
+        install,temp=run_case(fail_install=True)
+        self.assertNotEqual(install.returncode,0)
+        self.assertIn("NOT_RUN",(temp/"s83-static-lint.json").read_text())
+        self.assertIn("exit_code=not_run",(temp/"s83-static-lint-status.txt").read_text())
+        fail=workflow.index("name: Fail closed after preserving static lint findings")
+        capture=workflow.index("name: Install pinned browser capture dependencies")
+        self.assertLess(fail,capture)
 
     def test_source_browser_diagnostics_precede_private_checkout_and_mix(self):
         workflow=(ROOT/"s83-source-capture.workflow.yml").read_text()

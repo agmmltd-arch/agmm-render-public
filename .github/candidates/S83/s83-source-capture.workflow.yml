@@ -127,7 +127,12 @@ jobs:
         id: static_lint
         continue-on-error: true
         run: |
-          set -uo pipefail
+          set -euo pipefail
+          cd "$CANDIDATE"
+          mkdir -p "$RUNNER_TEMP"
+          printf '{"status":"NOT_RUN"}\n' > "$RUNNER_TEMP/s83-static-lint.json"
+          : > "$RUNNER_TEMP/s83-static-lint-stderr.txt"
+          printf 'exit_code=not_run\n' > "$RUNNER_TEMP/s83-static-lint-status.txt"
           static_tree="$RUNNER_TEMP/s83-static-tree"
           mkdir -p "$static_tree/assets"
           install -m 0644 index.html "$static_tree/index.html"
@@ -135,10 +140,13 @@ jobs:
           # Static-only stand-ins satisfy file-presence lint; no source marks or media are read here.
           printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>' > "$static_tree/assets/wht-mark.png"
           cp "$static_tree/assets/wht-mark.png" "$static_tree/assets/rwt-mark.png"
-          lint_exit=0
-          npx --yes hyperframes@0.8.71 lint "$static_tree" --json > "$RUNNER_TEMP/s83-static-lint.json" 2> "$RUNNER_TEMP/s83-static-lint-stderr.txt" || lint_exit=$?
+          set +e
+          npx --yes hyperframes@0.8.71 lint "$static_tree" --json > "$RUNNER_TEMP/s83-static-lint.json" 2> "$RUNNER_TEMP/s83-static-lint-stderr.txt"
+          lint_exit=$?
+          set -e
           printf 'exit_code=%s\n' "$lint_exit" > "$RUNNER_TEMP/s83-static-lint-status.txt"
-          if [[ "$lint_exit" == 0 ]]; then python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["errorCount"] == 0, d' "$RUNNER_TEMP/s83-static-lint.json"; else test -s "$RUNNER_TEMP/s83-static-lint.json"; fi
+          if [[ "$lint_exit" -ne 0 ]]; then exit "$lint_exit"; fi
+          python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["errorCount"] == 0, d' "$RUNNER_TEMP/s83-static-lint.json"
       - name: Upload pre-capture static lint TEXT diagnostics
         if: always() && steps.static_lint.outcome != 'skipped'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
