@@ -3,8 +3,8 @@
   "candidate_parent_public_main": "f3a1f16179716d0ff44baf2cdd15376c585ecbcc",
   "candidate_runtime_files": {
     ".github/scripts/film-publication-map.schema.json": {
-      "git_blob_sha": "9d4960408cc90c660860fd6bcb39063387e4d1cb",
-      "sha256": "4465d25ab2c8f6e8bbd536583e725b45784babd7543ff3150ca9003c4dab44c0"
+      "git_blob_sha": "a6977d9f8794a73ae2c2a659a87fe3675009963a",
+      "sha256": "2c252e5991363a9472bf772323f9cceb5d0572352728032893687039c3ddd11b"
     },
     ".github/scripts/film_public_post.py": {
       "git_blob_sha": "9ddcf94690719f09284dc038848a41f63411c422",
@@ -23,12 +23,12 @@
       "sha256": "3dbaa5a12ca5aa23e18f1b225686870a4c3bc277cbdad7212e532f29b7266b4a"
     },
     ".github/workflows/youtube-film-public-post.yml": {
-      "git_blob_sha": "25a3f3ded38093c986cf3394a06d1d323627acca",
-      "sha256": "674f654555a837b32b363dc79a16f732cf5239aba6738bbb8486bf1b57a1f639"
+      "git_blob_sha": "28b1eb82f5fbd78475217e59028e551ab0c0773b",
+      "sha256": "3d479ccdd51057951c8272bfb323423fe05e1fbcd310aa5d5554925c7f9e2eec"
     },
     "HOSTED-YOUTUBE-FILM-ROUTE.md": {
-      "git_blob_sha": "a7cc72b53f18a1ecef1c72045ed13043df394330",
-      "sha256": "13853bf5ff9868a9141ac65826615070681125f2313c9cec23c7bdd765a2d93b"
+      "git_blob_sha": "c8d2eea644433f2ff9ff984b41be47990496abea",
+      "sha256": "758ac4da96a2b5d10b9924290e4460315ce9a8bf7a918ad60e5c3b895e22a414"
     }
   },
   "current_public_main_preimages": {
@@ -52,7 +52,8 @@
     "artifact_download": "actions/download-artifact d3f86a106a0bac45b974a628896c90dbdf5c8093 via existing GITHUB_TOKEN actions:read",
     "repository": "agmmltd-arch/agmm-render-public",
     "trigger": "completed-success workflow_run on main; event run ID must match protected artifact row",
-    "workflow": "AGMM film segments render"
+    "workflow": "AGMM film segments render",
+    "source_head_binding": "protected artifact row source_head_sha must equal the actual completed producer run API head_sha"
   },
   "protected_source": {
     "actual_head": "captured and blob-bound",
@@ -64,7 +65,7 @@
   },
   "receipt_paths": {
     "always_artifact": "youtube-route-evidence-{producer_run_id}",
-    "ambiguous_claim": "manual reconciliation; automatic retry prohibited",
+    "ambiguous_claim": "any durable claim permanently prohibits automatic retry; absent canonical receipt requires manual reconciliation",
     "canonical": "status/youtube-public-receipts/{film}-{master_sha256}.json",
     "claim": "status/youtube-claims/{film}-{master_sha256}.json"
   },
