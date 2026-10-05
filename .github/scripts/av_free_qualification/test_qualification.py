@@ -1,7 +1,9 @@
-import os,unittest,urllib.error,hashlib,random,json
+import os,unittest,urllib.error,hashlib,random,json,inspect
 from unittest.mock import patch
 import qualification as q
 import hosted_av_qualification as av
+import verify_candidate as vc
+AV_SOURCE=inspect.getsource(av)
 ENV={"GITHUB_ACTIONS":"true","FLEET_FREE_ONLY":"1","AGMM_GEMINI_FREE_PROJECT_ID":"gen-lang-client-0105607923","AGMM_GEMINI_BILLING_DISABLED":"true","AGMM_GEMINI_FREE_TIER":"true",q.KEY_NAME:"redacted-test-key"}
 class Resp:
  def __init__(self,headers=None,body=b"{}"): self.status=200;self.headers=headers or {};self.body=body
@@ -76,6 +78,32 @@ class QualificationTests(unittest.TestCase):
   for args in ffmpeg_calls:self.assertNotIn("-t",args);self.assertIn("-c:v",args);self.assertIn("copy",args)
   self.assertEqual(sum(x["expected"]=="clean" for x in labels.values()),3)
   self.assertEqual(sum(x["expected"]=="synthetic-severe-audio-defect" for x in labels.values()),3)
+
+ def test_main_commit_validator_accepts_only_exact_installed_native_preimage(self):
+  files={p:("source:"+p).encode() for p in (
+   ".github/scripts/av_free_qualification/qualification.py",
+   ".github/scripts/av_free_qualification/hosted_av_qualification.py",
+   ".github/scripts/av_free_qualification/run_hosted_qualification.py",
+   ".github/scripts/av_free_qualification/test_qualification.py",
+   ".github/scripts/av_free_qualification/verify_candidate.py",
+   ".github/workflows/free-av-qualification.yml",
+   ".github/candidates/free-av-qualification/README.md")}
+  dest=[{"path":p,"operation":"create","preimage":{"state":"absent"}} for p in list(files)+[".github/candidates/free-av-qualification/candidate-manifest.json"]]
+  manifest={"publication_map":{"expected_public_head_sha":"parent","expected_public_tree_sha":"parent-tree","destinations":dest},"candidate_files":{p:hashlib.sha256(b).hexdigest() for p,b in files.items()}}
+  args=(manifest,"candidate","candidate","refs/heads/main","candidate","candidate-tree","parent","parent-tree","candidate","candidate-tree",set(),set(files)|{dest[-1]["path"]},files)
+  self.assertTrue(vc.verify_snapshot(*args))
+  for changes in ({"remote_main":"moved"},{"head":"different"},{"ref":"refs/heads/staging"},{"parent":"wrong"},{"parent_tree":"wrong"}):
+   changed=list(args);values=list(changed)
+   for key,value in changes.items():values[{"remote_main":8,"head":4,"ref":3,"parent":6,"parent_tree":7}[key]]=value
+   with self.assertRaises(vc.Refused):vc.verify_snapshot(*values)
+  changed_paths=set(args[10])|{dest[0]["path"]}
+  changed=list(args);changed[10]=changed_paths
+  with self.assertRaises(vc.Refused):vc.verify_snapshot(*changed)
+  tampered=dict(manifest);tampered["publication_map"]=dict(manifest["publication_map"])
+  tampered["publication_map"]["destinations"]=[dict(x) for x in dest]
+  tampered["publication_map"]["destinations"][0]["preimage"]={"state":"exists"}
+  with self.assertRaises(vc.Refused):vc.verify_snapshot(tampered,*args[1:])
+
  def test_prompt_withholds_labels(self):
   p=av.PROMPT.lower()
   for word in ("p1","p2","p3","positive","negative","pumping-injected","noise-injected"):self.assertNotIn(word,p)

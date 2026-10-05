@@ -1,12 +1,12 @@
 {
   "candidate_files": {
-    ".github/candidates/free-av-qualification/README.md": "42cb717372a80ab8a8fc77981ef83fc36e36dffecb9cdd561bdcdb584310ce0a",
+    ".github/candidates/free-av-qualification/README.md": "c5dd14d778e07948ac4216da8d3f315d444f7418b7126adaea6b3203d8e50b23",
     ".github/scripts/av_free_qualification/hosted_av_qualification.py": "da8d26533f9c079c561be782fbd5d4c2c11d0af56228d5248fb61b4bf42c0f61",
     ".github/scripts/av_free_qualification/qualification.py": "9f3c01cf3ed5e8c5728720f88b58fd40665fdf544dc10a6f637d2919e4e12a81",
     ".github/scripts/av_free_qualification/run_hosted_qualification.py": "5572d2853a164dbba3cf40714ad8a954eb0c06d9ae9222fced0e90e8261bd1dd",
-    ".github/scripts/av_free_qualification/test_qualification.py": "c1eba2c4c7882d79bd4cb22d1f7a162e2cfc004feb8707a349f1a241a7a8db54",
-    ".github/scripts/av_free_qualification/verify_candidate.py": "23a1f825ece529540be821026a468039b2f8b302492bd3a5b7b74b781557593e",
-    ".github/workflows/free-av-qualification.yml": "937692c13fdf88a8169142e680ba0a73ef730777dc2c952f2b0777a6b6cc623c"
+    ".github/scripts/av_free_qualification/test_qualification.py": "1111bf694548bdfe1a7b70cff31b9a205f59ff9bd7ca5facc2cdfd99694094f2",
+    ".github/scripts/av_free_qualification/verify_candidate.py": "9baefcbe802b8641003d6eb0af3f5513ae014a9848565df79a8e09e2dab5adf0",
+    ".github/workflows/free-av-qualification.yml": "a5fd7e7eb66ed4ff5cf5a68b39dd5ba524b03195d62bfc071dfd237bab8f076c"
   },
   "candidate_id": "free-av-qualification-20261005",
   "known_unavailable_controls": [
@@ -170,7 +170,7 @@
     }
   },
   "tests": {
-    "count": 8,
-    "execution": "in-memory Python unittest; no local writes/network/API/media/credentials"
+    "count": 9,
+    "execution": "workflow unittest command semantics via RAM import; no local writes/network/API/media/credentials"
   }
 }
