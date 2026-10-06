@@ -256,6 +256,24 @@ for (const job of plan) {
   await page.evaluateOnNewDocument(() => {
     // record every canvas text draw (fillText / strokeText) with the transform in force, so canvas-drawn labels are linted like DOM text
     window.__dlcalls = [];
+    // a scene's timeline can redraw its canvas several times inside ONE seek (every tween's onUpdate): only the LAST full redraw is on
+    // screen, so a clearRect / opaque fillRect that covers (90% of) the canvas drops that canvas's earlier text calls
+    const wipe = (ctx, x, y, w, h) => {
+      try {
+        const c = ctx.canvas, tm = ctx.getTransform();
+        const pts = [[x, y], [x + w, y], [x + w, y + h], [x, y + h]].map(([px, py]) => [tm.a * px + tm.c * py + tm.e, tm.b * px + tm.d * py + tm.f]);
+        const xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]);
+        const ax = Math.max(0, Math.min(...xs)), ay = Math.max(0, Math.min(...ys)), bx = Math.min(c.width, Math.max(...xs)), by = Math.min(c.height, Math.max(...ys));
+        if ((bx - ax) * (by - ay) >= 0.9 * c.width * c.height) window.__dlcalls = window.__dlcalls.filter((k) => k.canvas !== c);
+      } catch (e) {}
+    };
+    const oc = CanvasRenderingContext2D.prototype.clearRect;
+    CanvasRenderingContext2D.prototype.clearRect = function (x, y, w, h) { wipe(this, x, y, w, h); return oc.apply(this, arguments); };
+    const of = CanvasRenderingContext2D.prototype.fillRect;
+    CanvasRenderingContext2D.prototype.fillRect = function (x, y, w, h) {
+      try { if (this.globalAlpha >= 0.95 && this.globalCompositeOperation === 'source-over' && (typeof this.fillStyle !== 'string' || /^#|rgb\(|rgba\([^)]*,\s*(1|0?\.9\d*)\)/.test(this.fillStyle))) wipe(this, x, y, w, h); } catch (e) {}
+      return of.apply(this, arguments);
+    };
     for (const name of ['fillText', 'strokeText']) {
       const orig = CanvasRenderingContext2D.prototype[name];
       CanvasRenderingContext2D.prototype[name] = function (text, x, y) {
