@@ -141,7 +141,7 @@ const EXTRACT = (cfg) => {
         // visible share after non-root overflow clips
         let tot = 0, vis = 0; const cl = [];
         for (const L of inks) { const a = area(L); tot += a; const c = clip ? inter(L, clip) : L; const ca = area(c); vis += ca; if (ca > 0) cl.push(c); }
-        texts.push({ id: idOf(el), anc: astack.slice(-12).concat(idOf(el)), n: texts.length, el, e: short(el), t: raw.slice(0, 160), fs: +fs.toFixed(2), sc: +fsc.toFixed(4), fpx: +fpx.toFixed(2), op: +(op * alpha).toFixed(3),
+        texts.push({ id: idOf(el), anc: astack.slice(-12).concat(idOf(el)), rot: +rot.toFixed(4), n: texts.length, el, e: short(el), t: raw.slice(0, 160), fs: +fs.toFixed(2), sc: +fsc.toFixed(4), fpx: +fpx.toFixed(2), op: +(op * alpha).toFixed(3),
           ink: inks.map((r) => r.map((v) => +v.toFixed(1))), vis: tot > 0 ? +(vis / tot).toFixed(3) : 0, cp: !!cp, cut: cl.map((r) => r.map((v) => +v.toFixed(1))) });
       }
     }
