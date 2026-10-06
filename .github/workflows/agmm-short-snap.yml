@@ -1,0 +1,112 @@
+name: AGMM short frame snapshots
+run-name: AGMM short snap ${{ inputs.tag }}
+
+# Frame stills of a short's own built package, for makers and reviewers (kit/tools/snap.py AGMM_SNAP=actions).
+# Public-repository Ubuntu runners keep every media operation off the operator's Mac and off the Codespaces allowance.
+# Mechanical only: it renders exactly the requested frames with the pinned hyperframes version and uploads JPGs.
+# It cannot render a video, approve, arm or publish anything. The release asset is the package only (secret-scanned
+# by the dispatching tool before upload); artifacts expire after one day.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release tag holding exactly one asset, source.tar.gz
+        required: true
+      source_sha256:
+        description: Exact SHA256 of source.tar.gz
+        required: true
+      tag:
+        description: Unique safe label used for run title, concurrency and artifact name
+        required: true
+      plan:
+        description: 'JSON list of {"look": "...", "part": "...", "times": [seconds, ...]} jobs'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agmm-short-snap-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  snap:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE: ${{ inputs.release }}
+      SOURCE_SHA256: ${{ inputs.source_sha256 }}
+      TAG: ${{ inputs.tag }}
+      PLAN: ${{ inputs.plan }}
+      HYPERFRAMES_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts/snap_short_package.py
+            .github/scripts/render_short_package.py
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        with:
+          chrome-version: stable
+      - name: Validate labels, download and verify the exact package, validate the plan
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          [[ "$SOURCE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          assets="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE" --jq '[.assets[].name] | sort | join(",")')"
+          test "$assets" = "source.tar.gz"
+          mkdir exact-input
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p source.tar.gz -D exact-input
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet Pillow &
+          pip_pid=$!
+          python3 .github/scripts/snap_short_package.py prepare \
+            --source exact-input/source.tar.gz --source-sha256 "$SOURCE_SHA256" \
+            --plan "$PLAN" --output prepared
+          wait "$pip_pid"
+      - name: Warm the pinned hyperframes install once
+        run: npx --yes hyperframes@0.8.71 --version
+      - name: Snapshot exactly the requested frames, one headless Chrome per look
+        run: |
+          set -uo pipefail
+          mkdir -p raw logs
+          pids=(); names=()
+          while IFS=$'\t' read -r look part times; do
+            npx --yes hyperframes@0.8.71 snapshot "$GITHUB_WORKSPACE/prepared/project/$look" \
+              --at "$times" --no-end --describe false --no-browser-gpu --timeout 180000 \
+              --output "$GITHUB_WORKSPACE/raw/$part" > "logs/$part.log" 2>&1 &
+            pids+=($!); names+=("$part")
+          done < prepared/groups.tsv
+          rc=0
+          for i in "${!pids[@]}"; do
+            if ! wait "${pids[$i]}"; then echo "::error::snapshot failed for ${names[$i]}"; tail -40 "logs/${names[$i]}.log"; rc=1; fi
+          done
+          exit "$rc"
+      - name: Convert to JPG q92 and write the receipt
+        run: |
+          set -euo pipefail
+          .venv/bin/python .github/scripts/snap_short_package.py convert \
+            --raw raw --prepared prepared --dest snaps --run-id "$GITHUB_RUN_ID" --source-sha256 "$SOURCE_SHA256"
+      - name: Upload the JPG frames and receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-SNAPS
+          path: snaps/
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-SNAP-LOGS
+          path: logs/
+          retention-days: 1
+          if-no-files-found: ignore
