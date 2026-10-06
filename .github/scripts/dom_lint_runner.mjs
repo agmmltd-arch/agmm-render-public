@@ -63,7 +63,7 @@ const EXTRACT = (cfg) => {
     if (!v) { canvas.font = font; const m = canvas.measureText(text); v = [m.actualBoundingBoxAscent, m.actualBoundingBoxDescent, m.fontBoundingBoxAscent, m.fontBoundingBoxDescent]; inkCache.set(key, v); }
     return v;
   };
-  const texts = [], imgs = [], paints = [];
+  const texts = [], imgs = [], paints = [], canvases = new Map();
   const walk = (el, ctx) => {
     if (SKIP.has(el.tagName.toUpperCase())) return;
     const cs = getComputedStyle(el);
@@ -86,6 +86,7 @@ const EXTRACT = (cfg) => {
     const nctx = { op, sc, rot, clip, cp };
     const tag = el.tagName.toUpperCase();
     const hidden = cs.visibility === 'hidden';
+    if (tag === 'CANVAS' && !hidden) canvases.set(el, nctx);
     // ---- own text
     if (!hidden) {
       const isSvgText = typeof SVGTextContentElement !== 'undefined' && el instanceof SVGTextContentElement;
@@ -165,6 +166,32 @@ const EXTRACT = (cfg) => {
   };
   walk(root, { op: 1, sc: 1, rot: 0, clip: null, cp: false });
 
+  // ---- text drawn into a <canvas> (fillText / strokeText calls recorded during this seek by the init hook)
+  const calls = window.__dlcalls || [];
+  const seenCv = new Map();
+  for (const c of calls) {
+    const info = canvases.get(c.canvas); if (!info || !c.canvas.width || !c.canvas.height) continue;
+    const r = c.canvas.getBoundingClientRect(); if (r.width < 1 || r.height < 1) continue;
+    const kx = r.width / c.canvas.width, ky = r.height / c.canvas.height;
+    canvas.font = c.font; canvas.textAlign = c.align; canvas.textBaseline = c.base;
+    const m = canvas.measureText(c.text);
+    const cs4 = [[c.x - m.actualBoundingBoxLeft, c.y - m.actualBoundingBoxAscent], [c.x + m.actualBoundingBoxRight, c.y - m.actualBoundingBoxAscent],
+                 [c.x + m.actualBoundingBoxRight, c.y + m.actualBoundingBoxDescent], [c.x - m.actualBoundingBoxLeft, c.y + m.actualBoundingBoxDescent]];
+    let X0 = 1e9, Y0 = 1e9, X1 = -1e9, Y1 = -1e9;
+    for (const [px, py] of cs4) { const X = r.left + (c.tm.a * px + c.tm.c * py + c.tm.e) * kx, Y = r.top + (c.tm.b * px + c.tm.d * py + c.tm.f) * ky; X0 = Math.min(X0, X); X1 = Math.max(X1, X); Y0 = Math.min(Y0, Y); Y1 = Math.max(Y1, Y); }
+    if (!(X1 > X0 && Y1 > Y0)) continue;
+    const fsm = /(\d+(?:\.\d+)?)px/.exec(c.font); if (!fsm) continue;
+    const fpx = parseFloat(fsm[1]) * Math.sqrt(Math.abs(c.tm.a * c.tm.d - c.tm.b * c.tm.c)) * Math.sqrt(kx * ky);
+    const fa = typeof c.fill === 'string' ? rgba(c.fill) : null;
+    const alpha = c.alpha * (fa ? fa.a : 1);
+    const key = idOf(c.canvas) + '|' + c.text + '|' + Math.round(X0) + '|' + Math.round(Y0);
+    if (seenCv.has(key)) continue; seenCv.set(key, 1);
+    const nth = [...seenCv.keys()].filter((k) => k.startsWith(idOf(c.canvas) + '|' + c.text + '|')).length;
+    const ib = [X0, Y0, X1, Y1]; const cl = info.clip ? inter(ib, info.clip) : ib;
+    texts.push({ id: 'cv' + idOf(c.canvas) + ':' + c.text + '#' + nth, n: texts.length, el: c.canvas, e: 'canvas', t: c.text.replace(/\s+/g, ' ').trim().slice(0, 160), fs: +parseFloat(fsm[1]).toFixed(2), sc: +(fpx / parseFloat(fsm[1])).toFixed(4), fpx: +fpx.toFixed(2),
+      op: +(info.op * alpha).toFixed(3), ink: [ib.map((v) => +v.toFixed(1))], vis: area(ib) > 0 ? +(area(cl) / area(ib)).toFixed(3) : 0, cp: !!info.cp, cut: [cl.map((v) => +v.toFixed(1))], cv: true });
+  }
+
   // ---- occlusion (only for texts a rule might blame): an opaque painter above the text's own point hides it
   const profile = cfg.profile;
   const needOcc = (T) => {
@@ -201,8 +228,8 @@ const EXTRACT = (cfg) => {
       if (x < 0 || y < 0 || x >= W || y >= H) continue;
       n++;
       for (const e of document.elementsFromPoint(x, y)) {
-        if (e === T.el || T.el.contains(e) || e.contains(T.el)) break;
-        if (opaque(e)) { hit++; break; }
+        if (e === T.el || e.contains(T.el)) break;   // the text's own box, or something painted beneath it (an ancestor)
+        if (opaque(e)) { hit++; break; }   // anything else above it, a descendant included (children paint over their parent's text), hides it
       }
     }
     T.occ = n ? +(hit / n).toFixed(2) : null;
@@ -223,6 +250,17 @@ for (const job of plan) {
   await page.setViewport({ width: 1080, height: 1920, deviceScaleFactor: 1 });
   const errs = [];
   page.on('pageerror', (e) => errs.push(String(e).slice(0, 300)));
+  await page.evaluateOnNewDocument(() => {
+    // record every canvas text draw (fillText / strokeText) with the transform in force, so canvas-drawn labels are linted like DOM text
+    window.__dlcalls = [];
+    for (const name of ['fillText', 'strokeText']) {
+      const orig = CanvasRenderingContext2D.prototype[name];
+      CanvasRenderingContext2D.prototype[name] = function (text, x, y) {
+        try { if (this.canvas && this.canvas.isConnected !== false) window.__dlcalls.push({ canvas: this.canvas, text: String(text), x, y, font: this.font, tm: this.getTransform(), alpha: this.globalAlpha, fill: name === 'fillText' ? this.fillStyle : this.strokeStyle, align: this.textAlign, base: this.textBaseline }); } catch (e) {}
+        return orig.apply(this, arguments);
+      };
+    }
+  });
   const idx = path.join(ROOT, job.look, 'index.html');
   await page.goto(pathToFileURL(idx).href, { waitUntil: 'load', timeout: 120000 });
   await page.addStyleTag({ content: 'html,body{margin:0}#root{width:1080px!important;height:1920px!important;position:relative;overflow:hidden}' });
@@ -232,7 +270,7 @@ for (const job of plan) {
   const samples = [];
   const times = [...new Set(job.times.map((t) => +t))].sort((a, b) => a - b);
   for (const t of times) {
-    await page.evaluate((tt) => { for (const k of Object.keys(window.__timelines || {})) { const tl = window.__timelines[k]; tl.pause(); tl.seek(tt, false); } }, t);
+    await page.evaluate((tt) => { window.__dlcalls = []; for (const k of Object.keys(window.__timelines || {})) { const tl = window.__timelines[k]; tl.pause(); tl.seek(tt, false); } }, t);
     const o = await page.evaluate(EXTRACT, { profile: PROFILE });
     o.t = t; samples.push(o);
     if (SHOTS && SHOT_TIMES.some((x) => Math.abs(x - t) < 1e-6)) { fs.mkdirSync(SHOTS, { recursive: true }); await page.screenshot({ path: path.join(SHOTS, job.part + '-t' + t.toFixed(2) + '.png') }); }
