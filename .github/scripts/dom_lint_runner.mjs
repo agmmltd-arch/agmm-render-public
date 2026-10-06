@@ -22,6 +22,7 @@ const ROOT = arg('--root'), PLAN = arg('--plan'), OUT = arg('--out');
 if (!ROOT || !PLAN || !OUT) { console.error('usage: dom_lint_runner.mjs --root DIR --plan PLAN.json --out raw.json'); process.exit(2); }
 const PROFILE = arg('--profile') ? JSON.parse(fs.readFileSync(arg('--profile'), 'utf8')) : null;
 const SHOTS = arg('--shots');
+const EXTRA_CSS = arg('--css');   // debug / mutation tests only: extra CSS injected into every page (dom_lint.py --css)
 const SHOT_TIMES = (arg('--shot-times', '') || '').split(',').filter(Boolean).map(Number);
 
 let puppeteer;
@@ -306,6 +307,7 @@ for (const job of plan) {
   const idx = path.join(ROOT, job.look, 'index.html');
   await page.goto(pathToFileURL(idx).href, { waitUntil: 'load', timeout: 120000 });
   await page.addStyleTag({ content: 'html,body{margin:0}#root{width:1080px!important;height:1920px!important;position:relative;overflow:hidden}' });
+  if (EXTRA_CSS) await page.addStyleTag({ content: EXTRA_CSS });
   await page.waitForFunction('window.__timelines && Object.keys(window.__timelines).length > 0', { timeout: 60000 }).catch(() => {});
   await page.evaluate(async () => { try { await document.fonts.ready; } catch (e) {} await Promise.all([...document.images].map((i) => (i.decode ? i.decode().catch(() => 0) : 0))); });
   await new Promise((r) => setTimeout(r, 400));
