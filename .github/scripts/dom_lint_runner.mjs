@@ -83,7 +83,21 @@ const EXTRACT = (cfg) => {
       // very thing rule 2 must still see, so it is not a mask
       if (!(r.left <= 1 && r.top <= 1 && r.right >= W - 1 && r.bottom >= H - 1)) clip = inter(clip, [r.left, r.top, r.right, r.bottom]);
     }
-    const cp = ctx.cp || (cs.clipPath && cs.clipPath !== 'none') || (cs.webkitMaskImage && cs.webkitMaskImage !== 'none') || false;
+    // clip-path: inset(...) is how the kit wipes things in and out (a pressed button, a reveal): model it as one more clipper.
+    // Any other clip-path shape, or a mask, is only flagged (cp) because its visible area is not modelled.
+    let modelled = false;
+    if (cs.clipPath && cs.clipPath.startsWith('inset(')) {
+      const m = /^inset\(([^)]*)\)/.exec(cs.clipPath);
+      if (m) {
+        const tok = m[1].split(' round')[0].trim().split(/\s+/);
+        const r = el.getBoundingClientRect();
+        const val = (v, ref) => (v.endsWith('%') ? parseFloat(v) / 100 * ref : parseFloat(v));
+        const T = tok[0], Rr = tok[1] || tok[0], B = tok[2] || tok[0], L = tok[3] || tok[1] || tok[0];
+        const box = [r.left + val(L, r.width), r.top + val(T, r.height), r.right - val(Rr, r.width), r.bottom - val(B, r.height)];
+        if (box.every((v) => Number.isFinite(v))) { clip = inter(clip, box); modelled = true; }
+      }
+    }
+    const cp = ctx.cp || (cs.clipPath && cs.clipPath !== 'none' && !modelled) || (cs.webkitMaskImage && cs.webkitMaskImage !== 'none') || false;
     const nctx = { op, sc, rot, clip, cp };
     const tag = el.tagName.toUpperCase();
     const hidden = cs.visibility === 'hidden';
