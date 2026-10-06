@@ -217,7 +217,14 @@ const EXTRACT = (cfg) => {
     const cs = getComputedStyle(e); const tag = e.tagName.toUpperCase();
     let own = 0;
     if (tag === 'IMG' || tag === 'VIDEO' || tag === 'CANVAS') own = 1;
-    else { const bg = rgba(cs.backgroundColor); if (bg) own = bg.a; if (cs.backgroundImage && cs.backgroundImage !== 'none' && /url\(/.test(cs.backgroundImage)) own = Math.max(own, 0.9); }
+    else {
+      const bg = rgba(cs.backgroundColor); if (bg) own = bg.a;
+      const bi = cs.backgroundImage;
+      if (bi && bi !== 'none') {
+        if (/url\(/.test(bi)) own = Math.max(own, 0.9);
+        else if (/gradient\(/.test(bi)) own = Math.max(own, /transparent|rgba\([^)]*,\s*0?\.\d+\)|rgba\([^)]*,\s*0\)/.test(bi) ? 0.3 : 0.95);   // a gradient ground (a wall, a sky) hides what is under it unless a stop is transparent
+      }
+    }
     if (own < 0.8) return false;
     return chainOp(e) * own >= 0.8;
   };
