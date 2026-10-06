@@ -64,6 +64,7 @@ const EXTRACT = (cfg) => {
     return v;
   };
   const texts = [], imgs = [], paints = [], canvases = new Map();
+  const astack = [];
   const walk = (el, ctx) => {
     if (SKIP.has(el.tagName.toUpperCase())) return;
     const cs = getComputedStyle(el);
@@ -125,7 +126,7 @@ const EXTRACT = (cfg) => {
         // visible share after non-root overflow clips
         let tot = 0, vis = 0; const cl = [];
         for (const L of inks) { const a = area(L); tot += a; const c = clip ? inter(L, clip) : L; const ca = area(c); vis += ca; if (ca > 0) cl.push(c); }
-        texts.push({ id: idOf(el), n: texts.length, el, e: short(el), t: raw.slice(0, 160), fs: +fs.toFixed(2), sc: +fsc.toFixed(4), fpx: +fpx.toFixed(2), op: +(op * alpha).toFixed(3),
+        texts.push({ id: idOf(el), anc: astack.slice(-12).concat(idOf(el)), n: texts.length, el, e: short(el), t: raw.slice(0, 160), fs: +fs.toFixed(2), sc: +fsc.toFixed(4), fpx: +fpx.toFixed(2), op: +(op * alpha).toFixed(3),
           ink: inks.map((r) => r.map((v) => +v.toFixed(1))), vis: tot > 0 ? +(vis / tot).toFixed(3) : 0, cp: !!cp, cut: cl.map((r) => r.map((v) => +v.toFixed(1))) });
       }
     }
@@ -162,7 +163,9 @@ const EXTRACT = (cfg) => {
         if (area(c) >= 0.01 * W * H && frac > 0.2) paints.push({ id: idOf(el), e: short(el), kind, eo: +eo.toFixed(2), box: c.map((v) => +v.toFixed(1)), cp: !!cp });
       }
     }
+    astack.push(idOf(el));
     for (const ch of el.children) walk(ch, nctx);
+    astack.pop();
   };
   walk(root, { op: 1, sc: 1, rot: 0, clip: null, cp: false });
 
