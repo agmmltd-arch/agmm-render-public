@@ -1,0 +1,72 @@
+name: AGMM existing short hosted static check
+run-name: AGMM existing short static ${{ inputs.tag }}
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        required: true
+        description: Unique safe observation label
+      config:
+        required: true
+        description: Frozen current text binding and existing native snap receipt
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: agmm-existing-static-${{ inputs.tag }}
+  cancel-in-progress: false
+jobs:
+  measure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CONFIG: ${{ inputs.config }}
+      TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts/agmm_existing_static.py
+            .github/scripts/agmm_static_native_gate.py
+            .github/scripts/agmm_static_native_precheck.py
+            .github/scripts/agmm_native_dom_lint.py
+            .github/scripts/agmm_native_platforms.py
+            .github/scripts/render_short_package.py
+          sparse-checkout-cone-mode: false
+      - name: Validate inputs and retrieve exact existing native evidence on Ubuntu
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          d=json.loads(os.environ['CONFIG'])
+          assert re.fullmatch(r'snap-[a-z0-9-]+',d['release'])
+          assert re.fullmatch(r'[0-9a-f]{64}',d['transport_sha256'])
+          assert str(d['snap_run_id']).isdigit()
+          assert re.fullmatch(r'[A-Za-z0-9._-]+',d['snap_artifact'])
+          Path('config.json').write_text(json.dumps(d))
+          with Path('labels.txt').open('w') as f:
+              f.write('\n'.join(str(d[k]) for k in ['release','snap_run_id','snap_artifact','dom_run_id','dom_artifact'])+'\n')
+          PY
+          mapfile -t labels < labels.txt
+          mkdir exact-input snaps dom
+          gh release download "${labels[0]}" -R "$GITHUB_REPOSITORY" -p source.tar.gz -D exact-input
+          gh run download "${labels[1]}" -R "$GITHUB_REPOSITORY" -n "${labels[2]}" -D snaps
+          gh run download "${labels[3]}" -R "$GITHUB_REPOSITORY" -n "${labels[4]}" -D dom
+          cp .github/scripts/agmm_static_native_gate.py native_gate.py
+          cp .github/scripts/agmm_static_native_precheck.py native_static_precheck.py
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet numpy Pillow
+      - name: Apply unchanged native static rules to complete existing grid
+        run: .venv/bin/python .github/scripts/agmm_existing_static.py
+      - name: Upload JSON gate receipt only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-STATIC-JSON
+          path: result/*-result.json
+          retention-days: 1
+          if-no-files-found: ignore
