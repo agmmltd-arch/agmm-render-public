@@ -1,0 +1,35 @@
+name: Meta readback timeout qualification
+on:
+  workflow_dispatch:
+    inputs:
+      qa_ref:
+        description: Exact source closure commit
+        required: true
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.qa_ref }}
+      - name: Reproduce original timeout and qualify refusal guards
+        run: |
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          import subprocess,json,hashlib
+          d=Path('.github/scripts/meta_readback_qualification')
+          p=json.loads((d/'source-provenance.json').read_text())
+          assert hashlib.sha256((d/'before_meta.py').read_bytes()).hexdigest()==p['before_sha256']
+          assert hashlib.sha256((d/'candidate_meta.py').read_bytes()).hexdigest()==p['candidate_sha256']
+          old=subprocess.run(['python3',str(d/'test_readback.py'),str(d/'before_meta.py')],capture_output=True,text=True)
+          print(old.stdout+old.stderr)
+          assert old.returncode==1 and 'actual observed insights navigation timeout' in old.stderr
+          new=subprocess.run(['python3',str(d/'test_readback.py'),str(d/'candidate_meta.py')],capture_output=True,text=True)
+          print(new.stdout+new.stderr)
+          assert new.returncode==0 and 'Ran 6 tests' in new.stderr
+          compile((d/'candidate_meta.py').read_text(),'candidate_meta.py','exec')
+          print('QUALIFIED: original timeout fails; six candidate readback/refusal cases pass; no live DOM/account/media fixture')
+          PYCODE

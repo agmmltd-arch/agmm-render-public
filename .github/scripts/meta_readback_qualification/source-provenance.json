@@ -1,0 +1,9 @@
+{
+  "prepared_at": "2026-10-08T14:11:16.885167+01:00",
+  "source": "/Users/samwall/alfred/auto-poster/carousel_v3/adapters/video_lane/meta_video_publish.py",
+  "before_sha256": "31b219e4097b3392fe6918ba290d13b7a3fdd0c0a68e848d5257f88df1c2092f",
+  "candidate_sha256": "53af49fde470b9b4f7395e8ea7df065214b3e6b3d85d92b0bfc7f88c291ea3b2",
+  "scope": "Control flow after committed publication and read-only reconciliation only; strict fallback/identity/caption/canonical checks unchanged; prepublish lookup remains fail closed",
+  "native_failure": "14:03:20 Publish click;14:06:25 worker ambiguous after insights navigation60s timeout; committed nativeclaim preserved",
+  "no_media_or_account_inputs": true
+}
