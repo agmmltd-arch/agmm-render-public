@@ -1,0 +1,58 @@
+name: AGMM source publication date qualification
+run-name: AGMM source date qualification ${{ inputs.tag }}
+on:
+  workflow_dispatch:
+    inputs:
+      expected_candidate_commit:
+        description: Exact qualification source commit
+        required: true
+      tag:
+        description: Unique qualification label
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: agmm-source-date-${{ inputs.tag }}
+  cancel-in-progress: false
+jobs:
+  dates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Verify exact source closure
+        env:
+          EXPECTED: ${{ inputs.expected_candidate_commit }}
+          ACTUAL: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$EXPECTED" = "$ACTUAL"
+          cd .github/scripts/crop_clause_date_qualification
+          sha256sum --check SHA256SUMS
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        id: chrome
+        with:
+          chrome-version: stable
+      - name: Install the pinned browser driver
+        run: npm install --no-audit --no-fund --no-save puppeteer-core@25.12.0
+      - name: Prove native before failure and candidate passes including refusals
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          D=.github/scripts/crop_clause_date_qualification
+          python3 -B "$D/test_crop_clause_dates.py" --before "$D/crop_clause_before.py" \
+            --candidate "$D/crop_clause_candidate.py" --fixture "$D/channel4-header-and-date.html" \
+            --runner "$D/meta_runner.mjs" --out qualification-results
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ${{ inputs.tag }}-date-qualification
+          path: qualification-results/
+          retention-days: 7
+          if-no-files-found: error
