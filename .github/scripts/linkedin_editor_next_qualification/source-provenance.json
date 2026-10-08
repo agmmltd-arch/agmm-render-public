@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-08T10:00:53.570363+01:00",
+  "runtime": "/Users/samwall/alfred/auto-poster/carousel_v3/adapters/video_lane/linkedin_video_post.py",
+  "before_sha256": "0f113e728a337959a2e30e94a75d458d5673e08f90bca632d4d7de0b15a33e20",
+  "candidate_sha256": "69d02c47e23c0a7ed059e258c92041651931a60e899729fff70c65f6ab2ce4c1",
+  "native_bad_case": "Native S27 third attempt strict violation proves editor contentinfo Next and background carousel-inline-right-button Next. Actual09:55:32 screenshot confirms visible editor footer Next.",
+  "scope": "editor footer selector only; no force clicks, approval or quality changes"
+}
