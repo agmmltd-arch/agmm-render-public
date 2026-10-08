@@ -1,0 +1,4014 @@
+{
+  "resolved": {
+    "dur": 51.933,
+    "beats": [
+      {
+        "id": "hook",
+        "from": 0.0,
+        "to": 2.615
+      },
+      {
+        "id": "doubt",
+        "from": 2.615,
+        "to": 5.633
+      },
+      {
+        "id": "boe",
+        "from": 5.633,
+        "to": 7.544
+      },
+      {
+        "id": "fca",
+        "from": 7.544,
+        "to": 9.619
+      },
+      {
+        "id": "f75",
+        "from": 9.619,
+        "to": 12.334
+      },
+      {
+        "id": "insurers",
+        "from": 12.334,
+        "to": 14.648
+      },
+      {
+        "id": "all55",
+        "from": 14.648,
+        "to": 16.559
+      },
+      {
+        "id": "auto",
+        "from": 16.559,
+        "to": 18.369
+      },
+      {
+        "id": "matters",
+        "from": 18.369,
+        "to": 20.482
+      },
+      {
+        "id": "only34",
+        "from": 20.482,
+        "to": 22.292
+      },
+      {
+        "id": "fully",
+        "from": 22.292,
+        "to": 25.334
+      },
+      {
+        "id": "partly",
+        "from": 25.334,
+        "to": 27.949
+      },
+      {
+        "id": "reason",
+        "from": 27.949,
+        "to": 31.168
+      },
+      {
+        "id": "third",
+        "from": 31.168,
+        "to": 33.079
+      },
+      {
+        "id": "outside",
+        "from": 33.079,
+        "to": 34.688
+      },
+      {
+        "id": "risk",
+        "from": 34.688,
+        "to": 37.245
+      },
+      {
+        "id": "bar",
+        "from": 37.245,
+        "to": 40.107
+      },
+      {
+        "id": "sign",
+        "from": 40.107,
+        "to": 43.829
+      },
+      {
+        "id": "data",
+        "from": 43.829,
+        "to": 45.237
+      },
+      {
+        "id": "decisions",
+        "from": 45.237,
+        "to": 47.684
+      },
+      {
+        "id": "cta",
+        "from": 47.684,
+        "to": 51.933
+      }
+    ]
+  },
+  "cues": {
+    "cues": [
+      {
+        "t": 0.0333,
+        "pan": -0.16
+      },
+      {
+        "t": 0.3333,
+        "pan": -0.13
+      },
+      {
+        "t": 1.9,
+        "pan": 0.16
+      },
+      {
+        "t": 3.1333,
+        "pan": -0.16
+      },
+      {
+        "t": 3.5667,
+        "pan": 0.16
+      },
+      {
+        "t": 3.6333,
+        "pan": -0.18
+      },
+      {
+        "t": 6.0333,
+        "pan": -0.16
+      },
+      {
+        "t": 6.0333,
+        "pan": -0.31
+      },
+      {
+        "t": 6.0333,
+        "pan": 0.14
+      },
+      {
+        "t": 9.0667,
+        "pan": 0.13
+      },
+      {
+        "t": 9.0667,
+        "pan": -0.31
+      },
+      {
+        "t": 11.2333,
+        "pan": -0.16
+      },
+      {
+        "t": 11.4333,
+        "pan": -0.31
+      },
+      {
+        "t": 11.4333,
+        "pan": -0.21
+      },
+      {
+        "t": 11.9333,
+        "pan": 0.21
+      },
+      {
+        "t": 14.0333,
+        "pan": -0.16
+      },
+      {
+        "t": 14.0333,
+        "pan": -0.31
+      },
+      {
+        "t": 14.5333,
+        "pan": 0.23
+      },
+      {
+        "t": 15.2667,
+        "pan": 0.13
+      },
+      {
+        "t": 15.2667,
+        "pan": -0.31
+      },
+      {
+        "t": 15.9667,
+        "pan": 0.21
+      },
+      {
+        "t": 17.4667,
+        "pan": -0.16
+      },
+      {
+        "t": 17.4667,
+        "pan": 0.16
+      },
+      {
+        "t": 17.5667,
+        "pan": -0.38
+      },
+      {
+        "t": 18.2,
+        "pan": 0.38
+      },
+      {
+        "t": 20.3667,
+        "pan": -0.16
+      },
+      {
+        "t": 20.3667,
+        "pan": -0.31
+      },
+      {
+        "t": 21.5,
+        "pan": 0.13
+      },
+      {
+        "t": 21.5,
+        "pan": -0.38
+      },
+      {
+        "t": 22.0,
+        "pan": 0.21
+      },
+      {
+        "t": 24.6,
+        "pan": -0.31
+      },
+      {
+        "t": 24.6,
+        "pan": -0.31
+      },
+      {
+        "t": 25.2,
+        "pan": -0.16
+      },
+      {
+        "t": 27.0333,
+        "pan": 0.13
+      },
+      {
+        "t": 27.0333,
+        "pan": 0.16
+      },
+      {
+        "t": 27.6333,
+        "pan": 0.21
+      },
+      {
+        "t": 30.3667,
+        "pan": -0.16
+      },
+      {
+        "t": 30.4667,
+        "pan": -0.16
+      },
+      {
+        "t": 30.7667,
+        "pan": 0.13
+      },
+      {
+        "t": 32.7667,
+        "pan": 0.13
+      },
+      {
+        "t": 32.9667,
+        "pan": 0.38
+      },
+      {
+        "t": 32.9667,
+        "pan": 0.38
+      },
+      {
+        "t": 33.5667,
+        "pan": 0.47
+      },
+      {
+        "t": 33.5667,
+        "pan": 0.4
+      },
+      {
+        "t": 34.4667,
+        "pan": 0.4
+      },
+      {
+        "t": 36.2,
+        "pan": 0.13
+      },
+      {
+        "t": 36.2,
+        "pan": -0.16
+      },
+      {
+        "t": 36.5,
+        "pan": 0.16
+      },
+      {
+        "t": 39.1,
+        "pan": -0.16
+      },
+      {
+        "t": 39.1,
+        "pan": -0.31
+      },
+      {
+        "t": 39.9,
+        "pan": 0.54
+      },
+      {
+        "t": 43.0333,
+        "pan": -0.16
+      },
+      {
+        "t": 43.0333,
+        "pan": -0.31
+      },
+      {
+        "t": 43.1333,
+        "pan": 0.13
+      },
+      {
+        "t": 45.1333,
+        "pan": -0.16
+      },
+      {
+        "t": 47.2667,
+        "pan": -0.16
+      },
+      {
+        "t": 47.5667,
+        "pan": 0.44
+      },
+      {
+        "t": 50.8,
+        "pan": -0.16
+      },
+      {
+        "t": 51.3,
+        "pan": -0.21
+      }
+    ]
+  },
+  "voice_result": {
+    "final": {
+      "wpm_speaking_final": 172.0,
+      "naturalness": 9.0,
+      "flow": 9.0,
+      "pace": 8.33,
+      "emphasis": 9.0
+    }
+  },
+  "frames": {
+    "schema": "agmm-platform-frames/1",
+    "generated_by": "kit/platforms/build_frames.py",
+    "master": [
+      1080,
+      1920
+    ],
+    "units": "master pixels of a 1080x1920 short, origin top-left, half-open {x0,y0,x1,y1}",
+    "routing_alias": {
+      "instagram": "instagram_reels",
+      "instagram-reels": "instagram_reels",
+      "instagram_reels": "instagram_reels",
+      "facebook": "facebook_reels",
+      "facebook-reels": "facebook_reels",
+      "facebook_reels": "facebook_reels",
+      "facebook_feed": "facebook_feed",
+      "tiktok": "tiktok",
+      "youtube": "youtube_shorts",
+      "youtube-shorts": "youtube_shorts",
+      "youtube_shorts": "youtube_shorts",
+      "linkedin": "linkedin_feed",
+      "linkedin_feed": "linkedin_feed",
+      "s117": "facebook_reels"
+    },
+    "secondary": {
+      "facebook_reels": [
+        "facebook_feed"
+      ]
+    },
+    "rules": {
+      "outside_visible": "text box > 8 px beyond the visible rect: FAIL when the profile's fail_outside_visible is true (measured/derived visible rect), else WARN",
+      "touching_crop": "4-8 px beyond the visible rect: WARN (inside Vision's 4-px box grid, a sliver of a glyph)",
+      "under_overlay": "WARN when >= 25% of a text box's area lies under an overlay",
+      "persistence": "an event counts only when it holds on >= 2 consecutive 2-fps samples"
+    },
+    "cross_platform_text_safe_simple": {
+      "x0": 120,
+      "y0": 312,
+      "x1": 756,
+      "y1": 1224,
+      "note": "intersection of the Reels/TikTok/Shorts text-safe rects (notch-free): safe on all four"
+    },
+    "platforms": {
+      "instagram_reels": {
+        "label": "Instagram Reels (app, Reels tab)",
+        "phone": "iPhone 1179x2556 (Sam's, 29 Sep 2026)",
+        "visible": {
+          "x0": 50,
+          "y0": 0,
+          "x1": 1030,
+          "y1": 1920,
+          "evidence": "measured",
+          "source": "registration of the screenshot against the S33 master frame at 40.45/40.50/40.55 s: scale 1.203 screen px per master px, x offset -59.5, y offset -1 (mean abs error 5.4/255); video spans screen y 0-2309, the comment bar sits below it",
+          "note": "side crop 49.5 px each side (screen x -59.5 / 1.203); full height visible"
+        },
+        "overlays": [
+          {
+            "x0": 0,
+            "y0": 0,
+            "x1": 1080,
+            "y1": 240,
+            "evidence": "measured",
+            "source": "evidence/instagram-ui-mask-measured.png (pixels that are pure white/red on the phone but not in the master frame evidence/S33-master-40.55s.png)",
+            "name": "status bar + Reels/Friends header",
+            "note": "header row measured at master y 186-234 (screen 223-281); the status bar sits above it"
+          },
+          {
+            "x0": 905,
+            "y0": 1150,
+            "x1": 1080,
+            "y1": 1920,
+            "evidence": "measured",
+            "source": "evidence/instagram-ui-mask-measured.png (pixels that are pure white/red on the phone but not in the master frame evidence/S33-master-40.55s.png)",
+            "name": "right action rail",
+            "note": "like/comment/repost/send/menu/audio icons measured at master x 916-990, y 1158-1865"
+          },
+          {
+            "x0": 0,
+            "y0": 1690,
+            "x1": 1080,
+            "y1": 1920,
+            "evidence": "measured",
+            "source": "evidence/instagram-ui-mask-measured.png (pixels that are pure white/red on the phone but not in the master frame evidence/S33-master-40.55s.png)",
+            "name": "username + caption + progress bar",
+            "note": "avatar, @agmm_ltd and one caption line measured at master x 89-783, y 1704-1860; progress bar y 1912-1920. A tapped-open caption grows upward: not measured."
+          }
+        ],
+        "doc_safe": {
+          "x0": 65,
+          "y0": 269,
+          "x1": 1015,
+          "y1": 1248,
+          "evidence": "documented",
+          "source": "https://www.facebook.com/business/ads-guide/update/video/instagram-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-instagram-reels.txt): 'Consider leaving at least 14% of the top, 35% of the bottom and 6% on each side of your asset free from text, logos or other important creative elements ... placed too close to the edges of devices with screens taller than a 9:16 aspect ratio.'",
+          "note": "14% top, 35% bottom, 6% sides of 1080x1920 (ads guidance)"
+        },
+        "fail_outside_visible": true,
+        "text_safe": {
+          "x0": 74,
+          "y0": 264,
+          "x1": 1006,
+          "y1": 1666,
+          "notches": [
+            {
+              "x0": 881,
+              "y0": 1126,
+              "x1": 1080,
+              "y1": 1920,
+              "name": "right action rail"
+            }
+          ],
+          "simple": {
+            "x0": 74,
+            "y0": 264,
+            "x1": 881,
+            "y1": 1666
+          },
+          "margin": 24,
+          "evidence": "derived",
+          "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+        }
+      },
+      "facebook_reels": {
+        "label": "Facebook Reels (our vertical posts publish as /reel/ URLs: staged receipts)",
+        "phone": "not measured",
+        "visible": {
+          "x0": 50,
+          "y0": 0,
+          "x1": 1030,
+          "y1": 1920,
+          "evidence": "derived",
+          "source": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-facebook-reels.txt): 'Consider leaving roughly 14% of the top, 35% of the bottom and 6% on each side of your asset free from text ...' + https://www.facebook.com/business/ads-guide/update/video/instagram-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-instagram-reels.txt): 'Consider leaving at least 14% of the top, 35% of the bottom and 6% on each side of your asset free from text, logos or other important creative elements ... placed too close to the edges of devices with screens taller than a 9:16 aspect ratio.' -- Meta documents edge cropping on screens taller than 9:16; the 50 px is the aspect-fill strip measured on Instagram (Meta's sibling app) on Sam's phone"
+        },
+        "overlays": [
+          {
+            "x0": 0,
+            "y0": 0,
+            "x1": 1080,
+            "y1": 269,
+            "evidence": "documented",
+            "source": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-facebook-reels.txt): 'Consider leaving roughly 14% of the top, 35% of the bottom and 6% on each side of your asset free from text ...'",
+            "name": "top 14%"
+          },
+          {
+            "x0": 0,
+            "y0": 1248,
+            "x1": 1080,
+            "y1": 1920,
+            "evidence": "documented",
+            "source": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-facebook-reels.txt): 'Consider leaving roughly 14% of the top, 35% of the bottom and 6% on each side of your asset free from text ...'",
+            "name": "bottom 35% (profile, caption, CTA)"
+          }
+        ],
+        "doc_safe": {
+          "x0": 65,
+          "y0": 269,
+          "x1": 1015,
+          "y1": 1248,
+          "evidence": "documented",
+          "source": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-facebook-reels.txt): 'Consider leaving roughly 14% of the top, 35% of the bottom and 6% on each side of your asset free from text ...'"
+        },
+        "fail_outside_visible": true,
+        "text_safe": {
+          "x0": 74,
+          "y0": 293,
+          "x1": 1006,
+          "y1": 1224,
+          "notches": [],
+          "simple": {
+            "x0": 74,
+            "y0": 293,
+            "x1": 1006,
+            "y1": 1224
+          },
+          "margin": 24,
+          "evidence": "derived",
+          "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+        }
+      },
+      "facebook_feed": {
+        "label": "Facebook Feed (a vertical video shown in the main feed)",
+        "phone": "not measured",
+        "visible": {
+          "x0": 0,
+          "y0": 285,
+          "x1": 1080,
+          "y1": 1635,
+          "evidence": "estimated",
+          "source": "https://www.facebook.com/business/ads-guide/update/video/facebook-feed (fetched 29 Sep 2026, evidence/meta-ads-guide-facebook-feed.txt): 'Ratio: 4:5', 'Resolution: 1440 x 1800 pixels'. The page does NOT say how a 9:16 upload is shown in Feed. -- ASSUMPTION: a 9:16 video is centre-cropped to the recommended 4:5 (1080x1350) in Feed. Needs one phone screenshot of an AGMM reel in the Facebook feed to confirm or refute."
+        },
+        "overlays": [],
+        "doc_safe": null,
+        "fail_outside_visible": false,
+        "secondary_of": "facebook_reels",
+        "text_safe": {
+          "x0": 24,
+          "y0": 309,
+          "x1": 1056,
+          "y1": 1611,
+          "notches": [],
+          "simple": {
+            "x0": 24,
+            "y0": 309,
+            "x1": 1056,
+            "y1": 1611
+          },
+          "margin": 24,
+          "evidence": "derived",
+          "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+        }
+      },
+      "tiktok": {
+        "label": "TikTok (For You feed)",
+        "phone": "not measured",
+        "visible": {
+          "x0": 50,
+          "y0": 0,
+          "x1": 1030,
+          "y1": 1920,
+          "evidence": "estimated",
+          "source": "ASSUMPTION: TikTok aspect-fills the area above its bottom bar like Instagram does on the same phone. The documented template marks the outer 120 px per side unsafe (see doc_safe) but does not say it is cropped."
+        },
+        "overlays": [
+          {
+            "x0": 0,
+            "y0": 0,
+            "x1": 1080,
+            "y1": 240,
+            "evidence": "documented",
+            "source": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads (fetched 29 Sep 2026, evidence/tiktok-ads-in-feed-specs.txt) -> its 'In-Feed-Standard Version LTR.zip' (evidence/tiktok-in-feed-standard-safezone.png, 2880x5120, labelled on a 720x1280 grid: sides 80, top 160, right column 120 wide from 720 above the bottom, bottom 440). Measured from the file's alpha at x0.375.",
+            "name": "top tabs (160/1280)"
+          },
+          {
+            "x0": 780,
+            "y0": 840,
+            "x1": 1080,
+            "y1": 1920,
+            "evidence": "documented",
+            "source": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads (fetched 29 Sep 2026, evidence/tiktok-ads-in-feed-specs.txt) -> its 'In-Feed-Standard Version LTR.zip' (evidence/tiktok-in-feed-standard-safezone.png, 2880x5120, labelled on a 720x1280 grid: sides 80, top 160, right column 120 wide from 720 above the bottom, bottom 440). Measured from the file's alpha at x0.375.",
+            "name": "right column: profile, like, comment, share (120 wide, 720/1280 from the bottom)"
+          },
+          {
+            "x0": 0,
+            "y0": 1260,
+            "x1": 1080,
+            "y1": 1920,
+            "evidence": "documented",
+            "source": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads (fetched 29 Sep 2026, evidence/tiktok-ads-in-feed-specs.txt) -> its 'In-Feed-Standard Version LTR.zip' (evidence/tiktok-in-feed-standard-safezone.png, 2880x5120, labelled on a 720x1280 grid: sides 80, top 160, right column 120 wide from 720 above the bottom, bottom 440). Measured from the file's alpha at x0.375.",
+            "name": "bottom: account, caption, sound, CTA (440/1280)"
+          }
+        ],
+        "doc_safe": {
+          "x0": 120,
+          "y0": 240,
+          "x1": 960,
+          "y1": 1260,
+          "evidence": "documented",
+          "source": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads (fetched 29 Sep 2026, evidence/tiktok-ads-in-feed-specs.txt) -> its 'In-Feed-Standard Version LTR.zip' (evidence/tiktok-in-feed-standard-safezone.png, 2880x5120, labelled on a 720x1280 grid: sides 80, top 160, right column 120 wide from 720 above the bottom, bottom 440). Measured from the file's alpha at x0.375.",
+          "notch": {
+            "x0": 780,
+            "y0": 840,
+            "x1": 960,
+            "y1": 1260,
+            "evidence": "documented",
+            "source": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads (fetched 29 Sep 2026, evidence/tiktok-ads-in-feed-specs.txt) -> its 'In-Feed-Standard Version LTR.zip' (evidence/tiktok-in-feed-standard-safezone.png, 2880x5120, labelled on a 720x1280 grid: sides 80, top 160, right column 120 wide from 720 above the bottom, bottom 440). Measured from the file's alpha at x0.375."
+          }
+        },
+        "fail_outside_visible": false,
+        "text_safe": {
+          "x0": 120,
+          "y0": 264,
+          "x1": 960,
+          "y1": 1236,
+          "notches": [
+            {
+              "x0": 756,
+              "y0": 816,
+              "x1": 1080,
+              "y1": 1920,
+              "name": "right column: profile, like, comment, share (120 wide, 720/1280 from the bottom)"
+            },
+            {
+              "x0": 780,
+              "y0": 840,
+              "x1": 1080,
+              "y1": 1920,
+              "name": "documented notch"
+            }
+          ],
+          "simple": {
+            "x0": 120,
+            "y0": 264,
+            "x1": 756,
+            "y1": 1236
+          },
+          "margin": 24,
+          "evidence": "derived",
+          "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+        }
+      },
+      "youtube_shorts": {
+        "label": "YouTube Shorts",
+        "phone": "not measured",
+        "visible": {
+          "x0": 50,
+          "y0": 0,
+          "x1": 1030,
+          "y1": 1920,
+          "evidence": "estimated",
+          "source": "ASSUMPTION: the Shorts player aspect-fills like Instagram on the same phone. Google's vertical template marks x < 48 unsafe, which agrees with a ~50 px strip, but does not say it is cropped."
+        },
+        "overlays": [
+          {
+            "x0": 0,
+            "y0": 0,
+            "x1": 1080,
+            "y1": 288,
+            "evidence": "documented",
+            "source": "https://support.google.com/google-ads/answer/13547298 'Universal safe zones for video ads on YouTube' (fetched 29 Sep 2026, evidence/google-ads-youtube-video-specs.txt) -> its vertical template https://services.google.com/fh/files/misc/youtubesafezoneoverlay_vertical_final.png (evidence/youtube-vertical-safezone-overlay.png, 1080x1920). Measured from the file's alpha: safe x 48-887, y 288-1247.",
+            "name": "top (search, menu)"
+          },
+          {
+            "x0": 888,
+            "y0": 0,
+            "x1": 1080,
+            "y1": 1920,
+            "evidence": "documented",
+            "source": "https://support.google.com/google-ads/answer/13547298 'Universal safe zones for video ads on YouTube' (fetched 29 Sep 2026, evidence/google-ads-youtube-video-specs.txt) -> its vertical template https://services.google.com/fh/files/misc/youtubesafezoneoverlay_vertical_final.png (evidence/youtube-vertical-safezone-overlay.png, 1080x1920). Measured from the file's alpha: safe x 48-887, y 288-1247.",
+            "name": "right column (like, dislike, comment, share, remix) as the template draws it"
+          },
+          {
+            "x0": 0,
+            "y0": 1248,
+            "x1": 1080,
+            "y1": 1920,
+            "evidence": "documented",
+            "source": "https://support.google.com/google-ads/answer/13547298 'Universal safe zones for video ads on YouTube' (fetched 29 Sep 2026, evidence/google-ads-youtube-video-specs.txt) -> its vertical template https://services.google.com/fh/files/misc/youtubesafezoneoverlay_vertical_final.png (evidence/youtube-vertical-safezone-overlay.png, 1080x1920). Measured from the file's alpha: safe x 48-887, y 288-1247.",
+            "name": "bottom (channel, title, CTA)"
+          }
+        ],
+        "doc_safe": {
+          "x0": 48,
+          "y0": 288,
+          "x1": 888,
+          "y1": 1248,
+          "evidence": "documented",
+          "source": "https://support.google.com/google-ads/answer/13547298 'Universal safe zones for video ads on YouTube' (fetched 29 Sep 2026, evidence/google-ads-youtube-video-specs.txt) -> its vertical template https://services.google.com/fh/files/misc/youtubesafezoneoverlay_vertical_final.png (evidence/youtube-vertical-safezone-overlay.png, 1080x1920). Measured from the file's alpha: safe x 48-887, y 288-1247."
+        },
+        "fail_outside_visible": false,
+        "text_safe": {
+          "x0": 74,
+          "y0": 312,
+          "x1": 864,
+          "y1": 1224,
+          "notches": [],
+          "simple": {
+            "x0": 74,
+            "y0": 312,
+            "x1": 864,
+            "y1": 1224
+          },
+          "margin": 24,
+          "evidence": "derived",
+          "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+        }
+      },
+      "linkedin_feed": {
+        "label": "LinkedIn feed video",
+        "phone": "not measured",
+        "visible": {
+          "x0": 0,
+          "y0": 285,
+          "x1": 1080,
+          "y1": 1635,
+          "evidence": "estimated",
+          "source": "https://www.linkedin.com/help/lms/answer/a424737 (fetched 29 Sep 2026, evidence/linkedin-video-ads-specs.txt): 'Vertical: 4:5 (.80) (Recommended ratio) ... Vertical: 9:16 (0.56) ... Maximum: 1080 x 1920 pixels'. The page does NOT say how a 9:16 upload is shown in the feed. -- ASSUMPTION (worst case): the mobile feed shows a 9:16 video centre-cropped to the recommended 4:5. Needs one phone screenshot of an AGMM LinkedIn video in the feed to confirm or refute."
+        },
+        "overlays": [],
+        "doc_safe": null,
+        "fail_outside_visible": false,
+        "text_safe": {
+          "x0": 24,
+          "y0": 309,
+          "x1": 1056,
+          "y1": 1611,
+          "notches": [],
+          "simple": {
+            "x0": 24,
+            "y0": 309,
+            "x1": 1056,
+            "y1": 1611
+          },
+          "margin": 24,
+          "evidence": "derived",
+          "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+        }
+      }
+    }
+  },
+  "routing": {
+    "assignment": {
+      "S04": "facebook",
+      "S09": "facebook",
+      "C26": "facebook",
+      "C38": "facebook",
+      "C21": "linkedin",
+      "S28": "facebook",
+      "S16": "linkedin",
+      "S48": "tiktok",
+      "S15": "linkedin",
+      "S38": "tiktok",
+      "P1": "tiktok",
+      "C41": "facebook",
+      "S51": "tiktok",
+      "C23": "linkedin",
+      "S02": "linkedin",
+      "C34": "linkedin",
+      "C36": "linkedin",
+      "S42": "tiktok",
+      "S30": "facebook",
+      "S11": "facebook",
+      "S55": "facebook",
+      "P3": "tiktok",
+      "C07": "tiktok",
+      "C20": "linkedin",
+      "P2": "tiktok",
+      "C24": "linkedin",
+      "S47": "facebook",
+      "S26": "facebook",
+      "S50": "instagram",
+      "C03": "tiktok",
+      "S54": "tiktok",
+      "C29": "facebook",
+      "C19": "linkedin",
+      "C30": "facebook",
+      "S23": "facebook",
+      "S27": "linkedin",
+      "S21": "facebook",
+      "S24": "tiktok",
+      "S39": "tiktok",
+      "S36": "tiktok",
+      "S60": "tiktok",
+      "C01": "facebook",
+      "S35": "tiktok",
+      "C17": "tiktok",
+      "S45": "linkedin",
+      "C18": "tiktok",
+      "S49": "linkedin",
+      "S29": "linkedin",
+      "C11": "linkedin",
+      "S57": "linkedin",
+      "S32": "youtube_shorts",
+      "S41": "youtube_shorts",
+      "C28": "youtube_shorts",
+      "S40": "tiktok",
+      "C37": "facebook",
+      "S22": "facebook",
+      "S08": "linkedin",
+      "S07": "tiktok",
+      "C13": "instagram",
+      "C15": "instagram",
+      "S01": "instagram",
+      "S34": "facebook",
+      "S44": "instagram",
+      "C14": "instagram",
+      "S18": "instagram",
+      "S33": "instagram",
+      "C08": "instagram",
+      "S56": "instagram",
+      "C33": "instagram",
+      "S13": "linkedin",
+      "C22": "youtube_shorts",
+      "S14": "linkedin",
+      "S25": "facebook",
+      "S12": "youtube_shorts",
+      "C39": "youtube_shorts",
+      "C06": "youtube_shorts",
+      "C40": "youtube_shorts",
+      "S10": "instagram",
+      "C42": "facebook",
+      "S05": "youtube_shorts",
+      "C27": "linkedin",
+      "S20": "youtube_shorts",
+      "S03": "instagram",
+      "S53": "youtube_shorts",
+      "S19": "youtube_shorts",
+      "C05": "youtube_shorts",
+      "C04": "youtube_shorts",
+      "C09": "instagram",
+      "S58": "facebook",
+      "C25": "instagram",
+      "C16": "instagram",
+      "S31": "youtube_shorts",
+      "S37": "instagram",
+      "C02": "youtube_shorts",
+      "S52": "instagram",
+      "C35": "instagram",
+      "C31": "instagram",
+      "C32": "instagram",
+      "S43": "instagram",
+      "S59": "instagram",
+      "S46": "linkedin",
+      "C12": "youtube_shorts",
+      "C10": "youtube_shorts",
+      "S17": "youtube_shorts",
+      "S06": "facebook",
+      "S117": "facebook",
+      "S86": "linkedin",
+      "S102": "linkedin",
+      "S118": "linkedin",
+      "S124": "instagram",
+      "S103": "youtube_shorts",
+      "S72": "linkedin",
+      "S81": "facebook"
+    },
+    "score": {
+      "C01": {
+        "tiktok": 1.6273951320559297,
+        "instagram": 1.5785849661171791,
+        "youtube_shorts": 1.611450892071647,
+        "facebook": 1.6966337940969323,
+        "linkedin": 1.4810919597670338
+      },
+      "C02": {
+        "tiktok": 1.4087044709131713,
+        "instagram": 1.366357153570309,
+        "youtube_shorts": 1.4087447654572964,
+        "facebook": 1.431439928078894,
+        "linkedin": 1.4081083782334927
+      },
+      "C03": {
+        "tiktok": 1.7124115311582946,
+        "instagram": 1.621466846647851,
+        "youtube_shorts": 1.6326600274483578,
+        "facebook": 1.6012790030834196,
+        "linkedin": 1.5537348149628831
+      },
+      "C04": {
+        "tiktok": 1.2829060935611947,
+        "instagram": 1.2905468973698209,
+        "youtube_shorts": 1.3579019600943094,
+        "facebook": 1.2009592523125647,
+        "linkedin": 1.3123188471637939
+      },
+      "C05": {
+        "tiktok": 1.2049024684964613,
+        "instagram": 1.2254400676292938,
+        "youtube_shorts": 1.3019600943097438,
+        "facebook": 1.3292170365401201,
+        "linkedin": 1.3022333475681223
+      },
+      "C06": {
+        "tiktok": 1.0073580182979458,
+        "instagram": 1.0499584134385953,
+        "youtube_shorts": 1.216754055670901,
+        "facebook": 1.1897253824611682,
+        "linkedin": 1.2531914700297113
+      },
+      "C07": {
+        "tiktok": 1.2922924218884861,
+        "instagram": 1.203624166564405,
+        "youtube_shorts": 1.0655558292571345,
+        "facebook": 0.9906037083179314,
+        "linkedin": 0.9656865862855375
+      },
+      "C08": {
+        "tiktok": 1.043069221474193,
+        "instagram": 1.065638592328984,
+        "youtube_shorts": 0.8961044445226446,
+        "facebook": 0.9865573855278549,
+        "linkedin": 0.8609927402574981
+      },
+      "C09": {
+        "tiktok": 0.6731184187812879,
+        "instagram": 0.6647714102616546,
+        "youtube_shorts": 0.6009501354822816,
+        "facebook": 0.6174901542014064,
+        "linkedin": 0.6915381749788748
+      },
+      "C10": {
+        "tiktok": 0.7851070257206975,
+        "instagram": 0.759193357058126,
+        "youtube_shorts": 0.7576908188760249,
+        "facebook": 0.6222818522422865,
+        "linkedin": 0.7009195068099836
+      },
+      "C11": {
+        "tiktok": 0.994195580873468,
+        "instagram": 0.9986228712452793,
+        "youtube_shorts": 0.9974944575430199,
+        "facebook": 0.9142027451105665,
+        "linkedin": 1.0619077040496459
+      },
+      "C12": {
+        "tiktok": 0.7513378215087175,
+        "instagram": 0.7743963131127202,
+        "youtube_shorts": 0.7736530949783578,
+        "facebook": 0.7894056316903132,
+        "linkedin": 0.7864645326597551
+      },
+      "C13": {
+        "tiktok": 1.5543543932332127,
+        "instagram": 1.4992296259936466,
+        "youtube_shorts": 1.3681739803638664,
+        "facebook": 1.2724087942110203,
+        "linkedin": 1.2724765807430558
+      },
+      "C14": {
+        "tiktok": 1.0290436733989299,
+        "instagram": 0.988873890456907,
+        "youtube_shorts": 0.9031248900306152,
+        "facebook": 0.8768807414810454,
+        "linkedin": 0.8683069989732778
+      },
+      "C15": {
+        "tiktok": 1.0348696702917315,
+        "instagram": 0.9998500156801792,
+        "youtube_shorts": 0.7838512158215151,
+        "facebook": 0.8005862604523667,
+        "linkedin": 0.73190288845074
+      },
+      "C16": {
+        "tiktok": 1.2148282409804936,
+        "instagram": 1.2401658008480936,
+        "youtube_shorts": 1.1908892564310092,
+        "facebook": 1.1095443019104425,
+        "linkedin": 1.1532223625509952
+      },
+      "C17": {
+        "tiktok": 1.3075047471085794,
+        "instagram": 1.2387341323407102,
+        "youtube_shorts": 1.0835872892986589,
+        "facebook": 1.065407438845003,
+        "linkedin": 0.9350666460716524
+      },
+      "C18": {
+        "tiktok": 1.004984464008286,
+        "instagram": 0.937811047026902,
+        "youtube_shorts": 0.8477003202308475,
+        "facebook": 0.8393457734941518,
+        "linkedin": 0.7988669713517295
+      },
+      "C19": {
+        "tiktok": 0.9581607112031764,
+        "instagram": 1.0613435868068342,
+        "youtube_shorts": 1.196949009395784,
+        "facebook": 1.113217937075117,
+        "linkedin": 1.275588547960639
+      },
+      "C20": {
+        "tiktok": 1.0111341273951322,
+        "instagram": 1.1077705512605505,
+        "youtube_shorts": 1.2576943378963295,
+        "facebook": 1.1166253667930763,
+        "linkedin": 1.3437338154989595
+      },
+      "C21": {
+        "tiktok": 0.8538322112894874,
+        "instagram": 0.916063320652841,
+        "youtube_shorts": 1.0198120843157261,
+        "facebook": 0.8658598359870213,
+        "linkedin": 1.177527507972996
+      },
+      "C22": {
+        "tiktok": 1.123338511997238,
+        "instagram": 1.1327224881035167,
+        "youtube_shorts": 1.156821620860752,
+        "facebook": 0.9676035577217073,
+        "linkedin": 1.2085563197921112
+      },
+      "C23": {
+        "tiktok": 0.887385637838771,
+        "instagram": 1.0232339346341066,
+        "youtube_shorts": 1.2166062568181015,
+        "facebook": 1.0388933763521335,
+        "linkedin": 1.32342652577254
+      },
+      "C24": {
+        "tiktok": 0.9743440359054032,
+        "instagram": 0.9670579893920185,
+        "youtube_shorts": 1.0274237252348943,
+        "facebook": 1.041928118444691,
+        "linkedin": 1.1247376407199774
+      },
+      "C25": {
+        "tiktok": 1.0280726739167962,
+        "instagram": 0.9903055589642903,
+        "youtube_shorts": 0.9318717669000948,
+        "facebook": 1.039106340709506,
+        "linkedin": 0.8716461170826555
+      },
+      "C26": {
+        "tiktok": 1.2452528914206802,
+        "instagram": 1.239688578012299,
+        "youtube_shorts": 1.294570151669775,
+        "facebook": 1.478185604522146,
+        "linkedin": 1.2675019762127584
+      },
+      "C27": {
+        "tiktok": 0.6301786639047126,
+        "instagram": 0.6687937170204935,
+        "youtube_shorts": 0.7920540521518808,
+        "facebook": 0.8442439537137181,
+        "linkedin": 0.8545189398413576
+      },
+      "C28": {
+        "tiktok": 0.7803599171413776,
+        "instagram": 0.8910432091190469,
+        "youtube_shorts": 0.9699299714959353,
+        "facebook": 0.9291102501266377,
+        "linkedin": 1.0321509372245794
+      },
+      "C29": {
+        "tiktok": 1.324119627136199,
+        "instagram": 1.35435840798462,
+        "youtube_shorts": 1.235376711123623,
+        "facebook": 1.433729294920648,
+        "linkedin": 1.291330104761991
+      },
+      "C30": {
+        "tiktok": 0.7187553944415674,
+        "instagram": 0.786395058698409,
+        "youtube_shorts": 0.9737727416687193,
+        "facebook": 1.0632777952712786,
+        "linkedin": 0.9851307026231383
+      },
+      "C31": {
+        "tiktok": 1.3281115138960817,
+        "instagram": 1.3009094503756429,
+        "youtube_shorts": 1.270700636942675,
+        "facebook": 1.2112347825557852,
+        "linkedin": 1.227069117473355
+      },
+      "C32": {
+        "tiktok": 0.9202917313999656,
+        "instagram": 0.9241761088613465,
+        "youtube_shorts": 0.8952915508322481,
+        "facebook": 0.8056441639399623,
+        "linkedin": 0.950944493408081
+      },
+      "C33": {
+        "tiktok": 1.2109442430519595,
+        "instagram": 1.1637419724301554,
+        "youtube_shorts": 1.108195798289756,
+        "facebook": 1.0441110031077585,
+        "linkedin": 1.0989560145013129
+      },
+      "C34": {
+        "tiktok": 1.015881235974452,
+        "instagram": 1.0738877299191452,
+        "youtube_shorts": 1.147510293134391,
+        "facebook": 1.025742827284385,
+        "linkedin": 1.2487393125505408
+      },
+      "C35": {
+        "tiktok": 0.8085189021232522,
+        "instagram": 0.7864632333892367,
+        "youtube_shorts": 0.749044585987261,
+        "facebook": 0.695648073357094,
+        "linkedin": 0.7491209260487555
+      },
+      "C36": {
+        "tiktok": 1.0778094251683066,
+        "instagram": 1.1346995541375224,
+        "youtube_shorts": 1.1989442939085757,
+        "facebook": 1.105072050405621,
+        "linkedin": 1.296940731789313
+      },
+      "C37": {
+        "tiktok": 1.2930476437079232,
+        "instagram": 1.4276462006244806,
+        "youtube_shorts": 1.6081254178836608,
+        "facebook": 1.66836277565574,
+        "linkedin": 1.4577635631797488
+      },
+      "C38": {
+        "tiktok": 1.011026238563784,
+        "instagram": 1.0899087822636728,
+        "youtube_shorts": 1.2046345497413518,
+        "facebook": 1.3855993501544752,
+        "linkedin": 1.1357544589720057
+      },
+      "C39": {
+        "tiktok": 1.0035819092007596,
+        "instagram": 1.1635374483576721,
+        "youtube_shorts": 1.338909807509589,
+        "facebook": 1.3662728347229256,
+        "linkedin": 1.3290825829782205
+      },
+      "C40": {
+        "tiktok": 0.773347143103746,
+        "instagram": 0.9321525476881964,
+        "youtube_shorts": 1.0962240912130061,
+        "facebook": 1.0313331416654117,
+        "linkedin": 1.0829873068081664
+      },
+      "C41": {
+        "tiktok": 1.474840324529605,
+        "instagram": 1.4488485294719193,
+        "youtube_shorts": 1.3948516732941545,
+        "facebook": 1.5871701144074952,
+        "linkedin": 1.3476180957486437
+      },
+      "C42": {
+        "tiktok": 0.674413084757466,
+        "instagram": 0.7388772991914484,
+        "youtube_shorts": 0.8893795967202729,
+        "facebook": 0.9476381492180405,
+        "linkedin": 0.9197112457863508
+      },
+      "P1": {
+        "tiktok": 1.9741498360089766,
+        "instagram": 1.8614417583616263,
+        "youtube_shorts": 1.782749762466129,
+        "facebook": 1.8351138674783651,
+        "linkedin": 1.63135227468903
+      },
+      "P2": {
+        "tiktok": 1.6708743310892458,
+        "instagram": 1.585947832726579,
+        "youtube_shorts": 1.376376816694232,
+        "facebook": 1.4102499745203358,
+        "linkedin": 1.3421891894347575
+      },
+      "P3": {
+        "tiktok": 1.3496892801657172,
+        "instagram": 1.26020915995146,
+        "youtube_shorts": 0.9600274483583767,
+        "facebook": 0.9063230638877859,
+        "linkedin": 0.9033790966663333
+      },
+      "S01": {
+        "tiktok": 0.6697738650094943,
+        "instagram": 0.6391377265104105,
+        "youtube_shorts": 0.47125664215082513,
+        "facebook": 0.41501429142955365,
+        "linkedin": 0.42013828946292436
+      },
+      "S02": {
+        "tiktok": 0.808950457448645,
+        "instagram": 0.8409348113606308,
+        "youtube_shorts": 0.9014252032234223,
+        "facebook": 0.8409962472637882,
+        "linkedin": 1.002825757093922
+      },
+      "S03": {
+        "tiktok": 1.1249568444674607,
+        "instagram": 1.1019075278493615,
+        "youtube_shorts": 1.0045149030509903,
+        "facebook": 1.0267544079819042,
+        "linkedin": 1.0519130648106922
+      },
+      "S04": {
+        "tiktok": 1.2039314690143277,
+        "instagram": 1.3090222385841483,
+        "youtube_shorts": 1.3151141922088887,
+        "facebook": 1.5688019385841216,
+        "linkedin": 1.3128640093041004
+      },
+      "S05": {
+        "tiktok": 0.636436216122907,
+        "instagram": 0.7329461010894317,
+        "youtube_shorts": 0.8579723405004045,
+        "facebook": 0.8058571282973348,
+        "linkedin": 0.8602431423145767
+      },
+      "S06": {
+        "tiktok": 0.4137536682202659,
+        "instagram": 0.4757229925962287,
+        "youtube_shorts": 0.48751451595875694,
+        "facebook": 0.5094639839242333,
+        "linkedin": 0.49078221681098316
+      },
+      "S07": {
+        "tiktok": 0.7389306059036769,
+        "instagram": 0.68270135394936,
+        "youtube_shorts": 0.6276278284125698,
+        "facebook": 0.5548253920445643,
+        "linkedin": 0.5536348685704939
+      },
+      "S08": {
+        "tiktok": 0.43565510098394616,
+        "instagram": 0.41811537884675704,
+        "youtube_shorts": 0.41472358095506207,
+        "facebook": 0.3682686149863018,
+        "linkedin": 0.4926902843020561
+      },
+      "S09": {
+        "tiktok": 1.3273562920766442,
+        "instagram": 1.3769242306486142,
+        "youtube_shorts": 1.4248548404124288,
+        "facebook": 1.6137374179897077,
+        "linkedin": 1.399090487829255
+      },
+      "S10": {
+        "tiktok": 1.355515277058519,
+        "instagram": 1.4151020575121696,
+        "youtube_shorts": 1.2645669845515006,
+        "facebook": 1.3852799036184165,
+        "linkedin": 1.305776901480115
+      },
+      "S11": {
+        "tiktok": 1.4963102019678924,
+        "instagram": 1.436440735741264,
+        "youtube_shorts": 1.5669634373790333,
+        "facebook": 1.6605363355223026,
+        "linkedin": 1.4932218173888547
+      },
+      "S12": {
+        "tiktok": 1.1381192818919386,
+        "instagram": 1.1462210768874166,
+        "youtube_shorts": 1.3313720660168207,
+        "facebook": 1.3674973797778172,
+        "linkedin": 1.321109586676237
+      },
+      "S13": {
+        "tiktok": 0.614750561021923,
+        "instagram": 0.7150843320925542,
+        "youtube_shorts": 0.8850934299890908,
+        "facebook": 0.94934186407702,
+        "linkedin": 1.0016900026349502
+      },
+      "S14": {
+        "tiktok": 0.9564344899016054,
+        "instagram": 0.9880557941669738,
+        "youtube_shorts": 1.1686455290847024,
+        "facebook": 1.2720361065856185,
+        "linkedin": 1.2983490673184381
+      },
+      "S15": {
+        "tiktok": 0.830096668392888,
+        "instagram": 0.8362989323843418,
+        "youtube_shorts": 0.8820635535067035,
+        "facebook": 0.7834426296838848,
+        "linkedin": 1.0139788658810271
+      },
+      "S16": {
+        "tiktok": 0.6697738650094943,
+        "instagram": 0.6994041532021654,
+        "youtube_shorts": 0.7808952387655275,
+        "facebook": 0.7303080225194596,
+        "linkedin": 0.9272526553939249
+      },
+      "S17": {
+        "tiktok": 0.5561669255998619,
+        "instagram": 0.5596460370052223,
+        "youtube_shorts": 0.5756026322271879,
+        "facebook": 0.5482234969660185,
+        "linkedin": 0.5960212249793292
+      },
+      "S18": {
+        "tiktok": 0.9755308130502331,
+        "instagram": 0.988260318239457,
+        "youtube_shorts": 0.9027553928986168,
+        "facebook": 0.8316790566287438,
+        "linkedin": 0.8179476462624592
+      },
+      "S19": {
+        "tiktok": 0.9989426894527879,
+        "instagram": 1.0355735536739343,
+        "youtube_shorts": 1.123197381848893,
+        "facebook": 1.1315328718091475,
+        "linkedin": 1.0928910856904022
+      },
+      "S20": {
+        "tiktok": 1.1387666148800277,
+        "instagram": 1.2210768874163158,
+        "youtube_shorts": 1.320065453777668,
+        "facebook": 1.254147100566333,
+        "linkedin": 1.329423309315912
+      },
+      "S21": {
+        "tiktok": 0.8579319868807181,
+        "instagram": 0.8612508692273083,
+        "youtube_shorts": 0.8939613611570537,
+        "facebook": 0.9864509033491687,
+        "linkedin": 0.9105570648470366
+      },
+      "S22": {
+        "tiktok": 1.5874762644571037,
+        "instagram": 1.507955986419602,
+        "youtube_shorts": 1.4724460710138294,
+        "facebook": 1.645788553774261,
+        "linkedin": 1.3774202927520691
+      },
+      "S23": {
+        "tiktok": 0.9974322458139134,
+        "instagram": 1.0072128822895792,
+        "youtube_shorts": 0.9763592215927083,
+        "facebook": 1.0917085369805,
+        "linkedin": 1.0155007768560498
+      },
+      "S24": {
+        "tiktok": 0.751014155014673,
+        "instagram": 0.6760884089390656,
+        "youtube_shorts": 0.5606010486680507,
+        "facebook": 0.48561197589851945,
+        "linkedin": 0.5160641110677
+      },
+      "S25": {
+        "tiktok": 0.991174693595719,
+        "instagram": 1.0575939788113062,
+        "youtube_shorts": 1.1962100151317872,
+        "facebook": 1.2786380016641643,
+        "linkedin": 1.2461725074732641
+      },
+      "S26": {
+        "tiktok": 0.7848912480580011,
+        "instagram": 0.8538198279270806,
+        "youtube_shorts": 1.0902382376746311,
+        "facebook": 1.1711442422804224,
+        "linkedin": 1.0727200864990594
+      },
+      "S27": {
+        "tiktok": 0.7718366994648715,
+        "instagram": 0.778145921108248,
+        "youtube_shorts": 0.8229440123869513,
+        "facebook": 0.8759224018728694,
+        "linkedin": 0.9519439573319765
+      },
+      "S28": {
+        "tiktok": 1.331456067667875,
+        "instagram": 1.3247024174745372,
+        "youtube_shorts": 1.1962839145581867,
+        "facebook": 1.4889935456587975,
+        "linkedin": 1.152018462824485
+      },
+      "S29": {
+        "tiktok": 1.2420162264802348,
+        "instagram": 1.2863882412293264,
+        "youtube_shorts": 1.3893092163141778,
+        "facebook": 1.33725644103093,
+        "linkedin": 1.4535385565923729
+      },
+      "S30": {
+        "tiktok": 1.040048334196444,
+        "instagram": 1.1095430932220725,
+        "youtube_shorts": 1.1851990005982331,
+        "facebook": 1.2799157878083989,
+        "linkedin": 1.1709628472001379
+      },
+      "S31": {
+        "tiktok": 0.7034351803901261,
+        "instagram": 0.7208791808129151,
+        "youtube_shorts": 0.7678889397191819,
+        "facebook": 0.7696531875440189,
+        "linkedin": 0.7862146666787813
+      },
+      "S32": {
+        "tiktok": 0.6924305195926118,
+        "instagram": 0.7186975907064264,
+        "youtube_shorts": 0.7811169370447265,
+        "facebook": 0.6747243252452513,
+        "linkedin": 0.7152527280822103
+      },
+      "S33": {
+        "tiktok": 0.68779129984464,
+        "instagram": 0.6455461474482215,
+        "youtube_shorts": 0.5567582784952667,
+        "facebook": 0.5436980043718541,
+        "linkedin": 0.5609945574646326
+      },
+      "S34": {
+        "tiktok": 1.851480234766097,
+        "instagram": 1.769201401671644,
+        "youtube_shorts": 1.6549776542210646,
+        "facebook": 1.8721164245718276,
+        "linkedin": 1.534881290943948
+      },
+      "S35": {
+        "tiktok": 1.1284092870706026,
+        "instagram": 1.0593665207728287,
+        "youtube_shorts": 0.7717317098919659,
+        "facebook": 0.7005994946660035,
+        "linkedin": 0.7327206316611997
+      },
+      "S36": {
+        "tiktok": 1.0057396858277232,
+        "instagram": 0.9333796921230965,
+        "youtube_shorts": 0.8324770383925114,
+        "facebook": 0.8304012704845092,
+        "linkedin": 0.775674865299521
+      },
+      "S37": {
+        "tiktok": 0.7319178318660453,
+        "instagram": 0.6823604804952211,
+        "youtube_shorts": 0.6385649435197239,
+        "facebook": 0.5532281593642709,
+        "linkedin": 0.6325016582015099
+      },
+      "S38": {
+        "tiktok": 1.063460210598999,
+        "instagram": 0.9341977884130299,
+        "youtube_shorts": 0.7773480662983424,
+        "facebook": 0.7239190917982862,
+        "linkedin": 0.7219991095685041
+      },
+      "S39": {
+        "tiktok": 0.6548852062834456,
+        "instagram": 0.5824845584325277,
+        "youtube_shorts": 0.5303761832705773,
+        "facebook": 0.39275951608413306,
+        "linkedin": 0.47862964409998265
+      },
+      "S40": {
+        "tiktok": 0.5890730191610566,
+        "instagram": 0.5269221854078894,
+        "youtube_shorts": 0.48470633775556876,
+        "facebook": 0.43221116328737863,
+        "linkedin": 0.4696344687849244
+      },
+      "S41": {
+        "tiktok": 0.5870231313654412,
+        "instagram": 0.5796893961085888,
+        "youtube_shorts": 0.5892001266847309,
+        "facebook": 0.548436461323391,
+        "linkedin": 0.6515369029338808
+      },
+      "S42": {
+        "tiktok": 1.0478163300535128,
+        "instagram": 0.9507642382841797,
+        "youtube_shorts": 0.7143857550058063,
+        "facebook": 0.6670043672905,
+        "linkedin": 0.6504238635640882
+      },
+      "S43": {
+        "tiktok": 0.5597272570343519,
+        "instagram": 0.5228998786490505,
+        "youtube_shorts": 0.500151317873104,
+        "facebook": 0.42896345683744885,
+        "linkedin": 0.5171317202591337
+      },
+      "S44": {
+        "tiktok": 1.308475746590713,
+        "instagram": 1.3397008494566482,
+        "youtube_shorts": 1.237741492768413,
+        "facebook": 1.202982413707603,
+        "linkedin": 1.2392898354518938
+      },
+      "S45": {
+        "tiktok": 0.6926462972553082,
+        "instagram": 0.7276966498956928,
+        "youtube_shorts": 0.8066122391526197,
+        "facebook": 0.8378017819032016,
+        "linkedin": 0.9064002035271989
+      },
+      "S46": {
+        "tiktok": 0.7712972553081305,
+        "instagram": 0.7825772760120535,
+        "youtube_shorts": 0.7845902100855121,
+        "facebook": 0.8124590233758806,
+        "linkedin": 0.8601295668686794
+      },
+      "S47": {
+        "tiktok": 0.9296780597272571,
+        "instagram": 0.8828622462197137,
+        "youtube_shorts": 0.8440792483372628,
+        "facebook": 1.0120598673232053,
+        "linkedin": 0.7838068672257607
+      },
+      "S48": {
+        "tiktok": 1.1506343863283275,
+        "instagram": 1.0064629606904736,
+        "youtube_shorts": 0.8646971883027762,
+        "facebook": 0.8662325236124231,
+        "linkedin": 0.7146621357635449
+      },
+      "S49": {
+        "tiktok": 0.48927585016399106,
+        "instagram": 0.4911304727233064,
+        "youtube_shorts": 0.4932786712179328,
+        "facebook": 0.4348199766651911,
+        "linkedin": 0.5576781544444342
+      },
+      "S50": {
+        "tiktok": 0.6777576385292595,
+        "instagram": 0.5978920385596053,
+        "youtube_shorts": 0.5453038674033148,
+        "facebook": 0.4491418296984881,
+        "linkedin": 0.49389418402856644
+      },
+      "S51": {
+        "tiktok": 0.9264413947868118,
+        "instagram": 0.8147557300827644,
+        "youtube_shorts": 0.7290178414329449,
+        "facebook": 0.6261684517643336,
+        "linkedin": 0.7375362305672412
+      },
+      "S52": {
+        "tiktok": 1.1473977213878819,
+        "instagram": 1.1688550742422386,
+        "youtube_shorts": 1.1265967554632788,
+        "facebook": 1.137069945100831,
+        "linkedin": 1.1009549423491034
+      },
+      "S53": {
+        "tiktok": 1.0048765751769377,
+        "instagram": 1.0360507765097289,
+        "youtube_shorts": 1.128222542844072,
+        "facebook": 1.1584728630167618,
+        "linkedin": 1.1901570975567648
+      },
+      "S54": {
+        "tiktok": 0.8767046435353013,
+        "instagram": 0.796825786395059,
+        "youtube_shorts": 0.7672238448815848,
+        "facebook": 0.7793963068938083,
+        "linkedin": 0.7970724793065536
+      },
+      "S55": {
+        "tiktok": 0.7351544968064907,
+        "instagram": 0.757352640405776,
+        "youtube_shorts": 0.7609423936376112,
+        "facebook": 0.8527092869192727,
+        "linkedin": 0.7628862700914962
+      },
+      "S56": {
+        "tiktok": 1.0537502157776628,
+        "instagram": 1.0183935315853345,
+        "youtube_shorts": 0.9505683217792165,
+        "facebook": 0.9052582421009238,
+        "linkedin": 0.9069680807566849
+      },
+      "S57": {
+        "tiktok": 1.0246202313136545,
+        "instagram": 1.0328465660408233,
+        "youtube_shorts": 1.0898687405426328,
+        "facebook": 1.0454952714306793,
+        "linkedin": 1.1528816362133036
+      },
+      "S58": {
+        "tiktok": 0.9847013637148283,
+        "instagram": 0.9785795121419127,
+        "youtube_shorts": 1.0411690185452367,
+        "facebook": 1.0847871953658956,
+        "linkedin": 1.0065056015409914
+      },
+      "S59": {
+        "tiktok": 0.6374072156050407,
+        "instagram": 0.6072319712030108,
+        "youtube_shorts": 0.5846922616743497,
+        "facebook": 0.550832310343831,
+        "linkedin": 0.6361133573810409
+      },
+      "S60": {
+        "tiktok": 0.7907172449508028,
+        "instagram": 0.7186294160155986,
+        "youtube_shorts": 0.6638385473484181,
+        "facebook": 0.5561564192781421,
+        "linkedin": 0.6612362460135017
+      }
+    },
+    "total_rel_score": 116.01372579955735,
+    "swaps": 7,
+    "platform_mean_reach": {
+      "tiktok": 0.9268799999999999,
+      "instagram": 1.4668199999999996,
+      "youtube_shorts": 1.3531904761904765,
+      "facebook": 1.8782485714285715,
+      "linkedin": 4.402360000000001
+    },
+    "schedule": [
+      {
+        "day": 1,
+        "platform": "tiktok",
+        "slot": 1,
+        "item": "P1",
+        "provisional_cutdown": false,
+        "company": "Arup deepfake",
+        "format_family": "\"the named number\" format",
+        "score_rel": 1.974,
+        "icp_reach_index": 1.8298,
+        "writer_suggested": "Instagram Reels / TikTok, 9:16. **Target:** ~50s."
+      },
+      {
+        "day": 1,
+        "platform": "tiktok",
+        "slot": 2,
+        "item": "S07",
+        "provisional_cutdown": false,
+        "company": "Ocado",
+        "format_family": "F2",
+        "score_rel": 0.739,
+        "icp_reach_index": 0.6849,
+        "writer_suggested": "YouTube Shorts + LinkedIn (logistics, manufacturing)"
+      },
+      {
+        "day": 1,
+        "platform": "tiktok",
+        "slot": 3,
+        "item": "S48",
+        "provisional_cutdown": false,
+        "company": "DPD",
+        "format_family": "0x100x named-number reel",
+        "score_rel": 1.151,
+        "icp_reach_index": 1.0665,
+        "writer_suggested": "YouTube Shorts + LinkedIn"
+      },
+      {
+        "day": 2,
+        "platform": "tiktok",
+        "slot": 1,
+        "item": "S40",
+        "provisional_cutdown": false,
+        "company": "Brex (and OpenAI)",
+        "format_family": "0x100x named-number reel",
+        "score_rel": 0.589,
+        "icp_reach_index": 0.546,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 2,
+        "platform": "tiktok",
+        "slot": 2,
+        "item": "P3",
+        "provisional_cutdown": false,
+        "company": "Octopus Energy",
+        "format_family": "\"hidden number",
+        "score_rel": 1.35,
+        "icp_reach_index": 1.251,
+        "writer_suggested": "LinkedIn / Facebook, 9:16 (also 4:5 crop). **Target:** ~48s."
+      },
+      {
+        "day": 2,
+        "platform": "tiktok",
+        "slot": 3,
+        "item": "S51",
+        "provisional_cutdown": false,
+        "company": "Lumen Technologies",
+        "format_family": "greg how-to",
+        "score_rel": 0.926,
+        "icp_reach_index": 0.8587,
+        "writer_suggested": "LinkedIn"
+      },
+      {
+        "day": 3,
+        "platform": "tiktok",
+        "slot": 1,
+        "item": "C03",
+        "provisional_cutdown": false,
+        "company": "Arup cutdown (The hidden system)",
+        "format_family": "0x100x hidden system reveal",
+        "score_rel": 1.712,
+        "icp_reach_index": 1.5872,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 3,
+        "platform": "tiktok",
+        "slot": 2,
+        "item": "S24",
+        "provisional_cutdown": false,
+        "company": "BT Group (EE)",
+        "format_family": "F5",
+        "score_rel": 0.751,
+        "icp_reach_index": 0.6961,
+        "writer_suggested": "LinkedIn + YouTube Shorts (any firm with a busy inbox or phone line)"
+      },
+      {
+        "day": 3,
+        "platform": "tiktok",
+        "slot": 3,
+        "item": "S35",
+        "provisional_cutdown": false,
+        "company": "Intercom",
+        "format_family": "x",
+        "score_rel": 1.128,
+        "icp_reach_index": 1.0459,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 4,
+        "platform": "tiktok",
+        "slot": 1,
+        "item": "S39",
+        "provisional_cutdown": false,
+        "company": "Mercado Libre (Mercado Pago)",
+        "format_family": "hidden number",
+        "score_rel": 0.655,
+        "icp_reach_index": 0.607,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 4,
+        "platform": "tiktok",
+        "slot": 2,
+        "item": "C17",
+        "provisional_cutdown": false,
+        "company": "Klarna cutdown (The mechanism)",
+        "format_family": "F8",
+        "score_rel": 1.308,
+        "icp_reach_index": 1.2119,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 4,
+        "platform": "tiktok",
+        "slot": 3,
+        "item": "C18",
+        "provisional_cutdown": false,
+        "company": "Klarna cutdown (The scoreboard moment and why you can't copy it)",
+        "format_family": "0x100x named stakes open",
+        "score_rel": 1.005,
+        "icp_reach_index": 0.9315,
+        "writer_suggested": "YouTube Shorts + Facebook Reels"
+      },
+      {
+        "day": 5,
+        "platform": "tiktok",
+        "slot": 1,
+        "item": "P2",
+        "provisional_cutdown": false,
+        "company": "Builder.ai",
+        "format_family": "\"corporate collapse",
+        "score_rel": 1.671,
+        "icp_reach_index": 1.5487,
+        "writer_suggested": "YouTube Shorts, 9:16. **Target:** ~52s."
+      },
+      {
+        "day": 5,
+        "platform": "tiktok",
+        "slot": 2,
+        "item": "S60",
+        "provisional_cutdown": false,
+        "company": "JPMorgan",
+        "format_family": "build-in-public reveal",
+        "score_rel": 0.791,
+        "icp_reach_index": 0.7329,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 5,
+        "platform": "tiktok",
+        "slot": 3,
+        "item": "S38",
+        "provisional_cutdown": false,
+        "company": "DHL",
+        "format_family": "mechanism",
+        "score_rel": 1.063,
+        "icp_reach_index": 0.9857,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 6,
+        "platform": "tiktok",
+        "slot": 1,
+        "item": "S50",
+        "provisional_cutdown": false,
+        "company": "Walmart",
+        "format_family": "greg how-to",
+        "score_rel": 0.678,
+        "icp_reach_index": 0.6282,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 6,
+        "platform": "tiktok",
+        "slot": 2,
+        "item": "C07",
+        "provisional_cutdown": false,
+        "company": "Octopus Energy cutdown (The number that matters in the 2026 trial)",
+        "format_family": "0x100x named stakes open",
+        "score_rel": 1.292,
+        "icp_reach_index": 1.1978,
+        "writer_suggested": "LinkedIn + Instagram Reels"
+      },
+      {
+        "day": 6,
+        "platform": "tiktok",
+        "slot": 3,
+        "item": "S36",
+        "provisional_cutdown": false,
+        "company": "Humane",
+        "format_family": "corporate collapse",
+        "score_rel": 1.006,
+        "icp_reach_index": 0.9322,
+        "writer_suggested": "YouTube Shorts + TikTok"
+      },
+      {
+        "day": 7,
+        "platform": "tiktok",
+        "slot": 1,
+        "item": "C13",
+        "provisional_cutdown": false,
+        "company": "Klarna cutdown (The claim with no score)",
+        "format_family": "F3",
+        "score_rel": 1.554,
+        "icp_reach_index": 1.4407,
+        "writer_suggested": "LinkedIn + Instagram Reels"
+      },
+      {
+        "day": 7,
+        "platform": "tiktok",
+        "slot": 2,
+        "item": "S54",
+        "provisional_cutdown": false,
+        "company": "iTutorGroup (EEOC case)",
+        "format_family": "corporate scandal exposed",
+        "score_rel": 0.877,
+        "icp_reach_index": 0.8126,
+        "writer_suggested": "LinkedIn"
+      },
+      {
+        "day": 7,
+        "platform": "tiktok",
+        "slot": 3,
+        "item": "S42",
+        "provisional_cutdown": false,
+        "company": "Salesforce",
+        "format_family": "hot take",
+        "score_rel": 1.048,
+        "icp_reach_index": 0.9712,
+        "writer_suggested": "LinkedIn + TikTok"
+      },
+      {
+        "day": 1,
+        "platform": "instagram",
+        "slot": 1,
+        "item": "S10",
+        "provisional_cutdown": false,
+        "company": "Harrods",
+        "format_family": "0x100x hidden system reveal: 0x100x hidden layer",
+        "score_rel": 1.415,
+        "icp_reach_index": 2.0757,
+        "writer_suggested": "Instagram Reels + LinkedIn (any firm using suppliers for e-commerce)"
+      },
+      {
+        "day": 1,
+        "platform": "instagram",
+        "slot": 2,
+        "item": "S33",
+        "provisional_cutdown": false,
+        "company": "Unilever",
+        "format_family": "corporate scandal exposed",
+        "score_rel": 0.646,
+        "icp_reach_index": 0.9469,
+        "writer_suggested": "LinkedIn + Instagram Reels"
+      },
+      {
+        "day": 1,
+        "platform": "instagram",
+        "slot": 3,
+        "item": "C08",
+        "provisional_cutdown": false,
+        "company": "Octopus Energy cutdown (A character's quote)",
+        "format_family": "F10",
+        "score_rel": 1.066,
+        "icp_reach_index": 1.5631,
+        "writer_suggested": "LinkedIn + Instagram Reels"
+      },
+      {
+        "day": 2,
+        "platform": "instagram",
+        "slot": 1,
+        "item": "S43",
+        "provisional_cutdown": false,
+        "company": "Microsoft (and Meta)",
+        "format_family": "0x100x named-number reel",
+        "score_rel": 0.523,
+        "icp_reach_index": 0.767,
+        "writer_suggested": "YouTube Shorts + TikTok"
+      },
+      {
+        "day": 2,
+        "platform": "instagram",
+        "slot": 2,
+        "item": "C09",
+        "provisional_cutdown": false,
+        "company": "Octopus Energy cutdown (The rulebook)",
+        "format_family": "F2",
+        "score_rel": 0.665,
+        "icp_reach_index": 0.9751,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 2,
+        "platform": "instagram",
+        "slot": 3,
+        "item": "C32",
+        "provisional_cutdown": false,
+        "company": "Builder.ai, The Concept",
+        "format_family": "economic mechanism",
+        "score_rel": 0.924,
+        "icp_reach_index": 1.3556,
+        "writer_suggested": "LinkedIn + Instagram Reels (owners being sold 'AI-powered' services)"
+      },
+      {
+        "day": 3,
+        "platform": "instagram",
+        "slot": 1,
+        "item": "S44",
+        "provisional_cutdown": false,
+        "company": "MIT (NANDA initiative report)",
+        "format_family": "mechanism",
+        "score_rel": 1.34,
+        "icp_reach_index": 1.9651,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 3,
+        "platform": "instagram",
+        "slot": 2,
+        "item": "S52",
+        "provisional_cutdown": false,
+        "company": "Delta Air Lines / CrowdStrike",
+        "format_family": "0x100x named-number reel",
+        "score_rel": 1.169,
+        "icp_reach_index": 1.7145,
+        "writer_suggested": "YouTube Shorts + TikTok"
+      },
+      {
+        "day": 3,
+        "platform": "instagram",
+        "slot": 3,
+        "item": "S56",
+        "provisional_cutdown": false,
+        "company": "Google (Bard)",
+        "format_family": "headline-as-proof news",
+        "score_rel": 1.018,
+        "icp_reach_index": 1.4938,
+        "writer_suggested": "YouTube Shorts + LinkedIn"
+      },
+      {
+        "day": 4,
+        "platform": "instagram",
+        "slot": 1,
+        "item": "S59",
+        "provisional_cutdown": false,
+        "company": "IBM",
+        "format_family": "0x100x named-number reel",
+        "score_rel": 0.607,
+        "icp_reach_index": 0.8907,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 4,
+        "platform": "instagram",
+        "slot": 2,
+        "item": "C33",
+        "provisional_cutdown": false,
+        "company": "Builder.ai, The Quote",
+        "format_family": "0x100x 'when x and y show up",
+        "score_rel": 1.164,
+        "icp_reach_index": 1.707,
+        "writer_suggested": "Instagram Reels + TikTok"
+      },
+      {
+        "day": 4,
+        "platform": "instagram",
+        "slot": 3,
+        "item": "S18",
+        "provisional_cutdown": false,
+        "company": "Wimbledon (All England Club)",
+        "format_family": "0x100x hidden system reveal: 0x100x 'the newest customer isn't human'",
+        "score_rel": 0.988,
+        "icp_reach_index": 1.4496,
+        "writer_suggested": "Instagram Reels + TikTok (broad), YouTube Shorts"
+      },
+      {
+        "day": 5,
+        "platform": "instagram",
+        "slot": 1,
+        "item": "C31",
+        "provisional_cutdown": false,
+        "company": "Builder.ai, The Number",
+        "format_family": "hidden number",
+        "score_rel": 1.301,
+        "icp_reach_index": 1.9082,
+        "writer_suggested": "LinkedIn + Facebook Reels (owners who pay suppliers up front)"
+      },
+      {
+        "day": 5,
+        "platform": "instagram",
+        "slot": 2,
+        "item": "S03",
+        "provisional_cutdown": false,
+        "company": "British Chambers of Commerce",
+        "format_family": "F8",
+        "score_rel": 1.102,
+        "icp_reach_index": 1.6163,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 5,
+        "platform": "instagram",
+        "slot": 3,
+        "item": "C15",
+        "provisional_cutdown": false,
+        "company": "Klarna cutdown (A character's quote)",
+        "format_family": "F10",
+        "score_rel": 1.0,
+        "icp_reach_index": 1.4666,
+        "writer_suggested": "TikTok + LinkedIn"
+      },
+      {
+        "day": 6,
+        "platform": "instagram",
+        "slot": 1,
+        "item": "S01",
+        "provisional_cutdown": false,
+        "company": "John Lewis",
+        "format_family": "0x100x named stakes open: 0x100x named-authority",
+        "score_rel": 0.639,
+        "icp_reach_index": 0.9375,
+        "writer_suggested": "Instagram Reels + TikTok (retail audience); LinkedIn cut for marketing directors"
+      },
+      {
+        "day": 6,
+        "platform": "instagram",
+        "slot": 2,
+        "item": "S37",
+        "provisional_cutdown": false,
+        "company": "Bank of America (Erica)",
+        "format_family": "hidden number",
+        "score_rel": 0.682,
+        "icp_reach_index": 1.0009,
+        "writer_suggested": "LinkedIn + Instagram Reels"
+      },
+      {
+        "day": 6,
+        "platform": "instagram",
+        "slot": 3,
+        "item": "C14",
+        "provisional_cutdown": false,
+        "company": "Klarna cutdown (The twist)",
+        "format_family": "0x100x hidden system reveal",
+        "score_rel": 0.989,
+        "icp_reach_index": 1.4505,
+        "writer_suggested": "YouTube Shorts + TikTok"
+      },
+      {
+        "day": 7,
+        "platform": "instagram",
+        "slot": 1,
+        "item": "C16",
+        "provisional_cutdown": false,
+        "company": "Klarna cutdown (The number that matters)",
+        "format_family": "F4",
+        "score_rel": 1.24,
+        "icp_reach_index": 1.8191,
+        "writer_suggested": "Facebook Reels + YouTube Shorts"
+      },
+      {
+        "day": 7,
+        "platform": "instagram",
+        "slot": 2,
+        "item": "C35",
+        "provisional_cutdown": false,
+        "company": "Builder.ai, The Open Question",
+        "format_family": "0x100x one-word open",
+        "score_rel": 0.786,
+        "icp_reach_index": 1.1536,
+        "writer_suggested": "TikTok + YouTube Shorts (comment-driving open loop)"
+      },
+      {
+        "day": 7,
+        "platform": "instagram",
+        "slot": 3,
+        "item": "C25",
+        "provisional_cutdown": false,
+        "company": "M&S, The Incident",
+        "format_family": "question",
+        "score_rel": 0.99,
+        "icp_reach_index": 1.4526,
+        "writer_suggested": "YouTube Shorts + TikTok (broad, consumer-recognisable brand)"
+      },
+      {
+        "day": 1,
+        "platform": "youtube_shorts",
+        "slot": 1,
+        "item": "C02",
+        "provisional_cutdown": false,
+        "company": "Arup cutdown (A character's quote)",
+        "format_family": "F10",
+        "score_rel": 1.409,
+        "icp_reach_index": 1.9063,
+        "writer_suggested": "TikTok + Instagram Reels"
+      },
+      {
+        "day": 1,
+        "platform": "youtube_shorts",
+        "slot": 2,
+        "item": "C10",
+        "provisional_cutdown": false,
+        "company": "Octopus Energy cutdown (The twist)",
+        "format_family": "0x100x hidden system reveal",
+        "score_rel": 0.758,
+        "icp_reach_index": 1.0253,
+        "writer_suggested": "YouTube Shorts + LinkedIn"
+      },
+      {
+        "day": 1,
+        "platform": "youtube_shorts",
+        "slot": 3,
+        "item": "C22",
+        "provisional_cutdown": false,
+        "company": "Deloitte cutdown (The number that matters)",
+        "format_family": "F4",
+        "score_rel": 1.157,
+        "icp_reach_index": 1.5654,
+        "writer_suggested": "Facebook Reels + LinkedIn"
+      },
+      {
+        "day": 2,
+        "platform": "youtube_shorts",
+        "slot": 1,
+        "item": "S06",
+        "provisional_cutdown": false,
+        "company": "NHS England (Brainomix 360 Stroke)",
+        "format_family": "0x100x named stakes open: 0x100x named-authority",
+        "score_rel": 0.488,
+        "icp_reach_index": 0.6597,
+        "writer_suggested": "LinkedIn + Instagram Reels (clinics, vets, professional services)"
+      },
+      {
+        "day": 2,
+        "platform": "youtube_shorts",
+        "slot": 2,
+        "item": "S20",
+        "provisional_cutdown": false,
+        "company": "Birmingham City Council",
+        "format_family": "F1",
+        "score_rel": 1.32,
+        "icp_reach_index": 1.7863,
+        "writer_suggested": "LinkedIn (MDs, finance directors planning ERP or CRM changes) + YouTube Shorts"
+      },
+      {
+        "day": 2,
+        "platform": "youtube_shorts",
+        "slot": 3,
+        "item": "S53",
+        "provisional_cutdown": false,
+        "company": "Levidow, Levidow & Oberman (Mata v Avianca)",
+        "format_family": "narrative case story",
+        "score_rel": 1.128,
+        "icp_reach_index": 1.5267,
+        "writer_suggested": "LinkedIn + TikTok"
+      },
+      {
+        "day": 3,
+        "platform": "youtube_shorts",
+        "slot": 1,
+        "item": "C04",
+        "provisional_cutdown": false,
+        "company": "Arup cutdown (The number that matters)",
+        "format_family": "F4",
+        "score_rel": 1.358,
+        "icp_reach_index": 1.8375,
+        "writer_suggested": "YouTube Shorts + Facebook Reels"
+      },
+      {
+        "day": 3,
+        "platform": "youtube_shorts",
+        "slot": 2,
+        "item": "S31",
+        "provisional_cutdown": false,
+        "company": "BT",
+        "format_family": "hidden number",
+        "score_rel": 0.768,
+        "icp_reach_index": 1.0391,
+        "writer_suggested": "YouTube Shorts + LinkedIn (UK business audience)"
+      },
+      {
+        "day": 3,
+        "platform": "youtube_shorts",
+        "slot": 3,
+        "item": "S05",
+        "provisional_cutdown": false,
+        "company": "Asda",
+        "format_family": "F1",
+        "score_rel": 0.858,
+        "icp_reach_index": 1.161,
+        "writer_suggested": "YouTube Shorts + LinkedIn (ops and finance directors)"
+      },
+      {
+        "day": 4,
+        "platform": "youtube_shorts",
+        "slot": 1,
+        "item": "S17",
+        "provisional_cutdown": false,
+        "company": "Adzuna / Indeed (UK entry-level jobs)",
+        "format_family": "F4",
+        "score_rel": 0.576,
+        "icp_reach_index": 0.7789,
+        "writer_suggested": "LinkedIn + TikTok"
+      },
+      {
+        "day": 4,
+        "platform": "youtube_shorts",
+        "slot": 2,
+        "item": "C05",
+        "provisional_cutdown": false,
+        "company": "Arup cutdown (The blame question)",
+        "format_family": "F8",
+        "score_rel": 1.302,
+        "icp_reach_index": 1.7618,
+        "writer_suggested": "LinkedIn + Facebook Reels"
+      },
+      {
+        "day": 4,
+        "platform": "youtube_shorts",
+        "slot": 3,
+        "item": "C28",
+        "provisional_cutdown": false,
+        "company": "M&S, The Number",
+        "format_family": "'remember x?' then the number and 'what happened'",
+        "score_rel": 0.97,
+        "icp_reach_index": 1.3125,
+        "writer_suggested": "LinkedIn + YouTube Shorts (finance-minded owners and MDs)"
+      },
+      {
+        "day": 5,
+        "platform": "youtube_shorts",
+        "slot": 1,
+        "item": "C39",
+        "provisional_cutdown": false,
+        "company": "Post Office Horizon, The Twist",
+        "format_family": "0x100x 'when x",
+        "score_rel": 1.339,
+        "icp_reach_index": 1.8118,
+        "writer_suggested": "LinkedIn + YouTube Shorts (owners who rely on supplier-run systems)"
+      },
+      {
+        "day": 5,
+        "platform": "youtube_shorts",
+        "slot": 2,
+        "item": "C12",
+        "provisional_cutdown": false,
+        "company": "Octopus Energy cutdown (The jobs question)",
+        "format_family": "0x100x named-authority open",
+        "score_rel": 0.774,
+        "icp_reach_index": 1.0469,
+        "writer_suggested": "Facebook Reels + LinkedIn"
+      },
+      {
+        "day": 5,
+        "platform": "youtube_shorts",
+        "slot": 3,
+        "item": "S19",
+        "provisional_cutdown": false,
+        "company": "Barclays",
+        "format_family": "F2",
+        "score_rel": 1.123,
+        "icp_reach_index": 1.5199,
+        "writer_suggested": "YouTube Shorts + LinkedIn"
+      },
+      {
+        "day": 6,
+        "platform": "youtube_shorts",
+        "slot": 1,
+        "item": "S41",
+        "provisional_cutdown": false,
+        "company": "Amazon",
+        "format_family": "0x100x named-number reel",
+        "score_rel": 0.589,
+        "icp_reach_index": 0.7973,
+        "writer_suggested": "YouTube Shorts + LinkedIn"
+      },
+      {
+        "day": 6,
+        "platform": "youtube_shorts",
+        "slot": 2,
+        "item": "C06",
+        "provisional_cutdown": false,
+        "company": "Arup cutdown (The open question)",
+        "format_family": "0x100x named stakes open",
+        "score_rel": 1.217,
+        "icp_reach_index": 1.6465,
+        "writer_suggested": "YouTube Shorts + TikTok"
+      },
+      {
+        "day": 6,
+        "platform": "youtube_shorts",
+        "slot": 3,
+        "item": "S58",
+        "provisional_cutdown": false,
+        "company": "MGM Resorts",
+        "format_family": "clever exploit",
+        "score_rel": 1.041,
+        "icp_reach_index": 1.4089,
+        "writer_suggested": "YouTube Shorts + TikTok"
+      },
+      {
+        "day": 7,
+        "platform": "youtube_shorts",
+        "slot": 1,
+        "item": "S12",
+        "provisional_cutdown": false,
+        "company": "Capita",
+        "format_family": "F8",
+        "score_rel": 1.331,
+        "icp_reach_index": 1.8016,
+        "writer_suggested": "LinkedIn (MDs, ops directors, anyone with an outsourced IT or admin provider) + YouTube Shorts"
+      },
+      {
+        "day": 7,
+        "platform": "youtube_shorts",
+        "slot": 2,
+        "item": "S32",
+        "provisional_cutdown": false,
+        "company": "NATS (UK air traffic control)",
+        "format_family": "0x100x named-number reel",
+        "score_rel": 0.781,
+        "icp_reach_index": 1.057,
+        "writer_suggested": "YouTube Shorts + TikTok"
+      },
+      {
+        "day": 7,
+        "platform": "youtube_shorts",
+        "slot": 3,
+        "item": "C40",
+        "provisional_cutdown": false,
+        "company": "Post Office Horizon, The Number Twist",
+        "format_family": "comparison index reveal",
+        "score_rel": 1.096,
+        "icp_reach_index": 1.4834,
+        "writer_suggested": "LinkedIn + Facebook Reels (MDs who settle disputes)"
+      },
+      {
+        "day": 1,
+        "platform": "facebook",
+        "slot": 1,
+        "item": "S34",
+        "provisional_cutdown": false,
+        "company": "UK energy firm (unnamed) / insurer Euler Hermes",
+        "format_family": "clever exploit",
+        "score_rel": 1.872,
+        "icp_reach_index": 3.5163,
+        "writer_suggested": "TikTok + Instagram Reels"
+      },
+      {
+        "day": 1,
+        "platform": "facebook",
+        "slot": 2,
+        "item": "S47",
+        "provisional_cutdown": false,
+        "company": "FBA Machine (FTC case)",
+        "format_family": "build-in-public reveal",
+        "score_rel": 1.012,
+        "icp_reach_index": 1.9009,
+        "writer_suggested": "TikTok + YouTube Shorts"
+      },
+      {
+        "day": 1,
+        "platform": "facebook",
+        "slot": 3,
+        "item": "S04",
+        "provisional_cutdown": false,
+        "company": "Lloyds Banking Group",
+        "format_family": "F7",
+        "score_rel": 1.569,
+        "icp_reach_index": 2.9466,
+        "writer_suggested": "Facebook Reels + Instagram Reels (older owner audience), YouTube Shorts"
+      },
+      {
+        "day": 2,
+        "platform": "facebook",
+        "slot": 1,
+        "item": "S55",
+        "provisional_cutdown": false,
+        "company": "Rite Aid (FTC order)",
+        "format_family": "mechanism",
+        "score_rel": 0.853,
+        "icp_reach_index": 1.6016,
+        "writer_suggested": "TikTok + Instagram Reels"
+      },
+      {
+        "day": 2,
+        "platform": "facebook",
+        "slot": 2,
+        "item": "S22",
+        "provisional_cutdown": false,
+        "company": "HMRC",
+        "format_family": "F6",
+        "score_rel": 1.646,
+        "icp_reach_index": 3.0912,
+        "writer_suggested": "Facebook Reels + YouTube Shorts (owners who run payroll)"
+      },
+      {
+        "day": 2,
+        "platform": "facebook",
+        "slot": 3,
+        "item": "S25",
+        "provisional_cutdown": false,
+        "company": "Synnovis (NHS London pathology)",
+        "format_family": "0x100x hidden system reveal: 0x100x hidden company",
+        "score_rel": 1.279,
+        "icp_reach_index": 2.4016,
+        "writer_suggested": "LinkedIn (clinics, vets, any firm with a critical supplier) + YouTube Shorts"
+      },
+      {
+        "day": 3,
+        "platform": "facebook",
+        "slot": 1,
+        "item": "C01",
+        "provisional_cutdown": false,
+        "company": "Arup cutdown (The twist inside the incident)",
+        "format_family": "F6",
+        "score_rel": 1.697,
+        "icp_reach_index": 3.1867,
+        "writer_suggested": "Facebook Reels + LinkedIn (finance directors, office managers)"
+      },
+      {
+        "day": 3,
+        "platform": "facebook",
+        "slot": 2,
+        "item": "C30",
+        "provisional_cutdown": false,
+        "company": "M&S, The Open Question",
+        "format_family": "question-led open ending",
+        "score_rel": 1.063,
+        "icp_reach_index": 1.9971,
+        "writer_suggested": "YouTube Shorts (open-loop question drives comments)"
+      },
+      {
+        "day": 3,
+        "platform": "facebook",
+        "slot": 3,
+        "item": "S30",
+        "provisional_cutdown": false,
+        "company": "British Library",
+        "format_family": "0x100x hidden system reveal: 0x100x rise-and-silence",
+        "score_rel": 1.28,
+        "icp_reach_index": 2.404,
+        "writer_suggested": "LinkedIn + YouTube Shorts (charities, professional services, any firm with archives)"
+      },
+      {
+        "day": 4,
+        "platform": "facebook",
+        "slot": 1,
+        "item": "C42",
+        "provisional_cutdown": false,
+        "company": "Post Office Horizon, The Open Question",
+        "format_family": "question card",
+        "score_rel": 0.948,
+        "icp_reach_index": 1.7799,
+        "writer_suggested": "YouTube Shorts + TikTok (open question, comment-driving)"
+      },
+      {
+        "day": 4,
+        "platform": "facebook",
+        "slot": 2,
+        "item": "S09",
+        "provisional_cutdown": false,
+        "company": "Co-op",
+        "format_family": "0x100x named stakes open: 0x100x 'two events are connected'",
+        "score_rel": 1.614,
+        "icp_reach_index": 3.031,
+        "writer_suggested": "Facebook Reels + YouTube Shorts (retail, hospitality owners)"
+      },
+      {
+        "day": 4,
+        "platform": "facebook",
+        "slot": 3,
+        "item": "S28",
+        "provisional_cutdown": false,
+        "company": "Starling Bank (Safe Phrases)",
+        "format_family": "F6",
+        "score_rel": 1.489,
+        "icp_reach_index": 2.7967,
+        "writer_suggested": "Facebook Reels + Instagram Reels (owners and their families), TikTok"
+      },
+      {
+        "day": 5,
+        "platform": "facebook",
+        "slot": 1,
+        "item": "C37",
+        "provisional_cutdown": false,
+        "company": "Post Office Horizon, The Number",
+        "format_family": "flat astonishing group fact",
+        "score_rel": 1.668,
+        "icp_reach_index": 3.1336,
+        "writer_suggested": "YouTube Shorts + Facebook Reels (broad UK audience that knows the drama)"
+      },
+      {
+        "day": 5,
+        "platform": "facebook",
+        "slot": 2,
+        "item": "S23",
+        "provisional_cutdown": false,
+        "company": "Serco Leisure",
+        "format_family": "F7",
+        "score_rel": 1.092,
+        "icp_reach_index": 2.0505,
+        "writer_suggested": "LinkedIn (HR, ops directors, multi-site operators) + Facebook Reels"
+      },
+      {
+        "day": 5,
+        "platform": "facebook",
+        "slot": 3,
+        "item": "C26",
+        "provisional_cutdown": false,
+        "company": "M&S, The Mechanism",
+        "format_family": "x",
+        "score_rel": 1.478,
+        "icp_reach_index": 2.7764,
+        "writer_suggested": "LinkedIn + YouTube Shorts (owners and ops directors who own the IT supplier relationship)"
+      },
+      {
+        "day": 6,
+        "platform": "facebook",
+        "slot": 1,
+        "item": "S21",
+        "provisional_cutdown": false,
+        "company": "Monzo",
+        "format_family": "F7",
+        "score_rel": 0.986,
+        "icp_reach_index": 1.8528,
+        "writer_suggested": "Instagram Reels + TikTok (broad, funny-shocking), LinkedIn for compliance-minded owners"
+      },
+      {
+        "day": 6,
+        "platform": "facebook",
+        "slot": 2,
+        "item": "C41",
+        "provisional_cutdown": false,
+        "company": "Post Office Horizon, The Lesson For Ai",
+        "format_family": "greg business advice: banner question",
+        "score_rel": 1.587,
+        "icp_reach_index": 2.9811,
+        "writer_suggested": "LinkedIn + Instagram Reels (owners rolling out AI tools that flag staff)"
+      },
+      {
+        "day": 6,
+        "platform": "facebook",
+        "slot": 3,
+        "item": "C38",
+        "provisional_cutdown": false,
+        "company": "Post Office Horizon, The Quote",
+        "format_family": "quote clip",
+        "score_rel": 1.386,
+        "icp_reach_index": 2.6025,
+        "writer_suggested": "Instagram Reels + Facebook Reels (quote-led, shareable, handled with care)"
+      },
+      {
+        "day": 7,
+        "platform": "facebook",
+        "slot": 1,
+        "item": "S11",
+        "provisional_cutdown": false,
+        "company": "KNP Logistics (Knights of Old)",
+        "format_family": "F1",
+        "score_rel": 1.661,
+        "icp_reach_index": 3.1189,
+        "writer_suggested": "YouTube Shorts + Facebook Reels (hauliers, trades, manufacturing)"
+      },
+      {
+        "day": 7,
+        "platform": "facebook",
+        "slot": 2,
+        "item": "S26",
+        "provisional_cutdown": false,
+        "company": "Transport for London",
+        "format_family": "0x100x named stakes open: 0x100x 'largest in history' record",
+        "score_rel": 1.171,
+        "icp_reach_index": 2.1997,
+        "writer_suggested": "YouTube Shorts + Instagram Reels (London audience) + LinkedIn"
+      },
+      {
+        "day": 7,
+        "platform": "facebook",
+        "slot": 3,
+        "item": "C29",
+        "provisional_cutdown": false,
+        "company": "M&S, The Second-Order Effect",
+        "format_family": "clever exploit",
+        "score_rel": 1.434,
+        "icp_reach_index": 2.6929,
+        "writer_suggested": "TikTok + Instagram Reels (a relatable 'this is your business' scene)"
+      },
+      {
+        "day": 1,
+        "platform": "linkedin",
+        "slot": 1,
+        "item": "S29",
+        "provisional_cutdown": false,
+        "company": "Starling Bank (FCA fine)",
+        "format_family": "F4",
+        "score_rel": 1.454,
+        "icp_reach_index": 6.399,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 1,
+        "platform": "linkedin",
+        "slot": 2,
+        "item": "S46",
+        "provisional_cutdown": false,
+        "company": "DoNotPay",
+        "format_family": "corporate scandal exposed",
+        "score_rel": 0.86,
+        "icp_reach_index": 3.7866,
+        "writer_suggested": "TikTok + Instagram Reels"
+      },
+      {
+        "day": 1,
+        "platform": "linkedin",
+        "slot": 3,
+        "item": "C21",
+        "provisional_cutdown": false,
+        "company": "Deloitte cutdown (The twist under the twist)",
+        "format_family": "F2",
+        "score_rel": 1.178,
+        "icp_reach_index": 5.1839,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 2,
+        "platform": "linkedin",
+        "slot": 1,
+        "item": "S08",
+        "provisional_cutdown": false,
+        "company": "A&O Shearman (Allen & Overy)",
+        "format_family": "F10",
+        "score_rel": 0.493,
+        "icp_reach_index": 2.169,
+        "writer_suggested": "LinkedIn (professional services owners) + YouTube Shorts"
+      },
+      {
+        "day": 2,
+        "platform": "linkedin",
+        "slot": 2,
+        "item": "C36",
+        "provisional_cutdown": false,
+        "company": "Builder.ai, The Twist In The Timeline",
+        "format_family": "two-document paradox",
+        "score_rel": 1.297,
+        "icp_reach_index": 5.7096,
+        "writer_suggested": "LinkedIn + Facebook Reels (owners who sign software contracts)"
+      },
+      {
+        "day": 2,
+        "platform": "linkedin",
+        "slot": 3,
+        "item": "S13",
+        "provisional_cutdown": false,
+        "company": "Legal Aid Agency",
+        "format_family": "0x100x hidden system reveal: 0x100x 'for years ... then someone opened the books' reversal",
+        "score_rel": 1.002,
+        "icp_reach_index": 4.4098,
+        "writer_suggested": "LinkedIn (professional services, public sector suppliers) + YouTube Shorts"
+      },
+      {
+        "day": 3,
+        "platform": "linkedin",
+        "slot": 1,
+        "item": "C20",
+        "provisional_cutdown": false,
+        "company": "Deloitte cutdown (The character)",
+        "format_family": "0x100x hidden system reveal",
+        "score_rel": 1.344,
+        "icp_reach_index": 5.9156,
+        "writer_suggested": "YouTube Shorts + Instagram Reels"
+      },
+      {
+        "day": 3,
+        "platform": "linkedin",
+        "slot": 2,
+        "item": "S45",
+        "provisional_cutdown": false,
+        "company": "Delphia and Global Predictions (SEC)",
+        "format_family": "corporate scandal exposed",
+        "score_rel": 0.906,
+        "icp_reach_index": 3.9903,
+        "writer_suggested": "LinkedIn + YouTube Shorts"
+      },
+      {
+        "day": 3,
+        "platform": "linkedin",
+        "slot": 3,
+        "item": "S57",
+        "provisional_cutdown": false,
+        "company": "Samsung",
+        "format_family": "expensive lesson",
+        "score_rel": 1.153,
+        "icp_reach_index": 5.0754,
+        "writer_suggested": "LinkedIn + TikTok"
+      },
+      {
+        "day": 4,
+        "platform": "linkedin",
+        "slot": 1,
+        "item": "S49",
+        "provisional_cutdown": false,
+        "company": "Morgan Stanley",
+        "format_family": "x",
+        "score_rel": 0.558,
+        "icp_reach_index": 2.4551,
+        "writer_suggested": "LinkedIn + Instagram Reels"
+      },
+      {
+        "day": 4,
+        "platform": "linkedin",
+        "slot": 2,
+        "item": "C19",
+        "provisional_cutdown": false,
+        "company": "Deloitte cutdown (The hook incident)",
+        "format_family": "F7",
+        "score_rel": 1.276,
+        "icp_reach_index": 5.6156,
+        "writer_suggested": "Facebook Reels + TikTok"
+      },
+      {
+        "day": 4,
+        "platform": "linkedin",
+        "slot": 3,
+        "item": "S02",
+        "provisional_cutdown": false,
+        "company": "ONS (Business Insights and Conditions Survey)",
+        "format_family": "F4",
+        "score_rel": 1.003,
+        "icp_reach_index": 4.4148,
+        "writer_suggested": "LinkedIn (owners and MDs) + YouTube Shorts"
+      },
+      {
+        "day": 5,
+        "platform": "linkedin",
+        "slot": 1,
+        "item": "C23",
+        "provisional_cutdown": false,
+        "company": "Deloitte cutdown (The repeat)",
+        "format_family": "0x100x named stakes open",
+        "score_rel": 1.323,
+        "icp_reach_index": 5.8262,
+        "writer_suggested": "YouTube Shorts + TikTok"
+      },
+      {
+        "day": 5,
+        "platform": "linkedin",
+        "slot": 2,
+        "item": "S16",
+        "provisional_cutdown": false,
+        "company": "Clifford Chance",
+        "format_family": "F7",
+        "score_rel": 0.927,
+        "icp_reach_index": 4.0821,
+        "writer_suggested": "LinkedIn (professional services, finance and HR leads)"
+      },
+      {
+        "day": 5,
+        "platform": "linkedin",
+        "slot": 3,
+        "item": "C24",
+        "provisional_cutdown": false,
+        "company": "Deloitte cutdown (A character's quote)",
+        "format_family": "F5",
+        "score_rel": 1.125,
+        "icp_reach_index": 4.9515,
+        "writer_suggested": "LinkedIn + Facebook Reels"
+      },
+      {
+        "day": 6,
+        "platform": "linkedin",
+        "slot": 1,
+        "item": "C27",
+        "provisional_cutdown": false,
+        "company": "M&S, The Quote",
+        "format_family": "0x100x quote-first named authority",
+        "score_rel": 0.855,
+        "icp_reach_index": 3.7619,
+        "writer_suggested": "Facebook Reels + Instagram Reels (quote-led, shareable)"
+      },
+      {
+        "day": 6,
+        "platform": "linkedin",
+        "slot": 2,
+        "item": "C34",
+        "provisional_cutdown": false,
+        "company": "Builder.ai, The Human Cost",
+        "format_family": "crisis stack",
+        "score_rel": 1.249,
+        "icp_reach_index": 5.4974,
+        "writer_suggested": "Facebook Reels + YouTube Shorts"
+      },
+      {
+        "day": 6,
+        "platform": "linkedin",
+        "slot": 3,
+        "item": "S15",
+        "provisional_cutdown": false,
+        "company": "Big Four UK (KPMG, Deloitte, EY, PwC)",
+        "format_family": "F10",
+        "score_rel": 1.014,
+        "icp_reach_index": 4.4639,
+        "writer_suggested": "LinkedIn (professional services, recruitment) + TikTok"
+      },
+      {
+        "day": 7,
+        "platform": "linkedin",
+        "slot": 1,
+        "item": "S14",
+        "provisional_cutdown": false,
+        "company": "UK businesses (Cyber Security Breaches Survey 2025)",
+        "format_family": "0x100x named stakes open: 0x100x legible comparison",
+        "score_rel": 1.298,
+        "icp_reach_index": 5.7158,
+        "writer_suggested": "LinkedIn + Facebook Reels"
+      },
+      {
+        "day": 7,
+        "platform": "linkedin",
+        "slot": 2,
+        "item": "S27",
+        "provisional_cutdown": false,
+        "company": "Bank of England / FCA (UK financial services)",
+        "format_family": "F8",
+        "score_rel": 0.952,
+        "icp_reach_index": 4.1908,
+        "writer_suggested": "LinkedIn (owners with lenders, insurers, finance teams)"
+      },
+      {
+        "day": 7,
+        "platform": "linkedin",
+        "slot": 3,
+        "item": "C11",
+        "provisional_cutdown": false,
+        "company": "Octopus Energy cutdown (The open question, checked)",
+        "format_family": "F9",
+        "score_rel": 1.062,
+        "icp_reach_index": 4.6749,
+        "writer_suggested": "YouTube Shorts + LinkedIn"
+      }
+    ],
+    "format_clashes_same_platform_day": 0,
+    "manual_overrides": {
+      "S72": {
+        "by": "claude-root",
+        "at": "2026-10-06T13:20",
+        "why": "built for LinkedIn (statement ticker on the right sits under Instagram's action rail: 287 precheck FAIL there, 0 on linkedin_feed); storyboard approved on linkedin_feed by sonnet-rD"
+      },
+      "S58": {
+        "by": "claude-root",
+        "at": "2026-10-07T14:45",
+        "was": "youtube_shorts",
+        "why": "Thu-Sun Facebook/Instagram slots cannot be filled by cross-posts (no framing-proven candidates); route fresh shorts there, LI/YT/TT are covered by cross-posts. arm_ready re-checks the platform framing and falls back if it fails."
+      },
+      "S81": {
+        "by": "claude-root",
+        "at": "2026-10-07T14:45",
+        "was": null,
+        "why": "Thu-Sun Facebook/Instagram slots cannot be filled by cross-posts (no framing-proven candidates); route fresh shorts there, LI/YT/TT are covered by cross-posts. arm_ready re-checks the platform framing and falls back if it fails."
+      },
+      "S06": {
+        "by": "claude-root",
+        "at": "2026-10-07T14:45",
+        "was": "youtube_shorts",
+        "why": "Thu-Sun Facebook/Instagram slots cannot be filled by cross-posts (no framing-proven candidates); route fresh shorts there, LI/YT/TT are covered by cross-posts. arm_ready re-checks the platform framing and falls back if it fails."
+      },
+      "C13": {
+        "by": "claude-root",
+        "at": "2026-10-07T14:45",
+        "was": "tiktok",
+        "why": "Thu-Sun Facebook/Instagram slots cannot be filled by cross-posts (no framing-proven candidates); route fresh shorts there, LI/YT/TT are covered by cross-posts. arm_ready re-checks the platform framing and falls back if it fails."
+      },
+      "S50": {
+        "by": "claude-root",
+        "at": "2026-10-07T14:45",
+        "was": "tiktok",
+        "why": "Thu-Sun Facebook/Instagram slots cannot be filled by cross-posts (no framing-proven candidates); route fresh shorts there, LI/YT/TT are covered by cross-posts. arm_ready re-checks the platform framing and falls back if it fails."
+      }
+    }
+  },
+  "scoreboard": {
+    "generated_at": "2026-10-08T02:51:43",
+    "rows": [
+      {
+        "id": "C02",
+        "state": "approved",
+        "first_approved": "2026-09-25T07:01:56",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.33
+      },
+      {
+        "id": "C08",
+        "state": "approved",
+        "first_approved": "2026-09-25T07:08:06",
+        "voice_naturalness": 8.67,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.67
+      },
+      {
+        "id": "C10",
+        "state": "returned",
+        "first_approved": "2026-09-25T07:20:26",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.42
+      },
+      {
+        "id": "C13",
+        "state": "returned",
+        "first_approved": "2026-10-05T02:22:13",
+        "beat_len_max_s": 4.23,
+        "beats_per_min": 22.1,
+        "cues_per_min": 65.3,
+        "cue_pan_share": 0.97,
+        "voice_naturalness": 8.67,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.75,
+        "critic_hook": 9.0,
+        "critic_visuals": 8.0,
+        "critic_cta": 9.0,
+        "critic_mean": 8.5,
+        "static_max_s": 1.0,
+        "density_cov": 0.37,
+        "stereo_match": 0.81
+      },
+      {
+        "id": "C21",
+        "state": "approved",
+        "first_approved": "2026-09-25T11:53:39",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.33
+      },
+      {
+        "id": "C22",
+        "state": "approved",
+        "first_approved": "2026-09-25T14:00:17",
+        "beat_len_max_s": 11.1,
+        "beats_per_min": 9.9,
+        "cues_per_min": 54.5,
+        "cue_pan_share": 0.0,
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 7.67,
+        "voice_mean": 7.59
+      },
+      {
+        "id": "C29",
+        "state": "approved",
+        "first_approved": "2026-10-05T16:48:10",
+        "beat_len_max_s": 4.41,
+        "beats_per_min": 20.9,
+        "cues_per_min": 64.7,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 8.0,
+        "voice_mean": 8.0,
+        "critic_hook": 9.0,
+        "critic_visuals": 7.0,
+        "critic_cta": 9.0,
+        "critic_mean": 8.33,
+        "static_max_s": 1.3,
+        "density_cov": 0.21
+      },
+      {
+        "id": "C37",
+        "state": "returned",
+        "first_approved": "2026-10-04T17:57:36",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.92
+      },
+      {
+        "id": "S01",
+        "state": "returned",
+        "first_approved": "2026-10-05T18:16:39",
+        "voice_naturalness": 8.67,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.17
+      },
+      {
+        "id": "S02",
+        "state": "approved",
+        "first_approved": "2026-09-30T11:36:53",
+        "beat_len_max_s": 4.5,
+        "beats_per_min": 22.3,
+        "cues_per_min": 66.0,
+        "cue_pan_share": 0.98,
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.25,
+        "static_max_s": 0.7,
+        "density_cov": 0.4,
+        "stereo_match": 1.0
+      },
+      {
+        "id": "S03",
+        "state": "approved",
+        "first_approved": "2026-09-29T17:37:49",
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 8.0,
+        "voice_mean": 7.58
+      },
+      {
+        "id": "S04",
+        "state": "approved",
+        "first_approved": "2026-09-25T07:00:35",
+        "voice_naturalness": 7.0,
+        "voice_emphasis": 7.0,
+        "voice_mean": 6.83
+      },
+      {
+        "id": "S05",
+        "state": "approved",
+        "first_approved": "2026-09-27T15:01:49",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.33
+      },
+      {
+        "id": "S06",
+        "state": "approved",
+        "first_approved": "2026-10-06T22:32:01",
+        "beat_len_max_s": 4.61,
+        "beats_per_min": 22.5,
+        "cues_per_min": 58.6,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.83,
+        "critic_hook": 8.0,
+        "critic_visuals": 7.0,
+        "critic_cta": 9.0,
+        "critic_mean": 8.17,
+        "static_max_s": 1.8,
+        "density_cov": 0.41,
+        "stereo_match": 0.5
+      },
+      {
+        "id": "S07",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.1,
+        "beats_per_min": 25.0,
+        "cues_per_min": 57.3,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.67,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.75
+      },
+      {
+        "id": "S08",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.21,
+        "beats_per_min": 23.0,
+        "cues_per_min": 59.7,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 7.5,
+        "voice_emphasis": 7.5,
+        "voice_mean": 7.38
+      },
+      {
+        "id": "S09",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 3.59,
+        "beats_per_min": 25.9,
+        "cues_per_min": 61.0,
+        "cue_pan_share": 0.97,
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.33
+      },
+      {
+        "id": "S10",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.19,
+        "beats_per_min": 22.7,
+        "cues_per_min": 59.9,
+        "cue_pan_share": 0.97,
+        "voice_naturalness": 7.0,
+        "voice_emphasis": 7.0,
+        "voice_mean": 6.75
+      },
+      {
+        "id": "S102",
+        "state": "approved",
+        "first_approved": "2026-10-05T18:16:50",
+        "beat_len_max_s": 4.18,
+        "beats_per_min": 22.6,
+        "cues_per_min": 66.9,
+        "cue_pan_share": 0.94,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 9.0,
+        "critic_hook": 7.0,
+        "critic_visuals": 7.0,
+        "critic_cta": 8.0,
+        "critic_mean": 6.83,
+        "density_cov": 0.68,
+        "stereo_match": 0.75
+      },
+      {
+        "id": "S103",
+        "state": "returned",
+        "first_approved": "2026-10-05T18:00:40",
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 8.0,
+        "voice_mean": 7.88
+      },
+      {
+        "id": "S104",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 3.91,
+        "beats_per_min": 20.7,
+        "cues_per_min": 59.1,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.67,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.59
+      },
+      {
+        "id": "S11",
+        "state": "approved",
+        "first_approved": "2026-09-25T18:53:31",
+        "beat_len_max_s": 4.4,
+        "beats_per_min": 21.0,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.5,
+        "critic_hook": 9.0,
+        "critic_visuals": 8.0,
+        "critic_cta": 9.0,
+        "critic_mean": 8.67,
+        "static_max_s": 0.9,
+        "density_cov": 0.66,
+        "stereo_match": 1.0
+      },
+      {
+        "id": "S117",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 3.88,
+        "beats_per_min": 25.8,
+        "cues_per_min": 59.8,
+        "cue_pan_share": 0.96,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.92,
+        "density_cov": 0.68,
+        "stereo_match": 0.5
+      },
+      {
+        "id": "S118",
+        "state": "returned",
+        "first_approved": "2026-10-04T10:59:36",
+        "voice_naturalness": 6.33,
+        "voice_emphasis": 6.0,
+        "voice_mean": 6.08
+      },
+      {
+        "id": "S119",
+        "state": "returned",
+        "first_approved": "2026-10-06T02:18:45",
+        "beat_len_max_s": 4.75,
+        "beats_per_min": 23.0,
+        "cues_per_min": 62.1,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.58
+      },
+      {
+        "id": "S12",
+        "state": "approved",
+        "first_approved": "2026-09-30T11:37:00",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 8.67,
+        "voice_mean": 9.0
+      },
+      {
+        "id": "S121",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 3.82,
+        "beats_per_min": 26.3,
+        "cues_per_min": 59.2,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 7.33,
+        "voice_emphasis": 7.33,
+        "voice_mean": 7.5
+      },
+      {
+        "id": "S124",
+        "state": "returned",
+        "first_approved": "2026-10-05T13:28:12"
+      },
+      {
+        "id": "S13",
+        "state": "returned",
+        "first_approved": "2026-10-06T02:52:53",
+        "beat_len_max_s": 4.19,
+        "beats_per_min": 24.3,
+        "cues_per_min": 63.6,
+        "cue_pan_share": 0.94,
+        "voice_naturalness": 8.67,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.75
+      },
+      {
+        "id": "S14",
+        "state": "approved",
+        "first_approved": "2026-09-29T12:30:49",
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 8.67,
+        "voice_mean": 7.67
+      },
+      {
+        "id": "S15",
+        "state": "returned",
+        "first_approved": "2026-10-06T02:20:50",
+        "beat_len_max_s": 4.18,
+        "beats_per_min": 23.9,
+        "cues_per_min": 64.1,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 7.67,
+        "voice_mean": 7.75
+      },
+      {
+        "id": "S16",
+        "state": "approved",
+        "first_approved": "2026-09-28T17:28:27",
+        "voice_naturalness": 7.0,
+        "voice_emphasis": 7.0,
+        "voice_mean": 7.25
+      },
+      {
+        "id": "S17",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.2,
+        "beats_per_min": 25.3,
+        "cues_per_min": 61.7,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 9.08
+      },
+      {
+        "id": "S18",
+        "state": "approved",
+        "first_approved": "2026-10-04T11:37:02",
+        "beat_len_max_s": 4.04,
+        "beats_per_min": 22.4,
+        "cues_per_min": 58.0,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.25
+      },
+      {
+        "id": "S19",
+        "state": "approved",
+        "first_approved": "2026-09-29T09:18:08",
+        "beat_len_max_s": 5.09,
+        "beats_per_min": 16.7,
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.0,
+        "voice_mean": 7.33,
+        "critic_hook": 8.5,
+        "critic_visuals": 8.5,
+        "critic_sound": 8.0,
+        "critic_cta": 8.0,
+        "critic_mean": 8.36,
+        "static_max_s": 0.2,
+        "density_cov": 0.36,
+        "stereo_match": 0.75
+      },
+      {
+        "id": "S20",
+        "state": "approved",
+        "first_approved": "2026-09-25T07:36:42",
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 8.33,
+        "voice_mean": 7.83
+      },
+      {
+        "id": "S21",
+        "state": "approved",
+        "first_approved": "2026-09-29T11:43:46",
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.17
+      },
+      {
+        "id": "S22",
+        "state": "approved",
+        "first_approved": "2026-09-25T09:56:03",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 7.75
+      },
+      {
+        "id": "S23",
+        "state": "approved",
+        "first_approved": "2026-09-28T17:27:26",
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 7.67,
+        "voice_mean": 7.5
+      },
+      {
+        "id": "S25",
+        "state": "returned",
+        "first_approved": "2026-09-25T21:35:34",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.5
+      },
+      {
+        "id": "S26",
+        "state": "approved",
+        "first_approved": "2026-09-29T12:49:29",
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.0
+      },
+      {
+        "id": "S27",
+        "state": "approved",
+        "first_approved": "2026-10-06T00:49:32",
+        "beat_len_max_s": 4.45,
+        "beats_per_min": 21.7,
+        "cues_per_min": 59.1,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.5,
+        "critic_hook": 8.0,
+        "critic_visuals": 8.0,
+        "critic_sound": 8.0,
+        "critic_cta": 8.0,
+        "critic_mean": 8.14,
+        "static_max_s": 0.4,
+        "density_cov": 0.66,
+        "stereo_match": 1.0
+      },
+      {
+        "id": "S29",
+        "state": "approved",
+        "first_approved": "2026-09-25T07:40:31",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.0,
+        "voice_mean": 7.75
+      },
+      {
+        "id": "S30",
+        "state": "returned",
+        "first_approved": "2026-10-06T02:12:49",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.42
+      },
+      {
+        "id": "S31",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.89,
+        "beats_per_min": 22.0,
+        "cues_per_min": 58.6,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 8.0,
+        "voice_mean": 7.91
+      },
+      {
+        "id": "S32",
+        "state": "approved",
+        "first_approved": "2026-09-29T12:52:00",
+        "voice_naturalness": 8.67,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.33
+      },
+      {
+        "id": "S33",
+        "state": "approved",
+        "first_approved": "2026-09-25T10:41:57",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.5
+      },
+      {
+        "id": "S34",
+        "state": "approved",
+        "first_approved": "2026-09-25T08:10:50",
+        "beat_len_max_s": 7.15,
+        "beats_per_min": 14.8,
+        "voice_naturalness": 7.0,
+        "voice_emphasis": 7.67,
+        "voice_mean": 6.5
+      },
+      {
+        "id": "S35",
+        "state": "approved",
+        "first_approved": "2026-09-28T14:28:25",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.67
+      },
+      {
+        "id": "S36",
+        "state": "approved",
+        "first_approved": "2026-10-05T21:30:16",
+        "beat_len_max_s": 4.67,
+        "beats_per_min": 23.0,
+        "cues_per_min": 62.1,
+        "cue_pan_share": 0.95,
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 8.0,
+        "voice_mean": 8.08,
+        "static_max_s": 0.8,
+        "density_cov": 0.58,
+        "stereo_match": 1.0
+      },
+      {
+        "id": "S37",
+        "state": "approved",
+        "first_approved": "2026-10-05T16:28:43",
+        "beat_len_max_s": 4.13,
+        "beats_per_min": 23.6,
+        "cues_per_min": 65.0,
+        "cue_pan_share": 0.91,
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 8.33,
+        "voice_mean": 7.5,
+        "static_max_s": 0.5,
+        "density_cov": 0.86
+      },
+      {
+        "id": "S38",
+        "state": "approved",
+        "first_approved": "2026-09-29T09:17:08",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 8.0,
+        "voice_mean": 7.92
+      },
+      {
+        "id": "S39",
+        "state": "approved",
+        "first_approved": "2026-09-28T20:22:02",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 9.0
+      },
+      {
+        "id": "S40",
+        "state": "returned",
+        "first_approved": "2026-09-30T11:38:27",
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 8.0,
+        "voice_mean": 8.0
+      },
+      {
+        "id": "S41",
+        "state": "returned",
+        "first_approved": "2026-10-05T23:42:03",
+        "voice_naturalness": 7.33,
+        "voice_emphasis": 6.67,
+        "voice_mean": 6.75
+      },
+      {
+        "id": "S42",
+        "state": "approved",
+        "first_approved": "2026-09-29T13:23:55",
+        "voice_naturalness": 8.67,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.25
+      },
+      {
+        "id": "S43",
+        "state": "approved",
+        "first_approved": "2026-09-25T18:23:28",
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 8.0,
+        "voice_mean": 8.0
+      },
+      {
+        "id": "S44",
+        "state": "approved",
+        "first_approved": "2026-09-28T18:53:58",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.59
+      },
+      {
+        "id": "S45",
+        "state": "approved",
+        "first_approved": "2026-09-30T11:38:29",
+        "beat_len_max_s": 4.27,
+        "beats_per_min": 24.9,
+        "cues_per_min": 60.1,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 7.67,
+        "voice_mean": 7.5,
+        "density_cov": 0.5,
+        "stereo_match": 1.0
+      },
+      {
+        "id": "S46",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.2,
+        "beats_per_min": 22.1,
+        "cues_per_min": 58.9,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.25
+      },
+      {
+        "id": "S47",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 3.9,
+        "beats_per_min": 22.6,
+        "cues_per_min": 59.5,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.83
+      },
+      {
+        "id": "S48",
+        "state": "approved",
+        "first_approved": "2026-09-25T07:25:44",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.33
+      },
+      {
+        "id": "S49",
+        "state": "approved",
+        "first_approved": "2026-09-28T14:02:08",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.67
+      },
+      {
+        "id": "S50",
+        "state": "approved",
+        "first_approved": "2026-10-05T23:55:02",
+        "beat_len_max_s": 4.5,
+        "beats_per_min": 21.9,
+        "cues_per_min": 60.3,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.67,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.92,
+        "critic_hook": 9.0,
+        "critic_visuals": 8.0,
+        "critic_cta": 9.0,
+        "critic_mean": 8.17,
+        "static_max_s": 1.0,
+        "density_cov": 0.49,
+        "stereo_match": 1.0
+      },
+      {
+        "id": "S51",
+        "state": "approved",
+        "first_approved": "2026-09-28T18:29:35",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 7.5
+      },
+      {
+        "id": "S52",
+        "state": "approved",
+        "first_approved": "2026-09-29T19:12:30",
+        "beat_len_max_s": 4.3,
+        "beats_per_min": 22.0,
+        "cues_per_min": 64.1,
+        "cue_pan_share": 0.97,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.75,
+        "static_max_s": 0.2,
+        "density_cov": 0.66,
+        "stereo_match": 1.0
+      },
+      {
+        "id": "S53",
+        "state": "approved",
+        "first_approved": "2026-09-28T19:19:59",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.92
+      },
+      {
+        "id": "S55",
+        "state": "approved",
+        "first_approved": "2026-09-25T18:08:59",
+        "voice_naturalness": 8.67,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.67
+      },
+      {
+        "id": "S56",
+        "state": "returned",
+        "first_approved": "2026-09-28T18:41:33",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.41
+      },
+      {
+        "id": "S57",
+        "state": "approved",
+        "first_approved": "2026-09-28T14:27:52",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.25
+      },
+      {
+        "id": "S58",
+        "state": "approved",
+        "first_approved": "2026-10-05T18:05:01",
+        "beat_len_max_s": 4.13,
+        "beats_per_min": 22.7,
+        "cues_per_min": 61.5,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 7.33,
+        "voice_emphasis": 7.67,
+        "voice_mean": 7.42,
+        "critic_hook": 9.0,
+        "critic_visuals": 8.0,
+        "critic_cta": 9.0,
+        "critic_mean": 8.5,
+        "density_cov": 0.73
+      },
+      {
+        "id": "S59",
+        "state": "approved",
+        "first_approved": "2026-09-28T13:59:20",
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.0
+      },
+      {
+        "id": "S60",
+        "state": "approved",
+        "first_approved": "2026-09-29T09:11:35",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 8.67,
+        "voice_mean": 8.92
+      },
+      {
+        "id": "S63",
+        "state": "returned",
+        "first_approved": "2026-10-05T23:37:30",
+        "voice_naturalness": 7.33,
+        "voice_emphasis": 7.67,
+        "voice_mean": 7.67
+      },
+      {
+        "id": "S65",
+        "state": "returned",
+        "first_approved": "2026-10-06T02:33:14",
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.92
+      },
+      {
+        "id": "S66",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.4,
+        "beats_per_min": 25.2,
+        "cues_per_min": 59.1,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.75
+      },
+      {
+        "id": "S67",
+        "state": "approved",
+        "first_approved": "2026-10-06T11:16:50",
+        "beat_len_max_s": 4.0,
+        "beats_per_min": 23.2,
+        "cues_per_min": 61.9,
+        "cue_pan_share": 0.98,
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 8.0,
+        "voice_mean": 7.67,
+        "static_max_s": 2.8,
+        "density_cov": 0.4
+      },
+      {
+        "id": "S68",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.03,
+        "beats_per_min": 22.2,
+        "cues_per_min": 58.5,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.33
+      },
+      {
+        "id": "S69",
+        "state": "approved",
+        "first_approved": "2026-10-06T21:30:11",
+        "beat_len_max_s": 4.58,
+        "beats_per_min": 22.7,
+        "cues_per_min": 61.1,
+        "cue_pan_share": 0.97,
+        "voice_naturalness": 8.22,
+        "voice_emphasis": 8.22,
+        "voice_mean": 8.22,
+        "static_max_s": 3.0,
+        "density_cov": 0.38,
+        "stereo_match": 0.79
+      },
+      {
+        "id": "S70",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.47,
+        "beats_per_min": 22.1,
+        "cues_per_min": 59.6,
+        "cue_pan_share": 0.98,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.83
+      },
+      {
+        "id": "S71",
+        "state": "approved",
+        "first_approved": "2026-10-06T21:30:31",
+        "beat_len_max_s": 3.8,
+        "beats_per_min": 22.8,
+        "cues_per_min": 64.4,
+        "cue_pan_share": 0.98,
+        "voice_naturalness": 7.0,
+        "voice_emphasis": 7.33,
+        "voice_mean": 7.42,
+        "static_max_s": 1.7,
+        "density_cov": 0.44,
+        "stereo_match": 0.92
+      },
+      {
+        "id": "S72",
+        "state": "approved",
+        "first_approved": "2026-10-06T00:30:04",
+        "beat_len_max_s": 4.64,
+        "beats_per_min": 21.8,
+        "cues_per_min": 59.4,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.58,
+        "critic_hook": 9.0,
+        "critic_visuals": 8.0,
+        "critic_cta": 9.0,
+        "critic_mean": 8.17,
+        "static_max_s": 1.8,
+        "density_cov": 0.27
+      },
+      {
+        "id": "S73",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 3.97,
+        "beats_per_min": 23.4,
+        "cues_per_min": 63.1,
+        "cue_pan_share": 0.92,
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 8.0,
+        "voice_mean": 8.17
+      },
+      {
+        "id": "S74",
+        "state": "approved",
+        "first_approved": "2026-10-06T00:25:32",
+        "beat_len_max_s": 3.5,
+        "beats_per_min": 22.9,
+        "cues_per_min": 57.3,
+        "cue_pan_share": 0.91,
+        "voice_naturalness": 8.0,
+        "voice_emphasis": 8.0,
+        "voice_mean": 8.25
+      },
+      {
+        "id": "S80",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 6.45,
+        "beats_per_min": 13.9,
+        "cues_per_min": 48.2,
+        "cue_pan_share": 0.71,
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 7.67,
+        "voice_mean": 7.67
+      },
+      {
+        "id": "S81",
+        "state": "returned",
+        "first_approved": "2026-10-05T17:25:57",
+        "beat_len_max_s": 3.8,
+        "beats_per_min": 22.0,
+        "cues_per_min": 62.1,
+        "cue_pan_share": 0.95,
+        "voice_naturalness": 7.33,
+        "voice_emphasis": 7.33,
+        "voice_mean": 7.0,
+        "critic_hook": 7.0,
+        "critic_visuals": 9.0,
+        "critic_cta": 9.0,
+        "critic_mean": 8.33,
+        "static_max_s": 0.8,
+        "density_cov": 0.53,
+        "stereo_match": 0.0
+      },
+      {
+        "id": "S82",
+        "state": "approved",
+        "first_approved": "2026-10-05T16:59:35",
+        "beat_len_max_s": 3.95,
+        "beats_per_min": 23.4,
+        "cues_per_min": 70.1,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 7.67,
+        "voice_emphasis": 8.33,
+        "voice_mean": 7.83,
+        "critic_hook": 8.0,
+        "critic_visuals": 7.0,
+        "critic_sound": 8.0,
+        "critic_cta": 7.0,
+        "critic_mean": 7.71,
+        "static_max_s": 0.9,
+        "density_cov": 0.54,
+        "stereo_match": 0.75
+      },
+      {
+        "id": "S83",
+        "state": "approved",
+        "first_approved": "2026-10-05T18:04:44",
+        "beat_len_max_s": 4.26,
+        "beats_per_min": 24.1,
+        "cues_per_min": 70.2,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.92,
+        "critic_hook": 7.5,
+        "critic_visuals": 9.0,
+        "critic_sound": 8.5,
+        "critic_cta": 8.5,
+        "critic_mean": 8.57,
+        "density_cov": 0.4
+      },
+      {
+        "id": "S84",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.25,
+        "beats_per_min": 24.3,
+        "cues_per_min": 42.8,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.83
+      },
+      {
+        "id": "S85",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.29,
+        "beats_per_min": 24.6,
+        "cues_per_min": 62.6,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 7.33,
+        "voice_emphasis": 7.67,
+        "voice_mean": 7.67
+      },
+      {
+        "id": "S86",
+        "state": "returned",
+        "first_approved": "2026-10-01T22:07:35",
+        "beat_len_max_s": 11.1,
+        "beats_per_min": 11.9,
+        "cues_per_min": 42.6,
+        "cue_pan_share": 0.74,
+        "voice_naturalness": 8.33,
+        "voice_emphasis": 8.33,
+        "voice_mean": 8.41
+      },
+      {
+        "id": "S87",
+        "state": "approved",
+        "first_approved": "2026-10-05T19:06:35",
+        "beat_len_max_s": 4.1,
+        "beats_per_min": 22.3,
+        "cues_per_min": 66.9,
+        "cue_pan_share": 0.95,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 8.83,
+        "static_max_s": 1.6,
+        "density_cov": 0.36,
+        "stereo_match": 0.81
+      },
+      {
+        "id": "S88",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 4.62,
+        "beats_per_min": 22.7,
+        "cues_per_min": 46.5,
+        "cue_pan_share": 0.87
+      },
+      {
+        "id": "S90",
+        "state": "approved",
+        "first_approved": "2026-10-05T19:10:07",
+        "beat_len_max_s": 4.26,
+        "beats_per_min": 22.4,
+        "cues_per_min": 60.0,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 9.0,
+        "critic_hook": 9.0,
+        "critic_visuals": 6.0,
+        "critic_cta": 9.0,
+        "critic_mean": 7.83,
+        "static_max_s": 0.1,
+        "density_cov": 0.4,
+        "stereo_match": 1.0
+      },
+      {
+        "id": "S92",
+        "state": "approved",
+        "first_approved": "2026-10-06T07:54:33",
+        "beat_len_max_s": 4.47,
+        "beats_per_min": 21.7,
+        "cues_per_min": 67.1,
+        "cue_pan_share": 1.0,
+        "voice_naturalness": 9.0,
+        "voice_emphasis": 9.0,
+        "voice_mean": 9.08,
+        "static_max_s": 0.1,
+        "density_cov": 0.66
+      },
+      {
+        "id": "S94",
+        "state": "returned",
+        "first_approved": null,
+        "beat_len_max_s": 13.03,
+        "beats_per_min": 7.3,
+        "voice_naturalness": 7.0,
+        "voice_emphasis": 7.0,
+        "voice_mean": 7.0
+      }
+    ]
+  },
+  "seam": null
+}
