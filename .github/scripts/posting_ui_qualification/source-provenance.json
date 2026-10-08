@@ -1,0 +1,19 @@
+{
+  "runtime_sources": [
+    "/Users/samwall/alfred/auto-poster/carousel_v3/adapters/video_lane/linkedin_video_post.py",
+    "/Users/samwall/alfred/auto-poster/carousel_v3/adapters/video_lane/youtube_short_video.py"
+  ],
+  "before_sha256": {
+    "/Users/samwall/alfred/auto-poster/carousel_v3/adapters/video_lane/linkedin_video_post.py": "69d02c47e23c0a7ed059e258c92041651931a60e899729fff70c65f6ab2ce4c1",
+    "/Users/samwall/alfred/auto-poster/carousel_v3/adapters/video_lane/youtube_short_video.py": "f8db7d6d2f805f26f1f0315fb841872c0c2a72f624a7399d185d4d9f63d3434f"
+  },
+  "candidate_sha256": {
+    "/Users/samwall/alfred/auto-poster/carousel_v3/adapters/video_lane/linkedin_video_post.py": "157624bab72b09759cc13cea79cf8691d36eb844b30b5c9f8ce0f05abab4627e",
+    "/Users/samwall/alfred/auto-poster/carousel_v3/adapters/video_lane/youtube_short_video.py": "32ab6d0cb49cc0ac5af90a8f9300a51b652624c8a6d7a02d142f0c77a3024bcf"
+  },
+  "native_evidence": [
+    "S27 11:00\u201311:02 Startapost clickTimeout;11:01:46 actual screenshot shows authorised SamuelWall composer with Media",
+    "S37 11:00\u201311:02 nofileinput;11:02:29 actual screenshot shows signedin AGMM Studio upload dialog Selectfiles"
+  ],
+  "preserved": "Preflight, exact hashes/captions/identity, external claims, Public selection and canonical receipt verification retained; no force or Post click changes"
+}

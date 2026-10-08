@@ -1,0 +1,32 @@
+name: Posting UI transition qualification
+on:
+  workflow_dispatch:
+    inputs:
+      qa_ref:
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.qa_ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install playwright==1.58.0
+      - run: google-chrome --version
+      - run: >-
+          python .github/scripts/posting_ui_qualification/test_posting_ui.py
+          --directory .github/scripts/posting_ui_qualification
+          --output qualification.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: posting-ui-transition-result
+          path: qualification.json
+          retention-days: 3
