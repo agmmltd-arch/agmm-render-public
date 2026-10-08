@@ -1,0 +1,8 @@
+{
+  "runtime": "/Users/samwall/alfred/auto-poster/carousel_v3/adapters/linkedin_identity.py",
+  "before_sha256": "e194223c2da315b9f6fc56a95d02a14e9632762fa47755dc2f1165e6a161f1ff",
+  "candidate_sha256": "5a43b5e53ebd9b1d092266e9cd6ee235f1e021d9ba8222bd355d499d52bc8d6a",
+  "native_bad_case": "S27 10:38\u201310:41 native identity body read timed out20s; actual10:41:19 screenshot subsequently exposes correct identity",
+  "change": "Only body wait20s->60s, canonical/name/AGMM identity validations unchanged",
+  "no_account_or_public_action": true
+}

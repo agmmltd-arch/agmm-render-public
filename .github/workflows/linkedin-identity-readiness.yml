@@ -1,0 +1,33 @@
+name: LinkedIn identity readiness qualification
+on:
+  workflow_dispatch:
+    inputs:
+      qa_ref:
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.qa_ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install playwright==1.58.0
+      - run: python -m playwright install --with-deps chromium
+      - run: >-
+          python .github/scripts/linkedin_identity_readiness/test_identity_readiness.py
+          --before .github/scripts/linkedin_identity_readiness/before.py
+          --candidate .github/scripts/linkedin_identity_readiness/candidate.py
+          --output qualification.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linkedin-identity-readiness-result
+          path: qualification.json
+          retention-days: 3
