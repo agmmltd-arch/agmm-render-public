@@ -29,6 +29,7 @@ W4K, H4K = 3840, 2160
 # MASTER_GAIN_DB: must come from authoritative package contract, not invented
 FID_SPECIFIC_SETTINGS = {
     "F02": {"TRUE_PEAK_MAX_DBTP": -1.0, "MASTER_GAIN_DB": 0.0},
+    "F03": {"TRUE_PEAK_MAX_DBTP": -1.0, "MASTER_GAIN_DB": 0.0},
     "F07": {"TRUE_PEAK_MAX_DBTP": -1.0, "MASTER_GAIN_DB": -0.5},
 }
 
