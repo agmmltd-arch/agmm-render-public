@@ -68,7 +68,8 @@ const EXTRACT = (cfg) => {
     store.paths.set(el, k);
     return k;
   };
-  const MIN_OBJ = cfg.minObj || 2500;     // px^2: smaller painted things are texture, not objects
+  const MIN_OBJ = cfg.minObj || 1200;     // px^2: smaller painted things are texture, not objects (judge uses its own 2500 floor on the track MAX, so a box that shrinks past a floor is not mistaken for a blink)
+  const MIN_SVG = cfg.minSvg || 6000;     // an SVG shape (clock hand, spark, dash, dot) is a drawn mark: only large ones are objects
   const els = [];                          // [key, kind, box(4), eo, sc, rot, vis, zi, extra]
   const metas = [];
   const zOf = (cs) => { const z = parseInt(cs.zIndex, 10); return Number.isFinite(z) ? z : 0; };
@@ -159,13 +160,13 @@ const EXTRACT = (cfg) => {
     }
     // ---- painted objects
     if (!hidden && el !== root) {
-      let kind = null, eo = op;
+      let kind = null, eo = op, svgShape = false;
       if (tag === 'IMG' || tag === 'VIDEO' || tag === 'CANVAS' || tag === 'PICTURE') kind = tag.toLowerCase();
       else if (SVGSHAPE.has(tag)) {
         const f = cs.fill, st = cs.stroke;
         const fa = f !== 'none' ? (rgba(f) ? rgba(f).a : 1) * parseFloat(cs.fillOpacity || 1) : 0;
         const sa = (st !== 'none' && parseFloat(cs.strokeWidth) > 0) ? parseFloat(cs.strokeOpacity || 1) : 0;
-        if (tag === 'IMAGE' || fa > 0.05 || sa > 0.05) { kind = 'svg'; eo = op * Math.max(fa, sa); }
+        if (tag === 'IMAGE' || fa > 0.05 || sa > 0.05) { kind = 'svg'; eo = op * Math.max(fa, sa); svgShape = true; }
       } else if (!(typeof SVGElement !== 'undefined' && el instanceof SVGElement)) {
         const bg = rgba(cs.backgroundColor), hasImg = cs.backgroundImage && cs.backgroundImage !== 'none';
         const bw = parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
@@ -177,7 +178,7 @@ const EXTRACT = (cfg) => {
         const r = el.getBoundingClientRect();
         const b = [r.left, r.top, r.right, r.bottom];
         const c = clip ? inter(b, clip) : b;
-        if (area(b) >= MIN_OBJ) {
+        if (area(b) >= (svgShape ? MIN_SVG : MIN_OBJ)) {
           const frac = area(b) > 0 ? area(c) / area(b) : 0;
           els.push([keyOf(el), kind, b.map((v) => +v.toFixed(1)), +eo.toFixed(3), +sc.toFixed(4), +rot.toFixed(4), +frac.toFixed(3), zc.join('.'),
                     { e: short(el), pid: keyOf(el.parentElement || el), cr: (cs.borderTopLeftRadius || '0'), sh: (cs.boxShadow && cs.boxShadow !== 'none') ? 1 : 0, bw: parseFloat(cs.borderTopWidth) || 0 }]);
