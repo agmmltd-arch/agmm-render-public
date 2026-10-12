@@ -27,6 +27,10 @@ on:
       round:
         description: Round number (gate/r<N>)
         required: true
+      runner:
+        description: 'Runner label. Default macos-15-intel: the Mac this gate used to run on is Intel x86_64, and the arm64 runner decodes and scales frames with different SIMD code, which moved borderline static-hold and stereo numbers (S71 check 3, 12 Oct)'
+        required: false
+        default: macos-15-intel
 
 permissions:
   contents: read
@@ -37,7 +41,7 @@ concurrency:
 
 jobs:
   gate:
-    runs-on: macos-latest
+    runs-on: ${{ inputs.runner }}
     timeout-minutes: 60
     env:
       GH_TOKEN: ${{ github.token }}
