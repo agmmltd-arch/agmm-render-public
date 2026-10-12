@@ -71,7 +71,8 @@ const EXTRACT = (cfg) => {
   const MIN_OBJ = cfg.minObj || 1200;     // px^2: smaller painted things are texture, not objects (judge uses its own 2500 floor on the track MAX, so a box that shrinks past a floor is not mistaken for a blink)
   const MIN_SVG = cfg.minSvg || 6000;     // an SVG shape (clock hand, spark, dash, dot) is a drawn mark: only large ones are objects
   const els = [];                          // [key, kind, box(4), eo, sc, rot, vis, zi, extra]
-  let odc = 0;                             // document order of every element visited: with the z-index chain it gives the paint order
+  // document order of every element, assigned ONCE (stable across frames): with the z-index chain it gives the paint order
+  if (!store.ord) { store.ord = new WeakMap(); let n = 0; for (const x of root.querySelectorAll('*')) store.ord.set(x, n++); }
   const metas = [];
   const zOf = (cs) => { const z = parseInt(cs.zIndex, 10); return Number.isFinite(z) ? z : 0; };
   const canvases = [];
@@ -81,7 +82,7 @@ const EXTRACT = (cfg) => {
     if (cs.display === 'none') return;
     const op = ctx.op * parseFloat(cs.opacity);
     if (!(op > 0.02)) return;
-    const od = odc++;
+    const od = store.ord.get(el) || 0;
     const [s1, rot1] = matScale(cs.transform);
     const sc = ctx.sc * s1 * indScale(cs.scale);
     if (!(sc > 0.01)) return;
