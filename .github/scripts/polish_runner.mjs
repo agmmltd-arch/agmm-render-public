@@ -71,6 +71,7 @@ const EXTRACT = (cfg) => {
   const MIN_OBJ = cfg.minObj || 1200;     // px^2: smaller painted things are texture, not objects (judge uses its own 2500 floor on the track MAX, so a box that shrinks past a floor is not mistaken for a blink)
   const MIN_SVG = cfg.minSvg || 6000;     // an SVG shape (clock hand, spark, dash, dot) is a drawn mark: only large ones are objects
   const els = [];                          // [key, kind, box(4), eo, sc, rot, vis, zi, extra]
+  let odc = 0;                             // document order of every element visited: with the z-index chain it gives the paint order
   const metas = [];
   const zOf = (cs) => { const z = parseInt(cs.zIndex, 10); return Number.isFinite(z) ? z : 0; };
   const canvases = [];
@@ -80,6 +81,7 @@ const EXTRACT = (cfg) => {
     if (cs.display === 'none') return;
     const op = ctx.op * parseFloat(cs.opacity);
     if (!(op > 0.02)) return;
+    const od = odc++;
     const [s1, rot1] = matScale(cs.transform);
     const sc = ctx.sc * s1 * indScale(cs.scale);
     if (!(sc > 0.01)) return;
@@ -155,7 +157,7 @@ const EXTRACT = (cfg) => {
         let txt = raw; const tt = cs.textTransform; if (tt === 'uppercase') txt = raw.toUpperCase(); else if (tt === 'lowercase') txt = raw.toLowerCase();
         if (!store.meta.has(key)) store.meta.set(key, 1);
         els.push([key, 'text', bx.map((v) => +v.toFixed(1)), +(op * alpha).toFixed(3), +fsc.toFixed(4), +rot.toFixed(4), tot > 0 ? +(vis / tot).toFixed(3) : 0, zc.join('.'),
-                  { t: txt.slice(0, 120), fs: +(fs0 * fsc).toFixed(1), ta: cs.textAlign, lw, ln: lines.map((r) => r.map((v) => +v.toFixed(1))), e: short(el), pid: keyOf(el.parentElement || el),
+                  { t: txt.slice(0, 120), fs: +(fs0 * fsc).toFixed(1), ta: cs.textAlign, lw, ln: lines.map((r) => r.map((v) => +v.toFixed(1))), e: short(el), pid: keyOf(el.parentElement || el), od,
                     c: fill ? [fill.r, fill.g, fill.b].map((v) => Math.round(v)).join(',') : '' }]);
       }
     }
@@ -182,7 +184,7 @@ const EXTRACT = (cfg) => {
         if (area(b) >= (svgShape ? MIN_SVG : MIN_OBJ)) {
           const frac = area(b) > 0 ? area(c) / area(b) : 0;
           els.push([keyOf(el), kind, b.map((v) => +v.toFixed(1)), +eo.toFixed(3), +sc.toFixed(4), +rot.toFixed(4), +frac.toFixed(3), zc.join('.'),
-                    { e: short(el), pid: keyOf(el.parentElement || el), cr: (cs.borderTopLeftRadius || '0'), sh: (cs.boxShadow && cs.boxShadow !== 'none') ? 1 : 0, bw: parseFloat(cs.borderTopWidth) || 0,
+                    { e: short(el), pid: keyOf(el.parentElement || el), od, cr: (cs.borderTopLeftRadius || '0'), sh: (cs.boxShadow && cs.boxShadow !== 'none') ? 1 : 0, bw: parseFloat(cs.borderTopWidth) || 0,
                       c: (() => { const b2 = rgba(cs.backgroundColor); return b2 && b2.a > 0.05 ? [b2.r, b2.g, b2.b].map((v) => Math.round(v)).join(',') : ''; })(),
                       ...(tag === 'IMG' ? { nw: el.naturalWidth || 0, nh: el.naturalHeight || 0, ow: el.offsetWidth || 0, oh: el.offsetHeight || 0, of: cs.objectFit, src: (el.getAttribute('src') || '').slice(-60) } : {}) }]);
         }
