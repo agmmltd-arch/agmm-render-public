@@ -1,0 +1,114 @@
+name: AGMM short polish
+run-name: AGMM short polish ${{ inputs.tag }}
+
+# Frame-by-frame DOM facts for a short's own built package (kit/tools/polish_check.py, backend "actions"). Sibling of
+# agmm-short-domlint.yml and agmm-short-snap.yml: the same release asset (package only, secret-scanned by the dispatching
+# tool), the same hash check and safe extract. Instead of a few hundred samples it seeks each part's own GSAP timeline at
+# EVERY output frame (30 fps) in headless Chrome and writes ONE JSON of per-element, per-frame facts (box, opacity, scale,
+# rotation, visible share). Mechanical only: it cannot render a video, approve, arm or publish anything.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release tag holding exactly one asset, source.tar.gz
+        required: true
+      source_sha256:
+        description: Exact SHA256 of source.tar.gz
+        required: true
+      tag:
+        description: Unique safe label used for run title, concurrency and artifact name
+        required: true
+      parts:
+        description: 'JSON list of {"look": "...", "part": "...", "off": seconds, "dur": seconds} (build/parts.json parts)'
+        required: true
+      from_s:
+        description: Story second to start at (default 0)
+        required: false
+        default: '0'
+      to_s:
+        description: Story second to stop at (default end)
+        required: false
+        default: '99999'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agmm-short-polish-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  polish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE: ${{ inputs.release }}
+      SOURCE_SHA256: ${{ inputs.source_sha256 }}
+      TAG: ${{ inputs.tag }}
+      PARTS: ${{ inputs.parts }}
+      FROM_S: ${{ inputs.from_s }}
+      TO_S: ${{ inputs.to_s }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts/snap_short_package.py
+            .github/scripts/render_short_package.py
+            .github/scripts/polish_runner.mjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        id: chrome
+        with:
+          chrome-version: stable
+      - name: Validate labels, download and verify the exact package, validate the parts
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          [[ "$SOURCE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$FROM_S" =~ ^[0-9]+(\.[0-9]+)?$ ]]
+          [[ "$TO_S" =~ ^[0-9]+(\.[0-9]+)?$ ]]
+          assets="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE" --jq '[.assets[].name] | sort | join(",")')"
+          test "$assets" = "source.tar.gz"
+          mkdir exact-input
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p source.tar.gz -D exact-input
+          printf '%s' "$PARTS" > parts.json
+          python3 - <<'PY'
+          import json, re
+          rows = json.load(open("parts.json"))
+          assert isinstance(rows, list) and 1 <= len(rows) <= 32, "parts must be a list of 1..32 jobs"
+          lab = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+          plan = []
+          for r in rows:
+              assert lab.match(r["look"]) and lab.match(r["part"]), "unsafe label"
+              assert 0 <= float(r["off"]) <= 3600 and 0 < float(r["dur"]) <= 3600, "bad off/dur"
+              plan.append({"look": r["look"], "part": r["part"], "times": [0]})
+          json.dump(plan, open("plan.json", "w"))
+          PY
+          python3 .github/scripts/snap_short_package.py prepare \
+            --source exact-input/source.tar.gz --source-sha256 "$SOURCE_SHA256" \
+            --plan "$(cat plan.json)" --output prepared
+      - name: Install puppeteer-core (the browser is the runner's own Chrome)
+        run: npm install --no-audit --no-fund --no-save puppeteer-core@25.12.0
+      - name: Seek every part's timeline at every frame and record the DOM facts
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          set -euo pipefail
+          mkdir -p result
+          node .github/scripts/polish_runner.mjs --root prepared/project --parts parts.json \
+            --out result/raw.json --chrome "$CHROME_PATH" --from "$FROM_S" --to "$TO_S"
+          gzip -9 result/raw.json
+          ls -la result
+      - name: Upload the facts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-POLISH
+          path: result/raw.json.gz
+          retention-days: 1
+          if-no-files-found: error
