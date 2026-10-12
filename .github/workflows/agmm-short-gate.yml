@@ -92,12 +92,17 @@ jobs:
         run: |
           set -euo pipefail
           t0=$(date +%s)
-          brew install ffmpeg
+          # ffmpeg 7 on purpose: the Mac that used to run this gate has 7.1, and ffmpeg 9 dropped `-vsync` (check 8's contact sheets) and
+          # may move loudness / filter numbers. The gate must judge with the same tools the local gate does.
+          brew install ffmpeg@7
+          echo "$(brew --prefix ffmpeg@7)/bin" >> "$GITHUB_PATH"
+          export PATH="$(brew --prefix ffmpeg@7)/bin:$PATH"
           python3 -m venv "$RUNNER_TEMP/venv"
           "$RUNNER_TEMP/venv/bin/pip" install --quiet numpy pillow
           echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
           echo "install_s=$(( $(date +%s) - t0 ))" | tee "$RUNNER_TEMP/install.txt"
           ffmpeg -version | head -1
+          ffmpeg -version | head -1 | grep -q "version 7\."
       - name: Build Apple Vision OCR and prove it reads text
         run: |
           set -euo pipefail
