@@ -1,14 +1,16 @@
 name: AGMM short gate
 run-name: AGMM short gate ${{ inputs.tag }}
 
-# The 15-check QA gate for one collected short master (qa/gate.py checks 1-10 + kit checks 11-15), run on a hosted macOS
-# runner so the operator's Mac does none of the decoding. macOS because check 2 is Apple Vision OCR (kit/tools/ocr_vision,
-# compiled here from the bundled ocr_vision.swift and self-tested before it is trusted: its Swift source swallows errors,
-# so a broken Vision would otherwise read as "no text on screen" and PASS).
-# The bundle (the exact code the Mac would have run, the master and the audio inputs) comes from a release holding exactly
-# one asset, gate-bundle.tar.gz, verified against the dispatched SHA256. Check 9 (the critic) needs API keys and is NOT run
-# here: GATE_CRITIC=skip makes it an UNJUDGED row and the downscaled copy comes back so the Mac runs the critic on it.
-# Mechanical only: it cannot approve, arm, post or publish anything, and it holds no secrets.
+# The 15-check QA gate for one collected short master (qa/gate.py checks 1-10 + kit checks 11-15), run on a hosted Intel macOS runner
+# so the operator's Mac does none of the decoding. Intel on purpose: the Mac that used to run this gate is x86_64, and an arm64 runner
+# scales frames with different SIMD code, which moved borderline numbers (S71 check 3, a static hold of 1.9 s on arm64 and 1.4 s on the Mac).
+# Check 2 (Apple Vision OCR) is NOT run here: Vision's output depends on the macOS version (S71: 273 text events and no edge clip on the
+# Mac's macOS 26.5, 236 events and one 5 px edge clip on macOS 15.7), so the Mac runs it and ships it as gate/ocr.json, bound to the
+# master's sha256 (GATE_OCR_JSON). Check 9 (the critic) needs API keys and is NOT run here either: GATE_CRITIC=skip makes it an UNJUDGED
+# row, the 720p copy is shipped early, and the Mac runs the critic on it while the gate runs.
+# The bundle (the exact code the Mac would have run, the master and the audio inputs) comes from a release holding exactly one asset,
+# gate-bundle.tar.gz, verified against the dispatched SHA256. Mechanical only: it cannot approve, arm, post or publish anything, and it
+# holds no secrets.
 on:
   workflow_dispatch:
     inputs:
@@ -107,24 +109,6 @@ jobs:
           echo "install_s=$(( $(date +%s) - t0 ))" | tee "$RUNNER_TEMP/install.txt"
           ffmpeg -version | head -1
           ffmpeg -version | head -1 | grep -q "version 7\."
-      - name: Build Apple Vision OCR and prove it reads text
-        run: |
-          set -euo pipefail
-          K="$RUNNER_TEMP/w/v2/kit/tools"
-          swiftc -O "$K/ocr_vision.swift" -o "$K/ocr_vision"
-          # self-test: a frame with known words must come back through Vision, else this runner cannot be trusted
-          # (ocr_vision.swift swallows Vision errors and would print an empty result)
-          python3 - <<'PY'
-          import os
-          from PIL import Image, ImageDraw, ImageFont
-          im = Image.new("RGB", (1080, 300), "white")
-          ImageDraw.Draw(im).text((40, 90), "GATE VISION SELFTEST", fill="black",
-                                  font=ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 96))
-          im.save(os.path.join(os.environ["RUNNER_TEMP"], "vision-selftest.png"))
-          PY
-          out="$("$K/ocr_vision" "$RUNNER_TEMP/vision-selftest.png")"
-          echo "$out"
-          echo "$out" | grep -qi "SELFTEST"
       - name: Make the critic's 720p copy first
         run: |
           set -euo pipefail
@@ -154,6 +138,7 @@ jobs:
       - name: Run the gate
         env:
           GATE_DS_REUSE: '1'
+          GATE_OCR_JSON: ${{ runner.temp }}/w/v2/kit/out/${{ inputs.short_id }}/gate/ocr.json
         run: |
           set -euo pipefail
           t0=$(date +%s)
