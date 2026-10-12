@@ -155,7 +155,8 @@ const EXTRACT = (cfg) => {
         let txt = raw; const tt = cs.textTransform; if (tt === 'uppercase') txt = raw.toUpperCase(); else if (tt === 'lowercase') txt = raw.toLowerCase();
         if (!store.meta.has(key)) store.meta.set(key, 1);
         els.push([key, 'text', bx.map((v) => +v.toFixed(1)), +(op * alpha).toFixed(3), +fsc.toFixed(4), +rot.toFixed(4), tot > 0 ? +(vis / tot).toFixed(3) : 0, zc.join('.'),
-                  { t: txt.slice(0, 120), fs: +(fs0 * fsc).toFixed(1), ta: cs.textAlign, lw, ln: lines.map((r) => r.map((v) => +v.toFixed(1))), e: short(el), pid: keyOf(el.parentElement || el) }]);
+                  { t: txt.slice(0, 120), fs: +(fs0 * fsc).toFixed(1), ta: cs.textAlign, lw, ln: lines.map((r) => r.map((v) => +v.toFixed(1))), e: short(el), pid: keyOf(el.parentElement || el),
+                    c: fill ? [fill.r, fill.g, fill.b].map((v) => Math.round(v)).join(',') : '' }]);
       }
     }
     // ---- painted objects
@@ -182,6 +183,7 @@ const EXTRACT = (cfg) => {
           const frac = area(b) > 0 ? area(c) / area(b) : 0;
           els.push([keyOf(el), kind, b.map((v) => +v.toFixed(1)), +eo.toFixed(3), +sc.toFixed(4), +rot.toFixed(4), +frac.toFixed(3), zc.join('.'),
                     { e: short(el), pid: keyOf(el.parentElement || el), cr: (cs.borderTopLeftRadius || '0'), sh: (cs.boxShadow && cs.boxShadow !== 'none') ? 1 : 0, bw: parseFloat(cs.borderTopWidth) || 0,
+                      c: (() => { const b2 = rgba(cs.backgroundColor); return b2 && b2.a > 0.05 ? [b2.r, b2.g, b2.b].map((v) => Math.round(v)).join(',') : ''; })(),
                       ...(tag === 'IMG' ? { nw: el.naturalWidth || 0, nh: el.naturalHeight || 0, ow: el.offsetWidth || 0, oh: el.offsetHeight || 0, of: cs.objectFit, src: (el.getAttribute('src') || '').slice(-60) } : {}) }]);
         }
       }
@@ -231,7 +233,7 @@ for (const job of parts) {
       let e = els[key];
       if (!e) { e = els[key] = { m: { k: r[1], ...r[8] }, f: [], d: [] }; }
       e.f.push(fi);
-      e.d.push([r[2][0], r[2][1], r[2][2], r[2][3], r[3], r[4], r[5], r[6], r[7]]);
+      e.d.push([r[2][0], r[2][1], r[2][2], r[2][3], r[3], r[4], r[5], r[6], r[7], (r[8] && r[8].c) || '']);
       if (r[1] === 'text' && r[8]) { e.m.t = r[8].t; if (r[8].lw) e.m.lw = r[8].lw; e.m.fs = r[8].fs; }
     }
   }
