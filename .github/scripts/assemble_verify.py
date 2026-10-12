@@ -200,6 +200,15 @@ def get_fid_settings(fid: str) -> dict:
     return FID_SPECIFIC_SETTINGS[fid]
 
 
+def master_mux_cmd(concat: Path, adjusted_mix: Path, master: Path, duration: float) -> list:
+    """Join the verified video segments (stream copy) with the sealed mix. The output is capped at the composition duration with -t,
+    never -shortest: when the mix is a few ms shorter than the picture (F03 r2: 627.194 s against 627.200 s) -shortest stops at the audio
+    end and drops the last video frame (18,815 of 18,816), which the frame-count check then refuses (run 38184815821)."""
+    return ["ffmpeg", "-hide_banner", "-v", "error", "-xerror", "-y", "-f", "concat", "-safe", "0",
+            "-i", str(concat), "-i", str(adjusted_mix), "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy",
+            "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-t", "%.4f" % duration, "-movflags", "+faststart", str(master)]
+
+
 def assemble(segdir: Path, pkg: Path, out: Path, segs: list[dict], duration: float, fid: str) -> dict:
     require_hosted_media()
     settings = get_fid_settings(fid)
@@ -257,9 +266,7 @@ def assemble(segdir: Path, pkg: Path, out: Path, segs: list[dict], duration: flo
     concat = out / "concat.txt"
     concat.write_text("".join(f"file '{p.resolve()}'\n" for p in files))
     master = out / f"{fid}-MASTER-4K.mp4"
-    run(["ffmpeg", "-hide_banner", "-v", "error", "-xerror", "-y", "-f", "concat", "-safe", "0",
-         "-i", str(concat), "-i", str(adjusted_mix), "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy",
-         "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-shortest", "-movflags", "+faststart", str(master)])
+    run(master_mux_cmd(concat, adjusted_mix, master, duration))
     master_probe = probe(master)
     mv = video_stream(master_probe)
     master_frames = int(mv.get("nb_read_packets", 0))
@@ -337,6 +344,8 @@ def self_test() -> None:
         pass
     else:
         raise AssertionError("missing final segment was accepted")
+    cmd = master_mux_cmd(Path("c.txt"), Path("m.flac"), Path("o.mp4"), 627.2)
+    assert "-shortest" not in cmd and cmd[cmd.index("-t") + 1] == "627.2000", cmd
     print("self-test PASS: 73 contiguous segments, 18,973 expected frames, missing-tail refusal")
 
 
