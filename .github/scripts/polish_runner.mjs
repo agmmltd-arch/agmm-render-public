@@ -181,7 +181,8 @@ const EXTRACT = (cfg) => {
         if (area(b) >= (svgShape ? MIN_SVG : MIN_OBJ)) {
           const frac = area(b) > 0 ? area(c) / area(b) : 0;
           els.push([keyOf(el), kind, b.map((v) => +v.toFixed(1)), +eo.toFixed(3), +sc.toFixed(4), +rot.toFixed(4), +frac.toFixed(3), zc.join('.'),
-                    { e: short(el), pid: keyOf(el.parentElement || el), cr: (cs.borderTopLeftRadius || '0'), sh: (cs.boxShadow && cs.boxShadow !== 'none') ? 1 : 0, bw: parseFloat(cs.borderTopWidth) || 0 }]);
+                    { e: short(el), pid: keyOf(el.parentElement || el), cr: (cs.borderTopLeftRadius || '0'), sh: (cs.boxShadow && cs.boxShadow !== 'none') ? 1 : 0, bw: parseFloat(cs.borderTopWidth) || 0,
+                      ...(tag === 'IMG' ? { nw: el.naturalWidth || 0, nh: el.naturalHeight || 0, ow: el.offsetWidth || 0, oh: el.offsetHeight || 0, of: cs.objectFit, src: (el.getAttribute('src') || '').slice(-60) } : {}) }]);
         }
       }
     }
