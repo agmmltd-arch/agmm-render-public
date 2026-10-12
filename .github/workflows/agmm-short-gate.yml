@@ -121,7 +121,35 @@ jobs:
           out="$("$K/ocr_vision" "$RUNNER_TEMP/vision-selftest.png")"
           echo "$out"
           echo "$out" | grep -qi "SELFTEST"
+      - name: Make the critic's 720p copy first
+        run: |
+          set -euo pipefail
+          # check 9 (the critic) runs on the Mac, which has the API keys. Its input is made and shipped NOW, before the long gate, so the
+          # Mac's critic overlaps the gate instead of following it (the critic, not the checks, was most of the wall time).
+          python3 - <<'PY'
+          import os, shutil, sys
+          w = os.path.join(os.environ["RUNNER_TEMP"], "w", "v2")
+          sys.path.insert(0, os.path.join(w, "qa"))
+          import gate
+          sid, rnd = os.environ["SHORT_ID"], os.environ["ROUND"]
+          out = os.path.join(w, "kit", "out", sid)
+          g = os.path.join(out, "gate", "r" + rnd)
+          os.makedirs(g, exist_ok=True)
+          ok, err = gate.make_downscaled_copy(os.path.join(out, "FINAL.mp4"), os.path.join(g, "downscaled_for_gemini.mp4"))
+          assert ok, err[-400:]
+          os.makedirs(os.path.join(os.environ["RUNNER_TEMP"], "ds"), exist_ok=True)
+          shutil.copy(os.path.join(g, "downscaled_for_gemini.mp4"), os.path.join(os.environ["RUNNER_TEMP"], "ds"))
+          PY
+      - name: Ship the critic's copy now
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-DS
+          path: ${{ runner.temp }}/ds
+          retention-days: 1
+          if-no-files-found: error
       - name: Run the gate
+        env:
+          GATE_DS_REUSE: '1'
         run: |
           set -euo pipefail
           t0=$(date +%s)
