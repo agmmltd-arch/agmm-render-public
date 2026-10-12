@@ -187,7 +187,7 @@ const EXTRACT = (cfg) => {
           els.push([keyOf(el), kind, b.map((v) => +v.toFixed(1)), +eo.toFixed(3), +sc.toFixed(4), +rot.toFixed(4), +frac.toFixed(3), zc.join('.'),
                     { e: short(el), pid: keyOf(el.parentElement || el), od, cr: (cs.borderTopLeftRadius || '0'), sh: (cs.boxShadow && cs.boxShadow !== 'none') ? 1 : 0, bw: parseFloat(cs.borderTopWidth) || 0,
                       c: (() => { const b2 = rgba(cs.backgroundColor); return b2 && b2.a > 0.05 ? [b2.r, b2.g, b2.b].map((v) => Math.round(v)).join(',') : ''; })(),
-                      ...(tag === 'IMG' ? { nw: el.naturalWidth || 0, nh: el.naturalHeight || 0, ow: el.offsetWidth || 0, oh: el.offsetHeight || 0, of: cs.objectFit, src: (el.getAttribute('src') || '').slice(-60) } : {}) }]);
+                      ...(tag === 'IMG' ? { cbx: c.map((v) => +v.toFixed(1)), nw: el.naturalWidth || 0, nh: el.naturalHeight || 0, ow: el.offsetWidth || 0, oh: el.offsetHeight || 0, of: cs.objectFit, src: (el.getAttribute('src') || '').slice(-60) } : {}) }]);
         }
       }
     }
@@ -236,7 +236,7 @@ for (const job of parts) {
       let e = els[key];
       if (!e) { e = els[key] = { m: { k: r[1], ...r[8] }, f: [], d: [] }; }
       e.f.push(fi);
-      e.d.push([r[2][0], r[2][1], r[2][2], r[2][3], r[3], r[4], r[5], r[6], r[7], (r[8] && r[8].c) || '']);
+      e.d.push([r[2][0], r[2][1], r[2][2], r[2][3], r[3], r[4], r[5], r[6], r[7], (r[8] && r[8].c) || '', (r[8] && r[8].cbx) || null]);
       if (r[1] === 'text' && r[8]) { e.m.t = r[8].t; if (r[8].lw) e.m.lw = r[8].lw; e.m.fs = r[8].fs; }
     }
   }
