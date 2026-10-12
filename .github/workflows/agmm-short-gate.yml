@@ -105,7 +105,14 @@ jobs:
           swiftc -O "$K/ocr_vision.swift" -o "$K/ocr_vision"
           # self-test: a frame with known words must come back through Vision, else this runner cannot be trusted
           # (ocr_vision.swift swallows Vision errors and would print an empty result)
-          ffmpeg -v error -y -f lavfi -i "color=c=white:s=1080x300" -vf "drawtext=fontfile=/System/Library/Fonts/Supplemental/Arial.ttf:text='GATE VISION SELFTEST':fontsize=96:fontcolor=black:x=40:y=100" -frames:v 1 "$RUNNER_TEMP/vision-selftest.png"
+          python3 - <<'PY'
+          import os
+          from PIL import Image, ImageDraw, ImageFont
+          im = Image.new("RGB", (1080, 300), "white")
+          ImageDraw.Draw(im).text((40, 90), "GATE VISION SELFTEST", fill="black",
+                                  font=ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 96))
+          im.save(os.path.join(os.environ["RUNNER_TEMP"], "vision-selftest.png"))
+          PY
           out="$("$K/ocr_vision" "$RUNNER_TEMP/vision-selftest.png")"
           echo "$out"
           echo "$out" | grep -qi "SELFTEST"
