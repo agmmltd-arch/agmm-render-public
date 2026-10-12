@@ -204,6 +204,7 @@ const browser = await puppeteer.launch({ executablePath: CHROME, headless: true,
 const result = { runner: 'polish_runner.mjs v1', chrome: await browser.version(), fps: FPS, parts: {} };
 let fail = 0;
 for (const job of parts) {
+  if (job.off + job.dur < T_FROM || job.off > T_TO) { console.log('runner: ' + job.part + ' skipped (outside --from/--to)'); continue; }
   const page = await browser.newPage();
   await page.setViewport({ width: 1080, height: 1920, deviceScaleFactor: 1 });
   const errs = [];
