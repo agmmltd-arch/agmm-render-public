@@ -1,0 +1,76 @@
+name: AGMM native master evaluation
+run-name: AGMM native master evaluation ${{ fromJSON(inputs.request).tag }}
+on:
+  workflow_dispatch:
+    inputs:
+      request:
+        description: Immutable protected S87 native evaluation request, proposal only
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: agmm-native-master-evaluation-S87
+  cancel-in-progress: false
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      AGMM_HOSTED_MASTER_EVALUATION: '1'
+      REQUEST: ${{ inputs.request }}
+      TZ: Europe/London
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .github/scripts/master_evaluation_existing.py
+            .github/scripts/master-evaluation-native/
+            .github/scripts/render_short_package.py
+            .github/workflows/agmm-short-master-evaluate.yml
+      - name: Validate immutable native closure and protected namespace
+        id: binding
+        run: |
+          set -euo pipefail
+          printf '%s' "$REQUEST" > evaluation-request.json
+          python3 .github/scripts/master_evaluation_existing.py --preflight
+      - name: Check out protected individual inputs without persistent credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ steps.binding.outputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-evaluation-inputs
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ steps.binding.outputs.private_prefix }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12.8'
+      - name: Install native pixel/probe dependencies and original path root
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet numpy==2.0.2 pillow==11.3.0
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          sudo mkdir -p /Users/samwall/alfred/builds
+          sudo chown -R "$(id -u):$(id -g)" /Users/samwall
+          command -v gh git ffprobe > /dev/null
+      - name: Run unchanged native checks in the isolated original layout
+        run: |
+          set -euo pipefail
+          mkdir evaluation-work
+          python3 .github/scripts/master_evaluation_existing.py \
+            --private-root "$GITHUB_WORKSPACE/private-evaluation-inputs" \
+            --work "$GITHUB_WORKSPACE/evaluation-work" \
+            --output "$GITHUB_WORKSPACE/evaluation-result"
+      - name: Return only evaluation and provenance JSON
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ fromJSON(inputs.request).tag }}-EVALUATION
+          path: evaluation-result/*.json
+          retention-days: 1
+          if-no-files-found: error
