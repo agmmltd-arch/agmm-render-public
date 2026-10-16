@@ -3,13 +3,15 @@ run-name: AGMM short DOM lint ${{ inputs.tag }}
 
 # DOM-level lint facts for a short's own built package (kit/tools/dom_lint.py, backend "actions"). Sibling of agmm-short-snap.yml:
 # the same release asset (package only, secret-scanned by the dispatching tool), the same hash check, the same plan format.
-# Instead of JPG frames it seeks each part's own GSAP timeline in headless Chrome and writes ONE JSON of facts (text boxes,
+# existing_request accepts a previously sealed three-asset render release and runs the full native Python analysis, including
+# source-image pixels, on Ubuntu. Legacy snapshot callers retain the one-asset contract and raw JSON output.
+# Instead of JPG frames it seeks each part's own GSAP timeline in headless Chrome and writes JSON facts (text boxes,
 # opacity, font px, painted elements) per sample time. Mechanical only: it cannot render a video, approve, arm or publish anything.
 on:
   workflow_dispatch:
     inputs:
       release:
-        description: Release tag holding exactly one asset, source.tar.gz
+        description: Legacy source-only release, or exact native render release with existing_request
         required: true
       source_sha256:
         description: Exact SHA256 of source.tar.gz
@@ -24,6 +26,10 @@ on:
         description: 'JSON {"visible": {x0,y0,x1,y1}, "overlays": [...]}: only picks which texts get the occlusion probe'
         required: false
         default: '{}'
+      existing_request:
+        description: 'Optional exact native render REQUEST binding: full native analysis and pixels run on Ubuntu'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -43,6 +49,7 @@ jobs:
       TAG: ${{ inputs.tag }}
       PLAN: ${{ inputs.plan }}
       PROFILE: ${{ inputs.profile }}
+      EXISTING_REQUEST: ${{ inputs.existing_request }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -51,6 +58,8 @@ jobs:
             .github/scripts/snap_short_package.py
             .github/scripts/render_short_package.py
             .github/scripts/dom_lint_runner.mjs
+            .github/scripts/dom_lint_existing.py
+            .github/scripts/domlint-native/
           sparse-checkout-cone-mode: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
@@ -60,6 +69,7 @@ jobs:
         with:
           chrome-version: stable
       - name: Validate labels, download and verify the exact package, validate the plan
+        if: inputs.existing_request == ''
         run: |
           set -euo pipefail
           [[ "$RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
@@ -74,6 +84,36 @@ jobs:
             --plan "$PLAN" --output prepared
           printf '%s' "$PROFILE" > profile.json
           python3 -c "import json; json.load(open('profile.json'))"
+      - name: Verify and prepare existing native render inputs on Ubuntu
+        if: inputs.existing_request != ''
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          [[ "$SOURCE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          printf '%s' "$EXISTING_REQUEST" > existing-request.json
+          python3 - <<'PY'
+          import json, os, sys
+          sys.path.insert(0, '.github/scripts')
+          import dom_lint_existing as existing
+          payload = json.load(open('existing-request.json'))
+          req, _ = existing.validate_request(payload)
+          existing.require_host(payload)
+          existing.require(req['workflow_inputs']['release'] == os.environ['RELEASE'], 'release input mismatch')
+          existing.require(req['inputs']['source']['sha256'] == os.environ['SOURCE_SHA256'], 'source input mismatch')
+          PY
+          mkdir exact-input
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE" > exact-input/release.json
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p source.tar.gz -p parts.json -D exact-input
+          python3 .github/scripts/dom_lint_existing.py prepare
+          cp prepared/profile.json profile.json
+      - name: Install native pixel-analysis libraries
+        if: inputs.existing_request != ''
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/domlint-venv"
+          "$RUNNER_TEMP/domlint-venv/bin/pip" install --quiet numpy==2.0.2 pillow==11.3.0
+          echo "$RUNNER_TEMP/domlint-venv/bin" >> "$GITHUB_PATH"
       - name: Install puppeteer-core (the browser is the runner's own Chrome)
         run: npm install --no-audit --no-fund --no-save puppeteer-core@25.12.0
       - name: Seek every part's timeline and record the DOM facts
@@ -84,10 +124,13 @@ jobs:
           mkdir -p result
           node .github/scripts/dom_lint_runner.mjs --root prepared/project --plan prepared/PLAN.json \
             --out result/raw.json --chrome "$CHROME_PATH" --profile profile.json
+      - name: Run the entire unchanged native rule set, including source-image pixels
+        if: inputs.existing_request != ''
+        run: python3 .github/scripts/dom_lint_existing.py analyze
       - name: Upload the facts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ${{ inputs.tag }}-DOMLINT
-          path: result/raw.json
+          path: result/*.json
           retention-days: 1
           if-no-files-found: error
