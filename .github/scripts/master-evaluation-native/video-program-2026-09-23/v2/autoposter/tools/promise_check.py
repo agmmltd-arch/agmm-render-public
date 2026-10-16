@@ -25,6 +25,7 @@ import json
 import re
 import sys
 import urllib.request
+from urllib.parse import unquote_plus, urlsplit, urlunsplit
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -43,6 +44,45 @@ AGMM_ADDR = re.compile(r"(?i)agmm\s*(?:\.|dot)\s*co\s*(?:\.|dot)\s*uk(/[\w\-/]*)
 _PAGES: dict = {}
 
 
+class _QATag(urllib.request.BaseHandler):
+    handler_order = 90
+
+    def http_request(self, request):
+        parts = urlsplit(request.full_url)
+        first_party = parts.hostname in ("agmm.co.uk", "www.agmm.co.uk")
+        from_first_party = urlsplit("//" + request.origin_req_host).hostname in ("agmm.co.uk", "www.agmm.co.uk")
+        if first_party or from_first_party:
+            tags = {"utm_source": "qa", "utm_campaign": "qa_release_audit"}
+            query = []
+            for pair in parts.query.split("&") if parts.query else []:
+                key, _, value = pair.partition("=")
+                key, value = unquote_plus(key), unquote_plus(value)
+                if key in tags and (first_party or value == tags[key]): continue
+                query.append(pair)
+            if first_party: query += ["utm_source=qa", "utm_campaign=qa_release_audit"]
+            # Preserve this Request's timeout and bounded redirect_dict. Preserve
+            # unrelated query bytes and the fragment; never tag caption text.
+            request.full_url = urlunsplit((parts.scheme, parts.netloc, parts.path, "&".join(query), parts.fragment))
+        return request
+
+    https_request = http_request
+
+
+class _Redirects(urllib.request.HTTPRedirectHandler):
+    # Python3.9 has no308 handler and its redirect_request rejects308. Retain
+    # the native scheme/loop/hop limits; only GET/HEAD gain308 compatibility.
+    http_error_308 = urllib.request.HTTPRedirectHandler.http_error_302
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        compatible = 307 if code == 308 and req.get_method() in ("GET", "HEAD") else code
+        redirected = super().redirect_request(req, fp, compatible, msg, headers, newurl)
+        if redirected is not None and req.get_method() == "HEAD": redirected.method = "HEAD"
+        return redirected
+
+
+_OPENER = urllib.request.build_opener(_QATag(), _Redirects())
+
+
 def _text_of_html(h: str) -> str:
     h = re.sub(r"(?is)<(script|style|noscript)[^>]*>.*?</\1>", " ", h)
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", h))).strip()
@@ -57,7 +97,7 @@ def fetch(url: str) -> dict:
     import time as _t
     for attempt in range(3):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=25) as r:
+            with _OPENER.open(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=25) as r:
                 body = r.read(3_000_000).decode("utf-8", "replace")
                 out = {"status": r.status, "final": r.geturl(), "text": _text_of_html(body)}
         except Exception as exc:  # noqa: BLE001

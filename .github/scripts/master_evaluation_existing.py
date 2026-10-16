@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse
 import contextlib
+import copy
 import hashlib
 import importlib.util
 import io
@@ -16,7 +17,7 @@ import subprocess
 import sys
 import time
 import urllib.request
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import unquote_plus, urlsplit, urlunsplit
 
 HERE = Path(__file__).resolve().parent
 NATIVE = HERE / "master-evaluation-native"
@@ -206,10 +207,18 @@ def observe_native(plan, v2):
             loaded.validate_cached = lambda root, sid, transport=None: frozen_sound_cached(loaded, plan, root, sid, transport)
         return loaded
     native.load_module = load_with_frozen_sound
-    ctx = native.Ctx(str(v2)); captures = []
+    ctx = native.Ctx(str(v2)); captures = []; promise_calls = []
     def profile(frame, event, result):
         if event == "return" and Path(frame.f_code.co_filename).name == "validate_release.py" and frame.f_code.co_name in ("reviewer_approval", "check_row"):
-            captures.append({"function": frame.f_code.co_name, "result": result})
+            captures.append({"function": frame.f_code.co_name, "result": copy.deepcopy(result)})
+        if event == "return" and Path(frame.f_code.co_filename).name == "promise_check.py" and frame.f_code.co_name in ("fetch", "check"):
+            caller = frame.f_back
+            while caller is not None and not (Path(caller.f_code.co_filename).name == "machine_pass.py" and caller.f_code.co_name == "issue"):
+                caller = caller.f_back
+            platform_name = caller.f_locals.get("plat") if caller is not None else None
+            observed = {k: result[k] for k in ("status", "final", "error") if k in result} if frame.f_code.co_name == "fetch" and isinstance(result, dict) else result
+            promise_calls.append({"platform": platform_name, "function": frame.f_code.co_name,
+                                  "url": frame.f_locals.get("url") if frame.f_code.co_name == "fetch" else None, "result": copy.deepcopy(observed)})
     old_profile = sys.getprofile(); sys.setprofile(profile)
     try:
         if plan["mode"] == "proposal":
@@ -228,7 +237,7 @@ def observe_native(plan, v2):
                     "receipt": json.loads(receipt.read_text()) if receipt.is_file() else None}
     return {"schema": SCHEMA, "id": "S87", "plan_sha256": digest(plan), "proposal_only": True, "mode": plan["mode"], "ok": report.ok,
             "checks": report.checks, "evidence": report.evidence, "notes": report.notes, "native_rc": rc, "native_message": why,
-            "native_validator_calls": captures, "proposal": proposal}
+            "native_validator_calls": captures, "native_promise_calls": promise_calls, "proposal": proposal}
 
 
 class QATag(urllib.request.BaseHandler):
@@ -236,11 +245,18 @@ class QATag(urllib.request.BaseHandler):
     handler_order = 90
     def http_request(self, request):
         parts = urlsplit(request.full_url)
-        if parts.hostname in ("agmm.co.uk", "www.agmm.co.uk"):
-            query = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k not in ("utm_source", "utm_campaign")]
-            query += [("utm_source", "qa"), ("utm_campaign", "qa_release_audit")]
-            tagged = urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
-            return urllib.request.Request(tagged, data=request.data, headers=dict(request.header_items()), method=request.get_method())
+        first_party = parts.hostname in ("agmm.co.uk", "www.agmm.co.uk")
+        from_first_party = urlsplit("//" + request.origin_req_host).hostname in ("agmm.co.uk", "www.agmm.co.uk")
+        if first_party or from_first_party:
+            tags = {"utm_source": "qa", "utm_campaign": "qa_release_audit"}
+            query = []
+            for pair in parts.query.split("&") if parts.query else []:
+                key, _, value = pair.partition("=")
+                key, value = unquote_plus(key), unquote_plus(value)
+                if key in tags and (first_party or value == tags[key]): continue
+                query.append(pair)
+            if first_party: query += ["utm_source=qa", "utm_campaign=qa_release_audit"]
+            request.full_url = urlunsplit((parts.scheme, parts.netloc, parts.path, "&".join(query), parts.fragment))
         return request
     https_request = http_request
 
