@@ -7,17 +7,18 @@
   "video-program-2026-09-23/v2/autoposter/tools/credits.py": "291235947106e45565197abaeef2b08db832a71426fdf5db9d1d013194653303",
   "video-program-2026-09-23/v2/autoposter/tools/promise_check.py": "1afaade8d3d58987c24a3abe2acfc1de5a94518b72de95f3dbd438fec5218300",
   "video-program-2026-09-23/v2/autoposter/tools/strict_arming.py": "39751611e7876affdc789c5c153188c7f501a53768aebd836400bfb6272711a9",
-  "video-program-2026-09-23/v2/kit/tools/storyboard.py": "45a264c4b654a4758a7d14db712a3abd386dc059c7c651f504343287f4fea0c7",
+  "video-program-2026-09-23/v2/kit/tools/storyboard.py": "50ace1202175cc5316ad3bad08cea50faaab977c9d7531fa7ca2a0c259e7097b",
   "video-program-2026-09-23/v2/kit/tools/pan_rebind.py": "d05ae237eb8e7109008a48056ac2c96ddb46d656742b9459155b55a93a415461",
   "video-program-2026-09-23/v2/kit/tools/better_than_last.py": "5103439e3418857e2b61bf096c6a80a5cf11ff7e98a35e7396b45f742b6b12f5",
   "video-program-2026-09-23/v2/kit/tools/concept_check.py": "99ad2d1305f0ecb9f5fe34bf8a01933eb6deb1e40acfd4512d35d1f89f863f20",
-  "video-program-2026-09-23/v2/kit/tools/concept_reserve.py": "2d68748eea7bb252ba71441d39b31c937031b50999168fbfe15a1a536bb711f7",
-  "video-program-2026-09-23/v2/kit/tools/prop_reuse.py": "d5309a13931956131066b6bdb125140339b00299fc549b8e6fd95f951455694b",
+  "video-program-2026-09-23/v2/kit/tools/concept_reserve.py": "df280b6f300fff95e72f41539c081b7d430e17d8367dd2ce95d41e98bd727d49",
+  "video-program-2026-09-23/v2/kit/tools/prop_reuse.py": "c2da6cd2252c1d550b9200c46031174a697d4f9dec2f63bad9edb6f98aade389",
   "video-program-2026-09-23/v2/kit/voice_script_binding.py": "ac77bbb2a5a7a1e04ff08b15316409bd5d1f9a87bd28ff84e7aa692ffecd8d4d",
   "video-program-2026-09-23/v2/shorts/voice/tooling/prepare.py": "ece09faa468debda191c41ae9707230f0f4aeffe56614646a1963cc9b0bc6f1e",
   "video-program-2026-09-23/v2/kit/platforms/platforms.py": "413fcc21644943c8042543b323e4cfcd3140380998efd4dc4e2ad36916d86a1d",
   "video-program-2026-09-23/v2/kit/platforms/frames.json": "cbefbbed08d8535c0da981d9dc1dfe75a71ed855e9ac03f011de5575619a2cc2",
   "video-program-2026-09-23/v2/kit/tools/sound_audit_hosted.py": "7d7f4048f7a8da2ec4fd9b8637859a86c81f4a9d6af3154dd5c59ef60a32ea8a",
   "video-program-2026-09-23/v2/kit/tools/sound_audit_hosted_publication.json": "2378d77df823623948859f1d343a3849a5ff2787dd9ec8f0c28a4d08249485d3",
-  "craft-learning-2026-09-28/craft_metrics.py": "3e7d3aa6307fb17b71ed3e3ba6737dd1c9a7c7a4eaeb3e5ba28e868dfdcd295e"
+  "craft-learning-2026-09-28/craft_metrics.py": "3e7d3aa6307fb17b71ed3e3ba6737dd1c9a7c7a4eaeb3e5ba28e868dfdcd295e",
+  "video-program-2026-09-23/v2/kit/tools/concept_card.py": "8a64fcd60bc18b145d5f4d6eed8c10852f57ca3c8481077f13d2c0cdae486fe5"
 }

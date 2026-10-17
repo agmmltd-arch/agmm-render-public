@@ -156,6 +156,10 @@ def _waiver_arg(argv):
 def concept_gate(ID, waiver, stage="concept"):
     """Runs concept_check before anything is built or snapped. Returns the dict to merge into this submit's history row.
     Exits (refuses the submit) on a FAIL unless a written waiver is given or the gate is advisory (registry/concept-check.off)."""
+    import concept_card
+    allowed, why = concept_card.gate_ok(ID)
+    if not allowed:
+        sys.exit("storyboard.py %s: REFUSED: %s" % (stage, why))
     cc = _cc()
     ok, text, rep = cc.check_for_submit(ID)
     print(text, file=sys.stderr)

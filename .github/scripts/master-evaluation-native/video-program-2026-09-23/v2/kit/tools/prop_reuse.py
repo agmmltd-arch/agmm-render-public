@@ -113,7 +113,8 @@ def check(ID, T=None, window_ids=(), reserved=(), k=None, main_min=None, images=
     img = {}
     if images:
         mine = image_hashes(ID)
-        for sid in others:
+        # No target image can match the window when the target has no images (concept-only stage).
+        for sid in others if mine else ():
             for h, path in image_hashes(sid).items():
                 if h in mine:
                     img.setdefault(sid, []).append(mine[h])

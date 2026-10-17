@@ -128,7 +128,21 @@ def status(rec, T, q, events):
         if _dt(T) - _dt(ts) <= datetime.timedelta(hours=SUBMITTED_HOLD_H):
             return True, "storyboard submitted %s, held for the reviewer" % ts
         return False, "submitted %s and not decided for %d h" % (ts, SUBMITTED_HOLD_H)
-    act = max([x for x in (rec.get("reserved_at"), rec.get("renewed_at"), last_activity(ID, T)) if x] or ["0"])
+    # A concept review is the same existing review hold, not a new reservation duration.
+    cp = os.path.join(os.environ.get("AGMM_CONCEPT_CARDS_DIR") or os.path.join(REG, "concept-cards"), ID + ".json")
+    try:
+        concept = json.load(open(cp))
+        history = [h for h in concept.get("history", []) if h.get("at", "9") <= T]
+        last = history[-1] if history else {}
+    except (OSError, ValueError, TypeError):
+        last = {}
+    if st is None and last.get("state") == "concept_submitted":
+        at = last["at"]
+        if _dt(T) - _dt(at) <= datetime.timedelta(hours=SUBMITTED_HOLD_H):
+            return True, "concept submitted %s, held for the independent reviewer" % at
+        return False, "concept submitted %s and not decided for %d h" % (at, SUBMITTED_HOLD_H)
+    decided = last.get("at") if st is None and last.get("state") in ("concept_approved", "concept_returned") else None
+    act = max([x for x in (rec.get("reserved_at"), rec.get("renewed_at"), last_activity(ID, T), decided) if x] or ["0"])
     if _dt(T) - _dt(act) <= datetime.timedelta(hours=LEASE_H):
         return True, "lease: last activity %s" % act
     return False, "lease expired: no activity since %s (> %g h)" % (act, LEASE_H)
