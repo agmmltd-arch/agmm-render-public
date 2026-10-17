@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "id": "S66",
+  "platform": "instagram_reels",
+  "step": 0.1,
+  "parts": [
+    {
+      "look": "s66-a",
+      "file": "index.html",
+      "out": "S66-A",
+      "off": 0.0,
+      "dur": 13.7
+    },
+    {
+      "look": "s66-b",
+      "file": "index.html",
+      "out": "S66-B",
+      "off": 13.7,
+      "dur": 13.7
+    },
+    {
+      "look": "s66-c",
+      "file": "index.html",
+      "out": "S66-C",
+      "off": 27.4,
+      "dur": 13.7
+    },
+    {
+      "look": "s66-d",
+      "file": "index.html",
+      "out": "S66-D",
+      "off": 41.1,
+      "dur": 13.7
+    }
+  ],
+  "beat_starts": [
+    0.0,
+    2.8,
+    5.3,
+    7.2,
+    10.7,
+    12.151,
+    14.25,
+    16.05,
+    18.25,
+    20.45,
+    23.05,
+    24.979,
+    26.679,
+    29.779,
+    31.679,
+    32.579,
+    36.459,
+    39.059,
+    41.259,
+    44.359,
+    45.359,
+    47.387,
+    51.787
+  ],
+  "original_samples": 630,
+  "expected_source_before": "4f458a12904c46423330b1247f66e4ce856bc40dd362787ec97a29f1f2b411d7",
+  "expected_source_after": "6a3b4cfdcbbd1fbcea90d38bc8b90c2265d749cf88eca70bdfc6daa11833478c",
+  "native_analysis_matches_current_functions": true,
+  "native_public_difference_only": "main hosted-request dispatch branch; all pure analysis/platform/rules functions identical",
+  "resolved_sha256": "c9ee030494ea12badf3707d63f816bb53fcc53dfca94c4c09568ab2b9e5fda87",
+  "native_frames_sha256": "cbefbbed08d8535c0da981d9dc1dfe75a71ed855e9ac03f011de5575619a2cc2"
+}

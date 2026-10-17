@@ -1,0 +1,165 @@
+name: S66 exact cursor source repair and fresh DOM proof
+run-name: S66 cursor source repair ${{ github.run_id }}
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: s66-cursor-source-seal
+  cancel-in-progress: false
+jobs:
+  seal-and-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      REPO: agmmltd-arch/agmm-render-public
+      PARENT_RELEASE: short-s66-d1482b2b30c0a1b584a6d3aea177b28fae73eb329d8fa4d58286ff2206487570
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Guard public Actions Ubuntu and exact current main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_OS" == Linux && "$(uname -s)" == Linux ]]
+          [[ "$GITHUB_REPOSITORY" == "$REPO" && "$GITHUB_REF" == refs/heads/main && "$GITHUB_EVENT_NAME" == workflow_dispatch ]]
+          [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]
+          mkdir -p "$RUNNER_TEMP/s66-evidence"
+          gh api "repos/$REPO" > "$RUNNER_TEMP/s66-evidence/repository.json"
+          gh api "repos/$REPO/git/ref/heads/main" > "$RUNNER_TEMP/s66-evidence/main-ref.json"
+          python3 - "$RUNNER_TEMP/s66-evidence" "$GITHUB_SHA" <<'PY'
+          import json,pathlib,sys
+          p=pathlib.Path(sys.argv[1]);r=json.loads((p/'repository.json').read_text());h=json.loads((p/'main-ref.json').read_text())
+          assert r.get('full_name')=='agmmltd-arch/agmm-render-public' and r.get('private') is False and r.get('visibility')=='public'
+          assert h.get('object',{}).get('sha')==sys.argv[2], 'workflow is not exact current main'
+          PY
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify existing source/runtime and source-bound QA pins
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib,sys
+          sys.path.insert(0,'.github/scripts')
+          import seal_s66_cursor as s, qualify_s66_cursor as q
+          s.check_dependencies(pathlib.Path('.github/scripts'))
+          q.pinned(pathlib.Path('.github/scripts/domlint-native'),q.NATIVE_PINS)
+          q.pinned(pathlib.Path('.github/candidates/S66'),q.QA_PINS)
+          print('exact existing runtime and QA closure PASS')
+          PY
+      - name: Validate immutable original release and require new tag absence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$REPO/releases/tags/$PARENT_RELEASE" > "$RUNNER_TEMP/s66-evidence/parent-release.json"
+          python3 .github/scripts/seal_s66_cursor.py validate-parent "$RUNNER_TEMP/s66-evidence/parent-release.json"
+          tag="S66-cursor-${GITHUB_RUN_ID}"
+          for endpoint in "releases/tags/$tag" "git/ref/tags/$tag"; do
+            status=$(curl --silent --show-error --max-time 20 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -o "$RUNNER_TEMP/s66-evidence/absence.json" -w '%{http_code}' "https://api.github.com/repos/$REPO/$endpoint")
+            python3 - "$status" "$RUNNER_TEMP/s66-evidence/absence.json" <<'PY'
+          import json,sys
+          sys.path.insert(0,'.github/scripts')
+          import seal_s86_cta as s
+          s.release_absence_result(int(sys.argv[1]),json.load(open(sys.argv[2])),'S66-cursor')
+          PY
+          done
+      - name: Hydrate exact original package and mix only on Ubuntu
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/s66-parent"
+          gh release download "$PARENT_RELEASE" --repo "$REPO" -p source.tar.gz -p parts.json -p mix.wav -D "$RUNNER_TEMP/s66-parent"
+          python3 .github/scripts/seal_s66_cursor.py seal --parent "$RUNNER_TEMP/s66-parent" --output "$RUNNER_TEMP/s66-sealed"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce
+        id: chrome
+        with:
+          chrome-version: stable
+      - name: Install the existing hosted analysis dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --quiet numpy==2.5.2 Pillow==12.3.0
+          npm install --no-audit --no-fund --no-save puppeteer-core@25.12.0
+      - name: Validate corrected package with the unchanged render owner
+        run: |
+          set -euo pipefail
+          .venv/bin/python - "$RUNNER_TEMP/s66-sealed" "$RUNNER_TEMP/s66-prepared" <<'PY'
+          import argparse,pathlib,sys
+          sys.path.insert(0,'.github/scripts');import render_short_package as s
+          p=pathlib.Path(sys.argv[1])
+          s.command_prepare(argparse.Namespace(source=str(p/'source.tar.gz'),parts=str(p/'parts.json'),mix=str(p/'mix.wav'),
+                    source_sha256=s.sha256(p/'source.tar.gz'),parts_sha256=s.sha256(p/'parts.json'),
+                    mix_sha256=s.sha256(p/'mix.wav'),output=sys.argv[2],render_4k=True))
+          PY
+      - name: Run the unchanged native DOM observer over every original sample and first active labels
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          set -euo pipefail
+          node .github/scripts/dom_lint_runner.mjs --root "$RUNNER_TEMP/s66-prepared/project" \
+            --plan .github/candidates/S66/PLAN.json --profile .github/candidates/S66/PROFILE.json \
+            --out "$RUNNER_TEMP/s66-sealed/raw.json" --chrome "$CHROME_PATH"
+          shot_times=$(python3 - <<'PY'
+          import json
+          p=json.load(open('.github/candidates/S66/SHOTS-PLAN.json'))
+          print(','.join(str(t) for t in sorted({t for x in p for t in x['times']})))
+          PY
+          )
+          node .github/scripts/dom_lint_runner.mjs --root "$RUNNER_TEMP/s66-prepared/project" \
+            --plan .github/candidates/S66/SHOTS-PLAN.json --profile .github/candidates/S66/PROFILE.json \
+            --out "$RUNNER_TEMP/s66-sealed/raw-shots.json" --chrome "$CHROME_PATH" \
+            --shots "$RUNNER_TEMP/s66-sealed/shots" --shot-times "$shot_times"
+          .venv/bin/python .github/scripts/qualify_s66_cursor.py --native .github/scripts/domlint-native \
+            --contract-dir .github/candidates/S66 --prepared "$RUNNER_TEMP/s66-prepared" --output "$RUNNER_TEMP/s66-sealed"
+      - name: Persist exact publication intent before creating one source-only candidate release
+        run: |
+          set -euo pipefail
+          python3 - "$RUNNER_TEMP/s66-sealed" <<'PY'
+          import hashlib,json,os,pathlib,datetime,sys
+          p=pathlib.Path(sys.argv[1]);tag='S66-cursor-'+os.environ['GITHUB_RUN_ID']
+          files=[x for x in p.iterdir() if x.is_file()]+list((p/'shots').glob('*.png'))
+          rows={x.name:{'bytes':x.stat().st_size,'sha256':hashlib.sha256(x.read_bytes()).hexdigest()} for x in files}
+          (p/'release-intent.json').write_text(json.dumps({'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'tag':tag,'target':os.environ['GITHUB_SHA'],'assets':rows,'status':'CREATE_NOT_YET_ATTEMPTED','retry_policy':'Never blindly retry after timeout; reconcile exact native release/tag/assets first.'},indent=2)+'\n')
+          PY
+      - name: Publish candidate package, actual raw DOM facts and sixteen named review PNGs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="S66-cursor-${GITHUB_RUN_ID}"
+          p="$RUNNER_TEMP/s66-sealed"
+          assets=("$p/source.tar.gz" "$p/parts.json" "$p/mix.wav" "$p/source-receipt.json" "$p/raw.json" "$p/raw-shots.json" "$p/dom-result.json" "$p/qa-receipt.json" "$p"/shots/*.png)
+          gh release create "$tag" "${assets[@]}" --repo "$REPO" --target "$GITHUB_SHA" --latest=false \
+            --title 'S66 exact cursor source repair: candidate and fresh DOM evidence' \
+            --notes 'Source candidate only. Four copies of the same AGENT-label helper and their checksum entries changed. Original mix and all other package bytes preserved. No master render, storyboard approval, whole-master review, Ready status or public social post is granted.'
+          gh api "repos/$REPO/releases/tags/$tag" > "$p/published-release.json"
+          python3 - "$p" <<'PY'
+          import json,os,pathlib,sys
+          p=pathlib.Path(sys.argv[1]);intent=json.loads((p/'release-intent.json').read_text());r=json.loads((p/'published-release.json').read_text())
+          assert r['tag_name']==intent['tag'] and r.get('draft') is False and r.get('target_commitish')==intent['target']
+          rows=r['assets'];assert len({a['name'] for a in rows})==len(rows)
+          got={a['name']:{'bytes':a['size'],'sha256':a.get('digest','').removeprefix('sha256:')} for a in rows}
+          assert got==intent['assets'],(got,intent['assets'])
+          seal=json.loads((p/'source-receipt.json').read_text())['corrected']
+          (p/'RENDER-INPUTS.json').write_text(json.dumps({'workflow':'agmm-short-package.yml','repository':os.environ['GITHUB_REPOSITORY'],'inputs':{'release':r['tag_name'],'source_sha256':seal['source.tar.gz']['sha256'],'parts_sha256':seal['parts.json']['sha256'],'mix_sha256':seal['mix.wav']['sha256'],'tag':'S66-cursor-'+os.environ['GITHUB_RUN_ID'],'workers':'2','render_4k':True},'authority':'Conditional only: actual current native claim reconciliation, source/storyboard/precheck and independent reviewer decision are still required before render dispatch.','editorial_status':'NOT_REVIEWED'},indent=2)+'\n')
+          print('exact new candidate release ID/tag/source/QA/PNG asset digest readback PASS')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: S66-CURSOR-SOURCE-EVIDENCE-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/s66-evidence/*.json
+            ${{ runner.temp }}/s66-sealed/*.json
+          retention-days: 3
+          if-no-files-found: warn

@@ -1,0 +1,80 @@
+{
+  "label": "Instagram Reels (app, Reels tab)",
+  "phone": "iPhone 1179x2556 (Sam's, 29 Sep 2026)",
+  "visible": {
+    "x0": 50,
+    "y0": 0,
+    "x1": 1030,
+    "y1": 1920,
+    "evidence": "measured",
+    "source": "registration of the screenshot against the S33 master frame at 40.45/40.50/40.55 s: scale 1.203 screen px per master px, x offset -59.5, y offset -1 (mean abs error 5.4/255); video spans screen y 0-2309, the comment bar sits below it",
+    "note": "side crop 49.5 px each side (screen x -59.5 / 1.203); full height visible"
+  },
+  "overlays": [
+    {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1080,
+      "y1": 240,
+      "evidence": "measured",
+      "source": "evidence/instagram-ui-mask-measured.png (pixels that are pure white/red on the phone but not in the master frame evidence/S33-master-40.55s.png)",
+      "name": "status bar + Reels/Friends header",
+      "note": "header row measured at master y 186-234 (screen 223-281); the status bar sits above it"
+    },
+    {
+      "x0": 905,
+      "y0": 1150,
+      "x1": 1080,
+      "y1": 1920,
+      "evidence": "measured",
+      "source": "evidence/instagram-ui-mask-measured.png (pixels that are pure white/red on the phone but not in the master frame evidence/S33-master-40.55s.png)",
+      "name": "right action rail",
+      "note": "like/comment/repost/send/menu/audio icons measured at master x 916-990, y 1158-1865"
+    },
+    {
+      "x0": 0,
+      "y0": 1690,
+      "x1": 1080,
+      "y1": 1920,
+      "evidence": "measured",
+      "source": "evidence/instagram-ui-mask-measured.png (pixels that are pure white/red on the phone but not in the master frame evidence/S33-master-40.55s.png)",
+      "name": "username + caption + progress bar",
+      "note": "avatar, @agmm_ltd and one caption line measured at master x 89-783, y 1704-1860; progress bar y 1912-1920. A tapped-open caption grows upward: not measured."
+    }
+  ],
+  "doc_safe": {
+    "x0": 65,
+    "y0": 269,
+    "x1": 1015,
+    "y1": 1248,
+    "evidence": "documented",
+    "source": "https://www.facebook.com/business/ads-guide/update/video/instagram-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-instagram-reels.txt): 'Consider leaving at least 14% of the top, 35% of the bottom and 6% on each side of your asset free from text, logos or other important creative elements ... placed too close to the edges of devices with screens taller than a 9:16 aspect ratio.'",
+    "note": "14% top, 35% bottom, 6% sides of 1080x1920 (ads guidance)"
+  },
+  "fail_outside_visible": true,
+  "text_safe": {
+    "x0": 74,
+    "y0": 264,
+    "x1": 1006,
+    "y1": 1666,
+    "notches": [
+      {
+        "x0": 881,
+        "y0": 1126,
+        "x1": 1080,
+        "y1": 1920,
+        "name": "right action rail"
+      }
+    ],
+    "simple": {
+      "x0": 74,
+      "y0": 264,
+      "x1": 881,
+      "y1": 1666
+    },
+    "margin": 24,
+    "evidence": "derived",
+    "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+  },
+  "key": "instagram_reels"
+}
