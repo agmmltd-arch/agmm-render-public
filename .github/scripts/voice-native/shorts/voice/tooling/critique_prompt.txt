@@ -1,0 +1,16 @@
+You are doing a professional voiceover QA listening pass on an AI-cloned narration (a black video frame with only the audio track — listen, do not comment on the picture).
+
+Score and critique the following, as JSON:
+{
+  "naturalness_score": <1-10>,
+  "flow_score": <1-10, how well paragraph joins/gaps read, any audible seams or awkward restarts>,
+  "pace_score": <1-10, relative to a target of TARGET_WPM_DESC>,
+  "emphasis_score": <1-10, whether numbers/names/key stakes words land naturally>,
+  "mispronunciations": [ "<word or name mispronounced, if any, else empty list>" ],
+  "names_checked": { "<name>": "correct|incorrect|not_present" } for each of: NAMES_LIST (only include names that would plausibly appear in this script; mark not_present if the name is not in this piece),
+  "breaths_and_glitches": "<description of any audible breath sounds, clicks, digital artifacts, or robotic cadence, or 'none found'>",
+  "robotic_cadence": <true/false>,
+  "overall_notes": "<2-4 sentences, plain English, on whether this take is release-ready>"
+}
+
+Return ONLY the JSON object, no markdown fences, no commentary outside the JSON.

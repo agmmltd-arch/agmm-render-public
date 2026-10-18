@@ -1,0 +1,261 @@
+{
+ "version": "2026-09-25 r3 (Sam 22:40 on the S55 A/B: both mixes, bed median 24-27 LU under, 'a tiny bit too quiet', hardly different; S34 at 10.9 LU was 'a bit too loud'; P2, loved, sits a median 10.7. So: median 12-18 LU, target 15, no row louder than 12 LU under; density 20-60 events/min like P2)",
+ "source": "Sam 24 Sep (~20:00): 'you need better audio design controls. upgrade.' Card: AUDIO DESIGN SYSTEM v2. Every threshold used by mix2.py and audio_report.py lives here; calibration evidence in CALIBRATION.md, benchmark evidence in AUDIO-STANDARD.md.",
+ "mixer": {
+  "voice_premaster_lufs": -16.0,
+  "music_under_voice_lu_default": 15.0,
+  "music_under_voice_lu_min": 12.0,
+  "music_gap_rise_max_db": 3.0,
+  "swell_max_gain_db": 6.0,
+  "min_pause_s": 0.25,
+  "sfx_peak_under_voice_peak_db": 6.0,
+  "sfx_word_window_ms": 150,
+  "sfx_mask_margin_db": 10.0,
+  "ambience_max_region_s": 12.0,
+  "ambience_default_lowpass_hz": 3000,
+  "ambience_max_lowpass_hz": 5000,
+  "ambience_under_speech_db_default": 34.0,
+  "ambience_under_speech_db_min": 30.0,
+  "master_integrated_lufs": -14.0,
+  "master_true_peak_dbtp": -1.0,
+  "gap_under_voice_lu_min": 10.0,
+  "codec_margin_db": 1.0,
+  "swell_min_pause_s": 0.4,
+  "sfx_duck_db": 3.0,
+  "pan_max": 0.7,
+  "music_under_voice_lu_max": 18.0
+ },
+ "report": {
+  "short_max_s": 180,
+  "min_pause_s": 0.25,
+  "pause_edge_trim_s": 0.1,
+  "rules": {
+   "LOUD_INTEGRATED": {
+    "severity": "hard",
+    "target_lufs": -14.0,
+    "tolerance_lu": 1.0,
+    "why": "master -14 LUFS integrated (platform normalisation target)"
+   },
+   "TRUE_PEAK": {
+    "severity": "hard",
+    "max_dbtp": -1.0,
+    "why": "<= -1 dBTP so AAC/Opus transcodes do not clip"
+   },
+   "CLIPPING": {
+    "severity": "hard",
+    "max_runs": 0,
+    "run_samples": 3,
+    "why": "no run of >= 3 samples at full scale"
+   },
+   "SILENCE": {
+    "severity": "hard",
+    "floor_lufs": -50.0,
+    "max_s": 1.0,
+    "ignore_head_s": 0.3,
+    "ignore_tail_s": 0.5,
+    "why": "no dead air > 1 s (gate check 4 uses the same 1 s)"
+   },
+   "VOICE_LEVEL": {
+    "severity": "hard",
+    "min_lufs": -16.5,
+    "max_lufs": -13.5,
+    "spec_min_lufs": -16.0,
+    "spec_max_lufs": -14.0,
+    "why": "voice speech momentary median -16..-14 LUFS in the master (card); +-0.5 LU measurement tolerance, see CALIBRATION.md"
+   },
+   "MUSIC_UNDER_SPEECH": {
+    "severity": "hard",
+    "min_lu": 18.0,
+    "segment_min_s": 0.8,
+    "why": "music >= 18 LU below the voice under speech (25 Sep sound upgrade; was 14)"
+   },
+   "GAP_RISE": {
+    "severity": "hard",
+    "max_db": 3.0,
+    "context_s": 1.0,
+    "why": "in a voice pause the bed rises at most 3 dB over its level in the speech around it (Sam, P1)"
+   },
+   "GAP_UNDER_VOICE": {
+    "severity": "hard",
+    "min_lu": 10.0,
+    "why": "in a voice pause the bed stays >= 10 LU under the local voice level (Sam, P1)"
+   },
+   "SWELL_CAP": {
+    "severity": "hard",
+    "tolerance_db": 0.5,
+    "min_under_voice_lu": 10.0,
+    "why": "declared swells may exceed the 3 dB gap rise only up to their declared gain, never above swell_max_gain_db, and never closer than 10 LU to the voice"
+   },
+   "SFX_PEAK": {
+    "severity": "hard",
+    "under_voice_peak_db": 6.0,
+    "metric": "fast_loudness",
+    "why": "SFX peaks <= voice peak - 6 dB unless a designed hit. 'Peak' = the loudest 50 ms K-weighted block of each SFX event vs the voice's 99.5th-percentile 50 ms block (what the ear hears as a peak); sample peaks are reported alongside."
+   },
+   "SFX_WORD_MASK": {
+    "severity": "hard",
+    "window_ms": 150,
+    "margin_db": 10.0,
+    "why": "no SFX (designed hits included: the card has no exemption) within 150 ms of a stressed word at a level within 10 dB of that word"
+   },
+   "SFX_DENSITY": {
+    "severity": "advisory",
+    "short_per_min": [
+     10,
+     60
+    ],
+    "long_per_min": [
+     3,
+     30
+    ],
+    "why": "SOUND-RULES.md 2: density scales with pace; benchmark ranges in AUDIO-STANDARD.md"
+   },
+   "AMBIENCE_LEVEL": {
+    "severity": "hard",
+    "min_under_speech_db": 30.0,
+    "why": "ambience >= 30 dB under speech (Sam, F01 opening)"
+   },
+   "AMBIENCE_CONTINUITY": {
+    "severity": "hard",
+    "max_region_s": 12.0,
+    "max_coverage": 0.25,
+    "active_under_speech_db": 50.0,
+    "max_hf_share_db": -20.0,
+    "why": "ambience only where specified (runs <= 12 s, <= 25% of runtime), band-limited (energy above 5 kHz <= -20 dB re its full band), never a continuous broadband bed"
+   },
+   "NOISE_IN_PAUSES": {
+    "severity": "hard",
+    "stationary_max_db": 1.5,
+    "flatness_min": 0.8,
+    "noise_band_to_lufs_db": 12.0,
+    "min_under_voice_db": 30.0,
+    "max_noisy_fraction": 0.25,
+    "min_noisy_count": 3,
+    "why": "Sam's 30 dB rule applied to what is actually in each pause: a steady (2-10 kHz std <= 1.5 dB over the pause), noise-shaped (detrended flatness >= 0.8) floor whose loudness (2-10 kHz level + 12 dB, the offset of F01's own room-tone layer; white 7.3, pink 9.2, brown 15.3) is less than 30 dB under the local voice is a hiss/rain/room-tone bed. Fails when >= 3 pauses and >= 25% of pauses are noisy."
+   },
+   "NOISE_FLOOR": {
+    "severity": "hard",
+    "quiet_percentile": 10,
+    "window_s": 1.0,
+    "stationary_max_db": 6.0,
+    "flatness_min": 0.8,
+    "noise_band_to_lufs_db": 12.0,
+    "min_under_voice_db": 30.0,
+    "why": "the programme's quietest 10% of 1 s windows: if their 2-10 kHz band is steady (std <= 6 dB) and noise-shaped (detrended flatness >= 0.8) and the implied noise loudness is < 30 dB under the voice, a continuous noise bed runs under the programme. Calibrated: noise beds 1.1 dB (F01 opening), 2.3 dB and 4.3 dB (F01's layer under P1-mix2 with the raw and the studio voice: RAINBED); clean programmes 8.4-16.3 dB (pilots, mix2 remixes incl. studio voice, 0x100x). 2.0 then 4.0 missed RAINBED as the voice's own pause floor dropped; 6.0 sits between the groups."
+   },
+   "GEMINI_VOICE": {
+    "severity": "advisory",
+    "fail_at_or_below": 5.0,
+    "target": 6.5,
+    "passes": 2,
+    "model": "gemini-2.5-flash",
+    "why": "listening pass on the voice stem, 2 flash passes averaged (gate.py check 9 method); <= 5 or < 6.5 is flagged WARN. ADVISORY, not a release block: calibration 24 Sep scored the Sam-approved P2 voice 4.5 naturalness while the same take remixed scored 9.0, and per-pass scores on one file differ by up to 6 points (CALIBRATION.md)."
+   },
+   "GEMINI_MIX": {
+    "severity": "advisory",
+    "fail_at_or_below": 5.0,
+    "target": 7.0,
+    "passes": 2,
+    "model": "gemini-2.5-flash",
+    "why": "listening pass on the full mix, 2 flash passes averaged; <= 5 or < 7 is flagged WARN. ADVISORY, not a release block: on 24 Sep it scored the F01 rain bed noise_free 9/10, P2's 18 dB pumping bed music_in_pauses 10/10, approved P1 r7 overall 5.0 (passes 4 and 6), and put typing SFX at timestamps where the cue list has none. The measured rules decide; Gemini's notes are read by a human."
+   },
+   "STEM_INTEGRITY": {
+    "severity": "hard",
+    "max_median_dev_db": 1.5,
+    "why": "the supplied stems must add up to the master (otherwise every stem rule measures the wrong thing)"
+   },
+   "VOICE_NOISE_FLOOR": {
+    "severity": "hard",
+    "min_under_speech_db": 40.0,
+    "why": "studio voice (Sam, 24 Sep): the take's own floor in pauses >= 40 dB under its speech level. Raw Mistral takes measure 31-32 dB; the studio chain 45 dB (VOICE-STUDIO.md)"
+   },
+   "VOICE_SIBILANCE": {
+    "severity": "hard",
+    "max_db": 0.0,
+    "why": "5-9 kHz peaks (p99 while speaking) must not exceed the 1-4 kHz presence peaks: harsh 's' sounds"
+   },
+   "VOICE_BALANCE": {
+    "severity": "hard",
+    "bands": [
+     250,
+     500,
+     1000,
+     2000,
+     4000
+    ],
+    "max_dev_db": 8.0,
+    "why": "octave LTAS while speaking vs the benchmark voice curve (median of the three 0x100x reels, audio_rules.json voice_target); 125 Hz and 8 kHz are reported but not judged (music under the benchmark voice, 24 kHz TTS sources)"
+   },
+   "VOICE_CONSISTENCY": {
+    "severity": "hard",
+    "max_sentence_spread_lu": 3.0,
+    "why": "sentence-to-sentence level: p90 - p10 of per-sentence median momentary loudness. Raw takes 4.3-5.2 LU; the chain's leveller 0.9-1.3"
+   },
+   "VOICE_CLIPPING": {
+    "severity": "hard",
+    "max_runs": 0,
+    "why": "no clipped runs on the voice stem"
+   },
+   "FX_OVER_VOICE": {
+    "severity": "advisory",
+    "over_speech_p98_max": 8.0,
+    "over_pause_max": 2.5,
+    "why": "kit gate check 13 (v2/kit/tools/fxlevel.py, root 24 Sep 23:05) is the release gate for effects/music against the voice; this card reports the same two numbers level-consistently (voice stem at its level IN the master). Root's check compares the mix with the voice file as rendered, so it carries the master gain between them (+4.2 dB on P1 r7, +4.3 on P3): see AUDIO-STANDARD.md."
+   }
+  }
+ },
+ "voice_target": {
+  "curve": {
+   "125": 6.94,
+   "250": 8.45,
+   "500": 5.48,
+   "1000": 0.0,
+   "2000": 0.04,
+   "4000": 1.72,
+   "8000": -1.98
+  },
+  "benchmark_spread_db": {
+   "125": 2.31,
+   "250": 1.78,
+   "500": 1.62,
+   "1000": 0.0,
+   "2000": 1.96,
+   "4000": 1.39,
+   "8000": 3.22
+  },
+  "sources": [
+   "DUEmp0Ck0j7.audio.mka",
+   "Da8FpGRMYDA.audio.mka",
+   "DYDxdbnijN5.audio.mka"
+  ],
+  "method": "median octave LTAS re 1 kHz of the mid channel while the voice speaks (mid/side VAD); music under the voice contaminates the low bands, so 125 Hz carries a wider tolerance",
+  "derived": "24 Sep 2026 by voice_quality.py --target on the three most-viewed 0x100x reels"
+ },
+ "voice_chain": {
+  "_doc": "studio voice stage (voice_chain.py), applied to the voice stem before the mix; see VOICE-STUDIO.md for the before/after evidence",
+  "hp_hz": 80,
+  "mud_hz": 450,
+  "mud_width_oct": 1.0,
+  "mud_db": -3.0,
+  "presence_hz": 3200,
+  "presence_width_oct": 1.5,
+  "presence_db": 6.0,
+  "air_hz": 8000,
+  "air_db": 0.0,
+  "deess_i": 0.45,
+  "deess_m": 0.5,
+  "deess_f": 0.5,
+  "comp_threshold_db": -12.0,
+  "comp_ratio": 1.2,
+  "comp_attack_ms": 10,
+  "comp_release_ms": 150,
+  "comp_knee_db": 4,
+  "level_max_db": 3.0,
+  "expander_db": -12.0,
+  "expander_hold_ms": 120,
+  "expander_preroll_ms": 60,
+  "expander_ramp_ms": 60,
+  "out_lufs": -18.0,
+  "tp_dbtp": -2.0
+ }
+}

@@ -1,0 +1,137 @@
+name: AGMM unchanged native voice
+run-name: AGMM native voice ${{ fromJSON(inputs.request).intent }}
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        type: choice
+        options: [voice, runtime-closure]
+        default: voice
+        required: true
+      request:
+        description: Exact conductor-owned protected-input request, never credentials
+        default: '{"intent":"runtime-closure"}'
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: agmm-native-voice-single-flight
+  cancel-in-progress: false
+jobs:
+  voice:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TZ: Europe/London
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Validate unchanged source closure
+        run: |
+          python3 - <<'PY'
+          import json,os,sys
+          from pathlib import Path
+          r=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']['request']
+          Path('voice-request.json').write_text(r if isinstance(r,str) else json.dumps(r))
+          sys.path.insert(0,'.github/scripts')
+          from voice_hosted import host,source_closure
+          host();source_closure()
+          PY
+      - name: Validate native admission and reject prior intents
+        if: inputs.task == 'voice'
+        id: binding
+        env:
+          MISTRAL_AVAILABLE: ${{ secrets.AGMM_MISTRAL_KEY != '' }}
+          GEMINI_AVAILABLE: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY != '' }}
+          AGMM_VOICE_MISTRAL_KEY: ${{ secrets.AGMM_MISTRAL_KEY }}
+          AGMM_VOICE_GEMINI_FREE_KEY: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os
+          r=json.load(open('voice-request.json'))
+          if r['mode']=='api':
+              assert os.environ['MISTRAL_AVAILABLE']=='true', 'Mistral credential absent: no launch/provider effect'
+              assert os.environ['GEMINI_AVAILABLE']=='true', 'free-review credential absent: no provider effect'
+          PY
+          if python3 -c 'import json; raise SystemExit(json.load(open("voice-request.json"))["mode"] != "api")'; then
+            python3 .github/scripts/verify_voice_credential_roles.py --request voice-request.json \
+              --output "$RUNNER_TEMP/voice-runtime-json/CREDENTIAL-ROLES.json" --require-match
+          fi
+          python3 .github/scripts/voice_hosted.py --request voice-request.json --preflight
+      - name: Compare optional existing secret identities without provider requests
+        if: inputs.task == 'runtime-closure' && fromJSON(inputs.request).expected_credential_sha256 != null
+        env:
+          AGMM_VOICE_MISTRAL_KEY: ${{ secrets.AGMM_MISTRAL_KEY }}
+          AGMM_VOICE_GEMINI_FREE_KEY: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY }}
+        run: |
+          python3 .github/scripts/verify_voice_credential_roles.py --request voice-request.json \
+            --output "$RUNNER_TEMP/voice-runtime-json/CREDENTIAL-ROLES.json"
+      - name: Check out exact protected inputs with the existing read-only key
+        if: inputs.task == 'voice'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ steps.binding.outputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-voice-inputs
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ steps.binding.outputs.private_prefix }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12.8'
+      - name: Install the existing Ubuntu media runtime and frozen Python closure
+        run: |
+          set -euo pipefail
+          python3 -m pip install -r .github/scripts/voice-runtime-requirements.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          sudo mkdir -p /Users/samwall/alfred/builds
+          sudo chown -R "$(id -u):$(id -g)" /Users/samwall
+          python3 -m venv /Users/samwall/alfred/venvs/pitch
+          /Users/samwall/alfred/venvs/pitch/bin/python -m pip install numpy==2.0.2 praat-parselmouth==0.4.7
+          command -v gh git nice ffmpeg ffprobe > /dev/null
+          python3 .github/scripts/seed_voice_runtime.py "$RUNNER_TEMP/voice-runtime-json"
+      - name: Run unchanged native chain and exact-bound voicelead on Ubuntu
+        if: inputs.task == 'voice'
+        env:
+          AGMM_VOICE_MISTRAL_KEY: ${{ secrets.AGMM_MISTRAL_KEY }}
+          AGMM_VOICE_GEMINI_FREE_KEY: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY }}
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/voice_hosted.py --request voice-request.json \
+            --private-root "$GITHUB_WORKSPACE/private-voice-inputs" \
+            --output "$RUNNER_TEMP/voice-output"
+      - name: Retain bounded runtime metadata
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ fromJSON(inputs.request).intent }}-RUNTIME
+          path: ${{ runner.temp }}/voice-runtime-json/*.json
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Retain generated-only checkpoint; never export reference or private inputs
+        if: always() && inputs.task == 'voice'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ fromJSON(inputs.request).intent }}-GENERATED
+          path: ${{ runner.temp }}/voice-output/
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Retain separate JSON only for the Mac metadata reconciler
+        if: always() && inputs.task == 'voice'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ fromJSON(inputs.request).intent }}-JSON
+          path: ${{ runner.temp }}/voice-json/*.json
+          retention-days: 7
+          if-no-files-found: warn

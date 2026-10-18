@@ -1,0 +1,168 @@
+/* AGMM short-form design system, looks v2: six more art directions on the same engine.
+   The base engine (ds/kit.js + ds/kit.css) is reused unmodified; this file only adds the six
+   token sets, their fonts and the restyled shared components (captions, CTA, counters, cards).
+   Selected by data-look on the composition root, exactly like the first four looks. */
+
+@font-face { font-family: "AG2 Gloock"; src: url("fonts/Gloock-Regular.ttf") format("truetype"); font-weight: 400; }
+/* kit v1.0.0: cmtt10 and Zodiak removed (not OFL); EVIDENCE uses Red Hat Mono, CHART uses Young Serif */
+@font-face { font-family: "AG2 Marker"; src: url("fonts/NothingYouCouldDo-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "AG2 Instrument Sans"; src: url("fonts/InstrumentSans-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "AG2 Instrument Sans"; src: url("fonts/InstrumentSans-Bold.ttf") format("truetype"); font-weight: 700; }
+@font-face { font-family: "AG2 Bricolage"; src: url("fonts/BricolageGrotesque-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "AG2 Bricolage"; src: url("fonts/BricolageGrotesque-Bold.ttf") format("truetype"); font-weight: 700; }
+@font-face { font-family: "AG2 Young Serif"; src: url("fonts/YoungSerif-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "AG2 Silkscreen"; src: url("fonts/Silkscreen-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "AG2 Geist Mono"; src: url("fonts/GeistMono-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "AG2 Geist Mono"; src: url("fonts/GeistMono-Bold.ttf") format("truetype"); font-weight: 700; }
+@font-face { font-family: "AG2 JetBrains Mono"; src: url("fonts/JetBrainsMono-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "AG2 JetBrains Mono"; src: url("fonts/JetBrainsMono-Bold.ttf") format("truetype"); font-weight: 700; }
+@font-face { font-family: "AG2 Big Shoulders"; src: url("fonts/BigShoulders-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "AG2 Big Shoulders"; src: url("fonts/BigShoulders-Bold.ttf") format("truetype"); font-weight: 700; }
+@font-face { font-family: "AG2 Red Hat Mono"; src: url("fonts/RedHatMono-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "AG2 Red Hat Mono"; src: url("fonts/RedHatMono-Bold.ttf") format("truetype"); font-weight: 700; }
+
+/* ------------------------------------------------------------------ tokens (one block per look) */
+[data-look="evidence"] {
+  --bg: #6b4a2b; --fg: #1f1a14; --paper: #f3ecdc; --card: #fbf7ee; --ink: #1f1a14; --accent: #c3261d; --string: #b21f1a;
+  --rule: rgba(58,98,166,0.35); --margin: rgba(195,38,29,0.45); --shadow: rgba(20,10,2,0.55);
+  --f-hero: "AG2 Gloock", serif; --f-small: "AG2 Red Hat Mono", monospace; --f-note: "AG2 Marker", cursive;
+}
+[data-look="whitemodel"] {
+  --bg: #f4f4f2; --fg: #141414; --ink: #141414; --muted: #8a8a86; --accent: #e0301e; --auth: #141414; --plate: rgba(255,255,255,0.9);
+  --f-hero: "AG2 Instrument Sans", sans-serif; --f-small: "AG2 Instrument Sans", sans-serif;
+}
+[data-look="softui"] {
+  --bg: #ebebe7; --fg: #151a17; --ink: #151a17; --card: #0e3b2c; --card-ink: #f4f1e8; --lime: #cfff4a; --accent: #cfff4a;
+  --muted: #7c807b; --chip: #ffffff; --line: rgba(21,26,23,0.18);
+  --f-hero: "AG2 Bricolage", sans-serif; --f-small: "AG2 Bricolage", sans-serif; --f-serif: "AG2 Young Serif", serif;
+}
+[data-look="desktop"] {
+  --bg: #0b7a75; --fg: #000000; --ink: #000000; --face: #c3c3c3; --hi: #ffffff; --lo: #7b7b7b; --dk: #000000;
+  --title: #0a246a; --title2: #3a6ea5; --sel: #0a246a; --tip: #ffffe1; --accent: #c00000;
+  --f-hero: "AG2 Silkscreen", monospace; --f-small: "AG2 Geist Mono", monospace;
+}
+[data-look="chart"] {
+  --bg: #2138d6; --fg: #f4f1ea; --ink: #f4f1ea; --grid: rgba(244,241,234,0.16); --axis: rgba(244,241,234,0.7);
+  --accent: #ff6a4d; --pale: #a9b6ff;
+  --f-hero: "AG2 Young Serif", serif; --f-small: "AG2 JetBrains Mono", monospace;
+}
+[data-look="opsmap"] {
+  --bg: #2f3a24; --fg: #efe6cf; --paper: #eadfc4; --ink: #2a2418; --sea: #c9c3a8; --land: #efe7d1; --accent: #b3261e; --brass: #b8913d;
+  --f-hero: "AG2 Big Shoulders", sans-serif; --f-small: "AG2 Red Hat Mono", monospace;
+}
+
+/* ------------------------------------------------------------------ caption host (shared) */
+.ag2-cap { position: absolute; left: 60px; right: 60px; display: flex; justify-content: center; align-items: center; z-index: 30; pointer-events: none; }
+.ag2-card { position: absolute; left: 0; right: 0; display: flex; justify-content: center; }
+.ag2-w { display: inline-block; position: relative; white-space: nowrap; }
+.ag2-wm { display: inline-block; overflow: hidden; vertical-align: bottom; padding: 0.06em 0.03em 0.12em; margin-bottom: -0.12em; }
+
+/* evidence: words typed onto a strip of paper taped to the board */
+[data-look="evidence"] .ag2-card .strip { position: relative; background: var(--paper); padding: 26px 40px 24px; max-width: 940px;
+  box-shadow: 0 14px 26px var(--shadow); display: flex; flex-wrap: wrap; justify-content: center; gap: 0 0.5em;
+  font-family: var(--f-small); font-size: 60px; line-height: 1.12; color: var(--ink); }
+[data-look="evidence"] .ag2-card .tape { position: absolute; top: -22px; left: 50%; width: 150px; height: 48px; margin-left: -75px; background: rgba(236,226,196,0.78);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+[data-look="evidence"] .ag2-w.emph { color: var(--accent); }
+[data-look="evidence"] .ag2-w svg { position: absolute; left: -16%; top: -22%; width: 132%; height: 144%; overflow: visible; }
+
+/* whitemodel: Fern key-term captions, black bold sans, red underline on the term */
+[data-look="whitemodel"] .ag2-card .plate { background: var(--plate); padding: 18px 34px 22px; border-radius: 26px; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 0.28em;
+  font-family: var(--f-hero); font-weight: 700; font-size: 76px; line-height: 1.05; letter-spacing: -0.02em; color: var(--ink); max-width: 960px; }
+[data-look="whitemodel"] .ag2-w.emph { color: var(--accent); }
+[data-look="whitemodel"] .ag2-w .ul { position: absolute; left: 0; right: 0; bottom: -0.02em; height: 0.09em; background: var(--accent); transform-origin: 0 50%; }
+
+/* softui: kinetic words, emphasis inside a deep green pill */
+[data-look="softui"] .ag2-card .row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 0.3em; max-width: 960px;
+  font-family: var(--f-hero); font-weight: 700; font-size: 80px; line-height: 1.0; letter-spacing: -0.035em; color: var(--ink); }
+[data-look="softui"] .ag2-card.dark .row { color: var(--card-ink); }
+[data-look="softui"] .ag2-card.dark .ag2-w.emph { background: var(--lime); color: var(--card); }
+[data-look="softui"] .ag2-w.emph { background: var(--card); color: var(--lime); padding: 8px 30px 14px; border-radius: 999px; }
+
+/* desktop: a tooltip; the spoken word is selected like text under a drag */
+[data-look="desktop"] .ag2-card .tip { background: var(--tip); border: 3px solid #000; box-shadow: 8px 8px 0 rgba(0,0,0,0.55); padding: 16px 26px 14px;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 0.55em; max-width: 960px;
+  font-family: var(--f-hero); font-size: 56px; line-height: 1.15; color: #777; text-transform: uppercase; }
+[data-look="desktop"] .ag2-w { padding: 0 6px; }
+[data-look="desktop"] .ag2-w .sel { position: absolute; inset: -2px 0 -4px; background: var(--sel); transform-origin: 0 50%; z-index: -1; }
+
+/* chart: serif words rise like bars from a baseline */
+[data-look="chart"] .ag2-card .row { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 0.26em; max-width: 960px;
+  font-family: var(--f-hero); font-weight: 400; font-size: 78px; line-height: 1.04; letter-spacing: -0.02em; color: var(--ink); }
+[data-look="chart"] .ag2-w.emph { font-weight: 900; color: var(--accent); }
+
+/* opsmap: teleprinter tape */
+[data-look="opsmap"] .ag2-card .tape { position: relative; background: var(--paper); padding: 34px 36px 22px; max-width: 980px;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 0.62em; box-shadow: 0 12px 22px rgba(0,0,0,0.5);
+  font-family: var(--f-small); font-weight: 700; font-size: 52px; line-height: 1.12; color: var(--ink); text-transform: uppercase;
+  background-image: radial-gradient(circle, rgba(42,36,24,0.55) 5px, transparent 6px); background-size: 26px 26px; background-repeat: repeat-x; background-position: 8px 6px; }
+[data-look="opsmap"] .ag2-w.emph { color: var(--accent); }
+[data-look="opsmap"] .ag2-w .ch { opacity: 0; }
+
+/* ------------------------------------------------------------------ CTA (shared skeleton, restyled per look) */
+.ag2-cta { position: absolute; left: 70px; right: 70px; top: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 40; text-align: center; }
+.ag2-cta .line { width: 100%; }
+.ag2-cta .line .m { display: block; overflow: hidden; padding: 0.04em 0 0.1em; }
+.ag2-cta .line .m > span { display: inline-block; position: relative; }
+.ag2-cta .prof { display: flex; align-items: center; gap: 28px; margin-top: 70px; }
+.ag2-cta .av { width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.ag2-cta .hd { font-size: 50px; }
+.ag2-cta .btn { position: relative; margin-top: 56px; height: 136px; min-width: 560px; display: flex; align-items: center; justify-content: center; }
+.ag2-cta .btn .a, .ag2-cta .btn .b { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 16px; }
+
+[data-look="evidence"] .ag2-cta .card { position: relative; background: var(--card); padding: 70px 60px 80px; width: 900px; box-shadow: 0 26px 44px var(--shadow);
+  background-image: linear-gradient(90deg, transparent 96px, var(--margin) 96px, var(--margin) 99px, transparent 99px), repeating-linear-gradient(180deg, transparent 0 62px, var(--rule) 62px 65px); }
+[data-look="evidence"] .ag2-cta .line { font-family: var(--f-hero); font-size: 124px; line-height: 0.98; color: var(--ink); }
+[data-look="evidence"] .ag2-cta .line .emph { color: var(--accent); }
+[data-look="evidence"] .ag2-cta .av { background: #fff; padding: 12px 12px 30px; box-shadow: 0 8px 14px var(--shadow); transform: rotate(-4deg); width: 150px; height: 170px; }
+[data-look="evidence"] .ag2-cta .av b { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; background: #2a2521; color: var(--paper); font-family: var(--f-hero); font-size: 60px; font-weight: 400; }
+[data-look="evidence"] .ag2-cta .hd { font-family: var(--f-small); color: var(--ink); font-size: 56px; }
+[data-look="evidence"] .ag2-cta .btn { border: 8px solid var(--accent); color: var(--accent); font-family: var(--f-small); font-size: 76px; letter-spacing: 0.12em; min-width: 520px; }
+[data-look="evidence"] .ag2-cta .btn .b { background: var(--accent); color: var(--card); }
+
+[data-look="whitemodel"] .ag2-cta .line { font-family: var(--f-hero); font-weight: 700; font-size: 118px; line-height: 1.0; letter-spacing: -0.035em; color: var(--ink); }
+[data-look="whitemodel"] .ag2-cta .line .emph { color: var(--accent); }
+[data-look="whitemodel"] .ag2-cta .av { border-radius: 36px; background: var(--ink); color: #fff; font-family: var(--f-hero); font-weight: 700; font-size: 58px; }
+[data-look="whitemodel"] .ag2-cta .hd { font-family: var(--f-hero); font-weight: 700; color: var(--ink); }
+[data-look="whitemodel"] .ag2-cta .btn { border-radius: 40px; border: 6px solid var(--ink); background: #fff; color: var(--ink); font-family: var(--f-hero); font-weight: 700; font-size: 70px; overflow: hidden; }
+[data-look="whitemodel"] .ag2-cta .btn .b { background: var(--accent); color: #fff; }
+
+[data-look="softui"] .ag2-cta .card { background: var(--card); border-radius: 64px; padding: 80px 50px 76px; width: 940px; }
+[data-look="softui"] .ag2-cta .line { font-family: var(--f-hero); font-weight: 700; font-size: 116px; line-height: 1.0; letter-spacing: -0.04em; color: var(--card-ink); }
+[data-look="softui"] .ag2-cta .line .emph { font-family: var(--f-serif); font-weight: 400; color: var(--lime); letter-spacing: -0.02em; }
+[data-look="softui"] .ag2-cta .av { border-radius: 50%; background: var(--lime); color: var(--card); font-family: var(--f-hero); font-weight: 700; font-size: 56px; }
+[data-look="softui"] .ag2-cta .hd { font-family: var(--f-hero); font-weight: 700; color: var(--card-ink); }
+[data-look="softui"] .ag2-cta .btn { border-radius: 999px; background: var(--card-ink); color: var(--card); font-family: var(--f-hero); font-weight: 700; font-size: 66px; overflow: hidden; }
+[data-look="softui"] .ag2-cta .btn .b { background: var(--lime); color: var(--card); }
+
+[data-look="desktop"] .ag2-cta .line { font-family: var(--f-hero); font-size: 84px; line-height: 1.08; color: #000; text-transform: uppercase; }
+[data-look="desktop"] .ag2-cta .line .emph { color: var(--accent); }
+[data-look="desktop"] .ag2-cta .av { background: var(--bg); color: #fff; font-family: var(--f-hero); font-size: 52px; border: 4px solid #000; }
+[data-look="desktop"] .ag2-cta .hd { font-family: var(--f-small); font-weight: 700; color: #000; }
+[data-look="desktop"] .ag2-cta .btn { background: var(--face); color: #000; font-family: var(--f-hero); font-size: 60px; min-width: 480px; height: 120px;
+  box-shadow: inset -5px -5px 0 var(--dk), inset 5px 5px 0 var(--hi), inset -9px -9px 0 var(--lo); outline: 3px dotted #000; outline-offset: -22px; }
+[data-look="desktop"] .ag2-cta .btn .b { background: var(--face); box-shadow: inset 5px 5px 0 var(--dk), inset -5px -5px 0 var(--hi), inset 9px 9px 0 var(--lo); color: var(--accent); }
+
+[data-look="chart"] .ag2-cta .line { font-family: var(--f-hero); font-weight: 400; font-size: 124px; line-height: 0.98; letter-spacing: -0.03em; color: var(--ink); }
+[data-look="chart"] .ag2-cta .line .emph { font-weight: 900; color: var(--accent); }
+[data-look="chart"] .ag2-cta .av { border-radius: 50%; border: 5px solid var(--ink); color: var(--ink); font-family: var(--f-hero); font-weight: 900; font-size: 56px; }
+[data-look="chart"] .ag2-cta .hd { font-family: var(--f-small); color: var(--ink); }
+[data-look="chart"] .ag2-cta .btn { border: 5px solid var(--ink); color: var(--ink); font-family: var(--f-small); font-weight: 700; font-size: 60px; letter-spacing: 0.06em; overflow: hidden; }
+[data-look="chart"] .ag2-cta .btn .fill { position: absolute; inset: 0; background: var(--accent); transform-origin: 0 50%; }
+[data-look="chart"] .ag2-cta .btn .b { color: #1a1a1a; }
+
+[data-look="opsmap"] .ag2-cta .card { background: var(--paper); padding: 70px 50px 76px; width: 930px; box-shadow: 0 30px 50px rgba(0,0,0,0.55); }
+[data-look="opsmap"] .ag2-cta .card .hdr { font-family: var(--f-small); font-weight: 700; font-size: 34px; letter-spacing: 0.2em; color: var(--ink); border-bottom: 4px solid var(--ink); padding-bottom: 18px; margin-bottom: 40px; display: flex; justify-content: space-between; }
+[data-look="opsmap"] .ag2-cta .line { font-family: var(--f-hero); font-weight: 700; font-size: 138px; line-height: 0.9; color: var(--ink); text-transform: uppercase; }
+[data-look="opsmap"] .ag2-cta .line .emph { color: var(--accent); }
+[data-look="opsmap"] .ag2-cta .av { background: var(--ink); color: var(--paper); font-family: var(--f-hero); font-weight: 700; font-size: 64px; border-radius: 50%; }
+[data-look="opsmap"] .ag2-cta .hd { font-family: var(--f-small); font-weight: 700; color: var(--ink); }
+[data-look="opsmap"] .ag2-cta .btn { border: 8px double var(--accent); color: var(--accent); font-family: var(--f-hero); font-weight: 700; font-size: 84px; letter-spacing: 0.08em; min-width: 520px; }
+[data-look="opsmap"] .ag2-cta .btn .b { background: var(--accent); color: var(--paper); }
+
+/* ------------------------------------------------------------------ shared small pieces */
+.ag2-layer { position: absolute; inset: 0; }
+.ag2-abs { position: absolute; }
+.ag2-flash { position: absolute; inset: 0; background: #fff; z-index: 60; pointer-events: none; }
+.ag2-hide { position: absolute; width: 0; height: 0; overflow: hidden; }
+.ag2-tab { font-variant-numeric: tabular-nums; }

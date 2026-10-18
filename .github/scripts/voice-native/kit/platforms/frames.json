@@ -1,0 +1,399 @@
+{
+  "schema": "agmm-platform-frames/1",
+  "generated_by": "kit/platforms/build_frames.py",
+  "master": [
+    1080,
+    1920
+  ],
+  "units": "master pixels of a 1080x1920 short, origin top-left, half-open {x0,y0,x1,y1}",
+  "routing_alias": {
+    "instagram": "instagram_reels",
+    "instagram-reels": "instagram_reels",
+    "instagram_reels": "instagram_reels",
+    "facebook": "facebook_reels",
+    "facebook-reels": "facebook_reels",
+    "facebook_reels": "facebook_reels",
+    "facebook_feed": "facebook_feed",
+    "tiktok": "tiktok",
+    "youtube": "youtube_shorts",
+    "youtube-shorts": "youtube_shorts",
+    "youtube_shorts": "youtube_shorts",
+    "linkedin": "linkedin_feed",
+    "linkedin_feed": "linkedin_feed",
+    "s117": "facebook_reels"
+  },
+  "secondary": {
+    "facebook_reels": [
+      "facebook_feed"
+    ]
+  },
+  "rules": {
+    "outside_visible": "text box > 8 px beyond the visible rect: FAIL when the profile's fail_outside_visible is true (measured/derived visible rect), else WARN",
+    "touching_crop": "4-8 px beyond the visible rect: WARN (inside Vision's 4-px box grid, a sliver of a glyph)",
+    "under_overlay": "WARN when >= 25% of a text box's area lies under an overlay",
+    "persistence": "an event counts only when it holds on >= 2 consecutive 2-fps samples"
+  },
+  "cross_platform_text_safe_simple": {
+    "x0": 120,
+    "y0": 312,
+    "x1": 756,
+    "y1": 1224,
+    "note": "intersection of the Reels/TikTok/Shorts text-safe rects (notch-free): safe on all four"
+  },
+  "platforms": {
+    "instagram_reels": {
+      "label": "Instagram Reels (app, Reels tab)",
+      "phone": "iPhone 1179x2556 (Sam's, 29 Sep 2026)",
+      "visible": {
+        "x0": 50,
+        "y0": 0,
+        "x1": 1030,
+        "y1": 1920,
+        "evidence": "measured",
+        "source": "registration of the screenshot against the S33 master frame at 40.45/40.50/40.55 s: scale 1.203 screen px per master px, x offset -59.5, y offset -1 (mean abs error 5.4/255); video spans screen y 0-2309, the comment bar sits below it",
+        "note": "side crop 49.5 px each side (screen x -59.5 / 1.203); full height visible"
+      },
+      "overlays": [
+        {
+          "x0": 0,
+          "y0": 0,
+          "x1": 1080,
+          "y1": 240,
+          "evidence": "measured",
+          "source": "evidence/instagram-ui-mask-measured.png (pixels that are pure white/red on the phone but not in the master frame evidence/S33-master-40.55s.png)",
+          "name": "status bar + Reels/Friends header",
+          "note": "header row measured at master y 186-234 (screen 223-281); the status bar sits above it"
+        },
+        {
+          "x0": 905,
+          "y0": 1150,
+          "x1": 1080,
+          "y1": 1920,
+          "evidence": "measured",
+          "source": "evidence/instagram-ui-mask-measured.png (pixels that are pure white/red on the phone but not in the master frame evidence/S33-master-40.55s.png)",
+          "name": "right action rail",
+          "note": "like/comment/repost/send/menu/audio icons measured at master x 916-990, y 1158-1865"
+        },
+        {
+          "x0": 0,
+          "y0": 1690,
+          "x1": 1080,
+          "y1": 1920,
+          "evidence": "measured",
+          "source": "evidence/instagram-ui-mask-measured.png (pixels that are pure white/red on the phone but not in the master frame evidence/S33-master-40.55s.png)",
+          "name": "username + caption + progress bar",
+          "note": "avatar, @agmm_ltd and one caption line measured at master x 89-783, y 1704-1860; progress bar y 1912-1920. A tapped-open caption grows upward: not measured."
+        }
+      ],
+      "doc_safe": {
+        "x0": 65,
+        "y0": 269,
+        "x1": 1015,
+        "y1": 1248,
+        "evidence": "documented",
+        "source": "https://www.facebook.com/business/ads-guide/update/video/instagram-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-instagram-reels.txt): 'Consider leaving at least 14% of the top, 35% of the bottom and 6% on each side of your asset free from text, logos or other important creative elements ... placed too close to the edges of devices with screens taller than a 9:16 aspect ratio.'",
+        "note": "14% top, 35% bottom, 6% sides of 1080x1920 (ads guidance)"
+      },
+      "fail_outside_visible": true,
+      "text_safe": {
+        "x0": 74,
+        "y0": 264,
+        "x1": 1006,
+        "y1": 1666,
+        "notches": [
+          {
+            "x0": 881,
+            "y0": 1126,
+            "x1": 1080,
+            "y1": 1920,
+            "name": "right action rail"
+          }
+        ],
+        "simple": {
+          "x0": 74,
+          "y0": 264,
+          "x1": 881,
+          "y1": 1666
+        },
+        "margin": 24,
+        "evidence": "derived",
+        "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+      }
+    },
+    "facebook_reels": {
+      "label": "Facebook Reels (our vertical posts publish as /reel/ URLs: staged receipts)",
+      "phone": "not measured",
+      "visible": {
+        "x0": 50,
+        "y0": 0,
+        "x1": 1030,
+        "y1": 1920,
+        "evidence": "derived",
+        "source": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-facebook-reels.txt): 'Consider leaving roughly 14% of the top, 35% of the bottom and 6% on each side of your asset free from text ...' + https://www.facebook.com/business/ads-guide/update/video/instagram-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-instagram-reels.txt): 'Consider leaving at least 14% of the top, 35% of the bottom and 6% on each side of your asset free from text, logos or other important creative elements ... placed too close to the edges of devices with screens taller than a 9:16 aspect ratio.' -- Meta documents edge cropping on screens taller than 9:16; the 50 px is the aspect-fill strip measured on Instagram (Meta's sibling app) on Sam's phone"
+      },
+      "overlays": [
+        {
+          "x0": 0,
+          "y0": 0,
+          "x1": 1080,
+          "y1": 269,
+          "evidence": "documented",
+          "source": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-facebook-reels.txt): 'Consider leaving roughly 14% of the top, 35% of the bottom and 6% on each side of your asset free from text ...'",
+          "name": "top 14%"
+        },
+        {
+          "x0": 0,
+          "y0": 1248,
+          "x1": 1080,
+          "y1": 1920,
+          "evidence": "documented",
+          "source": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-facebook-reels.txt): 'Consider leaving roughly 14% of the top, 35% of the bottom and 6% on each side of your asset free from text ...'",
+          "name": "bottom 35% (profile, caption, CTA)"
+        }
+      ],
+      "doc_safe": {
+        "x0": 65,
+        "y0": 269,
+        "x1": 1015,
+        "y1": 1248,
+        "evidence": "documented",
+        "source": "https://www.facebook.com/business/ads-guide/update/video/facebook-facebook-reels (fetched 29 Sep 2026, evidence/meta-ads-guide-facebook-reels.txt): 'Consider leaving roughly 14% of the top, 35% of the bottom and 6% on each side of your asset free from text ...'"
+      },
+      "fail_outside_visible": true,
+      "text_safe": {
+        "x0": 74,
+        "y0": 293,
+        "x1": 1006,
+        "y1": 1224,
+        "notches": [],
+        "simple": {
+          "x0": 74,
+          "y0": 293,
+          "x1": 1006,
+          "y1": 1224
+        },
+        "margin": 24,
+        "evidence": "derived",
+        "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+      }
+    },
+    "facebook_feed": {
+      "label": "Facebook Feed (a vertical video shown in the main feed)",
+      "phone": "not measured",
+      "visible": {
+        "x0": 0,
+        "y0": 285,
+        "x1": 1080,
+        "y1": 1635,
+        "evidence": "estimated",
+        "source": "https://www.facebook.com/business/ads-guide/update/video/facebook-feed (fetched 29 Sep 2026, evidence/meta-ads-guide-facebook-feed.txt): 'Ratio: 4:5', 'Resolution: 1440 x 1800 pixels'. The page does NOT say how a 9:16 upload is shown in Feed. -- ASSUMPTION: a 9:16 video is centre-cropped to the recommended 4:5 (1080x1350) in Feed. Needs one phone screenshot of an AGMM reel in the Facebook feed to confirm or refute."
+      },
+      "overlays": [],
+      "doc_safe": null,
+      "fail_outside_visible": false,
+      "secondary_of": "facebook_reels",
+      "text_safe": {
+        "x0": 24,
+        "y0": 309,
+        "x1": 1056,
+        "y1": 1611,
+        "notches": [],
+        "simple": {
+          "x0": 24,
+          "y0": 309,
+          "x1": 1056,
+          "y1": 1611
+        },
+        "margin": 24,
+        "evidence": "derived",
+        "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+      }
+    },
+    "tiktok": {
+      "label": "TikTok (For You feed)",
+      "phone": "not measured",
+      "visible": {
+        "x0": 50,
+        "y0": 0,
+        "x1": 1030,
+        "y1": 1920,
+        "evidence": "estimated",
+        "source": "ASSUMPTION: TikTok aspect-fills the area above its bottom bar like Instagram does on the same phone. The documented template marks the outer 120 px per side unsafe (see doc_safe) but does not say it is cropped."
+      },
+      "overlays": [
+        {
+          "x0": 0,
+          "y0": 0,
+          "x1": 1080,
+          "y1": 240,
+          "evidence": "documented",
+          "source": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads (fetched 29 Sep 2026, evidence/tiktok-ads-in-feed-specs.txt) -> its 'In-Feed-Standard Version LTR.zip' (evidence/tiktok-in-feed-standard-safezone.png, 2880x5120, labelled on a 720x1280 grid: sides 80, top 160, right column 120 wide from 720 above the bottom, bottom 440). Measured from the file's alpha at x0.375.",
+          "name": "top tabs (160/1280)"
+        },
+        {
+          "x0": 780,
+          "y0": 840,
+          "x1": 1080,
+          "y1": 1920,
+          "evidence": "documented",
+          "source": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads (fetched 29 Sep 2026, evidence/tiktok-ads-in-feed-specs.txt) -> its 'In-Feed-Standard Version LTR.zip' (evidence/tiktok-in-feed-standard-safezone.png, 2880x5120, labelled on a 720x1280 grid: sides 80, top 160, right column 120 wide from 720 above the bottom, bottom 440). Measured from the file's alpha at x0.375.",
+          "name": "right column: profile, like, comment, share (120 wide, 720/1280 from the bottom)"
+        },
+        {
+          "x0": 0,
+          "y0": 1260,
+          "x1": 1080,
+          "y1": 1920,
+          "evidence": "documented",
+          "source": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads (fetched 29 Sep 2026, evidence/tiktok-ads-in-feed-specs.txt) -> its 'In-Feed-Standard Version LTR.zip' (evidence/tiktok-in-feed-standard-safezone.png, 2880x5120, labelled on a 720x1280 grid: sides 80, top 160, right column 120 wide from 720 above the bottom, bottom 440). Measured from the file's alpha at x0.375.",
+          "name": "bottom: account, caption, sound, CTA (440/1280)"
+        }
+      ],
+      "doc_safe": {
+        "x0": 120,
+        "y0": 240,
+        "x1": 960,
+        "y1": 1260,
+        "evidence": "documented",
+        "source": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads (fetched 29 Sep 2026, evidence/tiktok-ads-in-feed-specs.txt) -> its 'In-Feed-Standard Version LTR.zip' (evidence/tiktok-in-feed-standard-safezone.png, 2880x5120, labelled on a 720x1280 grid: sides 80, top 160, right column 120 wide from 720 above the bottom, bottom 440). Measured from the file's alpha at x0.375.",
+        "notch": {
+          "x0": 780,
+          "y0": 840,
+          "x1": 960,
+          "y1": 1260,
+          "evidence": "documented",
+          "source": "https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads (fetched 29 Sep 2026, evidence/tiktok-ads-in-feed-specs.txt) -> its 'In-Feed-Standard Version LTR.zip' (evidence/tiktok-in-feed-standard-safezone.png, 2880x5120, labelled on a 720x1280 grid: sides 80, top 160, right column 120 wide from 720 above the bottom, bottom 440). Measured from the file's alpha at x0.375."
+        }
+      },
+      "fail_outside_visible": false,
+      "text_safe": {
+        "x0": 120,
+        "y0": 264,
+        "x1": 960,
+        "y1": 1236,
+        "notches": [
+          {
+            "x0": 756,
+            "y0": 816,
+            "x1": 1080,
+            "y1": 1920,
+            "name": "right column: profile, like, comment, share (120 wide, 720/1280 from the bottom)"
+          },
+          {
+            "x0": 780,
+            "y0": 840,
+            "x1": 1080,
+            "y1": 1920,
+            "name": "documented notch"
+          }
+        ],
+        "simple": {
+          "x0": 120,
+          "y0": 264,
+          "x1": 756,
+          "y1": 1236
+        },
+        "margin": 24,
+        "evidence": "derived",
+        "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+      }
+    },
+    "youtube_shorts": {
+      "label": "YouTube Shorts",
+      "phone": "not measured",
+      "visible": {
+        "x0": 50,
+        "y0": 0,
+        "x1": 1030,
+        "y1": 1920,
+        "evidence": "estimated",
+        "source": "ASSUMPTION: the Shorts player aspect-fills like Instagram on the same phone. Google's vertical template marks x < 48 unsafe, which agrees with a ~50 px strip, but does not say it is cropped."
+      },
+      "overlays": [
+        {
+          "x0": 0,
+          "y0": 0,
+          "x1": 1080,
+          "y1": 288,
+          "evidence": "documented",
+          "source": "https://support.google.com/google-ads/answer/13547298 'Universal safe zones for video ads on YouTube' (fetched 29 Sep 2026, evidence/google-ads-youtube-video-specs.txt) -> its vertical template https://services.google.com/fh/files/misc/youtubesafezoneoverlay_vertical_final.png (evidence/youtube-vertical-safezone-overlay.png, 1080x1920). Measured from the file's alpha: safe x 48-887, y 288-1247.",
+          "name": "top (search, menu)"
+        },
+        {
+          "x0": 888,
+          "y0": 0,
+          "x1": 1080,
+          "y1": 1920,
+          "evidence": "documented",
+          "source": "https://support.google.com/google-ads/answer/13547298 'Universal safe zones for video ads on YouTube' (fetched 29 Sep 2026, evidence/google-ads-youtube-video-specs.txt) -> its vertical template https://services.google.com/fh/files/misc/youtubesafezoneoverlay_vertical_final.png (evidence/youtube-vertical-safezone-overlay.png, 1080x1920). Measured from the file's alpha: safe x 48-887, y 288-1247.",
+          "name": "right column (like, dislike, comment, share, remix) as the template draws it"
+        },
+        {
+          "x0": 0,
+          "y0": 1248,
+          "x1": 1080,
+          "y1": 1920,
+          "evidence": "documented",
+          "source": "https://support.google.com/google-ads/answer/13547298 'Universal safe zones for video ads on YouTube' (fetched 29 Sep 2026, evidence/google-ads-youtube-video-specs.txt) -> its vertical template https://services.google.com/fh/files/misc/youtubesafezoneoverlay_vertical_final.png (evidence/youtube-vertical-safezone-overlay.png, 1080x1920). Measured from the file's alpha: safe x 48-887, y 288-1247.",
+          "name": "bottom (channel, title, CTA)"
+        }
+      ],
+      "doc_safe": {
+        "x0": 48,
+        "y0": 288,
+        "x1": 888,
+        "y1": 1248,
+        "evidence": "documented",
+        "source": "https://support.google.com/google-ads/answer/13547298 'Universal safe zones for video ads on YouTube' (fetched 29 Sep 2026, evidence/google-ads-youtube-video-specs.txt) -> its vertical template https://services.google.com/fh/files/misc/youtubesafezoneoverlay_vertical_final.png (evidence/youtube-vertical-safezone-overlay.png, 1080x1920). Measured from the file's alpha: safe x 48-887, y 288-1247."
+      },
+      "fail_outside_visible": false,
+      "text_safe": {
+        "x0": 74,
+        "y0": 312,
+        "x1": 864,
+        "y1": 1224,
+        "notches": [],
+        "simple": {
+          "x0": 74,
+          "y0": 312,
+          "x1": 864,
+          "y1": 1224
+        },
+        "margin": 24,
+        "evidence": "derived",
+        "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+      }
+    },
+    "linkedin_feed": {
+      "label": "LinkedIn feed video",
+      "phone": "not measured",
+      "visible": {
+        "x0": 0,
+        "y0": 285,
+        "x1": 1080,
+        "y1": 1635,
+        "evidence": "estimated",
+        "source": "https://www.linkedin.com/help/lms/answer/a424737 (fetched 29 Sep 2026, evidence/linkedin-video-ads-specs.txt): 'Vertical: 4:5 (.80) (Recommended ratio) ... Vertical: 9:16 (0.56) ... Maximum: 1080 x 1920 pixels'. The page does NOT say how a 9:16 upload is shown in the feed. -- ASSUMPTION (worst case): the mobile feed shows a 9:16 video centre-cropped to the recommended 4:5. Needs one phone screenshot of an AGMM LinkedIn video in the feed to confirm or refute."
+      },
+      "overlays": [],
+      "doc_safe": null,
+      "fail_outside_visible": false,
+      "text_safe": {
+        "x0": 24,
+        "y0": 309,
+        "x1": 1056,
+        "y1": 1611,
+        "notches": [],
+        "simple": {
+          "x0": 24,
+          "y0": 309,
+          "x1": 1056,
+          "y1": 1611
+        },
+        "margin": 24,
+        "evidence": "derived",
+        "source": "visible minus overlays minus 24 px margin, clamped to doc_safe"
+      }
+    }
+  }
+}

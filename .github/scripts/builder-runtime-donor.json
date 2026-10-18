@@ -1,0 +1,200 @@
+{
+  "release": "short-s66-d1482b2b30c0a1b584a6d3aea177b28fae73eb329d8fa4d58286ff2206487570",
+  "asset_id": 635838753,
+  "sha256": "8d2ad2f65a82d715a31a1ac83adcbe74164de1fa19fc03db625e90d459efd678",
+  "files": [
+    {
+      "runtime_path": "kit/lib/ds/img/grain.png",
+      "package_path": "s66-a/ds/img/grain.png",
+      "sha256": "669923ab9b9806ab1d170c35168f54aced16a3ab1665888056fdca53fbe3722c",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/sourceserif-400-italic.woff2",
+      "package_path": "s66-a/ds/fonts/sourceserif-400-italic.woff2",
+      "sha256": "bdd0e2a056f9d959782ca58fe25611076c77680cba409708f2d700876eedb81d",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/kalam-400-normal.woff2",
+      "package_path": "s66-a/ds/fonts/kalam-400-normal.woff2",
+      "sha256": "257f0129d54c60cda0f8856ad1de05e760a219c9365fb19cd50b0cc8fdb2c9d1",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/sourceserif-var.woff2",
+      "package_path": "s66-a/ds/fonts/sourceserif-var.woff2",
+      "sha256": "286e05e5e444f44e50724df445808458dea58507e9805bba012b3b12d08ca122",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/kalam-700-normal.woff2",
+      "package_path": "s66-a/ds/fonts/kalam-700-normal.woff2",
+      "sha256": "c1bc5092263cb16e72fa43621eb116966068950e1b77ffd38fd401dd43ce1120",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/spacegrotesk-var.woff2",
+      "package_path": "s66-a/ds/fonts/spacegrotesk-var.woff2",
+      "sha256": "a0d054c4af557de20afd6ca59f47ab353bcaec49c63ff04b6c9d39d0f8910557",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/dmmono-400-normal.woff2",
+      "package_path": "s66-a/ds/fonts/dmmono-400-normal.woff2",
+      "sha256": "fd7521f3531a5ccfc655b25c4f22e9871df3ec141ad79bb27fde20d0df347b6d",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/plexmono-600-normal.woff2",
+      "package_path": "s66-a/ds/fonts/plexmono-600-normal.woff2",
+      "sha256": "ad4580d8cb4b5f627c2d18457656732f7f7b070f7837fbc380e08054157e6f6c",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/instrumentserif-400-italic.woff2",
+      "package_path": "s66-a/ds/fonts/instrumentserif-400-italic.woff2",
+      "sha256": "6ee678c33f388dd7ba59700ebea635deb98821baafd817b09891f7927177f702",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/instrumentserif-400-normal.woff2",
+      "package_path": "s66-a/ds/fonts/instrumentserif-400-normal.woff2",
+      "sha256": "60c06664b5a95c7de6cc3e00d1f9034d78bd1e40b564016b241674449a067d4d",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/archivo-var.woff2",
+      "package_path": "s66-a/ds/fonts/archivo-var.woff2",
+      "sha256": "7150c0ec5ad356453013d11affec1fbab95de0dd2dcecb043b4f1cb7f87c4ba4",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/dmmono-500-normal.woff2",
+      "package_path": "s66-a/ds/fonts/dmmono-500-normal.woff2",
+      "sha256": "0e263db52797086e763679c54f84ded8cc1249879bc27dca2bd5dd446f6d9f36",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/plexmono-500-normal.woff2",
+      "package_path": "s66-a/ds/fonts/plexmono-500-normal.woff2",
+      "sha256": "a76f53ca6612e7b3828eec2311098675b7f9849ae4169a8bcef6302aec02a6c0",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/plexmono-400-normal.woff2",
+      "package_path": "s66-a/ds/fonts/plexmono-400-normal.woff2",
+      "sha256": "c36f509c0a8f9f85f29cb44bc8701d8a9e0b14c499e77a884f789ead7093a7ac",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds/fonts/anton-400-normal.woff2",
+      "package_path": "s66-a/ds/fonts/anton-400-normal.woff2",
+      "sha256": "23aab0b2692a0c89eb7997d3c7cf5bda41276d6cd4ab6cc0edc3edfcece32b09",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/img/eb-cork-tile.jpg",
+      "package_path": "s66-a/ds2/img/eb-cork-tile.jpg",
+      "sha256": "831df03d4cc7f499120996b355f7d613b6977f01aa5e10df8ba09752d648f97f",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/RedHatMono-Regular.ttf",
+      "package_path": "s66-a/ds2/fonts/RedHatMono-Regular.ttf",
+      "sha256": "452fe826871b37539f5212b20c87cf30f82f58dd2741f1c96edd1dcbdc0db6b4",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/RedHatMono-Bold.ttf",
+      "package_path": "s66-a/ds2/fonts/RedHatMono-Bold.ttf",
+      "sha256": "7ef48353f4be5ddb90f000f6fad48f2b62b3e8c27d9818d8d45ff46c201065e0",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/JetBrainsMono-Bold.ttf",
+      "package_path": "s66-a/ds2/fonts/JetBrainsMono-Bold.ttf",
+      "sha256": "a2349098b9e45419e7bf0e2958d6c4937a049dded37387b08be725be4c7615f3",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/YoungSerif-Regular.ttf",
+      "package_path": "s66-a/ds2/fonts/YoungSerif-Regular.ttf",
+      "sha256": "f8dc08f77abad753a00670af70756a8ace938e5c3f0b770f4f4c2071c4bd8fc6",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/JetBrainsMono-Regular.ttf",
+      "package_path": "s66-a/ds2/fonts/JetBrainsMono-Regular.ttf",
+      "sha256": "b6b1ff4ddefe36d7f2a6174e1d001cab374e594519ee9049af028d577b64c5f5",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/Silkscreen-Regular.ttf",
+      "package_path": "s66-a/ds2/fonts/Silkscreen-Regular.ttf",
+      "sha256": "49567408600809e25147e9225ac4f37f410e2df45a750696c45027531fb65f1b",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/BricolageGrotesque-Regular.ttf",
+      "package_path": "s66-a/ds2/fonts/BricolageGrotesque-Regular.ttf",
+      "sha256": "972a6d098c9867ae131d0ea99e221e63976b11a19d4b931c2c7ace525674e4f6",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/InstrumentSans-Regular.ttf",
+      "package_path": "s66-a/ds2/fonts/InstrumentSans-Regular.ttf",
+      "sha256": "a22cb26e48fd79bcb01bf2fc92d36785474dce36d9c544ab0a8868c2657c4a87",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/NothingYouCouldDo-Regular.ttf",
+      "package_path": "s66-a/ds2/fonts/NothingYouCouldDo-Regular.ttf",
+      "sha256": "d866f985896d3280f4fce72db7e17302c24a0c1fdb0699b6b5ed3af14f944d57",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/Gloock-Regular.ttf",
+      "package_path": "s66-a/ds2/fonts/Gloock-Regular.ttf",
+      "sha256": "e86b4ce66dbd3f1f83eee8db99ec96e0da1128c3f53df0e9b3b7472025dfe960",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/GeistMono-Regular.ttf",
+      "package_path": "s66-a/ds2/fonts/GeistMono-Regular.ttf",
+      "sha256": "a55c1b51cda4afeab9e471e7947b85a20f7c8831d7e6b1470c1b7fbdc0f0f15e",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/BricolageGrotesque-Bold.ttf",
+      "package_path": "s66-a/ds2/fonts/BricolageGrotesque-Bold.ttf",
+      "sha256": "a737b146fe0d77ffe8a86e3cd16700dd431d3b1e420d4fd80e142cd68a1cb50d",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/BigShoulders-Regular.ttf",
+      "package_path": "s66-a/ds2/fonts/BigShoulders-Regular.ttf",
+      "sha256": "18a879fc71978a4447150705caf880a9da3860083c259fd29e6dc03057b6842a",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/GeistMono-Bold.ttf",
+      "package_path": "s66-a/ds2/fonts/GeistMono-Bold.ttf",
+      "sha256": "75c0828d5c1ee44b9ef9f4df577bf41595ec362e2ea3f1e558590c9e92c7949d",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/InstrumentSans-Bold.ttf",
+      "package_path": "s66-a/ds2/fonts/InstrumentSans-Bold.ttf",
+      "sha256": "444f85bf1c4b0e1ce1ca624f6be54bcd832207714ccaf4ea99ee531341683bdf",
+      "native_current_hash_known_on_mac": false
+    },
+    {
+      "runtime_path": "kit/lib/ds2/fonts/BigShoulders-Bold.ttf",
+      "package_path": "s66-a/ds2/fonts/BigShoulders-Bold.ttf",
+      "sha256": "b43bcd198b9fdf717dd42aa61a34dba32e01aceaeae659d689afd0ca52c37ea2",
+      "native_current_hash_known_on_mac": false
+    }
+  ],
+  "qualification": "Donor identity is exact; native current bodies require root protected upload and actual Ubuntu comparison. Staging always uses current protected bodies, never inferred donor equivalence."
+}

@@ -1,0 +1,95 @@
+name: AGMM unchanged native short package
+run-name: AGMM native build ${{ fromJSON(inputs.request).intent }}
+on:
+  workflow_dispatch:
+    inputs:
+      request:
+        description: Exact protected native-owner/current-source build request
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: agmm-native-build-${{ fromJSON(inputs.request).id }}
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TZ: Europe/London
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate exact immutable native build and owner intent
+        id: binding
+        run: |
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']['request']
+          Path('build-request.json').write_text(r if isinstance(r,str) else json.dumps(r))
+          PY
+          python3 .github/scripts/build_native_short.py --request build-request.json --preflight
+      - name: Check out exact protected current build inputs
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ steps.binding.outputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-build-inputs
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ steps.binding.outputs.private_prefix }}
+      - name: Check out only new voice source metadata when a hosted voice is used
+        if: fromJSON(inputs.request).voice_request != null
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ steps.binding.outputs.voice_private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-voice-inputs
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            ${{ steps.binding.outputs.voice_private_prefix }}/MANIFEST.json
+            ${{ steps.binding.outputs.voice_private_prefix }}/shorts/scripts-v2/${{ fromJSON(inputs.request).id }}.md
+            ${{ steps.binding.outputs.voice_private_prefix }}/shorts/voice/${{ fromJSON(inputs.request).id }}/paragraphs.txt
+            ${{ steps.binding.outputs.voice_private_prefix }}/shorts/voice/${{ fromJSON(inputs.request).id }}/names.txt
+            ${{ steps.binding.outputs.voice_private_prefix }}/shorts/voice/${{ fromJSON(inputs.request).id }}/source.json
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12.8'
+      - name: Install the established Ubuntu package-build runtime
+        run: |
+          python3 -m pip install numpy==2.5.2 pillow==11.3.0
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          sudo mkdir -p /Users/samwall/alfred/builds
+          sudo chown -R "$(id -u):$(id -g)" /Users/samwall
+      - name: Run unchanged native source and sound build with provider access denied
+        run: |
+          python3 .github/scripts/build_native_short.py --request build-request.json \
+            --private-root "$GITHUB_WORKSPACE/private-build-inputs" \
+            --voice-private-root "$GITHUB_WORKSPACE/private-voice-inputs" \
+            --work "$RUNNER_TEMP/native-build-work" --output "$RUNNER_TEMP/native-build-json"
+      - name: Seal exact package through original release owner
+        run: |
+          python3 .github/scripts/build_native_short.py --request build-request.json --seal \
+            --output "$RUNNER_TEMP/native-build-json"
+      - name: Return bounded native package metadata only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ fromJSON(inputs.request).intent }}-JSON
+          path: ${{ runner.temp }}/native-build-json/*.json
+          retention-days: 7
+          if-no-files-found: warn

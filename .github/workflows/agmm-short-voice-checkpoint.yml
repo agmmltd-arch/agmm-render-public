@@ -1,0 +1,69 @@
+name: AGMM known-capacity native take export
+run-name: AGMM checkpoint ${{ fromJSON(inputs.request).intent }}
+on:
+  workflow_dispatch:
+    inputs:
+      request:
+        description: Exact reconciled 402 checkpoint and original protected text coordinates
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: agmm-voice-checkpoint-${{ fromJSON(inputs.request).pointer.run_id }}
+  cancel-in-progress: false
+jobs:
+  checkpoint:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Check out original source metadata only
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ fromJSON(inputs.request).voice_request.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-voice-inputs
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            ${{ fromJSON(inputs.request).voice_request.private_prefix }}/MANIFEST.json
+            ${{ fromJSON(inputs.request).voice_request.private_prefix }}/shorts/scripts-v2/${{ fromJSON(inputs.request).voice_request.id }}.md
+            ${{ fromJSON(inputs.request).voice_request.private_prefix }}/shorts/voice/${{ fromJSON(inputs.request).voice_request.id }}/paragraphs.txt
+            ${{ fromJSON(inputs.request).voice_request.private_prefix }}/shorts/voice/${{ fromJSON(inputs.request).voice_request.id }}/names.txt
+            ${{ fromJSON(inputs.request).voice_request.private_prefix }}/shorts/voice/${{ fromJSON(inputs.request).voice_request.id }}/source.json
+      - name: Export only exact native-cache-eligible takes without provider access
+        run: |
+          python3 - <<'PY'
+          import json,sys,os
+          from pathlib import Path
+          payload=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']['request']
+          Path('checkpoint-request.json').write_text(payload if isinstance(payload,str) else json.dumps(payload))
+          sys.path.insert(0,'.github/scripts')
+          from voice_hosted import private_inputs,digest,need
+          from resume_voice_checkpoint import extract
+          r=json.load(open('checkpoint-request.json'))
+          v=r['voice_request']; p=r['pointer']
+          need(p['request_sha256']==digest(v), 'original source request differs')
+          root=Path('private-voice-inputs')
+          private_inputs(v,root,verify_media=False)
+          paras=root/v['private_prefix']/('shorts/voice/'+v['id']+'/paragraphs.txt')
+          extract(p,paras,Path(os.environ['RUNNER_TEMP'])/'checkpoint-export')
+          PY
+      - name: Preserve verified take export and its exact evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ fromJSON(inputs.request).intent }}-VERIFIED-TAKES
+          path: |
+            ${{ runner.temp }}/checkpoint-export/protected-takes/
+            ${{ runner.temp }}/checkpoint-export/CHECKPOINT-EXPORT.json
+          retention-days: 7
+          if-no-files-found: error
