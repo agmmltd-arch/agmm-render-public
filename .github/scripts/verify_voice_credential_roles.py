@@ -16,7 +16,7 @@ from voice_effects import host
 from voice_hosted import need, source_closure
 
 SLOTS = {"AGMM_MISTRAL_KEY":("MISTRAL_KEY","AGMM_VOICE_MISTRAL_KEY"),
-         "AGMM_GEMINI_FREE_REVIEW_KEY":("GEMINI_KEY_B","AGMM_VOICE_GEMINI_FREE_KEY")}
+         "AGMM_NATIVE_GEMINI_KEY_B":("GEMINI_KEY_B","AGMM_VOICE_GEMINI_FREE_KEY")}
 
 
 def compare(expected, environment):

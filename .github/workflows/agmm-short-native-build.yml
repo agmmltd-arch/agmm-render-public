@@ -3,6 +3,9 @@ run-name: AGMM native build ${{ fromJSON(inputs.request).intent }}
 on:
   workflow_dispatch:
     inputs:
+      runtime_commit:
+        description: Qualified commit behind its immutable agmm-native-runtime tag
+        required: true
       request:
         description: Exact protected native-owner/current-source build request
         required: true
@@ -14,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    if: github.repository == 'agmmltd-arch/agmm-render-public' && github.sha == inputs.runtime_commit && github.ref == format('refs/tags/agmm-native-runtime-{0}', inputs.runtime_commit)
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     permissions:
@@ -35,7 +38,10 @@ jobs:
           python3 - <<'PY'
           import json,os
           from pathlib import Path
-          r=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']['request']
+          inputs=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']
+          assert os.environ['GITHUB_SHA']==inputs['runtime_commit'], 'actual runtime commit differs'
+          assert os.environ['GITHUB_REF']=='refs/tags/agmm-native-runtime-'+inputs['runtime_commit'], 'actual runtime tag differs'
+          r=inputs['request']
           Path('build-request.json').write_text(r if isinstance(r,str) else json.dumps(r))
           PY
           python3 .github/scripts/build_native_short.py --request build-request.json --preflight

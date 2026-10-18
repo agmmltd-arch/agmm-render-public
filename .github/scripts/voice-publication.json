@@ -6,9 +6,9 @@
     ".github/scripts/builder-runtime-donor.json": "486401e56ed31f26e614dafa16991a55734cd7e3fdac16d095d7a0545a0aa24b",
     ".github/scripts/native_build_effects.py": "d0beb8d68b7e76ae7d9fd8ba2669153b8ebb45e7342708305fd39ec87a7a2eee",
     ".github/scripts/resume_voice_checkpoint.py": "49c4ad8aed0f60f23e6a3d7a7cabfb2a4049d89a9617ad73eb5780a93827212c",
-    ".github/scripts/seed_voice_runtime.py": "aa52393d74b715698591c76f1dcfb5a505d7c0a09f4de04d0e1b0f0868bcd512",
+    ".github/scripts/seed_voice_runtime.py": "5110ee1b26c51cc934f8f5c0eb404779fe5c4b473b4c645d42b9f11f754a2d3b",
     ".github/scripts/stage_hosted_voice.py": "9e05248cfc1eb47e11e47747d37539093fa21e0f4b9d301dc66ca0256a19bddd",
-    ".github/scripts/verify_voice_credential_roles.py": "43d54ae93be6e707af47780f211c65745ef64bf0466f006056290eba2078169d",
+    ".github/scripts/verify_voice_credential_roles.py": "af06dcf76134c638c1dc9615be7f985d876cdfaf2988371fd965716f87c21a41",
     ".github/scripts/voice-native/crew/short_cloud_dispatch.py": "ffc0b056e609edf5a77699f648486d86c93822300afef57d58c9b01c5bc77acf",
     ".github/scripts/voice-native/design-system/tools/key_green.py": "acceb5d279c9041a60c3e3bd21c404890b7f2884e9be23fac7b1e8e202b675d6",
     ".github/scripts/voice-native/films/tools/render_actions_film.py": "46a124649c499014cc485dfdaab3b8dce3e5566da5a9e86c6c2a79fd60923392",
@@ -84,16 +84,16 @@
     ".github/scripts/voice-site/sitecustomize.py": "22769b0008a63f9cbac3494493069e6ec04618351e1a4d1ceeea021bec2b9ce9",
     ".github/scripts/voice_capacity.py": "9eeb47a6d4d4cbb9b0d3cf78916bcfb7ac888f04a77904b4d6a786396f5f8031",
     ".github/scripts/voice_effects.py": "bf0fcf61974017c40e1a9fc58dacee3c996d3d29150ca0036025732b577b3c86",
-    ".github/scripts/voice_hosted.py": "909177f1f6ac846d831c7bf0077d1b48ff1c41229da751f5c3f340358c71c6c9",
+    ".github/scripts/voice_hosted.py": "e8a2435a7149678d8287351017ab6197fcca11e3073fed4a290e39020d3a27bc",
     ".github/scripts/voice_no_effect.py": "5b030fcea8a85e2966c80f27cc8673db5f6e9c54d38fbb708db9c104a4b09b4d",
-    ".github/workflows/agmm-short-native-build.yml": "786447e16b9c91fdbc1d56af6e749c7b39d2b7e29654e2e247d966ef377c91ae",
+    ".github/workflows/agmm-short-native-build.yml": "f5d6bec29c0ef42a9d6a0d9ef9583ca5848f68860ad09510f963acc0f2ee35ab",
     ".github/workflows/agmm-short-voice-checkpoint.yml": "175d586caa565e9830501cd88425e9816228fb8fb0a0b6bb37812176f36a76b7",
-    ".github/workflows/agmm-short-voice.yml": "365cc7a0ad7b20d494bf92f11781858436d9a6d5db651cb35c3dc4e6f08c4f31"
+    ".github/workflows/agmm-short-voice.yml": "53e83ede599e9e38c31183413d2f31bee64f90d64b81cdd263cce9f5469cb100"
   },
   "allowed_no_effect_workflow_blobs": [
-    "84283f9d15699d1a4374ceb6545b44af6a6919b4"
+    "8c397854ddbfa415d4574de0e35a946b58145b32"
   ],
   "allowed_build_no_effect_workflow_blobs": [
-    "b1cba2d3817e191cf91093c0867ec144856ed034"
+    "b2e7e805350d849b22cc5f032b20a364297455bd"
   ]
 }

@@ -3,6 +3,9 @@ run-name: AGMM native voice ${{ fromJSON(inputs.request).intent }}
 on:
   workflow_dispatch:
     inputs:
+      runtime_commit:
+        description: Qualified commit behind its immutable agmm-native-runtime tag
+        required: true
       task:
         type: choice
         options: [voice, runtime-closure]
@@ -20,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   voice:
-    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    if: github.repository == 'agmmltd-arch/agmm-render-public' && github.sha == inputs.runtime_commit && github.ref == format('refs/tags/agmm-native-runtime-{0}', inputs.runtime_commit)
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
@@ -38,7 +41,10 @@ jobs:
           python3 - <<'PY'
           import json,os,sys
           from pathlib import Path
-          r=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']['request']
+          inputs=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']
+          assert os.environ['GITHUB_SHA']==inputs['runtime_commit'], 'actual runtime commit differs'
+          assert os.environ['GITHUB_REF']=='refs/tags/agmm-native-runtime-'+inputs['runtime_commit'], 'actual runtime tag differs'
+          r=inputs['request']
           Path('voice-request.json').write_text(r if isinstance(r,str) else json.dumps(r))
           sys.path.insert(0,'.github/scripts')
           from voice_hosted import host,source_closure
@@ -49,9 +55,9 @@ jobs:
         id: binding
         env:
           MISTRAL_AVAILABLE: ${{ secrets.AGMM_MISTRAL_KEY != '' }}
-          GEMINI_AVAILABLE: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY != '' }}
+          GEMINI_AVAILABLE: ${{ secrets.AGMM_NATIVE_GEMINI_KEY_B != '' }}
           AGMM_VOICE_MISTRAL_KEY: ${{ secrets.AGMM_MISTRAL_KEY }}
-          AGMM_VOICE_GEMINI_FREE_KEY: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY }}
+          AGMM_VOICE_GEMINI_FREE_KEY: ${{ secrets.AGMM_NATIVE_GEMINI_KEY_B }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -70,7 +76,7 @@ jobs:
         if: inputs.task == 'runtime-closure' && fromJSON(inputs.request).expected_credential_sha256 != null
         env:
           AGMM_VOICE_MISTRAL_KEY: ${{ secrets.AGMM_MISTRAL_KEY }}
-          AGMM_VOICE_GEMINI_FREE_KEY: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY }}
+          AGMM_VOICE_GEMINI_FREE_KEY: ${{ secrets.AGMM_NATIVE_GEMINI_KEY_B }}
         run: |
           python3 .github/scripts/verify_voice_credential_roles.py --request voice-request.json \
             --output "$RUNNER_TEMP/voice-runtime-json/CREDENTIAL-ROLES.json"
@@ -105,7 +111,7 @@ jobs:
         if: inputs.task == 'voice'
         env:
           AGMM_VOICE_MISTRAL_KEY: ${{ secrets.AGMM_MISTRAL_KEY }}
-          AGMM_VOICE_GEMINI_FREE_KEY: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY }}
+          AGMM_VOICE_GEMINI_FREE_KEY: ${{ secrets.AGMM_NATIVE_GEMINI_KEY_B }}
         run: |
           set -euo pipefail
           python3 .github/scripts/voice_hosted.py --request voice-request.json \

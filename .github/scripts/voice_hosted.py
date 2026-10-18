@@ -91,7 +91,7 @@ def validate_request(request, now=None):
     need(request.get("manifest_path") == prefix + "/MANIFEST.json", "manifest outside namespace")
     need(request.get("mode") in ("api", "from-existing", "voicelead"), "unknown owner mode")
     if request["mode"] == "api":
-        for name, slot in (("AGMM_MISTRAL_KEY", "MISTRAL_KEY"), ("AGMM_GEMINI_FREE_REVIEW_KEY", "GEMINI_KEY_B")):
+        for name, slot in (("AGMM_MISTRAL_KEY", "MISTRAL_KEY"), ("AGMM_NATIVE_GEMINI_KEY_B", "GEMINI_KEY_B")):
             role = request.get("credential_roles", {}).get(name, {})
             need(role.get("native_slot") == slot and role.get("same_existing_credential") is True
                  and role.get("root_verified") is True

@@ -25,7 +25,7 @@ def main():
     need = lambda x: x or (_ for _ in ()).throw(RuntimeError("runtime closure failed"))
     records = []
     for repo, revision in MODELS.items():
-        path = Path(snapshot_download(repo_id=repo, revision=revision, allow_patterns=FILES))
+        path = Path(snapshot_download(repo_id=repo, revision=revision))
         need(path.name == revision and all((path / name).is_file() for name in FILES))
         alias = path.parent.parent / "refs/main"
         alias.parent.mkdir(exist_ok=True)
