@@ -1,5 +1,5 @@
 name: F03 exact existing r26 review derivation
-run-name: F03 existing review ${{ fromJSON(inputs.request).intent }}
+run-name: F03 existing review ${{ fromJSON(inputs.request).intent }} @ ${{ inputs.runtime_commit }}
 on:
   workflow_dispatch:
     inputs:
