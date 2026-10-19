@@ -13,6 +13,7 @@
     ".github/scripts/voice-native/design-system/tools/key_green.py": "acceb5d279c9041a60c3e3bd21c404890b7f2884e9be23fac7b1e8e202b675d6",
     ".github/scripts/voice-native/films/tools/render_actions_film.py": "46a124649c499014cc485dfdaab3b8dce3e5566da5a9e86c6c2a79fd60923392",
     ".github/scripts/voice-native/films/tools/render_codespace_film.py": "8c5fa848a5845080733a6f9e76c67b54cf799a9941d31f553af0ee3b939a3398",
+    ".github/scripts/voice-native/films/voice/tooling/asr_compare.py": "907f0d240bdd9ce3c5d6f4dd8e1caaefbfa4f7893f83dcc3e801a27dc21abc4a",
     ".github/scripts/voice-native/films/voice/tooling/check_web_takes.py": "690f9e7068dee72d03dd6b1ff9ede7ad87c71eb4288969f37f2f40521a026618",
     ".github/scripts/voice-native/films/voice/tooling/ingest_web_takes.py": "8ceb184248509581d3199098c376edfc07d6a92d54b31e116de61270c70ab72c",
     ".github/scripts/voice-native/films/voice/tooling/local_asr.py": "b59aca733bdfb5a48d7044d0fad5f585d2fd77206b9755a977222cb7dddb0c2c",
