@@ -2,7 +2,7 @@
 """Immutable Ubuntu adapter around the existing AGMM native voice owners.
 
 No activation, native promotion, source approval, card/claim or release writes.
-The conductor-owned request binds its existing four/day admission and private
+The conductor-owned request binds its existing daily-cap admission and private
 inputs; a separate native client reconciles JSON only. Media stays on Actions.
 """
 import argparse
@@ -28,6 +28,8 @@ BASE = Path("/Users/samwall/alfred/builds/video-program-2026-09-23/v2")
 REF = "shorts/voice/ref/sam-reference-20260905T152059Z-cdf499.wav"
 REF_SHA = "3df9d7568c0b0569887e6c9f39bd35835cda305a09d288ea535c63d9cdc15443"
 SCHEMA = "agmm-native-hosted-voice-v1"
+# 19 Oct 2026 (voice-ops, root-authorised): the conductor voice cap is 18 a day behind a spend guard (crew/voice_budget.py); was a literal 4.
+DAILY_VOICE_CAP = 18
 
 
 def need(value, why):
@@ -102,8 +104,8 @@ def validate_request(request, now=None):
                  "existing native provider/free-project binding absent")
     admission = request["admission"]
     need(admission.get("owner") == "crew/conductor.py" and admission.get("id") == request["id"]
-         and admission.get("step") == "voice" and admission.get("daily_cap") == 4
-         and type(admission.get("count_before")) is int and 0 <= admission["count_before"] < 4,
+         and admission.get("step") == "voice" and admission.get("daily_cap") == DAILY_VOICE_CAP
+         and type(admission.get("count_before")) is int and 0 <= admission["count_before"] < DAILY_VOICE_CAP,
          "foreign owner/daily voice admission")
     for key in ("conductor_sha256", "state_sha256", "input_binding_sha256"):
         need(re.fullmatch(r"[0-9a-f]{64}", admission.get(key, "")), "unbound native admission")

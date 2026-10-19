@@ -84,7 +84,7 @@
     ".github/scripts/voice-site/sitecustomize.py": "22769b0008a63f9cbac3494493069e6ec04618351e1a4d1ceeea021bec2b9ce9",
     ".github/scripts/voice_capacity.py": "9eeb47a6d4d4cbb9b0d3cf78916bcfb7ac888f04a77904b4d6a786396f5f8031",
     ".github/scripts/voice_effects.py": "bf0fcf61974017c40e1a9fc58dacee3c996d3d29150ca0036025732b577b3c86",
-    ".github/scripts/voice_hosted.py": "e8a2435a7149678d8287351017ab6197fcca11e3073fed4a290e39020d3a27bc",
+    ".github/scripts/voice_hosted.py": "5e760657827854389fc6193182a3051a50f5f514bf4d74d5e3adeb85f9d72758",
     ".github/scripts/voice_no_effect.py": "5b030fcea8a85e2966c80f27cc8673db5f6e9c54d38fbb708db9c104a4b09b4d",
     ".github/workflows/agmm-short-native-build.yml": "f5d6bec29c0ef42a9d6a0d9ef9583ca5848f68860ad09510f963acc0f2ee35ab",
     ".github/workflows/agmm-short-voice-checkpoint.yml": "175d586caa565e9830501cd88425e9816228fb8fb0a0b6bb37812176f36a76b7",
