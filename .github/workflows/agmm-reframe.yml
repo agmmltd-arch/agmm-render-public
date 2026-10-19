@@ -1,0 +1,96 @@
+name: AGMM short reframe
+run-name: AGMM short reframe ${{ inputs.tag }}
+
+# Platform-reframe VARIANT of one already-public short master (kit/tools/reframe_variant.py). The master is scaled down and padded so the picture's content
+# clears one platform's UI (caption band, action column); the ground is matched or edge-extended; the AUDIO IS COPIED, never re-encoded. The runner measures
+# the picture before and after (kit/tools/zone_check.py, numpy) and writes variant.mp4 + job.json. Apple Vision OCR is NOT run here: the Mac does that.
+# Mechanical only: it cannot approve, arm, post or publish anything and holds no secrets. The bundle comes from a release holding exactly one asset,
+# reframe-bundle.tar.gz (code + the master, which is already public on another platform), verified against the dispatched SHA256; the dispatching tool
+# deletes the release once the artifact is collected. The variant leaves as a 1-day ARTIFACT, never a commit.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release tag holding exactly one asset, reframe-bundle.tar.gz
+        required: true
+      bundle_sha256:
+        description: Exact SHA256 of reframe-bundle.tar.gz
+        required: true
+      tag:
+        description: Unique safe label used for run title, concurrency and artifact name
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agmm-short-reframe-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  reframe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE: ${{ inputs.release }}
+      BUNDLE_SHA256: ${{ inputs.bundle_sha256 }}
+      TAG: ${{ inputs.tag }}
+    steps:
+      - name: Validate labels, download and verify the exact bundle
+        run: |
+          set -euo pipefail
+          date +%s > "$RUNNER_TEMP/t_start"
+          [[ "$RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          [[ "$BUNDLE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          assets="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE" --jq '[.assets[].name] | sort | join(",")')"
+          test "$assets" = "reframe-bundle.tar.gz"
+          mkdir -p "$RUNNER_TEMP/in"
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p reframe-bundle.tar.gz -D "$RUNNER_TEMP/in"
+          got="$(sha256sum "$RUNNER_TEMP/in/reframe-bundle.tar.gz" | cut -d' ' -f1)"
+          test "$got" = "$BUNDLE_SHA256"
+          ls -la "$RUNNER_TEMP/in"
+      - name: Extract the bundle (names checked, no links, no escapes)
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/w"
+          python3 - <<'PY'
+          import os, tarfile
+          dest = os.path.join(os.environ["RUNNER_TEMP"], "w")
+          src = os.path.join(os.environ["RUNNER_TEMP"], "in", "reframe-bundle.tar.gz")
+          tf = tarfile.open(src)
+          n = 0
+          for m in tf:
+              n += 1
+              assert n <= 50, "too many entries"
+              assert not m.name.startswith("/") and ".." not in m.name.split("/"), "unsafe path " + m.name
+              assert m.isfile() or m.isdir(), "unsupported member " + m.name
+              assert m.name.split("/")[0] == "v2", "unexpected root " + m.name
+          tf.close()
+          tarfile.open(src).extractall(dest)
+          print("extracted", n, "entries")
+          PY
+          rm -f "$RUNNER_TEMP/in/reframe-bundle.tar.gz"
+          du -sh "$RUNNER_TEMP/w"
+      - name: Install ffmpeg and numpy
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg python3-numpy
+          ffmpeg -version | head -1
+          python3 -c "import numpy; print('numpy', numpy.__version__)"
+      - name: Measure, reframe, measure again
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/w"
+          python3 v2/kit/tools/reframe_job.py v2/work/request.json "$RUNNER_TEMP/result"
+          echo "job_s=$(( $(date +%s) - $(cat "$RUNNER_TEMP/t_start") ))" >> "$RUNNER_TEMP/result/wall.txt"
+          ls -la "$RUNNER_TEMP/result"
+      - name: Upload the result
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-REFRAME
+          path: ${{ runner.temp }}/result
+          retention-days: 1
+          if-no-files-found: error
