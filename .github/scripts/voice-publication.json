@@ -18,6 +18,7 @@
     ".github/scripts/voice-native/films/voice/tooling/ingest_web_takes.py": "8ceb184248509581d3199098c376edfc07d6a92d54b31e116de61270c70ab72c",
     ".github/scripts/voice-native/films/voice/tooling/local_asr.py": "b59aca733bdfb5a48d7044d0fad5f585d2fd77206b9755a977222cb7dddb0c2c",
     ".github/scripts/voice-native/films/voice/tooling/post_checks_local.py": "a3e14639566c82a58e744fbdfa7c5b1a4e4e882dd89e1289446bd9fdd3bb7790",
+    ".github/scripts/voice-native/films/voice/tooling/spotcheck_words.py": "59c504aabde443da8ee7a5d316a05066727fc1dedf2c3438fb1c2cfd39ae70ba",
     ".github/scripts/voice-native/kit/build_short.py": "fb1cddf5cb4781ed63cfc2abf6d27b0cd43ac26904156f0791fa3b7d47258fa4",
     ".github/scripts/voice-native/kit/lib/VERSION": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03",
     ".github/scripts/voice-native/kit/lib/ds/coins3d.js": "549d1aca5890d80afcc590dbed4258dffbaa2858ba2155da2b30e32e76b126ef",
