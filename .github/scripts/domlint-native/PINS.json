@@ -2,10 +2,12 @@
   "dom_lint_runner.mjs": "24192a80e4c4334d699faa81c0aa52dc45048c6523d8a96f0cc39d140381c859",
   "render_short_package.py": "2c7db0660522368489697d48220d8832e3f84b070d946e2f83133b4eb4114028",
   "snap_short_package.py": "b342aa53d38b3163a060d172c841d39fcf4362bb7d2de16904c3305ac6905ec1",
-  "dom_lint_existing.py": "e9ddb45ed99be955c732a5ed48176e9278f1b8163a349a86b42c51a8778113ea",
-  "domlint-native/kit/tools/dom_lint.py": "e2550cf87621c65c05a8b39d9f6822046e3c0d3dd8434b9f02efba6cf9cb7d6d",
+  "dom_lint_existing.py": "ff30340190b945b5bac2b421cafc90d217d65051d5e488b9cf6a04c9d2a01059",
+  "domlint-native/kit/tools/dom_lint.py": "6625fe50a3115dc0a4db03d15c3cbbcc5fdcf134be0eb00a57a4ab58e47f6d93",
   "domlint-native/qa/gate.py": "f8fac87d55cd0813776cef03513ae155f7fd6c155e741967a42ba77cd7f8415b",
   "domlint-native/qa/machine_pass.py": "62765c5fe718ac6c90aac9658296e7441b0200161f930bc5d3aadcf4ba35a8c3",
   "domlint-native/kit/platforms/platforms.py": "413fcc21644943c8042543b323e4cfcd3140380998efd4dc4e2ad36916d86a1d",
-  "domlint-native/kit/platforms/frames.json": "cbefbbed08d8535c0da981d9dc1dfe75a71ed855e9ac03f011de5575619a2cc2"
+  "domlint-native/kit/platforms/frames.json": "cbefbbed08d8535c0da981d9dc1dfe75a71ed855e9ac03f011de5575619a2cc2",
+  "domlint-native/kit/platforms/universal.py": "5087ff22c15decc0c2e58694e5d6639a23bbc2afd129119290803f4504e7c8bb",
+  "domlint-native/kit/platforms/universal.json": "171c56e9b799fa1a5028f2352474c0d7eb26ecf9b0b75c67b46773fa364fe05b"
 }

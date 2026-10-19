@@ -1,0 +1,76 @@
+{
+ "schema": "agmm-universal-zone-v1",
+ "note": "the intersection of the overlay-free areas of TikTok, Instagram Reels, YouTube Shorts, Facebook Reels and LinkedIn vertical video at 1080x1920, derived from frames.json by universal.py build. Text and hero objects of every new short stay inside it.",
+ "platforms": [
+  "tiktok",
+  "instagram_reels",
+  "youtube_shorts",
+  "facebook_reels",
+  "linkedin_feed"
+ ],
+ "master": [
+  1080,
+  1920
+ ],
+ "zone": {
+  "x0": 80,
+  "y0": 288,
+  "x1": 888,
+  "y1": 1248,
+  "notches": [
+   {
+    "x0": 780,
+    "y0": 840,
+    "x1": 888,
+    "y1": 1248
+   }
+  ]
+ },
+ "derived_zone_x0": 120,
+ "overrides": {
+  "x0": {
+   "value": 80,
+   "rationale": "No platform draws UI on the left edge. The derived 120 is TikTok's conservative ad-template side margin (80/720 per side) and blocked every approved short by 20-40 px of text; 74 (Instagram measured crop 50 + 24) leaves no margin for screen rounding. Root decision 19 Oct 2026."
+  }
+ },
+ "per_platform_free_rect": {
+  "tiktok": {
+   "x0": 120,
+   "y0": 240,
+   "x1": 960,
+   "y1": 1260,
+   "free_px": 781200
+  },
+  "instagram_reels": {
+   "x0": 65,
+   "y0": 269,
+   "x1": 1015,
+   "y1": 1248,
+   "free_px": 919270
+  },
+  "youtube_shorts": {
+   "x0": 50,
+   "y0": 288,
+   "x1": 888,
+   "y1": 1248,
+   "free_px": 804480
+  },
+  "facebook_reels": {
+   "x0": 65,
+   "y0": 269,
+   "x1": 1015,
+   "y1": 1248,
+   "free_px": 930050
+  },
+  "linkedin_feed": {
+   "x0": 0,
+   "y0": 285,
+   "x1": 1080,
+   "y1": 1635,
+   "free_px": 1458000
+  }
+ },
+ "tolerance_px": 8,
+ "live_from": "2026-10-19T17:00:00",
+ "live_from_rule": "FAIL for a short whose first claim in registry/queue.json is at or after live_from; WARN for one already in flight (claimed earlier) or never claimed. AGMM_UNIVERSAL_ENFORCE=1 forces FAIL, =0 forces WARN."
+}

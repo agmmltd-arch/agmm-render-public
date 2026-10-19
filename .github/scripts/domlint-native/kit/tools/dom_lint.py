@@ -34,6 +34,9 @@ V2 = os.path.dirname(KIT)
 sys.path.insert(0, os.path.join(KIT, "platforms"))
 sys.path.insert(0, os.path.join(V2, "qa"))
 import platforms  # noqa: E402
+import universal  # noqa: E402  (the one zone every NEW short stays inside: kit/platforms/universal.py)
+
+UNIVERSAL_OVERRIDE = None   # --universal fail|warn (demos and tests); None = universal.level(sid): FAIL for shorts claimed after live_from
 
 FW, FH = 1080.0, 1920.0
 FLOOR_PX = 42.0          # reviewers' legibility floor (craft standard: nothing under 42 px at 1080 wide)
@@ -504,6 +507,143 @@ def merge_runs(items, step):
     return runs
 
 
+# ------------------------------------------------------------------------------------------------- universal safe zone
+def _uni_allow(sid):
+    p = os.path.join(KIT, "out", sid, "lint-exceptions.json")
+    try:
+        return json.load(open(p)).get("universal", [])
+    except (OSError, ValueError):
+        return []
+
+
+def _uni_exempt(allow, text, t0, t1):
+    for a in allow:
+        if a.get("text") and norm(a["text"]) == norm(text):
+            return a.get("reason", "listed")
+        sp = a.get("span")
+        if sp and sp[0] <= t0 and t1 <= sp[1]:
+            return a.get("reason", "listed span")
+    return None
+
+
+HERO_KINDS = ("img", "svg-path", "svg-circle", "svg-ellipse", "svg-rect", "canvas", "bgcolor")
+
+
+def universal_findings(S, raw, sid, step, pkg_dir, out_dir):
+    """Rule 6. S: the flat sample list analyze() builds. Returns finding dicts (rule "universal")."""
+    lvl = UNIVERSAL_OVERRIDE or universal.level(sid)
+    allow = _uni_allow(sid)
+    z = universal.zone()
+    out = []
+    runs = {}      # (part, id, kind) -> [(T, payload)]
+    grp = {}
+    mass_ratio = []
+    for x in S:
+        if x["kind"] != "grid":
+            continue
+        s, part, T = x["s"], x["part"], x["T"]
+        cells = set()
+        for t in x["fi"]:
+            if not shown(t):
+                continue
+            boxes = t["cut"] if t["vis"] < 0.999 and t.get("cut") else t["ink"]
+            for b in boxes:
+                for c in _cells(b):
+                    cells.add(c)
+            if t.get("card"):
+                probs = [("universal_hero", b) for b in boxes if universal.hero_problems(b, z)]
+                key = (part, t["id"], "hero")
+            else:
+                probs = [("universal_text", b) for b in boxes if universal.text_problems(b, z)]
+                key = (part, t["id"], "text")
+            if probs:
+                b = probs[0][1]
+                runs.setdefault(key, []).append((T, (t, x["local"], b)))
+        for im in s["imgs"]:
+            if im["op"] < OPACITY_MIN or im["vis"] < 0.5:
+                continue
+            b = im.get("cut") or im["box"]
+            for c in _cells(b):
+                cells.add(c)
+            if any(os.path.basename(im["src"]) == (t.get("e") or "").split("[")[-1].rstrip("]") for t in x["fi"] if t.get("card")):
+                continue      # already judged as a text card above
+            if b[2] - b[0] >= 0.95 * FW or b[3] - b[1] >= 0.95 * FH:
+                continue
+            if universal.hero_problems(b, z):
+                runs.setdefault((part, im["id"], "hero"), []).append((T, ({"e": im["e"] + "[" + os.path.basename(im["src"]) + "]", "t": "(image)", "op": im["op"], "id": im["id"]}, x["local"], b)))
+        for pnt in s["paints"]:
+            if pnt["eo"] < OPACITY_MIN:
+                continue
+            b = pnt["box"]
+            a = (b[2] - b[0]) * (b[3] - b[1])
+            if a >= 0.55 * FW * FH or a < 400 or (pnt["kind"] in ("gradient", "bgcolor", "border") and a >= 0.3 * FW * FH):
+                continue
+            if b[2] - b[0] >= 0.95 * FW or b[3] - b[1] >= 0.95 * FH:
+                continue      # a band or stripe across the whole frame is ground, not content
+            for c in _cells(b):
+                cells.add(c)
+            if pnt["kind"] in HERO_KINDS and pnt["kind"] != "img" and b[2] - b[0] < 0.95 * FW and b[3] - b[1] < 0.95 * FH and universal.hero_problems(b, z):
+                runs.setdefault((part, pnt["id"], "hero"), []).append((T, ({"e": pnt["e"], "t": "(%s)" % pnt["kind"], "op": pnt["eo"], "id": pnt["id"]}, x["local"], b)))
+        if len(cells) >= 20:
+            o, n = universal.mass_out(cells, z)
+            mass_ratio.append((T, o / float(n), part, x["local"]))
+    # per-element runs (text and hero): a pass shorter than 0.3 s is a transit (a slide, a pop), not a resting place
+    for (part, eid, kind), items in runs.items():
+        for run in merge_runs(items, step):
+            t0, t1 = run[0][0], run[-1][0]
+            dur = (t1 - t0) + step
+            t, local, b = run[0][1]
+            if dur + 1e-6 < 0.3:
+                continue
+            worst = max(run, key=lambda r: (r[1][2][2] - r[1][2][0]) * (r[1][2][3] - r[1][2][1]))[1][2]
+            probs = universal.text_problems(worst, z) if kind == "text" else universal.hero_problems(worst, z)
+            if not probs:
+                probs = [("FAIL", "universal_" + kind, "outside the universal safe zone")]
+            txt = t["t"]
+            ex = _uni_exempt(allow, txt, t0, t1)
+            if ex:
+                continue
+            grp.setdefault((kind, part, round(t1 * 2) / 2.0), []).append(
+                {"sev": lvl, "rule": "universal", "t0": round(t0, 2), "t1": round(t1, 2), "part": part, "local": round(local, 2), "el": t["e"],
+                 "text": (txt or "")[:80], "detail": "%s for %.1f s (box %s)" % (probs[0][2], dur, [round(v) for v in worst])})
+    for (kind, part, _a), fs in sorted(grp.items(), key=lambda kv: min(g["t0"] for g in kv[1])):       # one line per (kind, scene run): a row of five cards under the caption band is one defect, not five
+        f = dict(min(fs, key=lambda g: g["t0"]))
+        f["t1"] = max(g["t1"] for g in fs)
+        if len(fs) > 1:
+            f["n"] = len(fs)
+            names = []
+            for g in fs:
+                nm = g["text"] if g["text"] and not g["text"].startswith("(") else g["el"]
+                if nm not in names:
+                    names.append(nm)
+            f["text"] = " | ".join(names)[:80]
+            f["detail"] = f["detail"] + " (+%d more like it)" % (len(fs) - 1)
+        out.append(f)
+    # the picture as a whole: share of what is drawn that sits under a platform's UI, per sample
+    if mass_ratio:
+        bad = [m for m in mass_ratio if m[1] > universal.MASS_BAD]
+        share = len(bad) / float(len(mass_ratio))
+        if share > universal.MASS_WARN_SHARE:
+            first = bad[0]
+            sev = lvl if share > universal.MASS_FAIL_SHARE else "WARN"
+            med = sorted(m[1] for m in mass_ratio)[len(mass_ratio) // 2]
+            if not _uni_exempt(allow, "(picture)", bad[0][0], bad[-1][0]):
+                out.append({"sev": sev, "rule": "universal", "t0": round(bad[0][0], 2), "t1": round(bad[-1][0], 2), "part": first[2], "local": round(first[3], 2),
+                            "el": "(picture)", "text": "",
+                            "detail": "%d%% of the samples have more than %d%% of what is drawn outside the universal safe zone (median %d%%; FAIL above %d%% of samples)" % (
+                                round(share * 100), round(universal.MASS_BAD * 100), round(med * 100), round(universal.MASS_FAIL_SHARE * 100))})
+    return out
+
+
+def _cells(b, cell=40):
+    x0, y0, x1, y1 = b
+    if x1 <= 0 or x0 >= FW or y1 <= 0 or y0 >= FH:
+        return
+    for gx in range(max(0, int(x0 // cell)), min(26, int(x1 // cell)) + 1):
+        for gy in range(max(0, int(y0 // cell)), min(47, int(y1 // cell)) + 1):
+            yield gx, gy
+
+
 def analyze(raw, sid, prof, step, kinds, parts, out_dir, allow_lint, pkg_dir, strict=False):
     """raw: runner JSON. kinds: {story T: grid|cut|seam}. Returns {"findings": [...], "stats": {...}}."""
     off = {p["out"]: p["off"] for p in parts}
@@ -653,6 +793,13 @@ def analyze(raw, sid, prof, step, kinds, parts, out_dir, allow_lint, pkg_dir, st
             cover = len(cells) / (27.0 * 48.0)
             if big < EMPTY_COVER and cover < SPARSE_COVER:
                 add("WARN", "empty-on-cut", x["T"], x["T"], x["part"], x["local"], "(frame)", "", "cut frame %.3f s is sparse: text and objects together cover about %d%% of the frame" % (x["T"], round(cover * 100)))
+
+    # ---- rule 6 (19 Oct 2026): the UNIVERSAL safe zone. Every text box and every hero object of every short stays inside the area that is free of
+    # the UI of TikTok, Instagram Reels, YouTube Shorts, Facebook Reels and LinkedIn at once (kit/platforms/universal.py), whatever platform the
+    # short is routed to: a short is cross-posted, and C13 (gated clean on Instagram) hid half its picture under TikTok's caption band.
+    # FAIL for a short claimed at or after universal live_from; WARN for one already in flight. Per-short exemption: out/<ID>/lint-exceptions.json
+    # "universal": [{"text": <exact string> | "span": [t0, t1], "reason": ...}].
+    findings += universal_findings(S, raw, sid, step, pkg_dir, out_dir)
 
     # ---- rule 5: text lint on the real strings
     import gate as _gate
@@ -805,8 +952,11 @@ def main():
     ap.add_argument("--css", help="mutation tests only (local backend): CSS injected into every page, e.g. '*{opacity:0!important}' must make every cut frame empty")
     ap.add_argument("--strict-floor", action="store_true", help="the card's literal rule: ANY text under 42 px FAILs (default: reading text under 38 px and image text under 37 px FAIL, the rest WARN)")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--universal", choices=["auto", "fail", "warn"], default="auto", help="level of the universal-safe-zone rule: auto = FAIL for shorts claimed after universal.json live_from, WARN for in-flight ones")
     a = ap.parse_args()
     sid = a.id
+    global UNIVERSAL_OVERRIDE
+    UNIVERSAL_OVERRIDE = {"fail": "FAIL", "warn": "WARN"}.get(a.universal)
     p = platforms.profile(a.platform) if a.platform else platforms.for_short(sid)
     if p is None:
         p = platforms.profile("instagram")

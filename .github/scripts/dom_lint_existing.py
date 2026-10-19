@@ -193,6 +193,7 @@ def analyze(prepared, result):
     plan = json.loads((prepared / "PLAN.json").read_text())
     images, svg, numpy_version, pillow_version = validate_raw(raw, plan, project)
     _, kinds = lint.make_plan(meta["parts"], lint.sample_times(meta["parts"], payload["beat_starts"], 0.1))
+    lint.UNIVERSAL_OVERRIDE = {"FAIL": "FAIL", "WARN": "WARN"}.get(payload.get("universal_level"), "WARN")   # level decided on the Mac (queue.json is not here)
     report = lint.analyze(raw, req["id"], prof, 0.1, kinds, meta["parts"], str(result), payload["allow_lint"], str(project) + os.sep, False)
     report.update(id=req["id"], platform=prof["key"], step=0.1)
     require(report["stats"]["samples"] == meta["expected_samples"] and report["stats"]["cut_frames"] == meta["expected_cuts"], "native report coverage mismatch")
