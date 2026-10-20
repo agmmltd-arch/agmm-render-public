@@ -1,0 +1,98 @@
+# agmm-llm-completion: one OpenAI chat-completions request in, one response artifact out.
+# Self-hosted free capacity layer for the AGMM fleet (CAPACITY 20 Oct 2026). llama.cpp (pinned release, sha256 checked)
+# serves Qwen2.5-Coder-7B-Instruct Q4_K_M (weights from Hugging Face, cached with actions/cache). Public repo = free
+# Actions minutes, so there is no daily cap; every run is independent (up to 20 in parallel).
+# EXPOSURE: this repo is PUBLIC. Workflow inputs, logs and artifacts are readable by anyone. The lane client refuses
+# secret-looking or private-path prompts; only public-safe work may be sent here.
+name: agmm-llm-completion
+run-name: llm ${{ inputs.request_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      request_id:
+        description: client-chosen id (letters, digits, dash)
+        required: true
+        type: string
+      request_b64:
+        description: base64(gzip(OpenAI chat.completions request JSON)), max about 60 KB
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  complete:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Restore model + runtime cache
+        id: mc
+        uses: actions/cache@v4
+        with:
+          path: ~/llm
+          key: llm-qwen25coder7b-q4km-b11747-v1
+
+      - name: Fetch model and llama.cpp (cache miss only)
+        if: steps.mc.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p ~/llm && cd ~/llm
+          curl -fL --retry 6 --retry-delay 10 --retry-all-errors -o model.gguf \
+            "https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/resolve/main/qwen2.5-coder-7b-instruct-q4_k_m.gguf"
+          echo "509287f78cb4d4cf6b3843734733b914b2c158e43e22a7f4bf5e963800894d3c  model.gguf" | sha256sum -c -
+          curl -fL --retry 6 --retry-delay 5 --retry-all-errors -o llama.tar.gz \
+            "https://github.com/ggml-org/llama.cpp/releases/download/b11747/llama-b11747-bin-ubuntu-x64.tar.gz"
+          echo "6e9e6eb4db7e2133fed8dfaf141fb1abfdd5b18db4b360be45245e0f91ffca1e  llama.tar.gz" | sha256sum -c -
+          tar xzf llama.tar.gz
+          rm llama.tar.gz
+
+      - name: Serve model and complete the request
+        env:
+          REQ_B64: ${{ inputs.request_b64 }}
+          REQ_ID: ${{ inputs.request_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          cd ~/llm
+          SERVER="$(find . -name llama-server -type f | head -1)"
+          export LD_LIBRARY_PATH="$(cd "$(dirname "$SERVER")" && pwd)"
+          T_LOAD=$(date +%s)
+          nohup "$SERVER" -m model.gguf --jinja -c 8192 -t "$(nproc)" --host 127.0.0.1 --port 8080 --no-webui > server.log 2>&1 &
+          for i in $(seq 1 180); do curl -sf http://127.0.0.1:8080/health >/dev/null && break; sleep 2; done
+          curl -sf http://127.0.0.1:8080/health >/dev/null || { tail -30 server.log; exit 1; }
+          T_READY=$(date +%s)
+          echo "$REQ_B64" | base64 -d | gunzip > "$GITHUB_WORKSPACE/out/request.json"
+          python3 - <<'PY'
+          import json, os
+          p = os.path.join(os.environ["GITHUB_WORKSPACE"], "out", "request.json")
+          r = json.load(open(p))
+          r["stream"] = False
+          r["model"] = "qwen2.5-coder-7b-instruct-q4_k_m"
+          r["max_tokens"] = min(int(r.get("max_tokens") or 1024), 3000)
+          json.dump(r, open(p, "w"))
+          PY
+          T_REQ=$(date +%s)
+          curl -s -m 2400 http://127.0.0.1:8080/v1/chat/completions -H 'Content-Type: application/json' \
+            -d @"$GITHUB_WORKSPACE/out/request.json" -o "$GITHUB_WORKSPACE/out/response.json"
+          T_DONE=$(date +%s)
+          python3 - <<PY
+          import json, os
+          meta = {"request_id": os.environ["REQ_ID"], "runner_cpus": os.cpu_count(), "load_s": $T_READY - $T_LOAD,
+                  "completion_s": $T_DONE - $T_REQ}
+          try:
+              r = json.load(open(os.path.join(os.environ["GITHUB_WORKSPACE"], "out", "response.json")))
+              meta["timings"] = r.get("timings"); meta["usage"] = r.get("usage")
+          except Exception as e:
+              meta["error"] = str(e)
+          json.dump(meta, open(os.path.join(os.environ["GITHUB_WORKSPACE"], "out", "meta.json"), "w"))
+          PY
+          rm -f "$GITHUB_WORKSPACE/out/request.json"
+
+      - name: Upload response
+        uses: actions/upload-artifact@v4
+        with:
+          name: llm-${{ inputs.request_id }}
+          path: out/
+          retention-days: 1
