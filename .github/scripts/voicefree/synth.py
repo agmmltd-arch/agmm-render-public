@@ -178,7 +178,7 @@ def main():
             resp = C.asr_words(wav_path, "medium.en", prompt=name_prompt)
             resp_s = C.asr_words(wav_path, "small.en")
             for _r in (resp, resp_s):          # whisper writes "10 .8 million" for "ten point eight million"
-                _r["text"] = re.sub(r"(\d)\s+\.(\d)", r"\1.\2", _r["text"])
+                _r["text"] = re.sub(r"(\d)\s+,(\d)", r"\1,\2", re.sub(r"(\d)\s+\.(\d)", r"\1.\2", _r["text"]))   # "10 .8", "638 ,000"
             ok_m, detail = compare(text, resp["text"])
             ok_s, detail_s = compare(text, resp_s["text"])
             sm = "" if (ok_m or ok_s) else (soft_match(text, resp["text"]) or soft_match(text, resp_s["text"]))
