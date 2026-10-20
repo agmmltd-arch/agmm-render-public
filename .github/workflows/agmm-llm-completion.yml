@@ -59,7 +59,7 @@ jobs:
           SERVER="$(find . -name llama-server -type f | head -1)"
           export LD_LIBRARY_PATH="$(cd "$(dirname "$SERVER")" && pwd)"
           T_LOAD=$(date +%s)
-          nohup "$SERVER" -m model.gguf --jinja -c 8192 -t "$(nproc)" --host 127.0.0.1 --port 8080 --no-webui > server.log 2>&1 &
+          nohup "$SERVER" -m model.gguf --jinja -c 12288 -t "$(nproc)" --host 127.0.0.1 --port 8080 --no-webui > server.log 2>&1 &
           for i in $(seq 1 180); do curl -sf http://127.0.0.1:8080/health >/dev/null && break; sleep 2; done
           curl -sf http://127.0.0.1:8080/health >/dev/null || { tail -30 server.log; exit 1; }
           T_READY=$(date +%s)
