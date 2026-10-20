@@ -57,7 +57,8 @@ jobs:
           path: |
             ~/.cache/pip
             ~/.cache/huggingface
-          key: voicefree-ref-${{ runner.os }}-v1
+            ~/.cache/torch
+          key: voicefree-ref-${{ runner.os }}-v2
       - name: Install runtime
         run: |
           set -euo pipefail
@@ -65,7 +66,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends ffmpeg libsndfile1
           python -m pip install --upgrade pip
           python -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install numpy==1.26.4 scipy soundfile librosa==0.11.0 faster-whisper==1.2.1 webrtcvad-wheels
+          python -m pip install torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy==1.26.4 scipy soundfile librosa==0.11.0 faster-whisper==1.2.1 webrtcvad-wheels demucs==4.0.1
           python -m pip install --no-deps resemblyzer==0.1.4
       - name: Cut, screen and transcribe segments
         run: |
