@@ -121,6 +121,15 @@ def main():
     ref = os.path.join(a.private, req["ref"])
     ref_sha = C.sha256_file(ref)
     t_all = time.time()
+    if req.get("sim_only"):       # measure the baseline takes against Sam's reference set; no synthesis
+        ref_embs = {os.path.basename(p): C.embed(os.path.join(a.private, p)) for p in (req.get("ref_sims") or [req["ref"]])}
+        out = {}
+        for k, p in (req.get("baseline") or {}).items():
+            e = C.embed(os.path.join(a.private, p))
+            out[k] = {n: round(C.cosine(e, r), 4) for n, r in ref_embs.items()}
+        json.dump({"label": req.get("label"), "id": req.get("id"), "baseline_sims": out}, open(os.path.join(a.out, "results.json"), "w"), indent=1)
+        print("sim_only done", len(out), flush=True)
+        return
     eng = ENGINES[a.engine](ref, P)
     print("engine", eng.name, "loaded in", eng.load_s, "s; ref", os.path.basename(ref), flush=True)
     compare = C.load_compare()
