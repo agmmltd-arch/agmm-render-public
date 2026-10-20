@@ -6,7 +6,8 @@ reference. Output: segments (24 kHz mono PCM16 WAV), manifest.json (a LIST: file
 summary.json (what was rejected and why). Nothing printed to the log contains a transcript.
 
 Rejection rules (each can fail, counted in summary.json):
-  music    - Demucs (htdemucs, MIT) splits each file into vocals and no_vocals; over the word frames of a window, music_gap_db = median vocals dB
+  music    - (all seven TikToks carry a bed, so the gate is relative and the kept segment is the Demucs VOCALS stem, original kept beside it)
+             Demucs (htdemucs, MIT) splits each file into vocals and no_vocals; over the word frames of a window, music_gap_db = median vocals dB
              minus median no_vocals dB. Music (or any bed) under speech shrinks the gap. Reject below GAP_MIN, which is set against the clean
              hash-locked reference run through the same separation (reported in summary.json).
   speaker  - resemblyzer cosine of the window to the locked reference below SIM_MIN, or any 3 s slice of the window below SLICE_MIN of the window mean
@@ -19,7 +20,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import vf_common as C
 
-GAP_MIN, SIM_MIN, SLICE_MIN = 18.0, 0.70, 0.75
+GAP_MIN, SIM_MIN, SLICE_MIN = 6.0, 0.70, 0.75   # 20 Oct run 1: Sam's TikToks all carry a music bed (best windows 15 dB under the voice, most 0-3 dB); the clean locked reference measures 36.7 dB
 MIN_S, MAX_S = 8.0, 15.0
 GAP_BREAK = 0.30
 
@@ -88,6 +89,7 @@ def main():
     lm = metrics(lx, lv, ln, lsr, lwords, 0.0, len(lx) / 24000)
     locked_stats = {"file": os.path.basename(a.locked), "sha256": C.sha256_file(a.locked), "duration_s": round(len(lx) / 24000, 2), "calibration_metrics": lm}
     print("locked reference calibration", lm, flush=True)
+    voc24_by_src = {}
     cands, rejects, per_src, gap_by_src = [], {"music": 0, "speaker": 0, "clip": 0, "no_words": 0}, {}, {}
     for src in sorted(glob.glob(os.path.join(a.src, "*.mp3"))):
         base = os.path.splitext(os.path.basename(src))[0]
@@ -101,6 +103,8 @@ def main():
         if not words:
             rejects["no_words"] += 1; continue
         voc, nov, ssr = separate(w24, os.path.join(work, "dm"))
+        import librosa
+        voc24_by_src[base] = librosa.resample(voc, orig_sr=ssr, target_sr=24000).astype("float32")
         units, cur = [], [words[0]]
         for w in words[1:]:
             if w[0] - cur[-1][1] >= GAP_BREAK or cur[-1][2].rstrip('"\')').endswith(('.', '?', '!')):
@@ -135,11 +139,13 @@ def main():
     kept = []
     for c in cands[:160]:
         tmp = os.path.join(work, "cand.wav")
-        x, sr = sf.read(c["w24"]); sf.write(tmp, x[int(c["t0"] * sr):int(c["t1"] * sr)], sr, subtype="PCM_16")
+        sr = 24000
+        v = voc24_by_src[c["source"]]
+        seg = v[int(c["t0"] * sr):int(c["t1"] * sr)]
+        sf.write(tmp, seg, sr, subtype="PCM_16")
         e = C.embed(tmp)
         sim = C.cosine(e, locked_emb)
         slice_min = 1.0
-        seg = x[int(c["t0"] * sr):int(c["t1"] * sr)]
         step = int(3 * sr)
         for k in range(0, max(1, len(seg) - step + 1), step):
             sl = os.path.join(work, "sl.wav"); sf.write(sl, seg[k:k + step], sr, subtype="PCM_16")
@@ -164,9 +170,13 @@ def main():
     for k, c in enumerate(chosen, 1):
         name = "sam-seg%02d-%s-%05d.wav" % (k, c["source"][-6:], int(c["t0"] * 100))
         path = os.path.join(segdir, name)
-        x, sr = sf.read(c["w24"]); sf.write(path, x[int(c["t0"] * sr):int(c["t1"] * sr)], sr, subtype="PCM_16")
+        v = voc24_by_src[c["source"]]; sr = 24000
+        vs = v[int(c["t0"] * sr):int(c["t1"] * sr)]
+        sf.write(path, vs / max(1.0, float(np.max(np.abs(vs))) / 0.95), sr, subtype="PCM_16")
+        opath = os.path.join(segdir, name.replace(".wav", ".orig.wav"))
+        x, _ = sf.read(c["w24"]); sf.write(opath, x[int(c["t0"] * sr):int(c["t1"] * sr)], sr, subtype="PCM_16")
         m = c["metrics"]
-        manifest.append({"file": "segments/" + name, "source": c["source"] + ".mp3", "start": c["t0"], "end": c["t1"], "duration_s": round(c["t1"] - c["t0"], 2),
+        manifest.append({"file": "segments/" + name, "file_original": "segments/" + name.replace(".wav", ".orig.wav"), "sha256_original": C.sha256_file(opath), "kind": "demucs vocals stem", "source": c["source"] + ".mp3", "start": c["t0"], "end": c["t1"], "duration_s": round(c["t1"] - c["t0"], 2),
                          "transcript": c["text"], "sha256": C.sha256_file(path), "music_gap_db": m["music_gap_db"], "vocal_db": m["vocal_db"], "bed_db": m["bed_db"],
                          "snr_db": m["snr_db"], "peak": m["peak"], "sim_to_locked_ref": c["sim_locked"], "slice_min_sim": c["slice_min"]})
     json.dump(manifest, open(os.path.join(a.out, "manifest.json"), "w"), indent=1)
