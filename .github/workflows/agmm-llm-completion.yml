@@ -69,6 +69,7 @@ jobs:
           p = os.path.join(os.environ["GITHUB_WORKSPACE"], "out", "request.json")
           r = json.load(open(p))
           r["stream"] = False
+          r.setdefault("temperature", 0.2)
           r["model"] = "qwen2.5-coder-7b-instruct-q4_k_m"
           r["max_tokens"] = min(int(r.get("max_tokens") or 1024), 3000)
           json.dump(r, open(p, "w"))
