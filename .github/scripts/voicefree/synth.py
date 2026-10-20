@@ -257,11 +257,14 @@ def main():
             C.write_wav24k(wav_path, full, eng.sr)
             info = C.wav_info(wav_path)
             tempo = None
-            target = P.get("target_wpm")
+            short_line = len(text.split()) <= 12
+            target = (P.get("target_wpm_short") if short_line else None) or P.get("target_wpm")
+            min_tempo = float(P.get("min_tempo_short", 0.78)) if short_line else float(P.get("min_tempo", 0.85))
             if target:
                 raw = len(text.split()) / (info["duration_s"] / 60.0)
                 if raw > float(target) * 1.03:
-                    tempo = max(float(target) / raw, float(P.get("min_tempo", 0.85)))
+                    # hosted voice_lead_check FAILS a CTA above 195 wpm and a paragraph at 190 wpm with 6.6 syl/s (S149, S201 20 Oct): slow fast takes, CTAs further
+                    tempo = max(float(target) / raw, min_tempo)
                     stretch(wav_path, tempo)
                     info = C.wav_info(wav_path)
                 elif P.get("min_wpm") and len(text.split()) > 12 and raw < float(P["min_wpm"]) * 0.97:
