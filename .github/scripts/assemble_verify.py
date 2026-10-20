@@ -24,13 +24,14 @@ LOUDNESS_MAX_LUFS = -13.0
 FPS = 30
 W4K, H4K = 3840, 2160
 
-# Film-specific settings - only F02 and F07 explicitly allowed
-# TRUE_PEAK_MAX_DBTP: both use -1.0 unless authoritative source contract overrides
+# Film-specific settings - only films registered here are explicitly allowed
+# TRUE_PEAK_MAX_DBTP: -1.0 unless an authoritative source contract overrides
 # MASTER_GAIN_DB: must come from authoritative package contract, not invented
 FID_SPECIFIC_SETTINGS = {
     "F02": {"TRUE_PEAK_MAX_DBTP": -1.0, "MASTER_GAIN_DB": 0.0},
     "F03": {"TRUE_PEAK_MAX_DBTP": -1.0, "MASTER_GAIN_DB": 0.0},
     "F07": {"TRUE_PEAK_MAX_DBTP": -1.0, "MASTER_GAIN_DB": -0.5},
+    "F04": {"TRUE_PEAK_MAX_DBTP": -1.0, "MASTER_GAIN_DB": 0.0},
 }
 
 

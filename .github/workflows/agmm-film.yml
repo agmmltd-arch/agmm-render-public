@@ -326,7 +326,7 @@ jobs:
           PYCODE
           )
           HELPER_SHA=$(sha256sum .github/scripts/assemble_verify.py | cut -d ' ' -f1)
-          test "$HELPER_SHA" = "d129cb379aacca1967f6c5448abbc5f6dd01b4a0c673f3a1cad0a0abec4177ac" || { echo "HELPER_SHA mismatch: expected d129cb379aacca1967f6c5448abbc5f6dd01b4a0c673f3a1cad0a0abec4177ac got $HELPER_SHA - update this pin in the same commit as .github/scripts/assemble_verify.py"; exit 1; }
+          test "$HELPER_SHA" = "b97c3f59d5ef9b21f234cadbf6741a0fc1cf6a84a73dcb1999be6876bf0e1e2b" || { echo "HELPER_SHA mismatch: expected b97c3f59d5ef9b21f234cadbf6741a0fc1cf6a84a73dcb1999be6876bf0e1e2b got $HELPER_SHA - update this pin in the same commit as .github/scripts/assemble_verify.py"; exit 1; }
           python3 .github/scripts/assemble_verify.py --self-test
           python3 .github/scripts/assemble_verify.py --segments-json "$SEGS_JSON" \
             --duration "$DURATION" --segments-dir segments --package-dir package --output-dir remote-final --fid "$FID"
