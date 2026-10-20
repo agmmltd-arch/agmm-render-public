@@ -84,21 +84,58 @@ def trim(a, sr, rel_db=-50.0, keep_head=0.04, keep_tail=0.14):
     return a[s:e]
 
 
-def spot_fail(wav_path, words, floor_db=-50.0, final_median_db=-23.0):
-    """The native spotcheck_words rule (RMS inside a word's window must be above -50 dB) applied to EVERY word, but on the level the native chain will see: the assembler
-    loudness-normalises to -18 LUFS before the check, which puts the median word at about -23 dB. A raw Chatterbox take is quieter, so each word's RMS is shifted by
-    (final_median_db - this take's median word RMS) first. Returns the failing words (empty window or digital silence included)."""
-    import soundfile as sf
-    x, sr = sf.read(wav_path, dtype="float32")
+def word_levels(x, sr, words):
     rows = []
     for w in words:
         seg = x[int(w["start"] * sr):int(w["end"] * sr)]
-        db = None if len(seg) == 0 else 20 * np.log10(np.sqrt(float((seg ** 2).mean())) + 1e-9)
-        rows.append((w, db))
-    vals = [d for _, d in rows if d is not None and d > -90]
-    gain = final_median_db - float(np.median(vals)) if vals else 0.0
+        rows.append(None if len(seg) == 0 else 20 * np.log10(np.sqrt(float((seg ** 2).mean())) + 1e-9))
+    vals = [d for d in rows if d is not None and d > -90]
+    return rows, (float(np.median(vals)) if vals else None)
+
+
+def gain_ride(wav_path, words, lift_below=20.0, max_lift=10.0):
+    """Production gain-riding: a word more than `lift_below` dB under the take's median word level (Chatterbox lets the last word of a sentence trail off to -45..-50
+    dB, which the native spot-check calls silence) is lifted to median - lift_below, by at most `max_lift` dB, with 25 ms raised-cosine edges. Words that would need
+    more are left alone and fail spot_fail. Writes the wav in place; returns the list of lifts."""
+    import soundfile as sf
+    x, sr = sf.read(wav_path, dtype="float32")
+    rows, med = word_levels(x, sr, words)
+    if med is None:
+        return []
+    lifts, g = [], np.ones(len(x), dtype="float32")
+    ramp = int(0.025 * sr)
+    for w, db in zip(words, rows):
+        if db is None or db <= -90 or db >= med - lift_below:
+            continue
+        gain_db = med - lift_below - db
+        if gain_db > max_lift:
+            continue
+        lin = 10 ** (gain_db / 20.0)
+        a, b = max(0, int(w["start"] * sr) - ramp), min(len(x), int(w["end"] * sr) + ramp)
+        env = np.ones(b - a, dtype="float32") * lin
+        n = min(ramp, (b - a) // 2)
+        if n > 0:
+            r = 0.5 - 0.5 * np.cos(np.linspace(0, np.pi, n)).astype("float32")
+            env[:n] = 1 + (lin - 1) * r
+            env[-n:] = 1 + (lin - 1) * r[::-1]
+        g[a:b] = np.maximum(g[a:b], env)
+        lifts.append({"word": w["text"], "start": w["start"], "lift_db": round(gain_db, 1)})
+    if lifts:
+        y = np.clip(x * g, -0.99, 0.99)
+        sf.write(wav_path, y, sr, subtype="PCM_16")
+    return lifts
+
+
+def spot_fail(wav_path, words, floor_db=-46.0, final_median_db=-20.0):
+    """The native spotcheck_words rule (RMS inside a word's window must be above -50 dB) applied to EVERY word with a 4 dB margin, on the level the native chain will see:
+    the assembler loudness-normalises to -18 LUFS, which puts the median word at about -20 dB, so each word's RMS is shifted by (final_median_db - this take's median word
+    RMS) first. Returns the failing words (empty window or digital silence included)."""
+    import soundfile as sf
+    x, sr = sf.read(wav_path, dtype="float32")
+    rows, med = word_levels(x, sr, words)
+    gain = final_median_db - med if med is not None else 0.0
     bad = []
-    for w, db in rows:
+    for w, db in zip(words, rows):
         if db is None:
             bad.append({"word": w["text"], "start": w["start"], "why": "empty window"})
         elif db + gain <= floor_db:
@@ -220,6 +257,9 @@ def main():
             ok_m, detail = compare(text, resp["text"])
             ok_s, detail_s = compare(text, resp_s["text"])
             sm = "" if (ok_m or ok_s) else (soft_match(text, resp["text"]) or soft_match(text, resp_s["text"]))
+            rides = gain_ride(wav_path, resp["segments"])
+            if rides:
+                info = C.wav_info(wav_path)
             sp_bad = spot_fail(wav_path, resp["segments"])
             ok = bool(ok_m or ok_s or sm) and not sp_bad          # a silent word window fails the take exactly as the native chain would
             if not ok_m and ok_s:
@@ -237,7 +277,7 @@ def main():
                        "wav_sha256": C.sha256_file(wav_path), "wav_bytes": os.path.getsize(wav_path), "wav_info": {k: info[k] for k in ("channels", "rate", "width", "frames", "duration_s")},
                        "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(), "attempt": takei, "wpm": wpm_native, "span_wpm": swpm,
                        "asr_status": "checked", "asr_engine": resp["model"], "asr_text": resp["text"], "asr_match": bool(ok), "asr_compare_detail": detail,
-                       "asr_variants": {"small.en": resp_s["text"]}, "asr_match_by": {"medium.en": bool(ok_m), "small.en": bool(ok_s), "soft": sm or None}, "tempo_applied": tempo, "timing": align_info, "spot_fail": sp_bad,
+                       "asr_variants": {"small.en": resp_s["text"]}, "asr_match_by": {"medium.en": bool(ok_m), "small.en": bool(ok_s), "soft": sm or None}, "tempo_applied": tempo, "timing": align_info, "spot_fail": sp_bad, "gain_ride": rides,
                        "tts_http_status": None, "params": P, "seed": seed, "chunks": len(cs), "tts_variant": tts_idx, "tts_input_differs": variants[tts_idx] != text, "render_seconds": render_s,
                        "speaker_sim": sims, "speaker_sim_to_baseline": sim_base,
                        "run": {"id": os.environ.get("GITHUB_RUN_ID"), "attempt": os.environ.get("GITHUB_RUN_ATTEMPT"), "sha": os.environ.get("GITHUB_SHA"),
