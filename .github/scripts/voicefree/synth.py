@@ -164,6 +164,8 @@ def main():
             # two transcribers, as voice_lead_check does: a paragraph passes if either matches the script (small.en mishears names such as Cora as Quora)
             resp = C.asr_words(wav_path, "medium.en")
             resp_s = C.asr_words(wav_path, "small.en")
+            for _r in (resp, resp_s):          # whisper writes "10 .8 million" for "ten point eight million"
+                _r["text"] = re.sub(r"(\d)\s+\.(\d)", r"\1.\2", _r["text"])
             ok_m, detail = compare(text, resp["text"])
             ok_s, detail_s = compare(text, resp_s["text"])
             sm = "" if (ok_m or ok_s) else (soft_match(text, resp["text"]) or soft_match(text, resp_s["text"]))
