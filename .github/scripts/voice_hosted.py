@@ -29,7 +29,9 @@ REF = "shorts/voice/ref/sam-reference-20260905T152059Z-cdf499.wav"
 REF_SHA = "3df9d7568c0b0569887e6c9f39bd35835cda305a09d288ea535c63d9cdc15443"
 SCHEMA = "agmm-native-hosted-voice-v1"
 # 19 Oct 2026 (voice-ops, root-authorised): the conductor voice cap is 18 a day behind a spend guard (crew/voice_budget.py); was a literal 4.
-DAILY_VOICE_CAP = 18
+# 20 Oct 2026 (voice-free, root-ordered): 30 a day. Voice is now free (Chatterbox takes on Actions CPU) and checked here with no provider call, so the cap bounds only
+# runner use and the single-flight queue. crew/voice_budget.py DAILY_VOICE_CAP must equal this value (admission daily_cap is compared for equality).
+DAILY_VOICE_CAP = 30
 
 
 def need(value, why):
