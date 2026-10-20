@@ -84,19 +84,25 @@ def trim(a, sr, rel_db=-50.0, keep_head=0.04, keep_tail=0.14):
     return a[s:e]
 
 
-def spot_fail(wav_path, words, floor_db=-50.0):
-    """The native spotcheck_words rule applied to EVERY word: RMS inside [start, end] must be above -50 dB. Returns the failing words."""
+def spot_fail(wav_path, words, floor_db=-50.0, final_median_db=-23.0):
+    """The native spotcheck_words rule (RMS inside a word's window must be above -50 dB) applied to EVERY word, but on the level the native chain will see: the assembler
+    loudness-normalises to -18 LUFS before the check, which puts the median word at about -23 dB. A raw Chatterbox take is quieter, so each word's RMS is shifted by
+    (final_median_db - this take's median word RMS) first. Returns the failing words (empty window or digital silence included)."""
     import soundfile as sf
     x, sr = sf.read(wav_path, dtype="float32")
-    bad = []
+    rows = []
     for w in words:
-        a, b = int(w["start"] * sr), int(w["end"] * sr)
-        seg = x[a:b]
-        if len(seg) == 0:
-            bad.append({"word": w["text"], "start": w["start"], "why": "empty window"}); continue
-        db = 20 * np.log10(np.sqrt(float((seg ** 2).mean())) + 1e-9)
-        if db <= floor_db:
-            bad.append({"word": w["text"], "start": w["start"], "end": w["end"], "rms_db": round(db, 1)})
+        seg = x[int(w["start"] * sr):int(w["end"] * sr)]
+        db = None if len(seg) == 0 else 20 * np.log10(np.sqrt(float((seg ** 2).mean())) + 1e-9)
+        rows.append((w, db))
+    vals = [d for _, d in rows if d is not None and d > -90]
+    gain = final_median_db - float(np.median(vals)) if vals else 0.0
+    bad = []
+    for w, db in rows:
+        if db is None:
+            bad.append({"word": w["text"], "start": w["start"], "why": "empty window"})
+        elif db + gain <= floor_db:
+            bad.append({"word": w["text"], "start": w["start"], "end": w["end"], "rms_db_final": round(db + gain, 1)})
     return bad
 
 
