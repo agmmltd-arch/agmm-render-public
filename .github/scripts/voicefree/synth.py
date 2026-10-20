@@ -130,6 +130,18 @@ def main():
         json.dump({"label": req.get("label"), "id": req.get("id"), "baseline_sims": out}, open(os.path.join(a.out, "results.json"), "w"), indent=1)
         print("sim_only done", len(out), flush=True)
         return
+    if req.get("align_only"):       # re-time existing takes: {"align": [{"key","wav","words"}]} (private paths); writes <key>.words.json
+        res = {}
+        for it in req["align"]:
+            w = json.load(open(os.path.join(a.private, it["words"])))
+            segs, info = C.align_words(os.path.join(a.private, it["wav"]), w["segments"])
+            w["segments"] = segs
+            w["timing"] = info
+            json.dump(w, open(os.path.join(a.out, it["key"] + ".words.json"), "w"), indent=2, ensure_ascii=False)
+            res[it["key"]] = info
+            print(it["key"], json.dumps(info), flush=True)
+        json.dump({"label": req.get("label"), "id": req.get("id"), "align": res}, open(os.path.join(a.out, "results.json"), "w"), indent=1)
+        return
     eng = ENGINES[a.engine](ref, P)
     print("engine", eng.name, "loaded in", eng.load_s, "s; ref", os.path.basename(ref), flush=True)
     compare = C.load_compare()
@@ -179,6 +191,7 @@ def main():
             resp_s = C.asr_words(wav_path, "small.en")
             for _r in (resp, resp_s):          # whisper writes "10 .8 million" for "ten point eight million"
                 _r["text"] = re.sub(r"(\d)\s+,(\d)", r"\1,\2", re.sub(r"(\d)\s+\.(\d)", r"\1.\2", _r["text"]))   # "10 .8", "638 ,000"
+            resp["segments"], align_info = C.align_words(wav_path, resp["segments"])
             ok_m, detail = compare(text, resp["text"])
             ok_s, detail_s = compare(text, resp_s["text"])
             sm = "" if (ok_m or ok_s) else (soft_match(text, resp["text"]) or soft_match(text, resp_s["text"]))
@@ -198,7 +211,7 @@ def main():
                        "wav_sha256": C.sha256_file(wav_path), "wav_bytes": os.path.getsize(wav_path), "wav_info": {k: info[k] for k in ("channels", "rate", "width", "frames", "duration_s")},
                        "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(), "attempt": takei, "wpm": wpm_native, "span_wpm": swpm,
                        "asr_status": "checked", "asr_engine": resp["model"], "asr_text": resp["text"], "asr_match": bool(ok), "asr_compare_detail": detail,
-                       "asr_variants": {"small.en": resp_s["text"]}, "asr_match_by": {"medium.en": bool(ok_m), "small.en": bool(ok_s), "soft": sm or None}, "tempo_applied": tempo,
+                       "asr_variants": {"small.en": resp_s["text"]}, "asr_match_by": {"medium.en": bool(ok_m), "small.en": bool(ok_s), "soft": sm or None}, "tempo_applied": tempo, "timing": align_info,
                        "tts_http_status": None, "params": P, "seed": seed, "chunks": len(cs), "tts_variant": tts_idx, "tts_input_differs": variants[tts_idx] != text, "render_seconds": render_s,
                        "speaker_sim": sims, "speaker_sim_to_baseline": sim_base,
                        "run": {"id": os.environ.get("GITHUB_RUN_ID"), "attempt": os.environ.get("GITHUB_RUN_ATTEMPT"), "sha": os.environ.get("GITHUB_SHA"),

@@ -60,6 +60,13 @@ def asr_words(path, name="small.en", prompt=None):
             t = w.word.strip()
             if t:
                 words.append({"type": "transcription_segment", "text": t, "start": round(float(w.start), 3), "end": round(float(w.end), 3)})
+    merged = []
+    for w in words:                       # whisper splits "638,000" into "638" + ",000" and "10.8" into "10" + ".8": one word, as the paid ASR wrote it
+        if merged and re.match(r"^[.,]\d", w["text"]) and re.search(r"\d$", merged[-1]["text"]):
+            merged[-1]["text"] += w["text"]; merged[-1]["end"] = w["end"]
+        else:
+            merged.append(w)
+    words = merged
     return {"model": "faster-whisper-%s (CTranslate2 int8, CPU)" % name, "language": "en", "text": " ".join(w["text"] for w in words), "segments": words}
 
 
@@ -108,3 +115,81 @@ def pack_encrypt(src_dir, out_file):
     cmd = "tar -C %s -cf - . | openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:VOICEFREE_PASS -out %s" % (src_dir, out_file)
     subprocess.run(["bash", "-o", "pipefail", "-c", cmd], check=True)
     return os.path.getsize(out_file)
+
+
+_ALIGN = {}
+
+
+def _spoken(word):
+    """Letters a CTC aligner can see for one transcript word: digits are spelled with num2words (years as years)."""
+    t = word.strip()
+    if re.search(r"\d", t):
+        try:
+            from num2words import num2words
+            parts = []
+            for m in re.finditer(r"\d[\d,]*(?:\.\d+)?|[^\d]+", t):
+                x = m.group(0)
+                if x[0].isdigit():
+                    x = x.replace(",", "")
+                    if "." in x:
+                        a, b = x.split(".", 1)
+                        parts.append(num2words(int(a)) + " point " + " ".join(num2words(int(c)) for c in b))
+                    else:
+                        n = int(x)
+                        parts.append(num2words(n, to="year") if len(x) == 4 and 1900 <= n <= 2099 else num2words(n))
+                else:
+                    parts.append(x)
+            t = " ".join(parts)
+        except Exception:      # noqa: BLE001
+            t = re.sub(r"\d", "", t)
+    return re.sub(r"[^A-Z' ]", "", t.upper().replace("-", " ")).strip()
+
+
+def align_words(wav_path, words):
+    """CTC forced alignment (wav2vec2-base-960h, Apache-2.0) of the transcript words against the audio: ~20 ms boundaries instead of whisper's loose word times
+    (whisper puts a paragraph's last word in silence, which the native spot-check rejects). Returns (words, info); on any failure returns the input words unchanged."""
+    import numpy as np, soundfile as sf, torch, torchaudio
+    try:
+        if "m" not in _ALIGN:
+            from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+            _ALIGN["p"] = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
+            _ALIGN["m"] = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h").eval()
+        proc, model = _ALIGN["p"], _ALIGN["m"]
+        x, sr = sf.read(wav_path, dtype="float32")
+        x = x if x.ndim == 1 else x.mean(axis=1)
+        if sr != 16000:
+            import librosa
+            x = librosa.resample(x, orig_sr=sr, target_sr=16000)
+        with torch.inference_mode():
+            inp = proc(x, sampling_rate=16000, return_tensors="pt")
+            lp = torch.log_softmax(model(inp.input_values).logits, dim=-1)
+        vocab = proc.tokenizer.get_vocab()
+        spoken = [_spoken(w["text"]) for w in words]
+        tokens, owner = [], []
+        for i, sw in enumerate(spoken):
+            if not sw:
+                continue
+            for ch in sw.replace(" ", "|"):
+                if ch in vocab:
+                    tokens.append(vocab[ch]); owner.append(i)
+            if i != max(j for j, t in enumerate(spoken) if t):
+                tokens.append(vocab["|"]); owner.append(-1)
+        if len(tokens) > lp.shape[1]:
+            return words, {"aligned": False, "why": "more tokens than frames"}
+        ali, sc = torchaudio.functional.forced_align(lp, torch.tensor([tokens], dtype=torch.int32), blank=vocab["<pad>"])
+        spans = torchaudio.functional.merge_tokens(ali[0], sc[0].exp())
+        ratio = len(x) / lp.shape[1] / 16000.0
+        first, last = {}, {}
+        for k, sp in enumerate(spans):
+            o = owner[k]
+            if o >= 0:
+                first.setdefault(o, sp.start); last[o] = sp.end
+        out = []
+        for i, w in enumerate(words):
+            if i in first:
+                out.append(dict(w, start=round(first[i] * ratio, 3), end=round(last[i] * ratio, 3)))
+            else:
+                out.append(dict(w))
+        return out, {"aligned": True, "model": "facebook/wav2vec2-base-960h CTC forced alignment", "frame_s": round(ratio, 4), "unaligned_words": sum(1 for i in range(len(words)) if i not in first)}
+    except Exception as e:      # noqa: BLE001
+        return words, {"aligned": False, "why": "%s: %s" % (type(e).__name__, str(e)[:160])}
