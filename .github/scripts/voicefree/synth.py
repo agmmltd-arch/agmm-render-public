@@ -264,6 +264,11 @@ def main():
                     tempo = max(float(target) / raw, float(P.get("min_tempo", 0.85)))
                     stretch(wav_path, tempo)
                     info = C.wav_info(wav_path)
+                elif P.get("min_wpm") and len(text.split()) > 12 and raw < float(P["min_wpm"]) * 0.97:
+                    # a slow paragraph (S119 20 Oct: raw speaking 146 wpm, which the assembler's 1.10 x ceiling cannot lift into the 164-173 band) is sped up a little here
+                    tempo = min(float(P["min_wpm"]) / raw, float(P.get("max_speedup", 1.06)))
+                    stretch(wav_path, tempo)
+                    info = C.wav_info(wav_path)
             assert (info["channels"], info["rate"], info["width"]) == (1, 24000, 2), info
             # two transcribers, as voice_lead_check does: a paragraph passes if either matches the script (small.en mishears names such as Cora as Quora)
             resp = C.asr_words(wav_path, "medium.en", prompt=name_prompt)
