@@ -66,7 +66,9 @@ def chunks(text, max_words):
     return out
 
 
-def trim(a, sr, floor_db=-42.0, keep=0.04):
+def trim(a, sr, rel_db=-50.0, keep_head=0.04, keep_tail=0.14):
+    """Trim edge silence RELATIVE to the chunk's own level (a fixed -42 dBFS floor cut the quiet tail of final words such as 'documents', 20 Oct: the native
+    spot-check then found the last word's window silent). Keeps a 0.14 s tail."""
     if len(a) == 0:
         return a
     w = int(0.01 * sr)
@@ -74,11 +76,28 @@ def trim(a, sr, floor_db=-42.0, keep=0.04):
     if n < 3:
         return a
     rms = 20 * np.log10(np.sqrt((a[:n * w].reshape(n, w) ** 2).mean(axis=1)) + 1e-9)
-    idx = np.where(rms > floor_db)[0]
+    floor = max(float(rms.max()) + rel_db, -75.0)
+    idx = np.where(rms > floor)[0]
     if len(idx) == 0:
         return a
-    s = max(0, idx[0] * w - int(keep * sr)); e = min(len(a), (idx[-1] + 1) * w + int(keep * sr))
+    s = max(0, idx[0] * w - int(keep_head * sr)); e = min(len(a), (idx[-1] + 1) * w + int(keep_tail * sr))
     return a[s:e]
+
+
+def spot_fail(wav_path, words, floor_db=-50.0):
+    """The native spotcheck_words rule applied to EVERY word: RMS inside [start, end] must be above -50 dB. Returns the failing words."""
+    import soundfile as sf
+    x, sr = sf.read(wav_path, dtype="float32")
+    bad = []
+    for w in words:
+        a, b = int(w["start"] * sr), int(w["end"] * sr)
+        seg = x[a:b]
+        if len(seg) == 0:
+            bad.append({"word": w["text"], "start": w["start"], "why": "empty window"}); continue
+        db = 20 * np.log10(np.sqrt(float((seg ** 2).mean())) + 1e-9)
+        if db <= floor_db:
+            bad.append({"word": w["text"], "start": w["start"], "end": w["end"], "rms_db": round(db, 1)})
+    return bad
 
 
 DIGITS = {'zero': '0', 'oh': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'}
@@ -195,7 +214,8 @@ def main():
             ok_m, detail = compare(text, resp["text"])
             ok_s, detail_s = compare(text, resp_s["text"])
             sm = "" if (ok_m or ok_s) else (soft_match(text, resp["text"]) or soft_match(text, resp_s["text"]))
-            ok = bool(ok_m or ok_s or sm)
+            sp_bad = spot_fail(wav_path, resp["segments"])
+            ok = bool(ok_m or ok_s or sm) and not sp_bad          # a silent word window fails the take exactly as the native chain would
             if not ok_m and ok_s:
                 detail = {"matched_by": "small.en", "medium_en": detail}
             elif sm:
@@ -211,7 +231,7 @@ def main():
                        "wav_sha256": C.sha256_file(wav_path), "wav_bytes": os.path.getsize(wav_path), "wav_info": {k: info[k] for k in ("channels", "rate", "width", "frames", "duration_s")},
                        "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(), "attempt": takei, "wpm": wpm_native, "span_wpm": swpm,
                        "asr_status": "checked", "asr_engine": resp["model"], "asr_text": resp["text"], "asr_match": bool(ok), "asr_compare_detail": detail,
-                       "asr_variants": {"small.en": resp_s["text"]}, "asr_match_by": {"medium.en": bool(ok_m), "small.en": bool(ok_s), "soft": sm or None}, "tempo_applied": tempo, "timing": align_info,
+                       "asr_variants": {"small.en": resp_s["text"]}, "asr_match_by": {"medium.en": bool(ok_m), "small.en": bool(ok_s), "soft": sm or None}, "tempo_applied": tempo, "timing": align_info, "spot_fail": sp_bad,
                        "tts_http_status": None, "params": P, "seed": seed, "chunks": len(cs), "tts_variant": tts_idx, "tts_input_differs": variants[tts_idx] != text, "render_seconds": render_s,
                        "speaker_sim": sims, "speaker_sim_to_baseline": sim_base,
                        "run": {"id": os.environ.get("GITHUB_RUN_ID"), "attempt": os.environ.get("GITHUB_RUN_ATTEMPT"), "sha": os.environ.get("GITHUB_SHA"),
