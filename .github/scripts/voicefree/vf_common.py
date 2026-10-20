@@ -48,11 +48,12 @@ def whisper_model(name="small.en"):
     return _WHISPER[name]
 
 
-def asr_words(path, name="small.en"):
+def asr_words(path, name="small.en", prompt=None):
     """Word-timed transcript in the shape the native chain reads from Mistral: {text, segments:[{type:'transcription_segment', text, start, end}]}.
     assemble.py takes resp['segments'] entries of type transcription_segment (one per word); api_queue.span_wpm reads segments[].start/end."""
     m = whisper_model(name)
-    segs, info = m.transcribe(path, language="en", beam_size=5, word_timestamps=True, vad_filter=False, condition_on_previous_text=False)
+    segs, info = m.transcribe(path, language="en", beam_size=5, word_timestamps=True, vad_filter=False, condition_on_previous_text=False,
+                                initial_prompt=prompt)
     words = []
     for s in segs:
         for w in (s.words or []):

@@ -128,6 +128,8 @@ def main():
     base_emb = {}
     for k, p in (req.get("baseline") or {}).items():
         base_emb[k] = C.embed(os.path.join(a.private, p))
+    names = req.get("names") or []
+    name_prompt = ("Names and terms in this script: " + ", ".join(names) + ".") if names else None
     max_words = int(P.get("chunk_words", 32))
     pause_sent, pause_mid = float(P.get("pause_sentence_s", 0.22)), float(P.get("pause_clause_s", 0.10))
     budget_s = float(req.get("budget_minutes", 45)) * 60
@@ -162,7 +164,7 @@ def main():
                     info = C.wav_info(wav_path)
             assert (info["channels"], info["rate"], info["width"]) == (1, 24000, 2), info
             # two transcribers, as voice_lead_check does: a paragraph passes if either matches the script (small.en mishears names such as Cora as Quora)
-            resp = C.asr_words(wav_path, "medium.en")
+            resp = C.asr_words(wav_path, "medium.en", prompt=name_prompt)
             resp_s = C.asr_words(wav_path, "small.en")
             for _r in (resp, resp_s):          # whisper writes "10 .8 million" for "ten point eight million"
                 _r["text"] = re.sub(r"(\d)\s+\.(\d)", r"\1.\2", _r["text"])
