@@ -84,6 +84,23 @@ def trim(a, sr, rel_db=-50.0, keep_head=0.04, keep_tail=0.14):
     return a[s:e]
 
 
+def normalise_lufs(a, sr, target=-18.0):
+    """Chatterbox renders about 15 dB quieter than the Mistral takes the native chain was built around (median word -37 dBFS). The assembler's silence detector uses an
+    ABSOLUTE -45 dB floor, so quiet trailing words were cut as 'silence' (S73, 'documents.'). Bring each take to the -18 LUFS the final mix targets before anything else."""
+    import pyloudnorm as pyln
+    try:
+        loud = pyln.Meter(sr).integrated_loudness(a.astype("float64"))
+    except Exception:      # noqa: BLE001
+        return a
+    if not np.isfinite(loud):
+        return a
+    y = a * (10 ** ((target - loud) / 20.0))
+    pk = float(np.max(np.abs(y)))
+    if pk > 0.97:
+        y = np.tanh(y / 0.97) * 0.97          # soft limit: only the rare peak above full scale is touched
+    return y.astype("float32")
+
+
 def word_levels(x, sr, words):
     rows = []
     for w in words:
@@ -233,7 +250,7 @@ def main():
                 pieces.append(audio)
                 if ci < len(cs) - 1:
                     pieces.append(np.zeros(int(pause_sent * eng.sr), dtype="float32"))
-            full = np.concatenate(pieces)
+            full = normalise_lufs(np.concatenate(pieces), eng.sr)
             render_s = round(time.time() - t0, 1)
             stem = "%s.t%d" % (key, takei)
             wav_path = os.path.join(a.out, stem + ".wav")
