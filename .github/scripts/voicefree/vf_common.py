@@ -48,6 +48,17 @@ def whisper_model(name="small.en"):
     return _WHISPER[name]
 
 
+def merge_fragments(words):
+    """whisper splits "638,000" into "638" + ",000" and "10.8" into "10" + ".8": one word, as the paid ASR wrote it."""
+    merged = []
+    for w in words:
+        if merged and re.match(r"^[.,]\d", w["text"]) and re.search(r"\d$", merged[-1]["text"]):
+            merged[-1] = dict(merged[-1], text=merged[-1]["text"] + w["text"], end=w["end"])
+        else:
+            merged.append(dict(w))
+    return merged
+
+
 def asr_words(path, name="small.en", prompt=None):
     """Word-timed transcript in the shape the native chain reads from Mistral: {text, segments:[{type:'transcription_segment', text, start, end}]}.
     assemble.py takes resp['segments'] entries of type transcription_segment (one per word); api_queue.span_wpm reads segments[].start/end."""
@@ -60,13 +71,7 @@ def asr_words(path, name="small.en", prompt=None):
             t = w.word.strip()
             if t:
                 words.append({"type": "transcription_segment", "text": t, "start": round(float(w.start), 3), "end": round(float(w.end), 3)})
-    merged = []
-    for w in words:                       # whisper splits "638,000" into "638" + ",000" and "10.8" into "10" + ".8": one word, as the paid ASR wrote it
-        if merged and re.match(r"^[.,]\d", w["text"]) and re.search(r"\d$", merged[-1]["text"]):
-            merged[-1]["text"] += w["text"]; merged[-1]["end"] = w["end"]
-        else:
-            merged.append(w)
-    words = merged
+    words = merge_fragments(words)
     return {"model": "faster-whisper-%s (CTranslate2 int8, CPU)" % name, "language": "en", "text": " ".join(w["text"] for w in words), "segments": words}
 
 
@@ -149,6 +154,7 @@ def align_words(wav_path, words):
     """CTC forced alignment (wav2vec2-base-960h, Apache-2.0) of the transcript words against the audio: ~20 ms boundaries instead of whisper's loose word times
     (whisper puts a paragraph's last word in silence, which the native spot-check rejects). Returns (words, info); on any failure returns the input words unchanged."""
     import numpy as np, soundfile as sf, torch, torchaudio
+    words = merge_fragments(words)
     try:
         if "m" not in _ALIGN:
             from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
