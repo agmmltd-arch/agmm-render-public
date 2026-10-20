@@ -151,7 +151,9 @@ def main():
             seed = int(P.get("seed", 1234)) + 1000 * takei + pi
             t0 = time.time()
             pieces = []
-            cs = chunks(text, max_words)
+            variants = para.get("tts_texts") or [text]          # pronunciation hints go to the TTS input only; receipts and ASR comparison use the script text
+            tts_idx = (takei - 1) % len(variants)
+            cs = chunks(variants[tts_idx], max_words)
             for ci, ch in enumerate(cs):
                 audio = trim(eng.synth(ch, seed + 97 * ci), eng.sr)
                 pieces.append(audio)
@@ -197,7 +199,7 @@ def main():
                        "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(), "attempt": takei, "wpm": wpm_native, "span_wpm": swpm,
                        "asr_status": "checked", "asr_engine": resp["model"], "asr_text": resp["text"], "asr_match": bool(ok), "asr_compare_detail": detail,
                        "asr_variants": {"small.en": resp_s["text"]}, "asr_match_by": {"medium.en": bool(ok_m), "small.en": bool(ok_s), "soft": sm or None}, "tempo_applied": tempo,
-                       "tts_http_status": None, "params": P, "seed": seed, "chunks": len(cs), "render_seconds": render_s,
+                       "tts_http_status": None, "params": P, "seed": seed, "chunks": len(cs), "tts_variant": tts_idx, "tts_input_differs": variants[tts_idx] != text, "render_seconds": render_s,
                        "speaker_sim": sims, "speaker_sim_to_baseline": sim_base,
                        "run": {"id": os.environ.get("GITHUB_RUN_ID"), "attempt": os.environ.get("GITHUB_RUN_ATTEMPT"), "sha": os.environ.get("GITHUB_SHA"),
                                "url": "https://github.com/%s/actions/runs/%s" % (os.environ.get("GITHUB_REPOSITORY", ""), os.environ.get("GITHUB_RUN_ID", ""))}}
