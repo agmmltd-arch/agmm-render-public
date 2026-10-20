@@ -40,7 +40,17 @@ class Chatterbox:
         return wav.squeeze(0).cpu().numpy().astype("float32")
 
 
-ENGINES = {"chatterbox": Chatterbox}
+class FishSpeech:
+    """Not wired. fish_gate.py refuses the only Fish weights that fit a CPU runner (openaudio-s1-mini is CC-BY-NC-SA-4.0 and gated; S2-Pro is Research
+    Licence; Drama 3 is 35B). Fill this in only after Sam supplies licensed weights and an HF token (secret HF_TOKEN_FISH)."""
+    name = "fish"
+    version = "unwired"
+
+    def __init__(self, ref, params):
+        raise SystemExit("fish engine not wired: no commercially licensed Fish weights are runnable on a CPU runner (see fish_gate.py)")
+
+
+ENGINES = {"chatterbox": Chatterbox, "fish": FishSpeech}
 
 
 def chunks(text, max_words):
@@ -69,6 +79,36 @@ def trim(a, sr, floor_db=-42.0, keep=0.04):
         return a
     s = max(0, idx[0] * w - int(keep * sr)); e = min(len(a), (idx[-1] + 1) * w + int(keep * sr))
     return a[s:e]
+
+
+DIGITS = {'zero': '0', 'oh': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'}
+
+
+def soft_match(text, asr_text):
+    """Same two comparator false-negatives api_queue.soft_match accepts (spacing only; a spelled digit run written as digits)."""
+    def alnum(t): return re.sub(r'[^a-z0-9]', '', t.lower())
+    if asr_text and alnum(text) == alnum(asr_text):
+        return 'spacing-only difference'
+    ws = re.findall(r"[a-z0-9']+", text.lower())
+    out, run = [], []
+    for w in ws + ['']:
+        if w in DIGITS:
+            run.append(DIGITS[w]); continue
+        if run:
+            out.append(''.join(run)); run = []
+        if w:
+            out.append(w)
+    if asr_text and alnum(' '.join(out)) == alnum(asr_text) and any(len(x) >= 2 and x.isdigit() for x in out):
+        return 'spelled digit run equals transcribed digits'
+    return ''
+
+
+def stretch(path, factor):
+    """Pitch-preserving slow-down with ffmpeg atempo (factor < 1 slows). In place, 24 kHz mono PCM16."""
+    import subprocess
+    tmp = path + ".st.wav"
+    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", path, "-af", "atempo=%.4f" % factor, "-ar", "24000", "-ac", "1", "-c:a", "pcm_s16le", tmp], check=True)
+    os.replace(tmp, path)
 
 
 def main():
@@ -112,9 +152,26 @@ def main():
             wav_path = os.path.join(a.out, stem + ".wav")
             C.write_wav24k(wav_path, full, eng.sr)
             info = C.wav_info(wav_path)
+            tempo = None
+            target = P.get("target_wpm")
+            if target:
+                raw = len(text.split()) / (info["duration_s"] / 60.0)
+                if raw > float(target) * 1.03:
+                    tempo = max(float(target) / raw, float(P.get("min_tempo", 0.85)))
+                    stretch(wav_path, tempo)
+                    info = C.wav_info(wav_path)
             assert (info["channels"], info["rate"], info["width"]) == (1, 24000, 2), info
-            resp = C.asr_words(wav_path)
-            ok, detail = compare(text, resp["text"])
+            # two transcribers, as voice_lead_check does: a paragraph passes if either matches the script (small.en mishears names such as Cora as Quora)
+            resp = C.asr_words(wav_path, "medium.en")
+            resp_s = C.asr_words(wav_path, "small.en")
+            ok_m, detail = compare(text, resp["text"])
+            ok_s, detail_s = compare(text, resp_s["text"])
+            sm = "" if (ok_m or ok_s) else (soft_match(text, resp["text"]) or soft_match(text, resp_s["text"]))
+            ok = bool(ok_m or ok_s or sm)
+            if not ok_m and ok_s:
+                detail = {"matched_by": "small.en", "medium_en": detail}
+            elif sm:
+                detail = {"matched_by": "soft rule: " + sm}
             wpm_native = round(len(text.split()) / (info["duration_s"] / 60.0), 1)
             swpm = C.span_wpm(resp, text)
             emb = C.embed(wav_path)
@@ -126,6 +183,7 @@ def main():
                        "wav_sha256": C.sha256_file(wav_path), "wav_bytes": os.path.getsize(wav_path), "wav_info": {k: info[k] for k in ("channels", "rate", "width", "frames", "duration_s")},
                        "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(), "attempt": takei, "wpm": wpm_native, "span_wpm": swpm,
                        "asr_status": "checked", "asr_engine": resp["model"], "asr_text": resp["text"], "asr_match": bool(ok), "asr_compare_detail": detail,
+                       "asr_variants": {"small.en": resp_s["text"]}, "asr_match_by": {"medium.en": bool(ok_m), "small.en": bool(ok_s), "soft": sm or None}, "tempo_applied": tempo,
                        "tts_http_status": None, "params": P, "seed": seed, "chunks": len(cs), "render_seconds": render_s,
                        "speaker_sim": sims, "speaker_sim_to_baseline": sim_base,
                        "run": {"id": os.environ.get("GITHUB_RUN_ID"), "attempt": os.environ.get("GITHUB_RUN_ATTEMPT"), "sha": os.environ.get("GITHUB_SHA"),
