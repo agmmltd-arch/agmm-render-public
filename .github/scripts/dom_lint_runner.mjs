@@ -151,7 +151,7 @@ const EXTRACT = (cfg) => {
       if (r.width > 1 && r.height > 1) {
         const nw = el.naturalWidth || 0;
         const lw = el.offsetWidth || r.width / sc;
-        imgs.push({ id: idOf(el), e: short(el), src: el.getAttribute('src') || el.currentSrc || '', nw, nh: el.naturalHeight || 0, k: nw ? +(lw / nw * sc).toFixed(4) : 0,
+        imgs.push({ id: idOf(el), e: short(el), src: el.getAttribute('src') || el.currentSrc || '', alt: el.getAttribute('alt') || '', nw, nh: el.naturalHeight || 0, k: nw ? +(lw / nw * sc).toFixed(4) : 0,
           op: +op.toFixed(3), box: [r.left, r.top, r.right, r.bottom].map((v) => +v.toFixed(1)), cut: (clip ? inter([r.left, r.top, r.right, r.bottom], clip) : [r.left, r.top, r.right, r.bottom]).map((v) => +v.toFixed(1)),
           vis: clip ? +(area(inter([r.left, r.top, r.right, r.bottom], clip)) / Math.max(1, area([r.left, r.top, r.right, r.bottom]))).toFixed(3) : 1, cp: !!cp });
       }
