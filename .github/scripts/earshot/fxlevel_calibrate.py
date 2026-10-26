@@ -33,6 +33,8 @@ def main():
     for c in cases:
         d4 = live.measure(c["mix"], c["voice"])
         d1 = nxt.measure100(c["mix"], c["voice"])
+        d4n = nxt.measure(c["mix"], c["voice"])
+        c["same400"] = d4n == d4          # the new file must leave every 400 ms number exactly as it was
         rows.append(dict(c, p98_400=d4.get("over_speech_p98"), pause_400=d4.get("over_pause_max"), worst3_400=d4.get("over_speech_worst"), **d1))
         print(c["name"], d4.get("over_speech_p98"), d4.get("over_pause_max"), d1.get("over_speech_100ms"), d1.get("over_pause_100ms"), flush=True)
     appr = {m: [r for r in rows if r["mode"] == m and r["group"] == "approved"] for m in ("legacy", "mix2")}
@@ -56,7 +58,7 @@ def main():
         w = ", ".join("%+.1f@%.1f" % (e["over_db"], e["t"]) for e in (r.get("worst5_100ms") or [])[:3])
         L.append("| %s | %s | %s | %+.1f | %s | %+.1f | %s | %s | %s | %s |" % (r["name"], r["group"], r["mode"], r["p98_400"], "%+.1f" % r["pause_400"] if r["pause_400"] is not None else "-", r["over_speech_100ms"],
                                                                          "%+.1f" % r["over_speech_100ms_p98"] if r["over_speech_100ms_p98"] is not None else "-", "%+.1f" % r["over_pause_100ms"] if r["over_pause_100ms"] is not None else "-", w, chk["status"]))
-    L += ["", "## limits (approved shorts' worst + 1 dB)", ""]
+    L += ["", "400 ms numbers identical between today's fxlevel.py and the new one on every case: %s" % all(r["same400"] for r in rows), "", "## limits (approved shorts' worst + 1 dB)", ""]
     for m, v in limits.items():
         L.append("- %s: over_speech_100ms %.1f, over_pause_100ms %.1f (from %s)" % (m, v["over_speech_100ms"], v["over_pause_100ms"], v["from"]))
     json.dump({"rows": rows, "checks": res}, open(out / "calibration.json", "w"), indent=1, default=str)
