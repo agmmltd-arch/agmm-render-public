@@ -79,10 +79,11 @@ jobs:
           set -euo pipefail
           python3 -m pip install --quiet --retries 4 faster-whisper soundfile numpy
           python3 - <<'PY'
-          import json
+          import json, soundfile as sf
           from faster_whisper import WhisperModel
+          audio, _sr = sf.read("work/w16.wav", dtype="float32")
           m = WhisperModel("${{ inputs.whisper_model }}", device="cpu", compute_type="int8")
-          segs, info = m.transcribe("work/w16.wav", language="en", word_timestamps=True, vad_filter=False, condition_on_previous_text=False, beam_size=5)
+          segs, info = m.transcribe(audio, language="en", word_timestamps=True, vad_filter=False, condition_on_previous_text=False, beam_size=5)
           words = []
           for s in segs:
               for w in (s.words or []):
