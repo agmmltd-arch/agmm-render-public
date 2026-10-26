@@ -1,0 +1,135 @@
+# agmm-llm-writer: one OpenAI chat-completions request in, one response artifact out, on a MODEL OF YOUR CHOICE (supply30e, 26 Oct 2026).
+# Sibling of agmm-llm-completion.yml (Qwen2.5-Coder 7B). The model GGUF is downloaded per run from Hugging Face (Apache-2.0 models only; no OpenAI-origin models), sha256 checked, and served by
+# the same pinned llama.cpp build. Public repo = free Actions minutes and no daily cap; every run is independent (up to 20 in parallel across the repo).
+# EXPOSURE: this repo is PUBLIC. Workflow inputs, logs and artifacts are readable by anyone. The client refuses secret-looking or private-path prompts and sends only public-news dossier text;
+# the request is never echoed into the log.
+name: agmm-llm-writer
+run-name: llmw ${{ inputs.request_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      request_id:
+        description: client-chosen id (letters, digits, dash)
+        required: true
+        type: string
+      request_b64:
+        description: base64(gzip(OpenAI chat.completions request JSON)), max about 60 KB
+        required: true
+        type: string
+      model:
+        description: which model to serve
+        required: true
+        type: choice
+        options:
+          - q30a3b-iq3xxs
+          - q30a3b-q3km
+          - q14b-q4km
+          - m24b-q3km
+
+permissions:
+  contents: read
+
+jobs:
+  complete:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Runtime cache (llama.cpp only; the model is too big for the 10 GB repo cache)
+        id: rc
+        uses: actions/cache@v4
+        with:
+          path: ~/llm-rt
+          key: llm-rt-b11747-v1
+
+      - name: Fetch llama.cpp (cache miss only)
+        if: steps.rc.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p ~/llm-rt && cd ~/llm-rt
+          curl -fL --retry 6 --retry-delay 5 --retry-all-errors -o llama.tar.gz \
+            "https://github.com/ggml-org/llama.cpp/releases/download/b11747/llama-b11747-bin-ubuntu-x64.tar.gz"
+          echo "6e9e6eb4db7e2133fed8dfaf141fb1abfdd5b18db4b360be45245e0f91ffca1e  llama.tar.gz" | sha256sum -c -
+          tar xzf llama.tar.gz
+          rm llama.tar.gz
+
+      - name: Resolve model
+        id: m
+        env:
+          MODEL: ${{ inputs.model }}
+        run: |
+          set -euo pipefail
+          case "$MODEL" in
+            q30a3b-iq3xxs) R=unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF; F=Qwen3-30B-A3B-Instruct-2507-UD-IQ3_XXS.gguf; H=4218b4f9e9e88fbcd0d50292f54322607f9dd40ccfb50956dab689622480e68f; NOTHINK=0;;
+            q30a3b-q3km)   R=unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF; F=Qwen3-30B-A3B-Instruct-2507-Q3_K_M.gguf;     H=e145c9d2f5d11c9583eb099aa75100b7ab943e77d5240c9a2cd936f81c89ef43; NOTHINK=0;;
+            q14b-q4km)     R=Qwen/Qwen3-14B-GGUF;                             F=Qwen3-14B-Q4_K_M.gguf;                    H=500a8806e85ee9c83f3ae08420295592451379b4f8cf2d0f41c15dffeb6b81f0; NOTHINK=1;;
+            m24b-q3km)     R=unsloth/Mistral-Small-3.2-24B-Instruct-2506-GGUF; F=Mistral-Small-3.2-24B-Instruct-2506-Q3_K_M.gguf; H=830d8937494e80e64b0ab03ed69a7f29b80dbe5c4d0656517be6620f231a3fdd; NOTHINK=0;;
+            *) echo "unknown model"; exit 2;;
+          esac
+          echo "repo=$R" >> "$GITHUB_OUTPUT"; echo "file=$F" >> "$GITHUB_OUTPUT"; echo "sha=$H" >> "$GITHUB_OUTPUT"; echo "nothink=$NOTHINK" >> "$GITHUB_OUTPUT"
+          echo "model $MODEL -> $R/$F"
+          df -h / /mnt | sed -n 1,3p; free -g | sed -n 1,2p; nproc
+
+      - name: Download model (per run, sha256 checked)
+        run: |
+          set -euo pipefail
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL 2>/dev/null || true
+          mkdir -p ~/llm-model && cd ~/llm-model
+          T0=$(date +%s)
+          curl -fL --retry 8 --retry-delay 10 --retry-all-errors -C - -o model.gguf \
+            "https://huggingface.co/${{ steps.m.outputs.repo }}/resolve/main/${{ steps.m.outputs.file }}"
+          echo "${{ steps.m.outputs.sha }}  model.gguf" | sha256sum -c -
+          echo "download+verify $(( $(date +%s) - T0 )) s"; ls -l model.gguf; df -h / | tail -1
+
+      - name: Serve model and complete the request
+        env:
+          REQ_B64: ${{ inputs.request_b64 }}
+          REQ_ID: ${{ inputs.request_id }}
+          NOTHINK: ${{ steps.m.outputs.nothink }}
+          MODEL_KEY: ${{ inputs.model }}
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          SERVER="$(find ~/llm-rt -name llama-server -type f | head -1)"
+          export LD_LIBRARY_PATH="$(cd "$(dirname "$SERVER")" && pwd)"
+          T_LOAD=$(date +%s)
+          nohup "$SERVER" -m ~/llm-model/model.gguf --jinja -c 14336 -t "$(nproc)" --host 127.0.0.1 --port 8080 --no-webui --parallel 1 > ~/server.log 2>&1 &
+          for i in $(seq 1 300); do curl -sf http://127.0.0.1:8080/health >/dev/null && break; sleep 2; done
+          curl -sf http://127.0.0.1:8080/health >/dev/null || { tail -30 ~/server.log | cut -c1-200; exit 1; }
+          T_READY=$(date +%s)
+          echo "$REQ_B64" | base64 -d | gunzip > "$GITHUB_WORKSPACE/out/request.json"
+          python3 - <<'PY'
+          import json, os
+          p = os.path.join(os.environ["GITHUB_WORKSPACE"], "out", "request.json")
+          r = json.load(open(p))
+          r["stream"] = False
+          r.setdefault("temperature", 0.3)
+          r["model"] = os.environ["MODEL_KEY"]
+          r["max_tokens"] = min(int(r.get("max_tokens") or 2048), 4500)
+          if os.environ.get("NOTHINK") == "1":
+              r["chat_template_kwargs"] = {"enable_thinking": False}
+          json.dump(r, open(p, "w"))
+          PY
+          T_REQ=$(date +%s)
+          curl -s -m 4800 http://127.0.0.1:8080/v1/chat/completions -H 'Content-Type: application/json' \
+            -d @"$GITHUB_WORKSPACE/out/request.json" -o "$GITHUB_WORKSPACE/out/response.json" || true
+          T_DONE=$(date +%s)
+          python3 - <<PY
+          import json, os
+          meta = {"request_id": os.environ["REQ_ID"], "model": os.environ["MODEL_KEY"], "runner_cpus": os.cpu_count(), "load_s": $T_READY - $T_LOAD, "completion_s": $T_DONE - $T_REQ}
+          try:
+              meta["mem_total_gb"] = round(int(open("/proc/meminfo").readline().split()[1]) / 1048576.0, 1)
+              r = json.load(open(os.path.join(os.environ["GITHUB_WORKSPACE"], "out", "response.json")))
+              meta["timings"] = r.get("timings"); meta["usage"] = r.get("usage")
+          except Exception as e:
+              meta["error"] = str(e)
+          json.dump(meta, open(os.path.join(os.environ["GITHUB_WORKSPACE"], "out", "meta.json"), "w"))
+          PY
+          rm -f "$GITHUB_WORKSPACE/out/request.json"
+
+      - name: Upload response
+        uses: actions/upload-artifact@v4
+        with:
+          name: llm-${{ inputs.request_id }}
+          path: out/
+          retention-days: 1
