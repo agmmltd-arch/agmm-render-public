@@ -19,7 +19,7 @@ RULES = json.load(open(LIB / "rules.json"))
 UA = "AGMM-sfx-library/1.0 (agmm.co.uk; licence-gated sound effects; earshot analysis)"
 
 
-def download(url, tries=3):
+def download(url, tries=6):
     last = None
     for i in range(tries):
         try:
@@ -31,7 +31,7 @@ def download(url, tries=3):
             return data, None
         except Exception as e:      # noqa: BLE001
             last = str(e)[:80]
-            time.sleep(2 + 3 * i)
+            time.sleep((12 + 10 * i) if "429" in last else (2 + 3 * i))      # providers throttle parallel runners: back off properly
     return None, last
 
 
@@ -112,6 +112,10 @@ def judge(c, role, spec, api, work, role_descs):
     # 6. write the trimmed, peak-normalised sound
     g = 10 ** ((RULES["peak_target_dbfs"] - 20 * np.log10(np.abs(clip).max() + 1e-12)) / 20)
     y = clip * g
+    tp1 = features.true_peak_dbtp(y.astype(np.float32).reshape(-1, 1).repeat(2, axis=1))
+    if tp1 > RULES["peak_target_dbfs"]:                      # normalise the TRUE peak (inter-sample) to the target, not just the sample peak
+        g *= 10 ** ((RULES["peak_target_dbfs"] - tp1) / 20)
+        y = clip * g
     fo = min(len(y) // 4, int(0.015 * sr))
     y[-fo:] *= np.linspace(1, 0, fo)
     wav = Path(work) / (cid + ".wav")
@@ -130,12 +134,16 @@ def judge(c, role, spec, api, work, role_descs):
         return None, "music-bed", "AudioSet music %.2f" % p_music
     if p_voice >= RULES["max_voice_p"]:
         return None, "voice", "AudioSet speech/voice %.2f" % p_voice
-    ms = api.match(str(wav), [spec["desc"]] + [v for k, v in role_descs.items() if k != role])
+    phrases = sorted({q for v in role_descs.values() for q in v})
+    ms = api.match(str(wav), phrases)
     rows = {r_["query"]: r_ for r_ in ms["results"]}
-    own = rows[spec["desc"]]
-    scores = {k: {"z": rows[v]["z"], "cosine": rows[v]["cosine"]} for k, v in role_descs.items()}
+    scores = {}
+    for k, v in role_descs.items():
+        best_q = max(v, key=lambda q: rows[q]["z"])
+        scores[k] = {"z": rows[best_q]["z"], "cosine": rows[best_q]["cosine"], "query": best_q, "verdict": rows[best_q]["verdict"]}
+    own = {"z": scores[role]["z"], "cosine": scores[role]["cosine"], "verdict": scores[role]["verdict"]}
     if own["z"] < RULES["role_min_z"]:
-        return None, "off-role", "'%s' z %.1f (%s)" % (spec["desc"], own["z"], own["verdict"])
+        return None, "off-role", "best role phrase '%s' z %.1f (%s)" % (scores[role]["query"], own["z"], own["verdict"])
     env_t = features.envelope_times(y)
     rec = {"id": cid, "role": role, "file": cid + ".wav", "duration_s": round(len(y) / sr, 4), "onset_ms": round(env_t["attack_at"] * 1000, 1),
            "peak_ms": round(env_t["peak_at"] * 1000, 1), "end_ms": round(len(y) / sr * 1000, 1), "attack_ms": env_t.get("attack_ms"), "decay_ms": env_t.get("decay_ms"),
@@ -143,7 +151,7 @@ def judge(c, role, spec, api, work, role_descs):
            "gain_applied_db": round(20 * np.log10(g), 2), "trim": {"from_s": round(start, 3), "to_s": round(end, 3), "source_s": round(dur, 3),
                                                                    "found_z": found and found["z"], "found_verdict": found and found["verdict"]},
            "description": d.get("summary", "")[:400], "top_tags": [{"term": t["term"], "z": t["z"]} for t in (d.get("top_tags") or [])[:3]],
-           "audioset": audioset[:4], "role_match": {"query": spec["desc"], "z": own["z"], "cosine": own["cosine"], "verdict": own["verdict"], "p_vs_alts": ms.get("p_vs_alts")},
+           "audioset": audioset[:4], "role_match": {"query": scores[role]["query"], "z": own["z"], "cosine": own["cosine"], "verdict": own["verdict"]},
            "scores": scores, "p_music": round(p_music, 3), "p_voice": round(p_voice, 3), "sha256_source": sha_src, "sha256_trim": hashlib.sha256(wav.read_bytes()).hexdigest(),
            "source": {k: c[k] for k in ("openverse_id", "title", "source_url", "landing_url", "provider", "licence_slug", "licence", "licence_url", "creator", "attribution", "query", "duration_ms")}}
     return (rec, wav), None, None
@@ -161,7 +169,7 @@ def main():
     if a.limit:
         cands = cands[: a.limit]
     spec = roles[a.role]
-    role_descs = {k: v["desc"] for k, v in roles.items()}
+    role_descs = {k: [v["desc"]] + list(v.get("alt") or []) for k, v in roles.items()}
     out = Path(a.out)
     (out / "wav").mkdir(parents=True, exist_ok=True)
     from earshot import api

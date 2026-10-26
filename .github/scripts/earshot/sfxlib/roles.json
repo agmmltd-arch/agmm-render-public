@@ -1,6 +1,10 @@
 {
  "whoosh": {
   "desc": "a fast air whoosh",
+  "alt": [
+   "a swoosh passing by",
+   "a short swish"
+  ],
   "max_s": 1.4,
   "kinds": [
    "whoosh",
@@ -15,6 +19,11 @@
  },
  "tick": {
   "desc": "a short light tick",
+  "alt": [
+   "a clock tick",
+   "a small click",
+   "a soft tap"
+  ],
   "max_s": 0.3,
   "kinds": [
    "tick",
@@ -30,6 +39,11 @@
  },
  "pop": {
   "desc": "a soft rounded pop",
+  "alt": [
+   "a bubble pop",
+   "a cork pop",
+   "a UI pop"
+  ],
   "max_s": 0.45,
   "kinds": [
    "pop"
@@ -43,6 +57,11 @@
  },
  "stamp": {
   "desc": "a rubber stamp thud on paper",
+  "alt": [
+   "a heavy thud",
+   "a rubber stamp hitting a desk",
+   "a book dropped on a table"
+  ],
   "max_s": 0.8,
   "kinds": [
    "stamp",
@@ -61,6 +80,11 @@
  },
  "ding": {
   "desc": "a bright notification ding",
+  "alt": [
+   "a small bell ting",
+   "a notification chime",
+   "a glass ting"
+  ],
   "max_s": 1.6,
   "kinds": [
    "ping"
@@ -74,6 +98,11 @@
  },
  "impact": {
   "desc": "a punchy impact hit",
+  "alt": [
+   "a deep cinematic boom",
+   "a heavy thud",
+   "a punchy hit"
+  ],
   "max_s": 1.4,
   "kinds": [
    "slam",
@@ -90,6 +119,11 @@
  },
  "cash": {
   "desc": "a coin clink",
+  "alt": [
+   "coins clinking",
+   "a cash register ding",
+   "money coins"
+  ],
   "max_s": 1.4,
   "kinds": [
    "money",
@@ -105,6 +139,11 @@
  },
  "paper": {
   "desc": "a paper rustle",
+  "alt": [
+   "paper rustling",
+   "a page turning",
+   "paper sliding"
+  ],
   "max_s": 1.2,
   "kinds": [
    "paper"
@@ -118,6 +157,11 @@
  },
  "typing": {
   "desc": "a mechanical keyboard key press",
+  "alt": [
+   "typing on a computer keyboard",
+   "a keyboard key click",
+   "a typewriter"
+  ],
   "max_s": 1.6,
   "kinds": [
    "type",
@@ -132,6 +176,11 @@
  },
  "error": {
   "desc": "a short error buzz",
+  "alt": [
+   "an error beep",
+   "a buzzer for a wrong answer",
+   "a harsh buzz"
+  ],
   "max_s": 1.2,
   "kinds": [
    "error"
@@ -145,6 +194,11 @@
  },
  "riser": {
   "desc": "a rising riser building up",
+  "alt": [
+   "a rising riser building tension",
+   "an uplifter sweep",
+   "ascending beeps"
+  ],
   "max_s": 3.0,
   "kinds": [
    "riser",
