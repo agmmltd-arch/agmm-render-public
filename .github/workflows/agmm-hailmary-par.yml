@@ -120,7 +120,16 @@ jobs:
               if len(cuts)<N and acc>=tot*len(cuts)/N: cuts.append(f+1)
           cuts=cuts[:N]+[frames]; cuts+=[frames]*(29-len(cuts))
           X='${{ inputs.cuts }}'.strip()
-          if X: cuts=[int(v) for v in X.split(',')]; N=len(cuts)-1; cuts+=[cuts[-1]]*(29-len(cuts))
+          if X:
+              # "c0,c1,...,ck+M": keep these cut frames (the reused segments), then split the rest of THIS film into M by cost
+              head, _, m = X.partition('+'); keep=[int(v) for v in head.split(',')]
+              if m:
+                  M=int(m); tail=cs[keep[-1]:]; tt=sum(tail); acc=0.0; add=[]
+                  for j,c in enumerate(tail):
+                      acc+=c
+                      if len(add)<M-1 and acc>=tt*(len(add)+1)/M: add.append(keep[-1]+j+1)
+                  keep=keep+add+[frames]
+              cuts=keep; N=len(cuts)-1; cuts+=[cuts[-1]]*(29-len(cuts))
           a,b=(cuts[i],cuts[i+1]) if i<N else (frames,frames)
           print('%.4f %.4f'%(a/fr,b/fr))")
           echo "a=$A" >> "$GITHUB_OUTPUT"; echo "b=$B" >> "$GITHUB_OUTPUT"
