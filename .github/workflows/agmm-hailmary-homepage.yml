@@ -1,0 +1,229 @@
+name: AGMM hailmary homepage capture
+run-name: AGMM hailmary homepage ${{ inputs.label }}
+# Hail Mary end card (26 Oct 2026): a frame sequence of the live agmm.co.uk homepage on a 1440x900 desktop viewport at device scale 2
+# (headless Chromium via Playwright). The page runs on a virtual clock (rAF, timers, Date, CSS animations stepped 1/30 s per frame) so every
+# frame is exact. utm_source=qa tags it as QA traffic in the CRM. No apt, no media committed here: the frames leave as an artifact.
+on:
+  workflow_dispatch:
+    inputs:
+      label: { description: short label, required: true }
+      mode: { description: 'explore (contact sheets, timings) or capture (the frame sequence)', required: false, default: capture }
+      lead_at: { description: 'capture: virtual second where the clip starts (end of the first hero sequence)', required: false, default: '5.0' }
+      hold: { description: 'capture: seconds of the settled hero before the scroll', required: false, default: '1.0' }
+      scroll_dur: { description: 'capture: seconds of the scroll', required: false, default: '3.0' }
+      scroll_y: { description: 'capture: css px scrolled', required: false, default: '1800' }
+permissions:
+  contents: read
+concurrency:
+  group: agmm-hailmary-homepage-${{ inputs.label }}
+  cancel-in-progress: false
+jobs:
+  capture:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Runtime (Playwright chromium via pip, no apt)
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --retries 4 playwright pillow
+          python3 -m playwright install chromium
+      - name: Capture
+        env:
+          MODE: ${{ inputs.mode }}
+          LEAD_AT: ${{ inputs.lead_at }}
+          HOLD: ${{ inputs.hold }}
+          SCROLL_DUR: ${{ inputs.scroll_dur }}
+          SCROLL_Y: ${{ inputs.scroll_y }}
+        run: |
+          set -euo pipefail
+          cat > hp_capture.py <<'PYEOF'
+          import asyncio, json, os, sys, time, io
+          from playwright.async_api import async_playwright
+          from PIL import Image
+
+          MODE = os.environ.get("MODE", "explore")
+          LEAD_AT = float(os.environ.get("LEAD_AT", "5.0"))      # virtual second at which the clip starts (end of the hero's first sequence)
+          HOLD = float(os.environ.get("HOLD", "1.0"))            # seconds of the settled hero before the scroll starts
+          SCROLL_DUR = float(os.environ.get("SCROLL_DUR", "3.0"))
+          SCROLL_Y = float(os.environ.get("SCROLL_Y", "1800"))
+          BUDGET_MB = float(os.environ.get("BUDGET_MB", "24"))
+          URL = "https://agmm.co.uk/?utm_source=qa"
+          FPS = 30
+          OUT = "out"; os.makedirs(OUT, exist_ok=True)
+
+          INIT = r"""
+          (() => {
+            if (window.__vt) return;
+            const realST = window.setTimeout.bind(window), realSI = window.setInterval.bind(window);
+            const E0 = Date.now();
+            const vt = window.__vt = { now: 0, real: realST };
+            let nid = 1;
+            const timers = new Map(), rafs = new Map();
+            window.setTimeout = (cb, ms, ...args) => { const id = nid++; timers.set(id, { due: vt.now + Math.max(0, +ms || 0), cb, args, every: 0 }); return id; };
+            window.setInterval = (cb, ms, ...args) => { const id = nid++; ms = Math.max(1, +ms || 1); timers.set(id, { due: vt.now + ms, cb, args, every: ms }); return id; };
+            window.clearTimeout = window.clearInterval = id => { timers.delete(id); };
+            window.requestAnimationFrame = cb => { const id = nid++; rafs.set(id, cb); return id; };
+            window.cancelAnimationFrame = id => { rafs.delete(id); };
+            performance.now = () => vt.now;
+            Date.now = () => E0 + vt.now;
+            const pinned = new WeakMap();
+            const sync = () => {
+              let n = 0;
+              for (const a of document.getAnimations()) {
+                if (a.timeline !== document.timeline) continue;
+                let s = pinned.get(a);
+                if (s === undefined) { s = vt.now; pinned.set(a, s); try { a.pause(); } catch (e) {} }
+                try { a.currentTime = vt.now - s; n++; } catch (e) {}
+              }
+              return n;
+            };
+            vt.sync = sync;
+            realSI(sync, 3);
+            ['animationstart', 'transitionrun', 'animationrun'].forEach(ev => document.addEventListener(ev, sync, true));
+            vt.step = dt => {
+              vt.now += dt;
+              for (let g = 0; g < 5000; g++) {
+                let bid = null, bt = null;
+                for (const [id, t] of timers) if (t.due <= vt.now && (bt === null || t.due < bt.due)) { bid = id; bt = t; }
+                if (bid === null) break;
+                if (bt.every) bt.due += bt.every; else timers.delete(bid);
+                try { if (typeof bt.cb === 'function') bt.cb(...bt.args); } catch (e) { console.error('timer', e && e.message); }
+              }
+              const cbs = [...rafs]; rafs.clear();
+              for (const [id, cb] of cbs) { try { cb(vt.now); } catch (e) { console.error('raf', e && e.message); } }
+              sync();
+            };
+            vt.info = () => ({
+              now: vt.now, timers: timers.size, rafs: rafs.size, lenis: !!window.lenis, gsap: !!window.gsap,
+              gsapKids: window.gsap ? window.gsap.globalTimeline.getChildren(true, true, true).filter(c => c.isActive && c.isActive()).length : -1,
+              anims: document.getAnimations().filter(a => a.playState !== 'finished' && a.effect && a.effect.getComputedTiming().iterations !== Infinity).length,
+              scrollY: window.scrollY, scrollH: document.documentElement.scrollHeight,
+            });
+          })();
+          """
+          CSS = ".consent,[data-social-campaign-dock],#consent-title{display:none !important}"
+
+          async def settle(page, ms=25):
+              await page.evaluate("ms => new Promise(r => window.__vt.real(r, ms))", ms)
+
+          async def go(play):
+              b = await play.chromium.launch(args=["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "--disable-gpu-vsync", "--hide-scrollbars"])
+              scale = 2 if MODE == "capture" else 1
+              ctx = await b.new_context(viewport={"width": 1440, "height": 900}, device_scale_factor=scale, locale="en-GB", reduced_motion="no-preference")
+              await ctx.add_init_script(INIT)
+              page = await ctx.new_page()
+              page.on("console", lambda m: print("console:", m.type, m.text[:200]) if m.type in ("error",) else None)
+              await page.goto(URL, wait_until="load", timeout=90000)
+              await page.add_style_tag(content=CSS)
+              await page.wait_for_timeout(5000)   # real time, virtual clock frozen: fonts, chunks, images arrive
+              try: await page.evaluate("document.fonts.ready.then(()=>1)")
+              except Exception: pass
+              return b, page
+
+          async def shot(page, **kw):
+              return await page.screenshot(type="jpeg", quality=kw.get("q", 90), animations="allow", caret="initial")
+
+          async def scroll_to(page, y):
+              await page.evaluate("y => { if (window.lenis) window.lenis.scrollTo(y, {immediate: true, force: true}); else window.scrollTo(0, y); }", y)
+
+          def ease(k): return 0.5 - 0.5 * __import__("math").cos(__import__("math").pi * min(1, max(0, k)))
+
+          async def explore(page):
+              log = []
+              dt = 1000 / FPS
+              sheet1, sheet2 = [], []
+              n = int(14 * FPS)
+              for i in range(n + 1):
+                  await page.evaluate("dt => window.__vt.step(dt)", dt)
+                  await settle(page, 12)
+                  if i % 15 == 0:
+                      info = await page.evaluate("window.__vt.info()")
+                      log.append(info)
+                      if i % 15 == 0:
+                          im = Image.open(io.BytesIO(await shot(page, q=60))).resize((480, 300)); sheet1.append((i / FPS, im))
+              # scroll sweep from where we are: 0..6000 css px, 0.4 s per 250 px
+              sc = []
+              for j, y in enumerate(range(0, 6001, 400)):
+                  await scroll_to(page, y)
+                  for _ in range(8):
+                      await page.evaluate("dt => window.__vt.step(dt)", dt); await settle(page, 15)
+                  im = Image.open(io.BytesIO(await shot(page, q=60))).resize((480, 300)); sc.append((y, im))
+                  log.append(await page.evaluate("window.__vt.info()"))
+              json.dump(log, open(f"{OUT}/explore-log.json", "w"), indent=1)
+              from PIL import ImageDraw
+              def sheetize(items, name, cols=4):
+                  rows = (len(items) + cols - 1) // cols
+                  S = Image.new("RGB", (cols * 480, rows * 300), "white"); d = ImageDraw.Draw(S)
+                  for k, (lab, im) in enumerate(items):
+                      S.paste(im, ((k % cols) * 480, (k // cols) * 300)); d.rectangle([(k % cols) * 480, (k // cols) * 300, (k % cols) * 480 + 110, (k // cols) * 300 + 22], fill="black"); d.text(((k % cols) * 480 + 4, (k // cols) * 300 + 5), str(round(lab, 2)), fill="white")
+                  S.save(f"{OUT}/{name}", quality=80)
+              # hero: 15 frames per sheet, sorted by time
+              sheetize(sheet1[:16], "hero-a.jpg"); sheetize(sheet1[16:], "hero-b.jpg")
+              sheetize(sc, "scroll.jpg")
+              print(json.dumps(log[:30]))
+
+          async def capture(page):
+              dt = 1000 / FPS
+              # run the page to LEAD_AT with no pictures, stepping at the film rate
+              n0 = int(round(LEAD_AT * FPS))
+              for i in range(n0):
+                  await page.evaluate("dt => window.__vt.step(dt)", dt)
+                  await settle(page, 6)
+              total = HOLD + SCROLL_DUR
+              N = int(round(total * FPS))
+              raw = []
+              t0 = time.time()
+              for i in range(N):
+                  t = i / FPS
+                  if t >= HOLD:
+                      y = SCROLL_Y * ease((t - HOLD) / SCROLL_DUR)
+                      await scroll_to(page, y)
+                  await page.evaluate("dt => window.__vt.step(dt)", dt)
+                  await settle(page, 20)
+                  raw.append(await page.screenshot(type="png", animations="allow", caret="initial"))
+                  if i % 20 == 0: print("frame", i, "of", N, round(time.time() - t0, 1), "s", await page.evaluate("window.__vt.info()"), flush=True)
+              print("raw png MB", round(sum(len(r) for r in raw) / 1e6, 1))
+              # pick the largest width that fits the budget at JPEG q90
+              choice = None
+              for W in (1760, 1600, 1440, 1280):
+                  H = round(W * 900 / 1440)
+                  ims = [Image.open(io.BytesIO(r)).convert("RGB").resize((W, H), Image.LANCZOS) for r in raw]
+                  bufs = []
+                  for im in ims:
+                      b = io.BytesIO(); im.save(b, "JPEG", quality=90, subsampling=0 if W <= 1440 else 1, optimize=True); bufs.append(b.getvalue())
+                  mb = sum(len(x) for x in bufs) / 1e6
+                  print("width", W, "x", H, "->", round(mb, 1), "MB")
+                  choice = (W, H, bufs, mb)
+                  if mb <= BUDGET_MB: break
+              W, H, bufs, mb = choice
+              d = f"{OUT}/homepage"; os.makedirs(d, exist_ok=True)
+              for i, x in enumerate(bufs): open(f"{d}/f{i:04d}.jpg", "wb").write(x)
+              json.dump({"fps": FPS, "frames": N, "width": W, "height": H, "mb": round(mb, 1), "src": URL, "viewport": [1440, 900], "dsf": 2, "lead_at": LEAD_AT, "hold": HOLD, "scroll_dur": SCROLL_DUR, "scroll_y": SCROLL_Y,
+                         "pattern": "f%04d.jpg", "captured": time.strftime("%Y-%m-%d")}, open(f"{d}/manifest.json", "w"), indent=1)
+              # contact sheet of 12 evenly spaced frames to read
+              from PIL import ImageDraw
+              pick = [round(k * (N - 1) / 11) for k in range(12)]
+              S = Image.new("RGB", (4 * 640, 3 * 400), "white")
+              for k, i in enumerate(pick):
+                  im = Image.open(f"{d}/f{i:04d}.jpg").resize((640, 400)); S.paste(im, ((k % 4) * 640, (k // 4) * 400)); ImageDraw.Draw(S).text(((k % 4) * 640 + 6, (k // 4) * 400 + 6), f"f{i}", fill="red")
+              S.save(f"{OUT}/sheet.jpg", quality=82)
+              # two full-size frames to judge sharpness
+              for i in (0, N // 2, N - 1): open(f"{OUT}/full{i}.jpg", "wb").write(bufs[i])
+
+          async def main():
+              async with async_playwright() as p:
+                  b, page = await go(p)
+                  print("loaded", await page.evaluate("window.__vt.info()"))
+                  await (explore(page) if MODE == "explore" else capture(page))
+                  await b.close()
+          asyncio.run(main())
+          PYEOF
+          python3 hp_capture.py
+          du -sh out
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: homepage-${{ inputs.label }}
+          path: out
+          retention-days: 3
