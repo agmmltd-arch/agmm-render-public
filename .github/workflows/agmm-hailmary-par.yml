@@ -18,6 +18,7 @@ on:
       segments: { description: number of parallel picture segments (max 20), required: false, default: '20' }
       scale: { description: 'device scale factor passed to openfilm render --scale: 2 = 2160x3840 (pages stay 1080x1920 CSS px), 1 = 1080x1920', required: false, default: '2' }
       reuse_picture_run: { description: 'run id whose picture segments to reuse (timeline AND scale must be identical)', required: false, default: '' }
+      cuts: { description: 'optional explicit segment cut frames, comma-separated, first 0 and last = total frames (keeps reused segments aligned when the film length changes)', required: false, default: '' }
       rerender_from: { description: 'with reuse_picture_run: re-render segments ending after this second, reuse the rest (empty = reuse all)', required: false, default: '' }
 permissions:
   contents: read
@@ -118,6 +119,8 @@ jobs:
               acc+=c
               if len(cuts)<N and acc>=tot*len(cuts)/N: cuts.append(f+1)
           cuts=cuts[:N]+[frames]; cuts+=[frames]*(21-len(cuts))
+          X='${{ inputs.cuts }}'.strip()
+          if X: cuts=[int(v) for v in X.split(',')]; N=len(cuts)-1; cuts+=[cuts[-1]]*(21-len(cuts))
           a,b=(cuts[i],cuts[i+1]) if i<N else (frames,frames)
           print('%.4f %.4f'%(a/fr,b/fr))")
           echo "a=$A" >> "$GITHUB_OUTPUT"; echo "b=$B" >> "$GITHUB_OUTPUT"
