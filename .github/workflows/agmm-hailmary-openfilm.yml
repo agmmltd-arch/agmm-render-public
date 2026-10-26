@@ -27,7 +27,7 @@ on:
         required: false
         default: ''
       mode:
-        description: full (render + QA) or build (edit + voice report only)
+        description: full (render + QA), build (edit + voice report) or stills (edit + key frames)
         required: false
         default: full
 permissions:
@@ -106,11 +106,11 @@ jobs:
           cp BUILD.json VOICE.json assets/timeline.json ../qa/ 2>/dev/null || true
           exit $rc
       - name: Dry stills (pages only, no render)
-        if: inputs.voice_run_id == 'dry'
+        if: inputs.voice_run_id == 'dry' || inputs.mode == 'stills'
         run: |
           cd film
           mkdir -p ../qa
-          for t in $(python3 -c "import json;a=json.load(open('assets/timeline.json'));t=a['a'];print(' '.join(str(round(x,2)) for x in [0.3,t['freeze']+0.7,t['blind']+0.5,t['light']+1.2,t['walk']+1.5,t['concrete']+0.2,t['screen']+1.2,t['clock']+0.2,t['resume']+0.6,a['ui_at']-0.3,a['ui_at']+0.6,t['email']+0.8,t['fortieth']+0.3,t['finds']+1.2,t['nights']+0.6,t['audit']+0.6]))"); do
+          for t in $(python3 -c "import json;a=json.load(open('assets/timeline.json'));t=a['a'];print(' '.join(str(round(x,2)) for x in [0.0,0.3,0.8,t['freeze']+0.7,t['blind']-0.2,t['blind']+0.5,t['light']+1.2,t['walk']+1.5,t['concrete']+0.2,t['screen']+1.2,t['clock']+0.2,t['resume']+0.3,t['resume']+0.9,a['ui_at']-0.5,a['ui_at']-0.15,a['ui_at']+0.05,a['ui_at']+0.6,t['email']+0.8,t['fortieth']+0.3,t['finds']+1.2,t['nights']+0.6,t['audit']+0.6]))"); do
             timeout 600 npx -y openfilm@0.2.5 look $t 2>&1 | tail -6
           done
           find . -path ./node_modules -prune -o \( -name '*.png' -o -name '*.jpg' \) -newer film.html -print | head -40
