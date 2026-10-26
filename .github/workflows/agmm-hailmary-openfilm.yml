@@ -26,6 +26,10 @@ on:
         description: optional forced takes, e.g. P1=2,P4=1
         required: false
         default: ''
+      mode:
+        description: full (render + QA) or build (edit + voice report only)
+        required: false
+        default: full
 permissions:
   contents: read
   actions: read
@@ -98,7 +102,7 @@ jobs:
           cp -r "private/${{ inputs.project_path }}" film
           cd film
           python3 build_film.py --voice "$RUNNER_TEMP/voice" --pick "${{ inputs.pick }}"
-          node --version; npx -y openfilm@0.2.5 render --help | head -40 || true
+          mkdir -p ../qa && cp BUILD.json VOICE.json assets/timeline.json ../qa/ 2>/dev/null || true
       - name: Dry stills (pages only, no render)
         if: inputs.voice_run_id == 'dry'
         run: |
@@ -111,21 +115,21 @@ jobs:
           find . -path ./node_modules -prune -o \( -name '*.png' -o -name '*.jpg' \) -newer film.html -print | while read f; do cp "$f" ../qa/; done
           cp assets/timeline.json BUILD.json ../qa/
       - name: OpenFilm look (determinism, errors, missing files, cut-off text)
-        if: inputs.voice_run_id != 'dry'
+        if: inputs.voice_run_id != 'dry' && inputs.mode == 'full'
         continue-on-error: true
         run: |
           cd film
           timeout 2400 npx -y openfilm@0.2.5 look 2>&1 | tee ../look.txt | tail -60
           ls -la .film 2>/dev/null | head || true
       - name: Render (headless Chromium)
-        if: inputs.voice_run_id != 'dry'
+        if: inputs.voice_run_id != 'dry' && inputs.mode == 'full'
         run: |
           set -euo pipefail
           cd film
           timeout 7200 npx -y openfilm@0.2.5 render 2>&1 | tail -40
           ls -la *.mp4 || find . -maxdepth 2 -name '*.mp4'
       - name: Master the mix (-14 LUFS, -1.5 dBTP) and run the QA gate
-        if: inputs.voice_run_id != 'dry'
+        if: inputs.voice_run_id != 'dry' && inputs.mode == 'full'
         run: |
           set -euo pipefail
           cd film
