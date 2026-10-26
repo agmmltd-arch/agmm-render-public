@@ -55,15 +55,15 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             ${{ inputs.project_path }}
-      - name: Runtime (ffmpeg, tesseract, Node 22, Pillow)
+      - name: Runtime (static ffmpeg, Node 22, Pillow, RapidOCR; no apt, the mirror hung on 26 Oct)
         run: |
           set -euo pipefail
-          for i in 1 2 3; do timeout 300 sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update -qq && break || sleep 10; done
-          for i in 1 2 3; do timeout 600 sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends ffmpeg tesseract-ocr >/dev/null && break || sleep 10; done
-          ffmpeg -version | head -1; tesseract --version | head -1
-          curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+          curl -fsSL --retry 4 https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/node-v22.12.0-linux-x64/bin" >> "$GITHUB_PATH"
-          python3 -m pip install --quiet pillow
+          python3 -m pip install --quiet --retries 4 pillow rapidocr-onnxruntime==1.3.24
+          "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin/ffmpeg" -version | head -1
       - name: Dry voice pack (silent takes on scripted timings, voice_run_id=dry)
         if: inputs.voice_run_id == 'dry'
         run: |
