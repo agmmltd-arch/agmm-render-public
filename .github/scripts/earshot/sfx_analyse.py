@@ -190,6 +190,9 @@ def main():
                 acc.append(rec)
             else:
                 rej.append({"id": "ov_%s_%s" % (a.role, c["openverse_id"][:8]), "reason": why, "detail": detail, "title": c.get("title"), "landing_url": c.get("landing_url"), "licence": c.get("licence")})
+        if (i + 1) % 5 == 0:      # partial results survive a cancelled / timed-out job
+            json.dump(acc, open(out / "accepted.json", "w"), indent=1)
+            json.dump(rej, open(out / "rejected.json", "w"), indent=1)
         print("[%s %d/%d] %s %s" % (a.role, i + 1, len(cands), "ACCEPT" if res else "reject", (res[0]["id"] if res else "%s (%s)" % (why, detail))), flush=True)
     reasons = {}
     for r in rej:
