@@ -1,0 +1,113 @@
+name: AGMM hailmary openfilm
+run-name: AGMM hailmary ${{ inputs.label }}
+# Hail Mary shorts (26 Oct 2026): an OpenFilm project (MIT, github.com/openfilm/openfilm) is read from the PRIVATE repo with the existing
+# read-only deploy key, the free Chatterbox voice pack of a voicefree-chatterbox run is decrypted here, build_film.py times the edit to the
+# voice, OpenFilm checks and renders it in headless Chromium, the mix is set to -14 LUFS, and qa.py gates the master. Nothing renders on the Mac.
+# No media is committed to this public repo; the project and its sounds live in the private repo.
+on:
+  workflow_dispatch:
+    inputs:
+      private_commit:
+        description: 40-hex commit of agmm-video-render holding the film folder
+        required: true
+      project_path:
+        description: film folder inside that commit (hailmary/H01/film)
+        required: true
+      voice_run_id:
+        description: run id of the voicefree-chatterbox run with the takes
+        required: true
+      voice_label:
+        description: label of that run (its artifact is voicefree-chatterbox-<label>-ENC)
+        required: true
+      label:
+        description: short label for this build
+        required: true
+      pick:
+        description: optional forced takes, e.g. P1=2,P4=1
+        required: false
+        default: ''
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: agmm-hailmary-${{ inputs.label }}
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 170
+    env:
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Fetch the film folder (read-only deploy key)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            ${{ inputs.project_path }}
+      - name: Runtime (ffmpeg, tesseract, Node 22, Pillow)
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg tesseract-ocr fonts-noto-color-emoji >/dev/null
+          curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/node-v22.12.0-linux-x64/bin" >> "$GITHUB_PATH"
+          python3 -m pip install --quiet pillow
+      - name: Voice pack (decrypt)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          set -euo pipefail
+          gh run download "${{ inputs.voice_run_id }}" -R "${{ github.repository }}" -n "voicefree-chatterbox-${{ inputs.voice_label }}-ENC" -D "$RUNNER_TEMP/vpack"
+          mkdir -p "$RUNNER_TEMP/voice"
+          openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/vpack/synth-pack.enc" | tar -x -C "$RUNNER_TEMP/voice"
+          ls "$RUNNER_TEMP/voice" | head -40
+      - name: Build the edit on the voice
+        run: |
+          set -euo pipefail
+          cp -r "private/${{ inputs.project_path }}" film
+          cd film
+          python3 build_film.py --voice "$RUNNER_TEMP/voice" --pick "${{ inputs.pick }}"
+          node --version; npx -y openfilm@0.2.5 render --help | head -40 || true
+      - name: OpenFilm look (determinism, errors, missing files, cut-off text)
+        continue-on-error: true
+        run: |
+          cd film
+          timeout 2400 npx -y openfilm@0.2.5 look 2>&1 | tee ../look.txt | tail -60
+          ls -la .film 2>/dev/null | head || true
+      - name: Render (headless Chromium)
+        run: |
+          set -euo pipefail
+          cd film
+          timeout 7200 npx -y openfilm@0.2.5 render 2>&1 | tail -40
+          ls -la *.mp4 || find . -maxdepth 2 -name '*.mp4'
+      - name: Master the mix (-14 LUFS, -1.5 dBTP) and run the QA gate
+        run: |
+          set -euo pipefail
+          cd film
+          SRC=$(ls -t *.mp4 | head -1)
+          J=$(ffmpeg -nostdin -i "$SRC" -af loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json -f null - 2>&1 | sed -n '/^{/,/^}/p')
+          MI=$(echo "$J" | python3 -c "import sys,json;d=json.load(sys.stdin);print(d['input_i'],d['input_tp'],d['input_lra'],d['input_thresh'],d['target_offset'])")
+          set -- $MI
+          ffmpeg -nostdin -y -loglevel error -i "$SRC" -c:v copy -af "loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=$1:measured_TP=$2:measured_LRA=$3:measured_thresh=$4:offset=$5:linear=true,aresample=48000" -c:a aac -b:a 256k -movflags +faststart ../FINAL.mp4
+          cd ..
+          python3 film/qa.py FINAL.mp4 film/assets/timeline.json qa | tee qa.txt
+          cp film/BUILD.json film/assets/timeline.json film/film.html qa/
+          cp look.txt qa/ || true
+          rm -rf qa/f10 qa/f2
+      - name: Upload master and QA
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hailmary-${{ inputs.label }}
+          path: |
+            FINAL.mp4
+            qa
+          retention-days: 7
