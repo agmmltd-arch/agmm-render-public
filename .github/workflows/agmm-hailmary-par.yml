@@ -14,6 +14,7 @@ on:
       pick: { description: forced takes e.g. P1=2,P4=1, required: false, default: '' }
       voice2_run_id: { description: optional second voicefree run whose takes replace the same paragraphs, required: false, default: '' }
       voice2_label: { description: label of that run, required: false, default: '' }
+      extra_voices: { description: 'more voicefree runs, later ones win per paragraph, space-separated run_id:label', required: false, default: '' }
       segments: { description: number of parallel picture segments (max 12), required: false, default: '12' }
       reuse_picture_run: { description: 'run id whose picture segments to reuse (timeline must be identical)', required: false, default: '' }
       rerender_from: { description: 'with reuse_picture_run: re-render segments ending after this second, reuse the rest (empty = reuse all)', required: false, default: '' }
@@ -56,6 +57,14 @@ jobs:
           gh run download "${{ inputs.voice_run_id }}" -R "${{ github.repository }}" -n "voicefree-chatterbox-${{ inputs.voice_label }}-ENC" -D "$RUNNER_TEMP/vpack"
           mkdir -p "$RUNNER_TEMP/voice"
           openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/vpack/synth-pack.enc" | tar -x -C "$RUNNER_TEMP/voice"
+          n=3
+          for rl in ${{ inputs.extra_voices }}; do
+            rid=${rl%%:*}; lab=${rl#*:}
+            gh run download "$rid" -R "${{ github.repository }}" -n "voicefree-chatterbox-$lab-ENC" -D "$RUNNER_TEMP/vpack$n"
+            mkdir -p "$RUNNER_TEMP/voice$n"
+            openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/vpack$n/synth-pack.enc" | tar -x -C "$RUNNER_TEMP/voice$n"
+            n=$((n+1))
+          done
           if [ -n "${{ inputs.voice2_run_id }}" ]; then
             gh run download "${{ inputs.voice2_run_id }}" -R "${{ github.repository }}" -n "voicefree-chatterbox-${{ inputs.voice2_label }}-ENC" -D "$RUNNER_TEMP/vpack2"
             mkdir -p "$RUNNER_TEMP/voice2"
@@ -67,7 +76,7 @@ jobs:
           set -euo pipefail
           cp -r "private/${{ inputs.project_path }}" film
           cd film
-          V2=""; [ -d "$RUNNER_TEMP/voice2" ] && V2="--voice2 $RUNNER_TEMP/voice2"
+          V2=""; for d in $(ls -d "$RUNNER_TEMP"/voice[0-9]* 2>/dev/null | sort -V); do V2="$V2 $d"; done; [ -n "$V2" ] && V2="--voice2$V2"
           python3 build_film.py --voice "$RUNNER_TEMP/voice" $V2 --pick "${{ inputs.pick }}"
           echo "total=$(python3 -c "import json;print(json.load(open('assets/timeline.json'))['total'])")" >> "$GITHUB_OUTPUT"
           echo "world_at=$(python3 -c "import json;print(json.load(open('assets/timeline.json'))['world_at'])")" >> "$GITHUB_OUTPUT"
