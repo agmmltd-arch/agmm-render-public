@@ -1,0 +1,148 @@
+name: AGMM ears
+run-name: AGMM ears ${{ inputs.label }}
+# Listening QA ("ears"): cut an ad's audio into overlapping ~8 s sections, run Whisper word timings and PANNs CNN14 AudioSet tags on the full mix.
+# The mp4 comes from the PRIVATE repo via the read-only deploy key. Nothing decodes on the Mac. The audio pack in the artifact is encrypted
+# (random AES key wrapped with the founder's RSA public key, private half stays on the Mac in ~/.ears); the json results are plain.
+# The LLM listening pass runs on the Mac (ears.py), not here.
+on:
+  workflow_dispatch:
+    inputs:
+      private_commit: { description: 40-hex commit of agmm-video-render holding the mp4, required: true }
+      path: { description: path of the mp4 inside that commit, required: true }
+      label: { description: short safe label, required: true }
+      whisper_model: { description: faster-whisper model, required: false, default: small }
+      section_len: { description: section seconds, required: false, default: '8' }
+      section_step: { description: section start step seconds, required: false, default: '6' }
+permissions:
+  contents: read
+concurrency:
+  group: agmm-ears-${{ inputs.label }}
+  cancel-in-progress: false
+jobs:
+  ears:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            ${{ inputs.path }}
+          sparse-checkout-cone-mode: false
+      - name: Runtime (static ffmpeg, no apt)
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+      - name: Extract audio and cut sections
+        run: |
+          set -euo pipefail
+          mkdir -p out/sections work
+          SRC="private/${{ inputs.path }}"; ls -la "$SRC"
+          ffmpeg -v error -y -i "$SRC" -vn -ac 2 -ar 44100 work/full.wav
+          ffmpeg -v error -y -i "$SRC" -vn -ac 1 -ar 16000 work/w16.wav
+          ffmpeg -v error -y -i "$SRC" -vn -ac 1 -ar 32000 work/p32.wav
+          ffmpeg -v error -y -i work/full.wav -b:a 128k work/full.mp3
+          DUR=$(ffprobe -v error -show_entries format=duration -of csv=p=0 work/full.wav)
+          L=${{ inputs.section_len }}; S=${{ inputs.section_step }}
+          python3 - "$DUR" "$L" "$S" > work/starts.txt <<'PY'
+          import sys
+          d, L, S = float(sys.argv[1]), float(sys.argv[2]), float(sys.argv[3])
+          s = 0.0
+          while True:
+              print("%.3f" % s)
+              if s + L >= d - 0.05: break
+              s += S
+          PY
+          i=0
+          while read s; do
+            e=$(python3 -c "print(min(float('$s')+$L, float('$DUR')))")
+            n=$(printf "%02d" $i)
+            ffmpeg -v error -y -ss "$s" -t "$L" -i work/full.wav -ac 2 -b:a 128k "out/sections/sec_${n}_${s}.mp3"
+            echo "$n $s $e" >> work/sections.txt
+            i=$((i+1))
+          done < work/starts.txt
+          python3 - "$DUR" <<'PY'
+          import json, sys
+          secs = [l.split() for l in open("work/sections.txt")]
+          json.dump({"duration": float(sys.argv[1]), "sections": [{"i": int(a), "start": float(b), "end": float(c)} for a, b, c in secs]}, open("out/meta.json", "w"), indent=1)
+          PY
+          cat out/meta.json | head -30
+      - name: Whisper word timings (faster-whisper, CPU)
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --retries 4 faster-whisper soundfile numpy
+          python3 - <<'PY'
+          import json
+          from faster_whisper import WhisperModel
+          m = WhisperModel("${{ inputs.whisper_model }}", device="cpu", compute_type="int8")
+          segs, info = m.transcribe("work/w16.wav", language="en", word_timestamps=True, vad_filter=False, condition_on_previous_text=False, beam_size=5)
+          words = []
+          for s in segs:
+              for w in (s.words or []):
+                  words.append({"w": w.word.strip(), "s": round(w.start, 3), "e": round(w.end, 3), "p": round(w.probability, 3)})
+          json.dump({"model": "${{ inputs.whisper_model }}", "words": words}, open("out/whisper.json", "w"), indent=1)
+          print(len(words), "words;", " ".join(w["w"] for w in words)[:600])
+          PY
+      - name: PANNs CNN14 AudioSet tags every 0.5 s
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --retries 4 torch --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install --quiet --retries 4 panns-inference librosa
+          mkdir -p ~/panns_data
+          curl -fL --retry 5 --retry-delay 5 -o ~/panns_data/Cnn14_mAP=0.431.pth "https://zenodo.org/record/3987831/files/Cnn14_mAP%3D0.431.pth?download=1"
+          curl -fL --retry 5 -o ~/panns_data/class_labels_indices.csv "http://storage.googleapis.com/us_audioset/youtube_corpus/v1/csv/class_labels_indices.csv"
+          ls -la ~/panns_data
+          python3 - <<'PY'
+          import json, numpy as np, soundfile as sf
+          from panns_inference import AudioTagging, labels
+          y, sr = sf.read("work/p32.wav", dtype="float32"); assert sr == 32000
+          at = AudioTagging(checkpoint_path=None, device="cpu")
+          dur = len(y) / sr; out = []
+          for c in np.arange(0, dur + 1e-6, 0.5):
+              a = max(0, int((c - 1.0) * sr)); b = min(len(y), int((c + 1.0) * sr))
+              seg = y[a:b]
+              if len(seg) < sr // 2: seg = np.pad(seg, (0, sr // 2 - len(seg)))
+              cw, _ = at.inference(seg[None, :].astype("float32"))
+              p = cw[0]; idx = np.argsort(-p)[:8]
+              out.append({"t": round(float(c), 2), "tags": [[labels[i], round(float(p[i]), 3)] for i in idx]})
+          json.dump({"win_s": 2.0, "hop_s": 0.5, "frames": out}, open("out/panns.json", "w"))
+          print(len(out), "frames; first:", out[0], "mid:", out[len(out)//2])
+          PY
+      - name: Encrypt the audio pack
+        run: |
+          set -euo pipefail
+          cat > work/pub.pem <<'PEM'
+          -----BEGIN PUBLIC KEY-----
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAqkFPrJjqJEb8aRKQCUZG
+          G9908H5tfI3FuTNjQzprgrCEfNyHzzh0reo7keyAi5NLSTnfoRmojenngewXWENm
+          oogYZOSBMmXIDW9X4tnL0a2f7j0xupfggb1opInG+5WhV4BeLCnWXlRSFyV8f7DX
+          H024Vb49I/xZszBGR3rF9zIgZN0gntf633q/nYCHuM6DyPHG0FAvfm7qtx7b7cy9
+          lfsT7IdLZLPpvD7CvnzHCyxQZgVr5LStB1HM2OK4jst7KvlfWzsQ6wfvcUePYSWx
+          VD0sj2OOZHzRB1xqUVzQ7ttFmrQ0JcDCzB5q5hQF58QMAZ/gD+zocUVbbfCUGSaE
+          eqVkr9iYF3gjV74iOu38+TExh9t5e1GfWeKbn9x2mUepWsnorIJ68M/aNFmh8Wmu
+          OI/BfdT8T0dCIYxPwlOJfqd2L177xLUuQiY6NU/h9WnBl4sHjT/8sPpvIXcELE4p
+          HRog9J28wHncIk0PsCTMPBDX1ZgcCMe+SJ8KsDK0Tb1vAgMBAAE=
+          -----END PUBLIC KEY-----
+          PEM
+          mkdir -p pack
+          head -c 32 /dev/urandom | base64 > work/key.txt
+          cp work/full.mp3 out/sections/
+          tar -C out -cz sections | openssl enc -aes-256-cbc -pbkdf2 -pass file:work/key.txt -out pack/audio.enc
+          openssl pkeyutl -encrypt -pubin -inkey work/pub.pem -pkeyopt rsa_padding_mode:oaep -in work/key.txt -out pack/key.rsa
+          rm -rf out/sections
+          ls -la pack out
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ears-${{ inputs.label }}
+          path: |
+            out
+            pack
+          retention-days: 2
