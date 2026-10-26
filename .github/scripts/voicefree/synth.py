@@ -128,7 +128,7 @@ def word_levels(x, sr, words):
     return rows, (float(np.median(vals)) if vals else None)
 
 
-def gain_ride(wav_path, words, lift_below=20.0, max_lift=10.0):
+def gain_ride(wav_path, words, lift_below=18.0, max_lift=10.0):
     """Production gain-riding: a word more than `lift_below` dB under the take's median word level (Chatterbox lets the last word of a sentence trail off to -45..-50
     dB, which the native spot-check calls silence) is lifted to median - lift_below, by at most `max_lift` dB, with 25 ms raised-cosine edges. Words that would need
     more are left alone and fail spot_fail. Writes the wav in place; returns the list of lifts."""
@@ -161,7 +161,7 @@ def gain_ride(wav_path, words, lift_below=20.0, max_lift=10.0):
     return lifts
 
 
-def spot_fail(wav_path, words, floor_db=-46.0, final_median_db=-20.0):
+def spot_fail(wav_path, words, floor_db=-44.0, final_median_db=-20.0):
     """The native spotcheck_words rule (RMS inside a word's window must be above -50 dB) applied to EVERY word with a 4 dB margin, on the level the native chain will see:
     the assembler loudness-normalises to -18 LUFS, which puts the median word at about -20 dB, so each word's RMS is shifted by (final_median_db - this take's median word
     RMS) first. Returns the failing words (empty window or digital silence included)."""
