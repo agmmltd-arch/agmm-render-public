@@ -19,6 +19,7 @@ on:
       scale: { description: 'device scale factor passed to openfilm render --scale: 2 = 2160x3840 (pages stay 1080x1920 CSS px), 1 = 1080x1920', required: false, default: '2' }
       reuse_picture_run: { description: 'run id whose picture segments to reuse (timeline AND scale must be identical)', required: false, default: '' }
       cuts: { description: 'optional explicit segment cut frames, comma-separated, first 0 and last = total frames (keeps reused segments aligned when the film length changes)', required: false, default: '' }
+      rerender_until: { description: 'with reuse_picture_run: ALSO re-render segments that start before this second (e.g. a fixed opening), reuse the middle', required: false, default: '' }
       rerender_from: { description: 'with reuse_picture_run: re-render segments ending after this second, reuse the rest (empty = reuse all)', required: false, default: '' }
 permissions:
   contents: read
@@ -137,6 +138,8 @@ jobs:
           if [ -n "${{ inputs.reuse_picture_run }}" ]; then
             F="${{ inputs.rerender_from }}"; [ -z "$F" ] && F=99999
             python3 -c "import sys; sys.exit(0 if float('$B') <= float('$F') else 1)" && R=yes
+            U="${{ inputs.rerender_until }}"
+            if [ -n "$U" ] && python3 -c "import sys; sys.exit(0 if float('$A') < float('$U') else 1)"; then R=no; fi
           fi
           echo "reuse=$R" >> "$GITHUB_OUTPUT"; echo "segment ${{ matrix.seg }}: $A - $B reuse=$R"
       - name: Reuse this segment from the earlier run
