@@ -48,7 +48,7 @@ def voice_gaps(voice_wav, min_gap, th=None):
 def bed_swells_in_gaps(music_wav, gaps, th=TH):
     from earshot import audio, timeline as T
     x = audio.load(music_wav)
-    sw = T._swells(x, [], min_rise_db=th["bed_swell_min_rise_db"])
+    sw = [e for e in T._swells(x, [], min_rise_db=th["bed_swell_min_rise_db"]) if e["band"] == "full"]     # full band only: one band's beat is music, not a swell
     pad = th["bed_swell_gap_pad_s"]
     return [{"t": round(e["t"], 2), "rise_db": round(e["contrast_db"], 1), "gap": [round(a, 2), round(b, 2)]}
             for e in sw for a, b in gaps if a - pad <= e["t"] <= b + pad]
@@ -64,7 +64,9 @@ def sync_stats(items, off_ms):
 def gate(final, cues, voice_wav, music_wav, use_realness=True, th=TH):
     from earshot import api
     crit = api.critique(final, video=final, use_realness=use_realness)
-    tl = api.timeline(final, video=final, cues=cues)
+    cj = json.load(open(cues)) if isinstance(cues, str) else cues
+    cue_list = [{"t": c["t"], "kind": c.get("category") or c.get("event") or "cue", "id": c.get("sfx_id")} for c in cj["cues"]]
+    tl = api.timeline(final, video=final, cues=cue_list)
     rules = []
     fs = next((r for r in crit["metrics"] if r["metric"] == "first_sound_s"), None)
     v = fs and fs.get("value")
@@ -79,9 +81,9 @@ def gate(final, cues, voice_wav, music_wav, use_realness=True, th=TH):
                   "detail": "%d of %d answered cues off by more than %d ms (%.0f%%, allowed %.0f%%)" % (
                       cue_s["off"], cue_s["answered"], th["cue_offset_max_ms"], 100 * cue_s["off_fraction"], 100 * th["cue_off_fraction_max"]), "items": cue_s["off_items"]})
     rules.append({"id": "M2b", "name": "hits within %d ms of the picture cut" % th["cut_offset_max_ms"],
-                  "status": "PASS" if cut_s["off_fraction"] <= th["cut_off_fraction_max"] else "FAIL",
-                  "detail": "%d of %d answered cuts off by more than %d ms (%.0f%%, allowed %.0f%%)" % (
-                      cut_s["off"], cut_s["answered"], th["cut_offset_max_ms"], 100 * cut_s["off_fraction"], 100 * th["cut_off_fraction_max"]), "items": cut_s["off_items"]})
+                  "status": "PASS" if cut_s["off_fraction"] <= th["cut_off_fraction_warn"] else ("WARN" if cut_s["off_fraction"] <= th["cut_off_fraction_max"] else "FAIL"),
+                  "detail": "%d of %d answered cuts off by more than %d ms (%.0f%%, warn above %.0f%%, fail above %.0f%%; picture cuts are frame-difference events, fuzzy on animated HTML)" % (
+                      cut_s["off"], cut_s["answered"], th["cut_offset_max_ms"], 100 * cut_s["off_fraction"], 100 * th["cut_off_fraction_warn"], 100 * th["cut_off_fraction_max"]), "items": cut_s["off_items"]})
     gaps = voice_gaps(voice_wav, th["voice_gap_min_s"]) if voice_wav and os.path.exists(voice_wav) else []
     sw = bed_swells_in_gaps(music_wav, gaps, th) if music_wav and os.path.exists(music_wav) else []
     rules.append({"id": "M3", "name": "bed does not swell in voice gaps", "status": "PASS" if len(sw) <= th["max_bed_swells_in_gaps"] else "FAIL",
@@ -133,12 +135,14 @@ def selftest(final, cues, voice_wav, music_wav, work):
     results["silent_open"] = ("M1", any(x["id"] == "M1" and x["status"] == "FAIL" for x in r["rules"]))
     # 2. cues shifted 120 ms late: the mix's own cue list no longer matches the sound
     j = json.load(open(cues))
+    frac0 = None
     for c in j["cues"]:
         c["t"] = round(c["t"] + 0.12, 4)
     sh = work / "cues_shifted.json"
     json.dump(j, open(sh, "w"))
     r = gate(final, str(sh), voice_wav, music_wav, use_realness=False)
     results["cues_shifted_120ms"] = ("M2a", any(x["id"] == "M2a" and x["status"] == "FAIL" for x in r["rules"]))
+    results["cues_shifted_120ms_detail"] = [x["detail"] for x in r["rules"] if x["id"] == "M2a"]
     # 3. a swell planted in the first voice gap of the music stem
     import soundfile as sf
     gaps = voice_gaps(voice_wav, TH["voice_gap_min_s"])
@@ -160,7 +164,7 @@ def selftest(final, cues, voice_wav, music_wav, work):
         results["bed_swell_in_gap"] = ("M3", len(found) > TH["max_bed_swells_in_gaps"])
     else:
         results["bed_swell_in_gap"] = ("M3", False)
-    ok = all(v[1] for v in results.values())
+    ok = all(v[1] for k, v in results.items() if not k.endswith("_detail"))
     print("SELFTEST", json.dumps(results), "OK" if ok else "FAILED")
     return ok, results
 
