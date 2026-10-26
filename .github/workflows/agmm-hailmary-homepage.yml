@@ -193,7 +193,7 @@ jobs:
                   ims = [Image.open(io.BytesIO(r)).convert("RGB").resize((W, H), Image.LANCZOS) for r in raw]
                   bufs = []
                   for im in ims:
-                      b = io.BytesIO(); im.save(b, "JPEG", quality=90, subsampling=0 if W <= 1440 else 1, optimize=True); bufs.append(b.getvalue())
+                      b = io.BytesIO(); im.save(b, "JPEG", quality=90, subsampling=1, optimize=True); bufs.append(b.getvalue())
                   mb = sum(len(x) for x in bufs) / 1e6
                   print("width", W, "x", H, "->", round(mb, 1), "MB")
                   choice = (W, H, bufs, mb)
