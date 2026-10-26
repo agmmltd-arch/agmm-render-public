@@ -304,6 +304,16 @@ def main():
             for _r in (resp, resp_s):          # whisper writes "10 .8 million" for "ten point eight million"
                 _r["text"] = re.sub(r"(\d)\s+,(\d)", r"\1,\2", re.sub(r"(\d)\s+\.(\d)", r"\1.\2", _r["text"]))   # "10 .8", "638 ,000"
             resp["segments"], align_info = C.align_words(wav_path, resp["segments"])
+            es = P.get("exact_span_wpm")          # film VO: the pace window is on the word span (first word start to last word end), so correct the take once more on that measure
+            if es:
+                sp0 = C.span_wpm(resp, text)
+                if sp0 and abs(sp0 - float(es)) / float(es) > 0.008:
+                    t2 = float(es) / sp0
+                    stretch(wav_path, t2)
+                    info = C.wav_info(wav_path)
+                    for _w in resp["segments"]:
+                        _w["start"], _w["end"] = round(_w["start"] / t2, 3), round(_w["end"] / t2, 3)
+                    tempo = (tempo or 1.0) * t2
             ok_m, detail = compare(text, resp["text"])
             ok_s, detail_s = compare(text, resp_s["text"])
             sm = "" if (ok_m or ok_s) else (soft_match(text, resp["text"]) or soft_match(text, resp_s["text"]))
