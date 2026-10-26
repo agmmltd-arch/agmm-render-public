@@ -34,7 +34,7 @@ def main():
     role_q = {k: [v["desc"]] + list(v.get("alt") or []) for k, v in ROLES.items()}
     acc, skipped = [], {"audit": 0, "none": 0}
     for key, (prefixes, want, serves) in PLAN.items():
-        members = [e["id"] for e in bank.list() if any(e["id"].startswith(p) for p in prefixes)]
+        members = [i for i in bank.ids() if any(i.startswith(p) for p in prefixes)]
         members = sorted(members)[:8]
         if not members:
             skipped["none"] += 1
@@ -47,9 +47,11 @@ def main():
                 try:
                     y, meta = bank.render(mid, seed=1000 + seed)
                 except Exception as e:      # noqa: BLE001
-                    skipped["audit"] += 1
+                    skipped["error"] = skipped.get("error", 0) + 1
+                    if skipped["error"] <= 3:
+                        print("render error", mid, seed, type(e).__name__, str(e)[:120])
                     continue
-                if meta.get("checks"):
+                if not (meta.get("checks") or {}).get("ok", False):
                     skipped["audit"] += 1
                     continue
                 y = np.asarray(y, np.float64)
