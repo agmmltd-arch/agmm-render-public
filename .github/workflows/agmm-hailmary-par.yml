@@ -1,6 +1,6 @@
 name: AGMM hailmary parallel
 run-name: AGMM hailmary par ${{ inputs.label }}
-# Hail Mary shorts, fast path (26 Oct 2026): build once, render the picture in up to 12 parallel segments, split by estimated cost (Alfred's raymarched half weighs 2.5x) (OpenFilm, headless Chromium),
+# Hail Mary shorts, fast path (26 Oct 2026): build once, render the picture in up to 12 parallel segments, split by measured cost per frame (the clone crowd is the slow part) (OpenFilm, headless Chromium),
 # join them, mix the sound with the project's own mix.py (designed arc: build-up, riser, hit, ducking), master to -14 LUFS, run qa.py.
 # The project and its sounds come from the PRIVATE repo via the read-only deploy key. Nothing renders on the Mac; no media is committed here.
 on:
@@ -100,13 +100,17 @@ jobs:
           set -euo pipefail
           cd film
           read A B < <(python3 -c "
-          T=${{ needs.build.outputs.total }}; W=${{ needs.build.outputs.world_at }}; N=min(12,int('${{ inputs.segments }}')); i=${{ matrix.seg }}
-          fr=30; frames=int(round(T*fr)); wf=int(round(W*fr))
-          cost=[1.0 if f<wf else 2.5 for f in range(frames)]; tot=sum(cost); cuts=[0]; acc=0.0
-          for f,c in enumerate(cost):
+          import json; tl=json.load(open('assets/timeline.json')); A=tl['a']; T=tl['total']; W=tl['world_at']
+          R=tl.get('choreo',{}).get('t',{}).get('reveal_end',W+1.2)
+          N=min(12,int('${{ inputs.segments }}')); i=${{ matrix.seg }}
+          fr=30; frames=int(round(T*fr))
+          # measured on r1 (26 Oct): crowd frames ~2-3x the opening, Alfred's half ~0.1x (the eye reveal is full-frame raymarch)
+          def cost(t): return 1.0 if t<A['ten'] else (2.6 if t<W else (1.2 if t<R else 0.4))
+          cs=[cost(f/fr) for f in range(frames)]; tot=sum(cs); cuts=[0]; acc=0.0
+          for f,c in enumerate(cs):
               acc+=c
               if len(cuts)<N and acc>=tot*len(cuts)/N: cuts.append(f+1)
-          cuts=cuts[:N]+[frames]; cuts+= [frames]*(13-len(cuts))
+          cuts=cuts[:N]+[frames]; cuts+=[frames]*(13-len(cuts))
           a,b=(cuts[i],cuts[i+1]) if i<N else (frames,frames)
           print('%.4f %.4f'%(a/fr,b/fr))")
           echo "segment ${{ matrix.seg }}: $A - $B"
