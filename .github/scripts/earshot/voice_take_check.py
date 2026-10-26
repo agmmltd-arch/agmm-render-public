@@ -111,6 +111,35 @@ def load_words(wav):
         return None
 
 
+# AudioSet classes that are impulsive / UI / foley sounds: what a stray non-speech sound inside a voice take is called by the AST tagger
+NONSPEECH_CLASSES = ("Knock", "Tap", "Click", "Clicking", "Tick", "Thump, thud", "Bang", "Pop", "Bell", "Ding", "Ding-dong", "Beep, bleep", "Computer keyboard", "Typing",
+                     "Finger snapping", "Clatter", "Slap, smack", "Door", "Slam", "Thunk", "Clip-clop", "Chime", "Tinkle", "Glass", "Wood", "Drum", "Percussion", "Mallet percussion",
+                     "Rattle", "Scratch", "Squeak", "Creak", "Crack", "Snap", "Camera", "Single-lens reflex camera", "Mouse click", "Doorbell", "Alarm", "Ping", "Sound effect")
+
+
+def ast_probe(x_mono, sr, events, regs, th):
+    """AST on a 0.3 s crop around each prominent in-speech transient: the best non-speech class and its probability (a hint, not proof)"""
+    from earshot import audio
+    from earshot.models import ast as A
+    ns = th["nonspeech_event"]
+    cand = [e for e in events if in_regions(e["t"], regs, ns["interior_margin_ms"] / 1000) and e.get("prominence_db", 0) >= ns["ast_min_prominence_db"]
+            and e.get("length_ms", 0) <= ns["max_length_ms"]]
+    cand = sorted(cand, key=lambda e: -e["prominence_db"])[: ns["ast_max_events"]]
+    if not cand:
+        return []
+    a = A.get()
+    x48 = audio.resample(x_mono.astype(np.float32), sr, 48000) if sr != 48000 else x_mono.astype(np.float32)
+    crops = [x48[max(0, int((e["t"] - 0.12) * 48000)): int((e["t"] + 0.18) * 48000)] for e in cand]
+    P = a.probs(crops)
+    out = []
+    for e, p in zip(cand, P):
+        wl = [(c, float(p[a.index[c]])) for c in NONSPEECH_CLASSES if c in a.index]
+        best = max(wl, key=lambda kv: kv[1])
+        out.append({"t": e["t"], "prom": e["prominence_db"], "len": e["length_ms"], "ns_label": best[0], "ns_p": round(best[1], 3),
+                    "speech_p": round(float(p[a.index["Speech"]]), 3), "top": a.top(p, 4, min_p=0.05)})
+    return out
+
+
 def check_take(path, api, th=TH, kind=None):
     kind = kind or ("paragraph" if re.match(r"^P\d+\.wav$", os.path.basename(path)) else "assembled")
     x, sr = sf.read(path, always_2d=False, dtype="float32")
@@ -137,6 +166,10 @@ def check_take(path, api, th=TH, kind=None):
             rel = round(e.get("peak_dbfs", -99) - sp_db, 1)
             breaths.append({"t": e["t"], "z": z0, "peak_dbfs": e["peak_dbfs"], "rel_to_speech_db": rel, "length_ms": e.get("length_ms"), "prominence_db": e.get("prominence_db"),
                             "loud": rel >= br["min_rel_db"] and e.get("length_ms", 0) >= br["min_length_ms"]})
+    probe = ast_probe(m, sr, tl["events"], regs, th)
+    for q in probe:
+        if q["ns_p"] >= ns["ast_min_p"] and q["ns_p"] >= q["speech_p"] * ns["ast_vs_speech"]:
+            nonspeech.append({"t": q["t"], "label": "AST %s p=%.2f (speech %.2f)" % (q["ns_label"], q["ns_p"], q["speech_p"]), "z": None, "prominence_db": q["prom"], "length_ms": q["len"]})
     all_events = [{"t": e["t"], "kind": e.get("kind"), "label": e.get("label"), "z": (e.get("tags") or [{}])[0].get("z"), "prom": e.get("prominence_db"),
                    "len": e.get("length_ms"), "in_speech": in_regions(e["t"], regs, ns["interior_margin_ms"] / 1000)} for e in tl["events"]][:80]
     fails = []
@@ -160,7 +193,7 @@ def check_take(path, api, th=TH, kind=None):
     return {"take": os.path.basename(path), "kind": kind, "speech_p95_dbfs": round(sp_db, 1), "duration_s": round(dur, 2), "verdict": "FAIL" if fails else "PASS", "fails": fails,
             "lufs": lufs, "true_peak_dbtp": tp, "clipped_samples": meas.get("clipped_samples"), "noise_floor_dbfs": meas.get("noise_floor_dbfs"),
             "speech_regions": len(regs), "speech_thr_dbfs": round(thr, 1), "click_max_ratio": round(best_ratio, 1), "clicks": clicks, "strays": strays,
-            "nonspeech_events": nonspeech, "breaths": breaths, "events": all_events, "n_events": len(tl["events"]), "timeline_summary": tl.get("summary")}
+            "nonspeech_events": nonspeech, "breaths": breaths, "events": all_events, "ast_probe": probe, "n_events": len(tl["events"]), "timeline_summary": tl.get("summary")}
 
 
 def inject(src, kind, dst, all_takes=None):
@@ -188,8 +221,7 @@ def inject(src, kind, dst, all_takes=None):
             import soxr
             snd = soxr.resample(snd, 48000, sr)
         a, b = max(regs, key=lambda r: r[1] - r[0])
-        sp95 = float(np.percentile(frames_db(m.astype(np.float32), sr, 10)[0], 95))
-        snd = snd * 10 ** ((sp95 + 3.0 - 20 * np.log10(max(1e-9, np.abs(snd).max()))) / 20)     # its peak 3 dB over the take's speech level (p95 of 10 ms frames)
+        snd = snd * 10 ** ((20 * np.log10(np.abs(m).max()) - 4.0 - 20 * np.log10(max(1e-9, np.abs(snd).max()))) / 20)     # its peak 4 dB under the take's own peak, like a real stray knock or ding
         t = int(((a + b) / 2 + 0.3) * sr)
         if y.ndim == 2:
             y[t: t + len(snd), :] += snd[:, None]
