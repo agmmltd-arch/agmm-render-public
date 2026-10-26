@@ -15,6 +15,7 @@ on:
       voice2_run_id: { description: optional second voicefree run whose takes replace the same paragraphs, required: false, default: '' }
       voice2_label: { description: label of that run, required: false, default: '' }
       segments: { description: number of parallel picture segments (max 12), required: false, default: '12' }
+      reuse_picture_run: { description: 'remix only: run id whose picture segments to reuse (timeline must be identical)', required: false, default: '' }
 permissions:
   contents: read
   actions: read
@@ -77,6 +78,7 @@ jobs:
           include-hidden-files: true
   picture:
     needs: build
+    if: inputs.reuse_picture_run == ''
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     strategy:
@@ -126,6 +128,7 @@ jobs:
           if-no-files-found: ignore
   assemble:
     needs: [build, picture]
+    if: always() && needs.build.result == 'success' && (needs.picture.result == 'success' || needs.picture.result == 'skipped')
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -134,10 +137,20 @@ jobs:
           name: film-${{ inputs.label }}
           path: film
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        if: inputs.reuse_picture_run == ''
         with:
           pattern: seg-${{ inputs.label }}-*
           path: segs
           merge-multiple: true
+      - name: Reuse picture segments from an earlier run (remix only)
+        if: inputs.reuse_picture_run != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download "${{ inputs.reuse_picture_run }}" -R "${{ github.repository }}" -p "seg-*" -D segraw
+          mkdir -p segs; find segraw -name 'seg_*.mp4' -exec cp {} segs/ \;
+          ls -la segs
       - name: Runtime (static ffmpeg, Pillow, RapidOCR)
         run: |
           set -euo pipefail
