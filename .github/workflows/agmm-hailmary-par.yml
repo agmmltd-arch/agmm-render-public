@@ -176,9 +176,13 @@ jobs:
           for f in $(ls segs/seg_*.mp4 | sort -V); do echo "file '$PWD/$f'" ; done > list.txt
           ffmpeg -nostdin -y -loglevel error -f concat -safe 0 -i list.txt -an -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p -r 30 picture.mp4
           cd film && python3 mix.py mix.json ../mix.wav && cd ..
-          J=$(ffmpeg -nostdin -i mix.wav -af loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json -f null - 2>&1 | sed -n '/^{/,/^}/p')
-          set -- $(echo "$J" | python3 -c "import sys,json;d=json.load(sys.stdin);print(d['input_i'],d['input_tp'],d['input_lra'],d['input_thresh'],d['target_offset'])")
-          ffmpeg -nostdin -y -loglevel error -i picture.mp4 -i mix.wav -map 0:v -map 1:a -c:v copy -af "loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=$1:measured_TP=$2:measured_LRA=$3:measured_thresh=$4:offset=$5:linear=true,aresample=48000" -c:a aac -b:a 256k -shortest -movflags +faststart FINAL.mp4
+          # master: a straight gain to -14 LUFS plus a peak limiter, twice. Two-pass loudnorm fell back to its dynamic mode
+          # and flattened every hit to voice level (26 Oct), which is the 'monotone' Sam heard.
+          LUFS() { ffmpeg -nostdin -i "$1" -af ebur128 -f null - 2>&1 | grep -E '^\s+I:' | tail -1 | awk '{print $2}'; }
+          I1=$(LUFS mix.wav); G1=$(python3 -c "print(-14-($I1))")
+          ffmpeg -nostdin -y -loglevel error -i mix.wav -af "volume=${G1}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled" -c:a pcm_f32le m1.wav
+          I2=$(LUFS m1.wav); G2=$(python3 -c "print(-14-($I2))"); echo "master: mix $I1 LUFS, gain $G1, after limit $I2, trim $G2"
+          ffmpeg -nostdin -y -loglevel error -i picture.mp4 -i m1.wav -map 0:v -map 1:a -c:v copy -af "volume=${G2}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled,aresample=48000" -c:a aac -b:a 256k -shortest -movflags +faststart FINAL.mp4
           python3 film/qa.py FINAL.mp4 film/assets/timeline.json qa | tee qa.txt
           cp film/BUILD.json film/assets/timeline.json film/film.html film/mix.json qa/ 2>/dev/null || true
           rm -rf qa/f10 qa/f2
