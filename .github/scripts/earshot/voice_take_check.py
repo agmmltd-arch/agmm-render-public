@@ -137,6 +137,8 @@ def check_take(path, api, th=TH, kind=None):
             rel = round(e.get("peak_dbfs", -99) - sp_db, 1)
             breaths.append({"t": e["t"], "z": z0, "peak_dbfs": e["peak_dbfs"], "rel_to_speech_db": rel, "length_ms": e.get("length_ms"), "prominence_db": e.get("prominence_db"),
                             "loud": rel >= br["min_rel_db"] and e.get("length_ms", 0) >= br["min_length_ms"]})
+    all_events = [{"t": e["t"], "kind": e.get("kind"), "label": e.get("label"), "z": (e.get("tags") or [{}])[0].get("z"), "prom": e.get("prominence_db"),
+                   "len": e.get("length_ms"), "in_speech": in_regions(e["t"], regs, ns["interior_margin_ms"] / 1000)} for e in tl["events"]][:80]
     fails = []
     lufs, tp = meas.get("lufs"), meas.get("true_peak_dbtp")
     win = th[kind]
@@ -158,7 +160,7 @@ def check_take(path, api, th=TH, kind=None):
     return {"take": os.path.basename(path), "kind": kind, "speech_p95_dbfs": round(sp_db, 1), "duration_s": round(dur, 2), "verdict": "FAIL" if fails else "PASS", "fails": fails,
             "lufs": lufs, "true_peak_dbtp": tp, "clipped_samples": meas.get("clipped_samples"), "noise_floor_dbfs": meas.get("noise_floor_dbfs"),
             "speech_regions": len(regs), "speech_thr_dbfs": round(thr, 1), "click_max_ratio": round(best_ratio, 1), "clicks": clicks, "strays": strays,
-            "nonspeech_events": nonspeech, "breaths": breaths, "n_events": len(tl["events"]), "timeline_summary": tl.get("summary")}
+            "nonspeech_events": nonspeech, "breaths": breaths, "events": all_events, "n_events": len(tl["events"]), "timeline_summary": tl.get("summary")}
 
 
 def inject(src, kind, dst, all_takes=None):
@@ -187,7 +189,7 @@ def inject(src, kind, dst, all_takes=None):
             snd = soxr.resample(snd, 48000, sr)
         a, b = max(regs, key=lambda r: r[1] - r[0])
         sp95 = float(np.percentile(frames_db(m.astype(np.float32), sr, 10)[0], 95))
-        snd = snd * 10 ** ((sp95 - 6.0 - 20 * np.log10(max(1e-9, np.abs(snd).max()))) / 20)     # its peak 6 dB under the take's speech level
+        snd = snd * 10 ** ((sp95 + 3.0 - 20 * np.log10(max(1e-9, np.abs(snd).max()))) / 20)     # its peak 3 dB over the take's speech level (p95 of 10 ms frames)
         t = int(((a + b) / 2 + 0.3) * sr)
         if y.ndim == 2:
             y[t: t + len(snd), :] += snd[:, None]
