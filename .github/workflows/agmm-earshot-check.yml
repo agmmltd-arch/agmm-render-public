@@ -5,6 +5,7 @@ run-name: AGMM earshot ${{ inputs.kind }} ${{ inputs.label }}
 #   kind=voice  sealed paragraph takes from the PRIVATE repo (deploy key): loudness, true peak, clicks, strays, non-speech events, breaths
 #   kind=mix    one short's final mix from a gate bundle release: critique scorecard + timeline sync, FAIL on the three named majors
 #   kind=sfxproof  do an engine build's cues land on their beats (earshot timeline sync, measured onset vs file start)
+#   kind=sfxaudit  rebuild a short's audio with the SFX library (mix2) and run gate check 15 (audit_sound) + 13 (fxlevel)
 #   kind=sfx    render earshot's code-made 'launch' kit once and publish the measured registry (onset / peak / end per take)
 # Thresholds: .github/scripts/earshot/thresholds.json. mode=warn records; mode=required turns a FAIL into a red run.
 # No paid call: earshot's optional Gemini `llm` command is never run. Nothing is committed back; the artifact holds numbers (and, for
@@ -75,7 +76,7 @@ jobs:
       - name: Validate labels
         run: |
           set -euo pipefail
-          [[ "$KIND" =~ ^(voice|mix|sfx|sfxproof|sfxbank)$ ]]
+          [[ "$KIND" =~ ^(voice|mix|sfx|sfxproof|sfxbank|sfxaudit)$ ]]
           [[ "$LABEL" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
           [[ "$MODE" =~ ^(warn|required)$ ]]
           [[ "$INJECT" =~ ^(none|click|click_soft|sfx_knock_pause|sfx_in_speech|clip|quiet|asm_ok|asm_loud|asm_quiet|all)$ ]]
@@ -89,7 +90,7 @@ jobs:
             .github/scripts/earshot
           sparse-checkout-cone-mode: false
       - name: Fetch takes (read-only deploy key)
-        if: inputs.kind == 'voice' || inputs.kind == 'sfxproof'
+        if: inputs.kind == 'voice' || inputs.kind == 'sfxproof' || inputs.kind == 'sfxaudit'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: agmmltd-arch/agmm-video-render
@@ -115,8 +116,23 @@ jobs:
           path: ~/.cache/pip
           key: earshot-pip-${{ runner.os }}-${{ hashFiles('.github/scripts/earshot/install.sh') }}
       - name: Install earshot (pinned commit, CPU torch)
+        if: inputs.kind != 'sfxaudit'
         timeout-minutes: 15
         run: bash .github/scripts/earshot/install.sh
+      - name: Install ffmpeg + numpy (audio remix audit needs no models)
+        if: inputs.kind == 'sfxaudit'
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m pip install --quiet numpy pillow
+      - name: Audio remix with the SFX library, then gate check 15 and 13
+        if: inputs.kind == 'sfxaudit'
+        run: |
+          set +e
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/result"
+          python3 .github/scripts/earshot/audio_remix_audit.py "private/$VPATH" "${{ inputs.short_id }}" "$RUNNER_TEMP/result" 2>&1 | tee "$RUNNER_TEMP/result/stdout.log"
+          exit ${PIPESTATUS[0]}
       - name: Voice takes, listening check
         if: inputs.kind == 'voice'
         run: |
