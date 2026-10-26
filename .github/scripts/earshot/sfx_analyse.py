@@ -8,7 +8,7 @@ REJECT (reason recorded) a music bed, a voice, clipping, long silence, a noise b
 undecodable or undownloadable. Accepted sounds are cut to the sound (4 ms before the attack, a 15 ms fade-out), peak-normalised to -1 dBFS, written as wav.
 Rules and numbers: sfxlib/rules.json. Output: <out>/wav/<id>.wav, <out>/accepted.json, <out>/rejected.json, <out>/summary.json
 """
-import argparse, hashlib, json, os, subprocess, sys, tempfile, time, urllib.request
+import argparse, hashlib, json, os, signal, subprocess, sys, tempfile, time, urllib.request
 from pathlib import Path
 import numpy as np
 import soundfile as sf
@@ -176,10 +176,14 @@ def main():
     acc, rej = [], []
     for i, c in enumerate(cands):
         with tempfile.TemporaryDirectory() as work:
+            signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(TimeoutError("candidate took over 180 s")))
+            signal.alarm(180)       # one stuck download / decode never holds the role job
             try:
                 res, why, detail = judge(c, a.role, spec, api, work, role_descs)
-            except Exception as e:      # noqa: BLE001
+            except BaseException as e:      # noqa: BLE001
                 res, why, detail = None, "error", "%s: %s" % (type(e).__name__, str(e)[:100])
+            finally:
+                signal.alarm(0)
             if res:
                 rec, wav = res
                 (out / "wav" / wav.name).write_bytes(wav.read_bytes())
