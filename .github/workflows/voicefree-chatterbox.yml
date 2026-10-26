@@ -37,6 +37,7 @@ jobs:
           sparse-checkout: |
             .github/scripts/voicefree
             .github/scripts/voice-native/shorts/voice/tooling/asr_compare.py
+            .github/scripts/voice-native/films/voice/tooling
       - name: Fetch request and Sam's reference (read-only deploy key)
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:

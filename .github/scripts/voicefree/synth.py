@@ -101,6 +101,24 @@ def normalise_lufs(a, sr, target=-18.0):
     return y.astype("float32")
 
 
+NATIVE_FILMS = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "voice-native", "films", "voice", "tooling"))
+
+
+def native_ratio(text, heard):
+    """The hosted chain's own whole-file ASR rule (films/voice/tooling/post_checks_local.py): local small.en, no prompt, folded script-vs-heard word diff, ratio >= 0.97 or the
+    short fails (S255, S268 20-26 Oct: names such as Dunelm, Royal Mail). Applied here per paragraph so a take that would fail that rule is re-rolled before it is sealed.
+    Returns (ratio, first diffs)."""
+    import difflib
+    if NATIVE_FILMS not in sys.path:
+        sys.path.insert(0, NATIVE_FILMS)
+    from post_checks_local import fold, _canon
+    a = [str(t) for t in _canon(fold(text))]
+    b = [str(t) for t in _canon(fold(heard))]
+    sm = difflib.SequenceMatcher(a=a, b=b, autojunk=False)
+    diffs = [{"script": " ".join(a[i1:i2]), "heard": " ".join(b[j1:j2])} for op, i1, i2, j1, j2 in sm.get_opcodes() if op != "equal"]
+    return round(sm.ratio(), 4), diffs[:8]
+
+
 def word_levels(x, sr, words):
     rows = []
     for w in words:
@@ -258,7 +276,14 @@ def main():
             info = C.wav_info(wav_path)
             tempo = None
             short_line = len(text.split()) <= 12
-            target = (P.get("target_wpm_short") if short_line else None) or P.get("target_wpm")
+            exact = P.get("exact_wpm")           # film voice-over (F20): land the take on one pace, whatever its length
+            if exact:
+                raw0 = len(text.split()) / (info["duration_s"] / 60.0)
+                if abs(raw0 - float(exact)) / float(exact) > 0.012:
+                    tempo = min(max(float(exact) / raw0, float(P.get("exact_min_tempo", 0.8))), float(P.get("exact_max_tempo", 1.25)))
+                    stretch(wav_path, tempo)
+                    info = C.wav_info(wav_path)
+            target = None if exact else ((P.get("target_wpm_short") if short_line else None) or P.get("target_wpm"))
             min_tempo = float(P.get("min_tempo_short", 0.78)) if short_line else float(P.get("min_tempo", 0.85))
             if target:
                 raw = len(text.split()) / (info["duration_s"] / 60.0)
@@ -285,6 +310,7 @@ def main():
             rides = gain_ride(wav_path, resp["segments"])
             if rides:
                 info = C.wav_info(wav_path)
+            nat_ratio, nat_diffs = native_ratio(text, resp_s["text"])
             sp_bad = spot_fail(wav_path, resp["segments"])
             ok = bool(ok_m or ok_s or sm) and not sp_bad          # a silent word window fails the take exactly as the native chain would
             if not ok_m and ok_s:
@@ -302,7 +328,7 @@ def main():
                        "wav_sha256": C.sha256_file(wav_path), "wav_bytes": os.path.getsize(wav_path), "wav_info": {k: info[k] for k in ("channels", "rate", "width", "frames", "duration_s")},
                        "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(), "attempt": takei, "wpm": wpm_native, "span_wpm": swpm,
                        "asr_status": "checked", "asr_engine": resp["model"], "asr_text": resp["text"], "asr_match": bool(ok), "asr_compare_detail": detail,
-                       "asr_variants": {"small.en": resp_s["text"]}, "asr_match_by": {"medium.en": bool(ok_m), "small.en": bool(ok_s), "soft": sm or None}, "tempo_applied": tempo, "timing": align_info, "spot_fail": sp_bad, "gain_ride": rides,
+                       "asr_variants": {"small.en": resp_s["text"]}, "asr_match_by": {"medium.en": bool(ok_m), "small.en": bool(ok_s), "soft": sm or None}, "tempo_applied": tempo, "timing": align_info, "spot_fail": sp_bad, "gain_ride": rides, "native_ratio": nat_ratio, "native_diffs": nat_diffs,
                        "tts_http_status": None, "params": P, "seed": seed, "chunks": len(cs), "tts_variant": tts_idx, "tts_input_differs": variants[tts_idx] != text, "render_seconds": render_s,
                        "speaker_sim": sims, "speaker_sim_to_baseline": sim_base,
                        "run": {"id": os.environ.get("GITHUB_RUN_ID"), "attempt": os.environ.get("GITHUB_RUN_ATTEMPT"), "sha": os.environ.get("GITHUB_SHA"),
@@ -310,7 +336,7 @@ def main():
             json.dump(resp, open(os.path.join(a.out, stem + ".words.json"), "w"), indent=2, ensure_ascii=False)
             json.dump(receipt, open(os.path.join(a.out, stem + ".receipt.json"), "w"), indent=2, ensure_ascii=False)
             row = {"key": key, "take": takei, "dur_s": info["duration_s"], "wpm_native": wpm_native, "span_wpm": swpm, "asr_match": bool(ok), "render_s": render_s,
-                   "rtf": round(render_s / info["duration_s"], 2), "sim_ref": sims, "sim_baseline": sim_base, "chunks": len(cs)}
+                   "rtf": round(render_s / info["duration_s"], 2), "sim_ref": sims, "sim_baseline": sim_base, "chunks": len(cs), "native_ratio": nat_ratio}
             results.append(row)
             print(json.dumps(row), flush=True)
     json.dump({"label": req.get("label"), "id": req.get("id"), "engine": eng.name, "engine_version": eng.version, "params": P, "reference_sha256": ref_sha,
