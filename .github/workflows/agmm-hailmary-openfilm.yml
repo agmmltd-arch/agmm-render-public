@@ -59,7 +59,29 @@ jobs:
           curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/node-v22.12.0-linux-x64/bin" >> "$GITHUB_PATH"
           python3 -m pip install --quiet pillow
+      - name: Dry voice pack (silent takes on scripted timings, voice_run_id=dry)
+        if: inputs.voice_run_id == 'dry'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/voice"
+          python3 - "$RUNNER_TEMP/voice" "private/${{ inputs.project_path }}/script.json" <<'PY'
+          import json, sys, wave, struct
+          out, sc = sys.argv[1], json.load(open(sys.argv[2]))
+          takes = []
+          for p in sc["paragraphs"]:
+              t = 0.05; ws = []
+              for w in p["text"].split():
+                  d = len(w) * 0.055 + 0.12; ws.append({"word": " " + w, "start": round(t, 3), "end": round(t + d, 3)}); t += d + 0.03
+              dur = t + 0.1
+              json.dump({"segments": [{"words": ws}]}, open(f"{out}/{p['key']}.t1.words.json", "w"))
+              json.dump({"spot_fail": []}, open(f"{out}/{p['key']}.t1.receipt.json", "w"))
+              with wave.open(f"{out}/{p['key']}.t1.wav", "wb") as wf:
+                  wf.setnchannels(1); wf.setsampwidth(2); wf.setframerate(24000); wf.writeframes(b"\x00\x00" * int(dur * 24000))
+              takes.append({"key": p["key"], "take": 1, "dur_s": round(dur, 3), "wpm_native": 168, "asr_match": True, "sim_ref": {"r": 0.9}})
+          json.dump({"takes": takes}, open(f"{out}/results.json", "w"))
+          PY
       - name: Voice pack (decrypt)
+        if: inputs.voice_run_id != 'dry'
         env:
           GH_TOKEN: ${{ github.token }}
           VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
@@ -76,19 +98,33 @@ jobs:
           cd film
           python3 build_film.py --voice "$RUNNER_TEMP/voice" --pick "${{ inputs.pick }}"
           node --version; npx -y openfilm@0.2.5 render --help | head -40 || true
+      - name: Dry stills (pages only, no render)
+        if: inputs.voice_run_id == 'dry'
+        run: |
+          cd film
+          mkdir -p ../qa
+          for t in $(python3 -c "import json;a=json.load(open('assets/timeline.json'));t=a['a'];print(' '.join(str(round(x,2)) for x in [0.3,t['freeze']+0.7,t['blind']+0.5,t['light']+1.2,t['walk']+1.5,t['concrete']+0.2,t['screen']+1.2,t['clock']+0.2,t['resume']+0.6,a['ui_at']-0.3,a['ui_at']+0.6,t['email']+0.8,t['fortieth']+0.3,t['finds']+1.2,t['nights']+0.6,t['audit']+0.6]))"); do
+            timeout 600 npx -y openfilm@0.2.5 look $t 2>&1 | tail -6
+          done
+          find . -path ./node_modules -prune -o \( -name '*.png' -o -name '*.jpg' \) -newer film.html -print | head -40
+          find . -path ./node_modules -prune -o \( -name '*.png' -o -name '*.jpg' \) -newer film.html -print | while read f; do cp "$f" ../qa/; done
+          cp assets/timeline.json BUILD.json ../qa/
       - name: OpenFilm look (determinism, errors, missing files, cut-off text)
+        if: inputs.voice_run_id != 'dry'
         continue-on-error: true
         run: |
           cd film
           timeout 2400 npx -y openfilm@0.2.5 look 2>&1 | tee ../look.txt | tail -60
           ls -la .film 2>/dev/null | head || true
       - name: Render (headless Chromium)
+        if: inputs.voice_run_id != 'dry'
         run: |
           set -euo pipefail
           cd film
           timeout 7200 npx -y openfilm@0.2.5 render 2>&1 | tail -40
           ls -la *.mp4 || find . -maxdepth 2 -name '*.mp4'
       - name: Master the mix (-14 LUFS, -1.5 dBTP) and run the QA gate
+        if: inputs.voice_run_id != 'dry'
         run: |
           set -euo pipefail
           cd film
