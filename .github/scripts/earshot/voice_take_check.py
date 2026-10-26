@@ -166,6 +166,12 @@ def check_take(path, api, th=TH, kind=None):
             rel = round(e.get("peak_dbfs", -99) - sp_db, 1)
             breaths.append({"t": e["t"], "z": z0, "peak_dbfs": e["peak_dbfs"], "rel_to_speech_db": rel, "length_ms": e.get("length_ms"), "prominence_db": e.get("prominence_db"),
                             "loud": rel >= br["min_rel_db"] and e.get("length_ms", 0) >= br["min_length_ms"]})
+    sg = th["stray"]
+    for e in tl["events"]:      # a prominent short transient in a pause (>= pause_margin_ms clear of every speech region): a knock, a tick, a stray syllable
+        if (not any(a - sg["pause_margin_ms"] / 1000 <= e["t"] <= b + sg["pause_margin_ms"] / 1000 for a, b in regs)
+                and sg["edge_margin_ms"] / 1000 <= e["t"] <= dur - sg["edge_margin_ms"] / 1000
+                and e.get("prominence_db", 0) >= sg["pause_min_prominence_db"] and e.get("length_ms", 0) <= sg["pause_max_length_ms"]):
+            strays.append({"t": e["t"], "ms": e.get("length_ms"), "label": e.get("label"), "prominence_db": e["prominence_db"]})
     probe = ast_probe(m, sr, tl["events"], regs, th)
     for q in probe:
         if q["ns_p"] >= ns["ast_min_p"] and q["ns_p"] >= q["speech_p"] * ns["ast_vs_speech"]:

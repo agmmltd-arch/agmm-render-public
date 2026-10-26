@@ -20,7 +20,10 @@
       "max_ms": 350,
       "isolation_ms": 150,
       "edge_margin_ms": 150,
-      "max_strays": 0
+      "max_strays": 0,
+      "pause_margin_ms": 120,
+      "pause_min_prominence_db": 25.0,
+      "pause_max_length_ms": 400
     },
     "nonspeech_event": {
       "min_prominence_db": 12.0,
