@@ -15,7 +15,8 @@ on:
       voice2_run_id: { description: optional second voicefree run whose takes replace the same paragraphs, required: false, default: '' }
       voice2_label: { description: label of that run, required: false, default: '' }
       segments: { description: number of parallel picture segments (max 12), required: false, default: '12' }
-      reuse_picture_run: { description: 'remix only: run id whose picture segments to reuse (timeline must be identical)', required: false, default: '' }
+      reuse_picture_run: { description: 'run id whose picture segments to reuse (timeline must be identical)', required: false, default: '' }
+      rerender_from: { description: 'with reuse_picture_run: re-render segments ending after this second, reuse the rest (empty = reuse all)', required: false, default: '' }
 permissions:
   contents: read
   actions: read
@@ -78,7 +79,6 @@ jobs:
           include-hidden-files: true
   picture:
     needs: build
-    if: inputs.reuse_picture_run == ''
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     strategy:
@@ -90,14 +90,8 @@ jobs:
         with:
           name: film-${{ inputs.label }}
           path: film
-      - name: Runtime (static ffmpeg, Node 22)
-        run: |
-          set -euo pipefail
-          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
-          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
-          curl -fsSL --retry 4 https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$RUNNER_TEMP"
-          echo "$RUNNER_TEMP/node-v22.12.0-linux-x64/bin" >> "$GITHUB_PATH"
-      - name: Render this segment (frame-exact range)
+      - id: rng
+        name: This segment's frame-exact range, and whether to reuse it
         run: |
           set -euo pipefail
           cd film
@@ -115,7 +109,36 @@ jobs:
           cuts=cuts[:N]+[frames]; cuts+=[frames]*(13-len(cuts))
           a,b=(cuts[i],cuts[i+1]) if i<N else (frames,frames)
           print('%.4f %.4f'%(a/fr,b/fr))")
-          echo "segment ${{ matrix.seg }}: $A - $B"
+          echo "a=$A" >> "$GITHUB_OUTPUT"; echo "b=$B" >> "$GITHUB_OUTPUT"
+          R=no
+          if [ -n "${{ inputs.reuse_picture_run }}" ]; then
+            F="${{ inputs.rerender_from }}"; [ -z "$F" ] && F=99999
+            python3 -c "import sys; sys.exit(0 if float('$B') <= float('$F') else 1)" && R=yes
+          fi
+          echo "reuse=$R" >> "$GITHUB_OUTPUT"; echo "segment ${{ matrix.seg }}: $A - $B reuse=$R"
+      - name: Reuse this segment from the earlier run
+        if: steps.rng.outputs.reuse == 'yes'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download "${{ inputs.reuse_picture_run }}" -R "${{ github.repository }}" -p "seg-*-${{ matrix.seg }}" -D segraw || true
+          find segraw -name "seg_${{ matrix.seg }}.mp4" -exec cp {} . \; 2>/dev/null || true
+          ls -la seg_*.mp4 || true
+      - name: Runtime (static ffmpeg, Node 22)
+        if: steps.rng.outputs.reuse != 'yes'
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+          curl -fsSL --retry 4 https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/node-v22.12.0-linux-x64/bin" >> "$GITHUB_PATH"
+      - name: Render this segment (frame-exact range)
+        if: steps.rng.outputs.reuse != 'yes'
+        run: |
+          set -euo pipefail
+          cd film
+          A=${{ steps.rng.outputs.a }}; B=${{ steps.rng.outputs.b }}
           if python3 -c "import sys; sys.exit(0 if float('$A') < float('$B') else 1)"; then
             timeout 3000 npx -y openfilm@0.2.5 render "$A-$B" --out "../seg_${{ matrix.seg }}.mp4" 2>&1 | tail -15
           fi
@@ -128,7 +151,6 @@ jobs:
           if-no-files-found: ignore
   assemble:
     needs: [build, picture]
-    if: always() && needs.build.result == 'success' && (needs.picture.result == 'success' || needs.picture.result == 'skipped')
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -137,20 +159,10 @@ jobs:
           name: film-${{ inputs.label }}
           path: film
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        if: inputs.reuse_picture_run == ''
         with:
           pattern: seg-${{ inputs.label }}-*
           path: segs
           merge-multiple: true
-      - name: Reuse picture segments from an earlier run (remix only)
-        if: inputs.reuse_picture_run != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          gh run download "${{ inputs.reuse_picture_run }}" -R "${{ github.repository }}" -p "seg-*" -D segraw
-          mkdir -p segs; find segraw -name 'seg_*.mp4' -exec cp {} segs/ \;
-          ls -la segs
       - name: Runtime (static ffmpeg, Pillow, RapidOCR)
         run: |
           set -euo pipefail
