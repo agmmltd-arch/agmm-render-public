@@ -41,11 +41,21 @@ def main():
             ww.append({'word': w.word.strip(), 'start': w.start, 'end': w.end})
     heard = ' '.join(seg_texts)   # segment text, not re-joined words: '$440,000' must not split into '440' '000'
     (piece / f'{name}.whole_asr.json').write_text(json.dumps({'text': heard, 'words': ww}, indent=1))
-    a = [str(t) for t in _canon(fold(script))]; b = [str(t) for t in _canon(fold(heard))]
+    a0 = [str(t) for t in _canon(fold(script))]; b0 = [str(t) for t in _canon(fold(heard))]
+    ratio_unfolded = difflib.SequenceMatcher(a=a0, b=b0, autojunk=False).ratio()
+    a, b, folds = a0, b0, []
+    try:
+        # runtime delta 5 (26 Oct 2026): deterministic spelling folds on BOTH sides before the ratio (asr_fold.py: fixed UK/US list, names.txt possessives and declared aliases, pound amounts)
+        from asr_fold import fold_pair
+        names_txt = (piece / 'names.txt').read_text(encoding='utf-8') if (piece / 'names.txt').exists() else ''
+        ta, tb, folds = fold_pair(fold(script), fold(heard), names_txt, _canon)
+        a = [str(t) for t in ta]; b = [str(t) for t in tb]
+    except ImportError:
+        pass
     sm = difflib.SequenceMatcher(a=a, b=b, autojunk=False)
     diffs = [{'op': op, 'script': ' '.join(a[i1:i2]), 'heard': ' '.join(b[j1:j2]), 'script_pos': i1} for op, i1, i2, j1, j2 in sm.get_opcodes() if op != 'equal']
     ratio = sm.ratio()
-    out['checks']['whole_file_asr'] = {'ratio': round(ratio, 4), 'n_diffs': len(diffs), 'diffs': diffs[:60], 'pass': ratio >= 0.97}
+    out['checks']['whole_file_asr'] = {'ratio': round(ratio, 4), 'ratio_unfolded': round(ratio_unfolded, 4), 'folds_applied': folds[:60], 'n_diffs': len(diffs), 'diffs': diffs[:60], 'pass': ratio >= 0.97}
     if ratio < 0.97: hard_fail.append('whole_file_asr')
     # timing: match words by aligned tokens between assembled words.json and whole-file whisper words
     ta = [norm_tokens(w['word']) for w in words]; tb = [norm_tokens(w['word']) for w in ww]
