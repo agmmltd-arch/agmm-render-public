@@ -3,8 +3,10 @@
 # Optional Gemini `llm` command is never used. Models (CLAP + AST, ~1.1 GB) land in $EARSHOT_HOME and are cached by the workflow.
 set -euo pipefail
 EARSHOT_SHA="591fa3e028032e6dce56620a20e932e35667e8d8"
-sudo apt-get update -qq
-sudo apt-get install -y --no-install-recommends ffmpeg libsndfile1
+if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then       # the hosted apt mirror was slow on 26 Oct (15 min timeouts): only install what is missing
+  sudo apt-get update -qq -o Acquire::Retries=3
+  sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 ffmpeg
+fi
 python3 -m pip install --quiet --upgrade pip
 python3 -m pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
 src="$RUNNER_TEMP/earshot-src"
