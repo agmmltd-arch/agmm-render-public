@@ -30,7 +30,7 @@ on:
         required: false
         default: ''
       inject:
-        description: kind=voice, none | click | clip | quiet | loud | all (adds injected copies of the first take to the set)
+        description: kind=voice, none | click | click_soft | clip | quiet | asm_ok | asm_loud | asm_quiet | all (adds injected copies of the first take to the set)
         required: false
         default: none
       selftest:
@@ -77,7 +77,7 @@ jobs:
           [[ "$KIND" =~ ^(voice|mix|sfx)$ ]]
           [[ "$LABEL" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
           [[ "$MODE" =~ ^(warn|required)$ ]]
-          [[ "$INJECT" =~ ^(none|click|clip|quiet|loud|all)$ ]]
+          [[ "$INJECT" =~ ^(none|click|click_soft|clip|quiet|asm_ok|asm_loud|asm_quiet|all)$ ]]
           [[ -z "$VPATH" || "$VPATH" =~ ^[A-Za-z0-9._/-]{1,200}$ ]]
           [[ "$VPATH" != *..* ]]
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683

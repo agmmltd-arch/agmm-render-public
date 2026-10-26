@@ -12,7 +12,7 @@ Thresholds: thresholds.json (voice section). Mode: warn (record, exit 0) | requi
 --selftest renders injected defects (click, clip, quiet, loud) from the first real take and asserts the check FAILS each for the
 right reason; it exits 1 if the check misses one. --inject X adds the injected take X to the set under test (so a run can go red).
 """
-import argparse, json, os, sys
+import argparse, json, os, re, sys
 from pathlib import Path
 import numpy as np
 import soundfile as sf
@@ -111,12 +111,14 @@ def load_words(wav):
         return None
 
 
-def check_take(path, api, th=TH):
+def check_take(path, api, th=TH, kind=None):
+    kind = kind or ("paragraph" if re.match(r"^P\d+\.wav$", os.path.basename(path)) else "assembled")
     x, sr = sf.read(path, always_2d=False, dtype="float32")
     m = to_mono(x)
     dur = len(m) / sr
     meas = api.measure(path, light=True)
     regs, thr = speech_regions(m, sr, th)
+    sp_db = float(np.percentile(frames_db(m, sr, th["speech_frame_ms"])[0], 95))
     clicks, best_ratio = find_clicks(m, sr, regs, th["click"])
     strays = find_strays(regs, dur, load_words(path), th["stray"])
     tl = api.timeline(path, detail="normal")
@@ -128,15 +130,17 @@ def check_take(path, api, th=TH):
             continue
         z0 = tags[0]["z"]
         if e.get("kind") != "VOICE":
-            if (in_regions(e["t"], regs) and e.get("prominence_db", 0) >= ns["min_prominence_db"] and z0 >= ns["min_z"]
+            if (in_regions(e["t"], regs, ns["interior_margin_ms"] / 1000) and e.get("prominence_db", 0) >= ns["min_prominence_db"] and z0 >= ns["min_z"]
                     and e.get("length_ms", 0) <= ns["max_length_ms"]):
                 nonspeech.append({"t": e["t"], "label": e.get("label"), "z": z0, "prominence_db": e["prominence_db"], "length_ms": e["length_ms"]})
-        elif tags[0]["tag"] == "a breath" and z0 >= br["min_z"] and e.get("peak_dbfs", -99) >= br["min_peak_dbfs"]:
-            breaths.append({"t": e["t"], "z": z0, "peak_dbfs": e["peak_dbfs"], "prominence_db": e["prominence_db"]})
+        elif tags[0]["tag"] == "a breath" and z0 >= br["min_z"]:
+            rel = round(e.get("peak_dbfs", -99) - sp_db, 1)
+            breaths.append({"t": e["t"], "z": z0, "peak_dbfs": e["peak_dbfs"], "rel_to_speech_db": rel, "loud": rel >= br["min_rel_db"]})
     fails = []
     lufs, tp = meas.get("lufs"), meas.get("true_peak_dbtp")
-    if lufs is None or not (th["lufs_min"] <= lufs <= th["lufs_max"]):
-        fails.append("V1 loudness %s LUFS outside [%s, %s]" % (lufs, th["lufs_min"], th["lufs_max"]))
+    win = th[kind]
+    if lufs is None or not (win["lufs_min"] <= lufs <= win["lufs_max"]):
+        fails.append("V1 loudness %s LUFS outside the %s window [%s, %s]" % (lufs, kind, win["lufs_min"], win["lufs_max"]))
     if tp is not None and tp > th["true_peak_max_dbtp"]:
         fails.append("V2 true peak %.1f dBTP above %.1f" % (tp, th["true_peak_max_dbtp"]))
     if meas.get("clipped_samples", 0) > th["clipped_samples_max"]:
@@ -147,40 +151,50 @@ def check_take(path, api, th=TH):
         fails.append("V4 stray sound in a pause at %s" % ", ".join("%.2fs (%d ms)" % (s["t"], s["ms"]) for s in strays[:4]))
     if len(nonspeech) > ns["max_events"]:
         fails.append("V5 non-speech event inside speech: %s" % ", ".join("%.2fs %s" % (e["t"], e["label"]) for e in nonspeech[:4]))
-    if len(breaths) > br["max_breaths"]:
-        fails.append("V6 breath over %.0f dBFS at %s" % (br["min_peak_dbfs"], ", ".join("%.2fs" % b["t"] for b in breaths[:4])))
-    return {"take": os.path.basename(path), "duration_s": round(dur, 2), "verdict": "FAIL" if fails else "PASS", "fails": fails,
+    loud_br = [b for b in breaths if b["loud"]]
+    if len(loud_br) > br["max_breaths"]:
+        fails.append("V6 loud breath (within %.0f dB of speech) at %s" % (-br["min_rel_db"], ", ".join("%.2fs (%+.0f dB)" % (b["t"], b["rel_to_speech_db"]) for b in loud_br[:4])))
+    return {"take": os.path.basename(path), "kind": kind, "speech_p95_dbfs": round(sp_db, 1), "duration_s": round(dur, 2), "verdict": "FAIL" if fails else "PASS", "fails": fails,
             "lufs": lufs, "true_peak_dbtp": tp, "clipped_samples": meas.get("clipped_samples"), "noise_floor_dbfs": meas.get("noise_floor_dbfs"),
             "speech_regions": len(regs), "speech_thr_dbfs": round(thr, 1), "click_max_ratio": round(best_ratio, 1), "clicks": clicks, "strays": strays,
             "nonspeech_events": nonspeech, "breaths": breaths, "n_events": len(tl["events"]), "timeline_summary": tl.get("summary")}
 
 
-def inject(src, kind, dst):
+def inject(src, kind, dst, all_takes=None):
     x, sr = sf.read(src, always_2d=False, dtype="float32")
     y = x.copy().astype(np.float64)
     m = to_mono(y)
     regs, _ = speech_regions(m.astype(np.float32), sr)
-    if kind == "click":
+    if kind in ("click", "click_soft"):
         a, b = max(regs, key=lambda r: r[1] - r[0])
         t = int(((a + b) / 2) * sr)
         n = int(0.0015 * sr)
         rng = np.random.default_rng(7)
-        burst = rng.standard_normal(n) * np.hanning(n) * 0.35
+        burst = rng.standard_normal(n) * np.hanning(n) * (0.35 if kind == "click" else 0.06)
         if y.ndim == 2:
             y[t: t + n, :] += burst[:, None]
         else:
             y[t: t + n] += burst
     elif kind == "clip":
-        y = np.clip(y * 6.0, -1.0, 1.0)
+        y = np.clip(y * (2.0 / max(1e-6, np.abs(y).max())), -1.0, 1.0)
     elif kind == "quiet":
         y = y * 10 ** (-14 / 20)
-    elif kind == "loud":
-        y = y * 10 ** (9 / 20)
-        y = np.tanh(y * 0.9) * 0.97 if np.abs(y).max() > 0.98 else y
+    elif kind.startswith("asm_"):
+        import pyloudnorm as pl
+        gap = np.zeros(int(0.4 * sr))
+        parts = []
+        for p in all_takes:
+            xx, ss = sf.read(str(p), always_2d=False, dtype="float64")
+            parts += [to_mono(xx), gap]
+        y = np.concatenate(parts)
+        target = {"asm_ok": -18.0, "asm_loud": -12.0, "asm_quiet": -24.0}[kind]
+        cur = pl.Meter(sr).integrated_loudness(y)
+        y = y * 10 ** ((target - cur) / 20)
+        y = y * min(1.0, 10 ** (-1.5 / 20) / max(1e-9, np.abs(y).max()))     # keep the peak under -1.5 dBFS: only the loudness is under test
     sf.write(dst, np.clip(y, -1, 1).astype(np.float32), sr, subtype="PCM_24")
 
 
-EXPECT = {"click": "V3", "clip": "V2", "quiet": "V1", "loud": "V1"}
+EXPECT = {"click": "V3", "click_soft": "V3", "clip": "V2", "quiet": "V1", "asm_ok": "PASS", "asm_loud": "V1", "asm_quiet": "V1"}
 
 
 def main():
@@ -188,7 +202,7 @@ def main():
     ap.add_argument("--dir", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--mode", choices=("warn", "required"), default="warn")
-    ap.add_argument("--inject", default="none", help="none | click | clip | quiet | loud | all : add injected copies of the first take to the set")
+    ap.add_argument("--inject", default="none", help="none | click | click_soft | clip | quiet | asm_ok | asm_loud | asm_quiet | all : add injected copies of the first take to the set")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
     out = Path(a.out)
@@ -201,11 +215,11 @@ def main():
         return 2
     inj_dir = out / "injected"
     inj_dir.mkdir(exist_ok=True)
-    kinds = list(EXPECT) if a.inject == "all" or a.selftest else ([] if a.inject == "none" else [a.inject])
+    kinds = [k for k in EXPECT if a.inject == "all" or a.selftest or a.inject == k] if a.inject != "none" or a.selftest else []
     injected = []
     for k in kinds:
         d = inj_dir / ("%s__inj_%s.wav" % (takes[0].stem, k))
-        inject(str(takes[0]), k, str(d))
+        inject(str(takes[0]), k, str(d), all_takes=takes)
         injected.append((k, d))
     rows = []
     for t in takes if not a.selftest else takes[:1]:
@@ -215,8 +229,15 @@ def main():
         r = check_take(str(d), api)
         r["injected"] = k
         r["expected"] = EXPECT[k]
-        r["caught"] = any(f.startswith(EXPECT[k]) for f in r["fails"])
+        r["caught"] = (r["verdict"] == "PASS") if EXPECT[k] == "PASS" else any(f.startswith(EXPECT[k]) for f in r["fails"])
         inj_rows.append(r)
+    pl_rows = [r for r in rows if r["kind"] == "paragraph" and r["lufs"] is not None]
+    if len(pl_rows) > 1:
+        med = float(np.median([r["lufs"] for r in pl_rows]))
+        for r in pl_rows:
+            if abs(r["lufs"] - med) > TH["paragraph"]["spread_max_lu"] / 2:
+                r["fails"].append("V1b loudness %.1f LUFS is %.1f LU from the paragraph median %.1f (allowed +-%.1f)" % (r["lufs"], r["lufs"] - med, med, TH["paragraph"]["spread_max_lu"] / 2))
+                r["verdict"] = "FAIL"
     selftest_ok = all(r["caught"] for r in inj_rows) if a.selftest else None
     # only injected takes asked for with --inject count against the verdict; --selftest ones are asserted instead
     counted = rows + ([] if a.selftest else inj_rows)
