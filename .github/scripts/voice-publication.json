@@ -14,7 +14,7 @@
     ".github/scripts/voice-native/films/tools/render_actions_film.py": "46a124649c499014cc485dfdaab3b8dce3e5566da5a9e86c6c2a79fd60923392",
     ".github/scripts/voice-native/films/tools/render_codespace_film.py": "8c5fa848a5845080733a6f9e76c67b54cf799a9941d31f553af0ee3b939a3398",
     ".github/scripts/voice-native/films/voice/tooling/asr_compare.py": "907f0d240bdd9ce3c5d6f4dd8e1caaefbfa4f7893f83dcc3e801a27dc21abc4a",
-    ".github/scripts/voice-native/films/voice/tooling/asr_fold.py": "2bb96831f3482210c0e288dec63956361bc8b3c025763192da60c3c49f729576",
+    ".github/scripts/voice-native/films/voice/tooling/asr_fold.py": "697512775569af020392b78de834f070488169f12994250f4ddaae518d4d7809",
     ".github/scripts/voice-native/films/voice/tooling/check_web_takes.py": "690f9e7068dee72d03dd6b1ff9ede7ad87c71eb4288969f37f2f40521a026618",
     ".github/scripts/voice-native/films/voice/tooling/dmetaphone.py": "7d93a3b863783a5799cf136631cdb3ecdf88fe921b2d18d2ef405eae21d9ca0a",
     ".github/scripts/voice-native/films/voice/tooling/ingest_web_takes.py": "8ceb184248509581d3199098c376edfc07d6a92d54b31e116de61270c70ab72c",

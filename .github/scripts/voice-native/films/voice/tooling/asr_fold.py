@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""asr_fold.py - deterministic transcript-spelling normaliser for the whole-file ASR check (runtime delta 5 qualified 26 Oct 2026; delta 6 PROPOSED same day: phonetic auto-alias replaces aliases.txt).
+"""asr_fold.py - deterministic transcript-spelling normaliser for the whole-file ASR check (runtime delta 5 and 6 qualified 26 Oct 2026; delta 7 PROPOSED: ordinals and spoken years; cardinals, money and percent locked by fixtures).
 
 WHAT IT IS FOR. The whole-file check (post_checks_local.py: local small.en, folded script-vs-heard word diff, ratio >= 0.97) fails a take when the AUDIO IS RIGHT and only the
 transcript's SPELLING differs from the script: a Whisper transcript writes "maximize" for a British "maximise", "Morrison's" for "Morrisons", "£4.75" for "four pounds seventy-five".
@@ -14,6 +14,12 @@ word) must still be a diff, so every fold below is explicit, fixed, and applied 
                            not in names.txt (total/tonal) is never folded. No file, human or agent declares an alias (aliases.txt is no longer read). Each fold is listed in `applied`
                            as "auto_alias: <script> <- <heard> | phonetic match <code>".
   4 currency and numbers   "£4.75" == "four pounds seventy-five" == "4.75";  "£150,000" == "150,000 pounds" == "a hundred and fifty thousand pounds" (pound amounts only, pence 1-99).
+
+  5 numbers                cardinals ("fifty nine" == 59, "twenty-four" == "24", "1,000" == "one thousand") are collapsed to one value by asr_compare._canon (unchanged). Added here, on BOTH sides:
+                           ordinals to one value at any size ("sixteenth" == "16th", "forty second" == "42nd", "one hundred and first" == "101st", "hundredth" == "100th"; the digit suffix must be the
+                           right one for the number); spoken years ("twenty twenty-six" == 2026, "nineteen eighty four" == 1984, "nineteen oh five" == 1905; first half 18/19/20 and a
+                           two-digit second half only); percent ("forty per cent" == "40%" == "40 percent": asr_compare._canon strips %, percent and per cent on both sides, so the value is what is compared; NOT tightened here because the idiom "from 31 to 54 percent" is written "31% to 54%" by Whisper and a strict percent token made known-good S124 move).
+                           A wrong number is always a diff (59 vs 69, 16th vs 60th, 2026 vs 2025). Pure functions of the two texts; no model, no network.
 
 fold_pair(script_text, heard_text, names_text) -> (script_tokens, heard_tokens, applied) where tokens are asr_compare._canon tokens after the folds and `applied` lists every fold
 that fired as a string ("uk_us: maximize->maximise"), so the check output shows exactly what was normalised.
@@ -176,6 +182,98 @@ def money_fold(text):
 
 
 # ------------------------------------------------------------------------------------------------------------------------------ the fold
+# ------------------------------------------------------------------------------------------------------------------------------ 5 numbers (delta 7)
+_UNIT_ORD = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10, "eleventh": 11, "twelfth": 12,
+             "thirteenth": 13, "fourteenth": 14, "fifteenth": 15, "sixteenth": 16, "seventeenth": 17, "eighteenth": 18, "nineteenth": 19}
+_TENS_ORD = {"twentieth": 20, "thirtieth": 30, "fortieth": 40, "fiftieth": 50, "sixtieth": 60, "seventieth": 70, "eightieth": 80, "ninetieth": 90}
+_SCALE_ORD = {"hundredth": 100, "thousandth": 1000, "millionth": 1000000, "billionth": 1000000000}
+_SUFFIX = ("st", "nd", "rd", "th")
+
+
+def _suffix_for(n):
+    if 10 <= n % 100 <= 20:
+        return "th"
+    return {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+
+
+def ord_fold(tokens, side, applied):
+    """Ordinals to one ('ORD', n) token, on tokens already collapsed by _canon ('NUM', v). Digit form: NUM n followed by st/nd/rd/th (the suffix must be the right one for n).
+    Word form: first..nineteenth, twentieth..ninetieth, hundredth/thousandth/..., combined with a directly preceding number word group (forty second = NUM 40 + second -> 42,
+    one hundred and first = NUM 100 [and] first -> 101, two hundredth = NUM 2 + hundredth -> 200). Anything that does not combine stays as it is."""
+    out, i, n, seen = [], 0, len(tokens), {}
+
+    def note(src, dst):
+        seen[(src, dst)] = seen.get((src, dst), 0) + 1
+    while i < n:
+        t = tokens[i]
+        if isinstance(t, tuple) and t[0] == "NUM" and float(t[1]).is_integer() and i + 1 < n and tokens[i + 1] in _SUFFIX:
+            v = int(t[1])
+            if tokens[i + 1] == _suffix_for(v):
+                out.append(("ORD", v))
+                note("%d %s" % (v, tokens[i + 1]), "%d%s" % (v, tokens[i + 1]))
+                i += 2
+                continue
+        if isinstance(t, str) and (t in _UNIT_ORD or t in _TENS_ORD or t in _SCALE_ORD):
+            prev = out[-1] if out else None
+            joined_and = False
+            if prev == "and" and len(out) >= 2:
+                prev, joined_and = out[-2], True
+            pv = int(prev[1]) if isinstance(prev, tuple) and prev[0] == "NUM" and float(prev[1]).is_integer() else None
+            if t in _SCALE_ORD:
+                scale = _SCALE_ORD[t]
+                if pv is not None and not joined_and and 1 <= pv < 1000:
+                    out.pop()
+                    val = pv * scale
+                else:
+                    val = scale
+            else:
+                v = _UNIT_ORD.get(t) or _TENS_ORD[t]
+                val = v
+                if pv is not None and pv >= 20:
+                    if v < 10 and pv % 10 == 0 and (pv % 100 != 0 or pv >= 100) and (not joined_and or pv % 100 == 0):
+                        val = pv + v
+                    elif v >= 10 and pv >= 100 and pv % 100 == 0:
+                        val = pv + v
+                    if val != v:
+                        out.pop()
+                        if joined_and:
+                            out.pop()
+            out.append(("ORD", val))
+            note(t, "%d%s" % (val, _suffix_for(val)))
+            i += 1
+            continue
+        out.append(t)
+        i += 1
+    for (src, dst), c in seen.items():
+        if src.replace(" ", "") != dst:                      # only report a real change of form (word <-> digits), not "5th" kept as "5th"
+            applied.append("ordinal(%s): %s -> %s%s" % (side, src, dst, (" x%d" % c) if c > 1 else ""))
+    return out
+
+
+_YR_ONES = "one|two|three|four|five|six|seven|eight|nine"
+_YR_TEENS = "ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen"
+_YR_TENS = "twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety"
+_YR = re.compile(r"\b(eighteen|nineteen|twenty)[\s-]+(?:(?:oh|o|zero)[\s-]+(%s)|(%s)(?:[\s-]+(%s))?|(%s))\b(?![\s-]+(?:hundred|thousand|million|billion)\b)" % (_YR_ONES, _YR_TENS, _YR_ONES, _YR_TEENS))
+_YR_VAL = dict(_ONES, **_TENS)
+
+
+def year_fold(text, side, applied):
+    """Spoken years to digits: 'twenty twenty-six' -> 2026, 'nineteen eighty four' -> 1984, 'nineteen oh five' -> 1905, 'twenty ten' -> 2010, 'nineteen ninety' -> 1990.
+    First half 18/19/20 only; second half oh+digit, a tens word (+ digit) or a teen. _canon alone would read 'twenty twenty six' as 46."""
+    def one(m):
+        first = {"eighteen": 18, "nineteen": 19, "twenty": 20}[m.group(1)]
+        if m.group(2):
+            rest = _ONES[m.group(2)]
+        elif m.group(3):
+            rest = _TENS[m.group(3)] + (_ONES[m.group(4)] if m.group(4) else 0)
+        else:
+            rest = _ONES[m.group(5)]
+        year = first * 100 + rest
+        applied.append("year(%s): %s -> %d" % (side, re.sub(r"\s+", " ", m.group(0)), year))
+        return " %d " % year
+    return _YR.sub(one, text)
+
+
 _MIN_CODE = 3
 
 
@@ -233,8 +331,13 @@ def fold_pair(script_text, heard_text, names_text="", canon=None):
         from asr_compare import _canon as canon
     names = parse_names(names_text)
     applied = []
-    a_txt, b_txt = money_fold(script_text), money_fold(heard_text)
+    def prep(text, side):
+        t = text.replace("\u2019", "'").lower()
+        t = year_fold(t, side, applied)
+        return money_fold(t)
+    a_txt, b_txt = prep(script_text, "script"), prep(heard_text, "heard")
     a, b = canon(a_txt), canon(b_txt)
+    a, b = ord_fold(a, "script", applied), ord_fold(b, "heard", applied)
 
     def norm(tokens, side):
         out = []
@@ -360,6 +463,59 @@ def selftest():
     # US spelling of a word NOT in the fixed list is not guessed
     r1, d1, ap = new("the warrior won", "the warier won")
     expect("no fuzzy matching: unlisted spellings stay diffs", d1)
+    # ---- numbers (delta 7): every spoken/written form folds, a wrong number never does
+    def same(name, sc, he, names=""):
+        r1, d1, ap = new(sc, he, names)
+        expect(name, not d1, str(d1))
+
+    def differ(name, sc, he, names=""):
+        r1, d1, ap = new(sc, he, names)
+        expect(name, bool(d1), "no diff for %r vs %r" % (sc, he))
+    same("cardinal: 'fifty nine' == 59", "a fifty nine year old man", "a 59 year old man")
+    same("cardinal: 'fifty-nine' == '59-year-old'", "a fifty-nine year old man", "a 59-year-old man")
+    same("cardinal: 'twenty four' == 24", "he spent twenty four hours in custody", "He spent 24 hours in custody.")
+    same("cardinal: 'twenty-four' == 24", "he spent twenty-four hours in custody", "He spent 24 hours in custody.")
+    same("cardinal: 'one thousand' == '1,000'", "it cost one thousand units", "It cost 1,000 units.")
+    same("money: 'three hundred pounds' == '£300' == '300 pounds'", "the goods were worth three hundred pounds today", "The goods were worth £300 today.")
+    same("money: '300' alone is not required: 'three hundred pounds' == '300 pounds'", "the goods were worth three hundred pounds today", "The goods were worth 300 pounds today.")
+    differ("wrong number: 59 vs 69", "a fifty nine year old man", "a 69 year old man")
+    differ("wrong number: 24 vs 42", "he spent twenty four hours in custody", "He spent 42 hours in custody.")
+    differ("wrong money: three hundred pounds vs £400", "the goods were worth three hundred pounds today", "The goods were worth £400 today.")
+    same("ordinal: 'sixteenth' == '16th'", "on the sixteenth of October", "On the 16th of October")
+    same("ordinal: 'forty second' == '42nd' (past the old 1-31 table)", "the forty second day", "the 42nd day")
+    same("ordinal: 'twenty-first' == '21st'", "the twenty-first of May", "the 21st of May")
+    same("ordinal: 'one hundred and first' == '101st'", "the one hundred and first time", "the 101st time")
+    same("ordinal: 'hundredth' == '100th'", "the hundredth time", "the 100th time")
+    same("ordinal: 'two hundredth' == '200th'", "the two hundredth time", "the 200th time")
+    same("ordinal: 'first' == '1st'", "the first of June", "the 1st of June")
+    differ("wrong ordinal: 16th vs 60th", "on the 16th of October", "on the 60th of October")
+    differ("wrong ordinal: sixteenth vs sixtieth", "on the sixteenth of October", "on the sixtieth of October")
+    differ("wrong ordinal: sixteenth vs sixth", "on the sixteenth of October", "on the sixth of October")
+    differ("an ordinal is not a cardinal: 16th vs 16", "on the 16th of October", "on the 16 of October")
+    differ("a wrong suffix is not folded: 21th", "the 21st of May", "the 21th of May")
+    same("year: 'twenty twenty-six' == 2026", "in twenty twenty-six the rule applies", "In 2026 the rule applies.")
+    same("year: 'twenty twenty six' == 2026", "in twenty twenty six the rule applies", "In 2026 the rule applies.")
+    same("year: 'nineteen eighty four' == 1984", "born in nineteen eighty four", "Born in 1984.")
+    same("year: 'nineteen oh five' == 1905", "built in nineteen oh five", "Built in 1905.")
+    same("year: 'twenty ten' == 2010", "since twenty ten", "Since 2010.")
+    same("year: spoken both sides", "in twenty twenty-six the rule applies", "In twenty twenty six the rule applies.")
+    differ("wrong year: 2026 vs 2025", "in twenty twenty-six the rule applies", "In 2025 the rule applies.")
+    differ("wrong year: nineteen eighty four vs 1894", "born in nineteen eighty four", "Born in 1894.")
+    same("not a year: 'nineteen thousand' stays a cardinal", "nineteen thousand people", "19,000 people")
+    same("not a year: 'twenty one' stays 21", "twenty one people", "21 people")
+    same("percent: 'forty per cent' == '40%'", "prices rose forty per cent", "Prices rose 40%.")
+    same("percent: 'forty per cent' == '40 percent'", "prices rose forty per cent", "Prices rose 40 percent.")
+    same("percent: 'zero point five per cent' == '0.5%'", "prices rose zero point five per cent", "Prices rose 0.5%.")
+    differ("wrong percent: 40% vs 14%", "prices rose forty per cent", "Prices rose 14%.")
+    # S256 P02 as heard by small.en in the take receipts: only the ordinal differed (and 'offense' in one take)
+    p02 = ("On the sixteenth of October 2025, police arrested a fifty nine year old man in London. Police linked him to the offence through a retrospective facial recognition search. "
+           "The IKEA goods were worth three hundred pounds. He spent twenty four hours in custody before being charged.")
+    h1 = ("On the 16th of October 2025, police arrested a 59 -year -old man in London. Police linked him to the offence through a retrospective facial recognition search. "
+          "The IKEA goods were worth £300. He spent 24 hours in custody before being charged.")
+    h2 = h1.replace("offence", "offense")
+    same("S256 P02 as heard (16th, 59, \u00a3300, 24)", p02, h1)
+    same("S256 P02 as heard with 'offense'", p02, h2)
+    differ("S256 P02 with one wrong number (69) still differs", p02, h1.replace("59", "69"))
     print("SELFTEST", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 
