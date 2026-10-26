@@ -54,8 +54,9 @@ jobs:
       - name: Runtime (ffmpeg, tesseract, Node 22, Pillow)
         run: |
           set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends ffmpeg tesseract-ocr fonts-noto-color-emoji >/dev/null
+          for i in 1 2 3; do timeout 300 sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update -qq && break || sleep 10; done
+          for i in 1 2 3; do timeout 600 sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends ffmpeg tesseract-ocr >/dev/null && break || sleep 10; done
+          ffmpeg -version | head -1; tesseract --version | head -1
           curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/node-v22.12.0-linux-x64/bin" >> "$GITHUB_PATH"
           python3 -m pip install --quiet pillow
