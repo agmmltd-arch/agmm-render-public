@@ -133,8 +133,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh run download "${{ inputs.reuse_picture_run }}" -R "${{ github.repository }}" -p "seg-*-${{ matrix.seg }}" -D segraw || true
+          # the earlier run may still be rendering this segment: wait for its artifact (up to 60 min)
+          for i in $(seq 1 60); do
+            rm -rf segraw
+            gh run download "${{ inputs.reuse_picture_run }}" -R "${{ github.repository }}" -p "seg-*-${{ matrix.seg }}" -D segraw 2>/dev/null || true
+            if find segraw -name "seg_${{ matrix.seg }}.mp4" | grep -q .; then break; fi
+            echo "waiting for segment ${{ matrix.seg }} of run ${{ inputs.reuse_picture_run }} ($i)"; sleep 60
+          done
           find segraw -name "seg_${{ matrix.seg }}.mp4" -exec cp {} . \; 2>/dev/null || true
+          ls seg_${{ matrix.seg }}.mp4
           ls -la seg_*.mp4 || true
       - name: Runtime (static ffmpeg, Node 22)
         if: steps.rng.outputs.reuse != 'yes'
