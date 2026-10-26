@@ -95,6 +95,7 @@ jobs:
           set -euo pipefail
           cp -r "private/${{ inputs.project_path }}" film
           cd film; mkdir -p ../qa
+          if [ -f fetch_3d.py ]; then python3 fetch_3d.py; fi
           for t in ${{ inputs.times }}; do timeout 600 npx -y openfilm@0.2.5 look $t 2>&1 | tail -4; done
           find . -path ./node_modules -prune -o \( -name '*.png' -o -name '*.jpg' \) -newer film.html -print | while read f; do cp "$f" ../qa/; done
       - name: Voice pack (decrypt)
