@@ -1,0 +1,147 @@
+name: AGMM hailmary parallel
+run-name: AGMM hailmary par ${{ inputs.label }}
+# Hail Mary shorts, fast path (26 Oct 2026): build once, render the picture in 6 parallel segments (OpenFilm, headless Chromium),
+# join them, mix the sound with the project's own mix.py (designed arc: build-up, riser, hit, ducking), master to -14 LUFS, run qa.py.
+# The project and its sounds come from the PRIVATE repo via the read-only deploy key. Nothing renders on the Mac; no media is committed here.
+on:
+  workflow_dispatch:
+    inputs:
+      private_commit: { description: 40-hex commit of agmm-video-render holding the film folder, required: true }
+      project_path: { description: film folder inside that commit, required: true }
+      voice_run_id: { description: voicefree-chatterbox run id with the takes, required: true }
+      voice_label: { description: label of that run, required: true }
+      label: { description: short label, required: true }
+      pick: { description: forced takes e.g. P1=2,P4=1, required: false, default: '' }
+      segments: { description: number of parallel picture segments, required: false, default: '6' }
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: agmm-hailmary-par-${{ inputs.label }}
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      total: ${{ steps.b.outputs.total }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            ${{ inputs.project_path }}
+      - name: Runtime (static ffmpeg, no apt)
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+      - name: Voice pack (decrypt)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          set -euo pipefail
+          gh run download "${{ inputs.voice_run_id }}" -R "${{ github.repository }}" -n "voicefree-chatterbox-${{ inputs.voice_label }}-ENC" -D "$RUNNER_TEMP/vpack"
+          mkdir -p "$RUNNER_TEMP/voice"
+          openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/vpack/synth-pack.enc" | tar -x -C "$RUNNER_TEMP/voice"
+      - id: b
+        name: Build the edit and the mix plan on the voice
+        run: |
+          set -euo pipefail
+          cp -r "private/${{ inputs.project_path }}" film
+          cd film
+          python3 build_film.py --voice "$RUNNER_TEMP/voice" --pick "${{ inputs.pick }}"
+          echo "total=$(python3 -c "import json;print(json.load(open('assets/timeline.json'))['total'])")" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: film-${{ inputs.label }}
+          path: film
+          retention-days: 1
+          include-hidden-files: true
+  picture:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: true
+      matrix:
+        seg: [0, 1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: film-${{ inputs.label }}
+          path: film
+      - name: Runtime (static ffmpeg, Node 22)
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+          curl -fsSL --retry 4 https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/node-v22.12.0-linux-x64/bin" >> "$GITHUB_PATH"
+      - name: Render this segment (frame-exact range)
+        run: |
+          set -euo pipefail
+          cd film
+          read A B < <(python3 -c "
+          T=${{ needs.build.outputs.total }}; N=${{ inputs.segments }}; i=${{ matrix.seg }}
+          fr=30; frames=int(round(T*fr)); per=-(-frames//N); a=i*per; b=min(frames,(i+1)*per)
+          print('%.4f %.4f'%(a/fr,b/fr))")
+          echo "segment ${{ matrix.seg }}: $A - $B"
+          if python3 -c "import sys; sys.exit(0 if float('$A') < float('$B') else 1)"; then
+            timeout 3000 npx -y openfilm@0.2.5 render "$A-$B" --out "../seg_${{ matrix.seg }}.mp4" 2>&1 | tail -15
+          fi
+          ls -la ../seg_*.mp4 || true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seg-${{ inputs.label }}-${{ matrix.seg }}
+          path: seg_*.mp4
+          retention-days: 1
+          if-no-files-found: ignore
+  assemble:
+    needs: [build, picture]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: film-${{ inputs.label }}
+          path: film
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: seg-${{ inputs.label }}-*
+          path: segs
+          merge-multiple: true
+      - name: Runtime (static ffmpeg, Pillow, RapidOCR)
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+          python3 -m pip install --quiet --retries 4 pillow rapidocr-onnxruntime==1.3.24
+      - name: Join picture, mix sound, master, QA
+        run: |
+          set -euo pipefail
+          ls -la segs
+          for f in $(ls segs/seg_*.mp4 | sort -V); do echo "file '$PWD/$f'" ; done > list.txt
+          ffmpeg -nostdin -y -loglevel error -f concat -safe 0 -i list.txt -an -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p -r 30 picture.mp4
+          cd film && python3 mix.py mix.json ../mix.wav && cd ..
+          J=$(ffmpeg -nostdin -i mix.wav -af loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json -f null - 2>&1 | sed -n '/^{/,/^}/p')
+          set -- $(echo "$J" | python3 -c "import sys,json;d=json.load(sys.stdin);print(d['input_i'],d['input_tp'],d['input_lra'],d['input_thresh'],d['target_offset'])")
+          ffmpeg -nostdin -y -loglevel error -i picture.mp4 -i mix.wav -map 0:v -map 1:a -c:v copy -af "loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=$1:measured_TP=$2:measured_LRA=$3:measured_thresh=$4:offset=$5:linear=true,aresample=48000" -c:a aac -b:a 256k -shortest -movflags +faststart FINAL.mp4
+          python3 film/qa.py FINAL.mp4 film/assets/timeline.json qa | tee qa.txt
+          cp film/BUILD.json film/assets/timeline.json film/film.html film/mix.json qa/ 2>/dev/null || true
+          rm -rf qa/f10 qa/f2
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hailmary-${{ inputs.label }}
+          path: |
+            FINAL.mp4
+            qa
+          retention-days: 7
