@@ -101,8 +101,10 @@ jobs:
           set -euo pipefail
           cp -r "private/${{ inputs.project_path }}" film
           cd film
-          python3 build_film.py --voice "$RUNNER_TEMP/voice" --pick "${{ inputs.pick }}"
-          mkdir -p ../qa && cp BUILD.json VOICE.json assets/timeline.json ../qa/ 2>/dev/null || true
+          mkdir -p ../qa
+          rc=0; python3 build_film.py --voice "$RUNNER_TEMP/voice" --pick "${{ inputs.pick }}" || rc=$?
+          cp BUILD.json VOICE.json assets/timeline.json ../qa/ 2>/dev/null || true
+          exit $rc
       - name: Dry stills (pages only, no render)
         if: inputs.voice_run_id == 'dry'
         run: |
