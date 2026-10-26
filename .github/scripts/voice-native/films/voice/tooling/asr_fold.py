@@ -8,7 +8,7 @@ word) must still be a diff, so every fold below is explicit, fixed, and applied 
 
   1 UK/US spelling pairs   a FIXED list in this file (UK_US_STEMS + UK_US_WORDS). No fuzzy matching, no suffix guessing outside the listed stems. The UK form is the canonical form.
   2 possessive / plural    ONLY for tokens listed in that short's names.txt (Morrisons == Morrison's == Morrison). A token that is not a listed name is never folded.
-  3 name aliases           ONLY from names.txt, one declared line each:     @alias <script form> = <heard form> | <reason>
+  3 name aliases           ONLY from the short's aliases.txt (read only here; prepare.py rewrites names.txt on every run, so declarations live in their own file):\n                           <script form> = <heard form> | <reason>
                            The reason is mandatory; a line without one is ignored (and reported). "euston = houston" with no declaration stays a FAIL: a misheard word is a defect.
   4 currency and numbers   "£4.75" == "four pounds seventy-five" == "4.75";  "£150,000" == "150,000 pounds" == "a hundred and fifty thousand pounds" (pound amounts only, pence 1-99).
 
@@ -39,7 +39,10 @@ UK_US_WORDS = {
     "centre": "center", "centres": "centers", "centred": "centered", "metre": "meter", "metres": "meters", "kilometre": "kilometer", "kilometres": "kilometers", "litre": "liter",
     "litres": "liters", "theatre": "theater", "theatres": "theaters", "fibre": "fiber", "fibres": "fibers", "calibre": "caliber", "sabre": "saber", "spectre": "specter",
     # -ence / -ense
-    "defence": "defense", "offence": "offense", "pretence": "pretense",
+    "defence": "defense", "defences": "defenses", "offence": "offense", "offences": "offenses", "pretence": "pretense",
+    # one spoken word, two spellings (root condition 1): licence/license, practise/practice (UK verb/noun; US uses practice for both)
+    "licence": "license", "licences": "licenses", "licenced": "licensed", "licencing": "licensing", "practise": "practice", "practised": "practiced", "practises": "practices",
+    "practising": "practicing",
     # programme and friends
     "programme": "program", "programmes": "programs", "programmed": "programed", "catalogue": "catalog", "catalogues": "catalogs", "dialogue": "dialog", "dialogues": "dialogs",
     # doubled consonants
@@ -79,27 +82,38 @@ def uk_us_key(tok):
 
 # ------------------------------------------------------------------------------------------------------------------------------ names.txt
 def parse_names(names_text):
-    """-> (name_bases: set, aliases: {script token tuple: set of heard token tuples}, ignored: list of alias lines without a reason).
-    names.txt lines: a name per line (multi-word names allowed), and optional `@alias <script form> = <heard form> | <reason>` lines."""
-    names, aliases, ignored = set(), {}, []
+    """-> set of name bases. names.txt lines are names only (multi-word allowed); prepare.py regenerates this file from the script, so nothing else lives in it."""
+    names = set()
     for raw in (names_text or "").splitlines():
         line = raw.strip()
-        if not line:
+        if line and not line.startswith("@"):
+            for t in _toks(line):
+                names.add(_base(t))
+    return names
+
+
+def parse_aliases(aliases_text):
+    """-> ({script token tuple: set of heard token tuples}, ignored lines). aliases.txt (read ONLY by this module; prepare.py never touches it) has one declaration per line:
+        <script form> = <heard form> | <reason>
+    The reason is mandatory; a line without one is ignored and reported. A leading '@alias' is tolerated."""
+    aliases, ignored = {}, []
+    for raw in (aliases_text or "").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
             continue
         if line.lower().startswith("@alias"):
-            body = line[6:].strip()
-            if "|" not in body or "=" not in body.split("|", 1)[0] or not body.split("|", 1)[1].strip():
-                ignored.append(line)
-                continue
-            pair, _reason = body.split("|", 1)
-            a, b = pair.split("=", 1)
-            sa, sb = tuple(_toks(a)), tuple(_toks(b))
-            if sa and sb:
-                aliases.setdefault(sa, set()).add(sb)
+            line = line[6:].strip()
+        pair, _, reason = line.partition("|")
+        if "=" not in pair or not reason.strip():
+            ignored.append(line)
             continue
-        for t in _toks(line):
-            names.add(_base(t))
-    return names, aliases, ignored
+        a, b = pair.split("=", 1)
+        sa, sb = tuple(_toks(a)), tuple(_toks(b))
+        if sa and sb:
+            aliases.setdefault(sa, set()).add(sb)
+        else:
+            ignored.append(line)
+    return aliases, ignored
 
 
 def _toks(s):
@@ -168,7 +182,7 @@ def _amount(s):
 def money_fold(text):
     """'four pounds seventy-five' / '4 pounds 75' / '£4.75' -> '4.75'; '£150,000' / '150,000 pounds' -> '150000'. Pound amounts only; pence must be 1-99; everything else
     (apostrophes and all) is untouched. A phrase that is not entirely a number is left alone."""
-    t = text.replace("\u2019", "'")
+    t = text.replace("\u2019", "'").lower()
     t = re.sub(r"£\s*(\d[\d,]*)\.(\d{2})\b", lambda m: "%s.%s" % (m.group(1).replace(",", ""), m.group(2)), t)
     t = re.sub(r"£\s*(\d[\d,]*)", lambda m: m.group(1).replace(",", ""), t)
 
@@ -196,15 +210,14 @@ def _replace_seq(tokens, pat, rep):
     return out, c
 
 
-def fold_pair(script_text, heard_text, names_text="", canon=None):
+def fold_pair(script_text, heard_text, names_text="", canon=None, aliases_text=""):
     """-> (script tokens, heard tokens, applied list). `canon` is asr_compare._canon (injected so this module has no import cycle in tests)."""
     if canon is None:
         from asr_compare import _canon as canon
-    names, aliases, ignored = parse_names(names_text)
-    applied = ["alias line ignored (no reason): " + l for l in ignored]
+    names = parse_names(names_text)
+    aliases, ignored = parse_aliases(aliases_text)
+    applied = ["alias line ignored (no reason or malformed): " + l for l in ignored]
     a_txt, b_txt = money_fold(script_text), money_fold(heard_text)
-    if a_txt != script_text.lower().replace("’", "'") or b_txt != heard_text.lower().replace("’", "'"):
-        pass
     a, b = canon(a_txt), canon(b_txt)
 
     def norm(tokens, side):
@@ -255,8 +268,8 @@ def selftest():
     def old(s, h):
         return _ratio(_canon(s.lower()), _canon(h.lower()))
 
-    def new(s, h, names=""):
-        a, b, ap = fold_pair(s, h, names, _canon)
+    def new(s, h, names="", aliases=""):
+        a, b, ap = fold_pair(s, h, names, _canon, aliases)
         return _ratio(a, b) + (ap,)
     # ---- folds that must fire
     s = "the plan will maximise growth and the programme will organise the whole organisation"
@@ -268,15 +281,23 @@ def selftest():
     r1, d1, ap = new("Morrisons plans cuts", "Morrison's plans cuts", "Morrisons\n")
     r2, d2, ap2 = new("Morrisons plans cuts", "Morrison's plans cuts", "")
     expect("possessive fold fires only for a name listed in names.txt", d0 and not d1 and d2, "listed=%s unlisted=%s" % (d1, d2))
-    r1, d1, ap = new("Greggs has built a weather formula", "Greg's has built a weather formula", "Greggs\n@alias greggs = greg's | whisper writes the possessive and drops a g\n")
+    r1, d1, ap = new("Greggs has built a weather formula", "Greg's has built a weather formula", "Greggs\n", "greggs = greg's | whisper writes the possessive and drops a g\n")
     r2, d2, ap2 = new("Greggs has built a weather formula", "Greg's has built a weather formula", "Greggs\n")
-    expect("declared alias (with reason) folds Greggs/Greg's, undeclared stays a diff", not d1 and d2, "declared=%s undeclared=%s" % (d1, d2))
-    r1, d1, ap = new("the Evolv system", "the evolve system", "Evolv\n@alias evolv = evolve | brand is pronounced evolve\n")
-    r2, d2, ap2 = new("the Evolv system", "the evolve system", "Evolv\n@alias evolv = evolve\n")
+    expect("declared alias (aliases.txt, with reason) folds Greggs/Greg's, undeclared stays a diff", not d1 and d2, "declared=%s undeclared=%s" % (d1, d2))
+    r1, d1, ap = new("the Evolv system", "the evolve system", "Evolv\n", "evolv = evolve | brand is pronounced evolve\n")
+    r2, d2, ap2 = new("the Evolv system", "the evolve system", "Evolv\n", "evolv = evolve\n")
     expect("an alias without a reason is ignored (and reported)", not d1 and d2 and any("ignored" in x for x in ap2))
+    r2, d2, ap2 = new("the Evolv system", "the evolve system", "Evolv\n@alias evolv = evolve | brand is pronounced evolve\n", "")
+    expect("an @alias line inside names.txt is NOT honoured (aliases come only from aliases.txt)", d2)
     r1, d1, ap = new("trains stop at Euston tonight", "trains stop at Houston tonight", "Euston\n")
-    r2, d2, ap2 = new("trains stop at Euston tonight", "trains stop at Houston tonight", "Euston\n@alias euston = houston\n")
+    r2, d2, ap2 = new("trains stop at Euston tonight", "trains stop at Houston tonight", "Euston\n", "euston = houston\n")
     expect("Euston/Houston is NOT folded without a declared reason (a misheard word stays a fail)", d1 and d2, str(d1))
+    r1, d1, ap = new("trains stop at Euston tonight", "trains stop at Houston tonight", "Euston\n", "euston = houston | Whisper hears the station name as Houston and the audio says Euston\n")
+    expect("...and is folded when aliases.txt declares it with a reason", not d1)
+    r1, d1, ap = new("she must practise and renew the licence and the defence plan", "She must practice and renew the license and the defense plan.")
+    expect("one spoken word, two spellings: licence/license, practise/practice, defence/defense", not d1, str(d1))
+    r1, d1, ap = new("the offence was licenced", "The offense was licensed.")
+    expect("offence/offense and licenced/licensed", not d1, str(d1))
     r1, d1, ap = new("a baguette and a sausage roll drop to four pounds seventy-five", "A baguette and a sausage roll drop to £4.75.")
     expect("money: 'four pounds seventy-five' == '£4.75'", not d1, str(d1))
     r1, d1, ap = new("it costs a hundred and fifty thousand pounds a year", "It costs £150,000 a year.")
@@ -292,12 +313,14 @@ def selftest():
     cases = [("dropped -ed ending", "she obtain the licence and it's valid for another twelve months in total"),
              ("dropped it's", "she obtained the licence and valid for another twelve months in total"),
              ("missing word", "she obtained the licence and it's valid for another months in total"),
-             ("wrong word", "she obtained the license and it's valid for another twelve months in total"),
              ("misheard word", "she obtained the licence and it's valid for another twelve months in tonal")]
     for nm, heard in cases:
         r0, d0 = old(base, heard)
         r1, d1, ap = new(base, heard, "Licence\n")
         expect("defect still fails after folds: %s" % nm, d1 and r1 < 0.97 and abs(r1 - r0) < 1e-9, "old %.3f new %.3f diffs %s" % (r0, r1, d1))
+    r0, d0 = old("the contract is valid for another twelve months in total from today", "the contact is valid for another twelve months in total from today")
+    r1, d1, ap = new("the contract is valid for another twelve months in total from today", "the contact is valid for another twelve months in total from today")
+    expect("defect still fails after folds: contract heard as contact", d1 and abs(r1 - r0) < 1e-9 and r1 < 0.97, "old %.3f new %.3f diffs %s" % (r0, r1, d1))
     # a defect INSIDE a folded word's neighbourhood is not hidden: 'maximise' spoken as 'maximum' stays a diff
     r1, d1, ap = new("we must maximise returns this year", "we must maximum returns this year")
     expect("a different word that merely looks similar is not folded", d1, str(d1))

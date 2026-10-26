@@ -204,7 +204,7 @@ def private_inputs(request, private_root, verify_media=True):
         need(not rel.endswith((".py", ".sh", ".env")), "input cannot replace runtime")
         if rel.startswith("shorts/voice/" + sid + "/") and rel not in required:
             name = rel.removeprefix("shorts/voice/" + sid + "/")
-            need(re.fullmatch(r"(?:P[0-9]{2}\.(?:wav|mp4|receipt\.json|words\.json)|" + sid +
+            need(re.fullmatch(r"(?:aliases\.txt|P[0-9]{2}\.(?:wav|mp4|receipt\.json|words\.json)|" + sid +
                  r"\.(?:wav|words\.json|receipt\.json|voicelead\.json)|RESULT\.json)", name),
                  "only original native take/final input names may enter a piece")
     need(not any(r["runtime_path"] != REF and r["sha256"] == REF_SHA for r in rows),

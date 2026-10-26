@@ -45,10 +45,11 @@ def main():
     ratio_unfolded = difflib.SequenceMatcher(a=a0, b=b0, autojunk=False).ratio()
     a, b, folds = a0, b0, []
     try:
-        # runtime delta 5 (26 Oct 2026): deterministic spelling folds on BOTH sides before the ratio (asr_fold.py: fixed UK/US list, names.txt possessives and declared aliases, pound amounts)
+        # runtime delta 5 (26 Oct 2026): deterministic spelling folds on BOTH sides before the ratio (asr_fold.py: fixed UK/US list, names.txt possessives, aliases.txt declarations, pound amounts)
         from asr_fold import fold_pair
         names_txt = (piece / 'names.txt').read_text(encoding='utf-8') if (piece / 'names.txt').exists() else ''
-        ta, tb, folds = fold_pair(fold(script), fold(heard), names_txt, _canon)
+        aliases_txt = (piece / 'aliases.txt').read_text(encoding='utf-8') if (piece / 'aliases.txt').exists() else ''
+        ta, tb, folds = fold_pair(fold(script), fold(heard), names_txt, _canon, aliases_txt)
         a = [str(t) for t in ta]; b = [str(t) for t in tb]
     except ImportError:
         pass
