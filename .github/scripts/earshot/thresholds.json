@@ -54,10 +54,11 @@
     "cue_off_fraction_max": 0.15,
     "cut_offset_max_ms": 80,
     "cut_off_fraction_max": 0.5,
-    "voice_gap_min_s": 0.3,
+    "voice_gap_min_s": 0.6,
     "bed_swell_min_rise_db": 6.0,
     "bed_swell_gap_pad_s": 0.05,
     "max_bed_swells_in_gaps": 0,
-    "cut_off_fraction_warn": 0.2
+    "cut_off_fraction_warn": 0.2,
+    "bed_gap_rise_max_db": 4.0
   }
 }
