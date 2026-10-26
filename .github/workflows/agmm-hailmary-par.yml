@@ -12,6 +12,8 @@ on:
       voice_label: { description: label of that run, required: true }
       label: { description: short label, required: true }
       pick: { description: forced takes e.g. P1=2,P4=1, required: false, default: '' }
+      voice2_run_id: { description: optional second voicefree run whose takes replace the same paragraphs, required: false, default: '' }
+      voice2_label: { description: label of that run, required: false, default: '' }
       segments: { description: number of parallel picture segments, required: false, default: '6' }
 permissions:
   contents: read
@@ -51,13 +53,19 @@ jobs:
           gh run download "${{ inputs.voice_run_id }}" -R "${{ github.repository }}" -n "voicefree-chatterbox-${{ inputs.voice_label }}-ENC" -D "$RUNNER_TEMP/vpack"
           mkdir -p "$RUNNER_TEMP/voice"
           openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/vpack/synth-pack.enc" | tar -x -C "$RUNNER_TEMP/voice"
+          if [ -n "${{ inputs.voice2_run_id }}" ]; then
+            gh run download "${{ inputs.voice2_run_id }}" -R "${{ github.repository }}" -n "voicefree-chatterbox-${{ inputs.voice2_label }}-ENC" -D "$RUNNER_TEMP/vpack2"
+            mkdir -p "$RUNNER_TEMP/voice2"
+            openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/vpack2/synth-pack.enc" | tar -x -C "$RUNNER_TEMP/voice2"
+          fi
       - id: b
         name: Build the edit and the mix plan on the voice
         run: |
           set -euo pipefail
           cp -r "private/${{ inputs.project_path }}" film
           cd film
-          python3 build_film.py --voice "$RUNNER_TEMP/voice" --pick "${{ inputs.pick }}"
+          V2=""; [ -d "$RUNNER_TEMP/voice2" ] && V2="--voice2 $RUNNER_TEMP/voice2"
+          python3 build_film.py --voice "$RUNNER_TEMP/voice" $V2 --pick "${{ inputs.pick }}"
           echo "total=$(python3 -c "import json;print(json.load(open('assets/timeline.json'))['total'])")" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
