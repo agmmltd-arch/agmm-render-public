@@ -1,0 +1,190 @@
+name: AGMM earshot audio check
+run-name: AGMM earshot ${{ inputs.kind }} ${{ inputs.label }}
+
+# earshot (MIT, github.com/Leonxlnx/earshot) gives the video programme ears: CPU-only listening checks on ubuntu, models cached.
+#   kind=voice  sealed paragraph takes from the PRIVATE repo (deploy key): loudness, true peak, clicks, strays, non-speech events, breaths
+#   kind=mix    one short's final mix from a gate bundle release: critique scorecard + timeline sync, FAIL on the three named majors
+#   kind=sfx    render earshot's code-made 'launch' kit once and publish the measured registry (onset / peak / end per take)
+# Thresholds: .github/scripts/earshot/thresholds.json. mode=warn records; mode=required turns a FAIL into a red run.
+# No paid call: earshot's optional Gemini `llm` command is never run. Nothing is committed back; the artifact holds numbers (and, for
+# kind=sfx, synthetic sounds), never a voice take or a master.
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: voice | mix | sfx
+        required: true
+      label:
+        description: unique safe label (run title, concurrency, artifact name)
+        required: true
+      mode:
+        description: warn | required
+        required: false
+        default: warn
+      private_commit:
+        description: kind=voice, 40-hex commit of agmm-video-render
+        required: false
+        default: ''
+      path:
+        description: kind=voice, directory in the private repo holding the takes (e.g. voice-free/align/S73)
+        required: false
+        default: ''
+      inject:
+        description: kind=voice, none | click | clip | quiet | loud | all (adds injected copies of the first take to the set)
+        required: false
+        default: none
+      selftest:
+        description: 'true = also prove the check can fail (inject each defect, assert it is caught)'
+        required: false
+        default: 'false'
+      release:
+        description: kind=mix, release tag holding exactly one asset, gate-bundle.tar.gz
+        required: false
+        default: ''
+      bundle_sha256:
+        description: kind=mix, SHA256 of gate-bundle.tar.gz
+        required: false
+        default: ''
+      short_id:
+        description: kind=mix, short ID (S104)
+        required: false
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: agmm-earshot-${{ inputs.label }}
+  cancel-in-progress: false
+jobs:
+  earshot:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      EARSHOT_HOME: /home/runner/.cache/earshot
+      EARSHOT_THREADS: '4'
+      KIND: ${{ inputs.kind }}
+      LABEL: ${{ inputs.label }}
+      MODE: ${{ inputs.mode }}
+      INJECT: ${{ inputs.inject }}
+      VPATH: ${{ inputs.path }}
+      SELFTEST: ${{ inputs.selftest }}
+    steps:
+      - name: Validate labels
+        run: |
+          set -euo pipefail
+          [[ "$KIND" =~ ^(voice|mix|sfx)$ ]]
+          [[ "$LABEL" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          [[ "$MODE" =~ ^(warn|required)$ ]]
+          [[ "$INJECT" =~ ^(none|click|clip|quiet|loud|all)$ ]]
+          [[ -z "$VPATH" || "$VPATH" =~ ^[A-Za-z0-9._/-]{1,200}$ ]]
+          [[ "$VPATH" != *..* ]]
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/scripts/earshot
+          sparse-checkout-cone-mode: false
+      - name: Fetch takes (read-only deploy key)
+        if: inputs.kind == 'voice'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            ${{ inputs.path }}
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12.8'
+      - name: Cache earshot models
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/earshot
+          key: earshot-models-v1-591fa3e
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: earshot-pip-${{ runner.os }}-${{ hashFiles('.github/scripts/earshot/install.sh') }}
+      - name: Install earshot (pinned commit, CPU torch)
+        run: bash .github/scripts/earshot/install.sh
+      - name: Voice takes, listening check
+        if: inputs.kind == 'voice'
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/out"
+          args=(--dir "private/$VPATH" --out "$RUNNER_TEMP/out" --mode "$MODE" --inject "$INJECT")
+          python3 .github/scripts/earshot/voice_take_check.py "${args[@]}" 2>&1 | tee "$RUNNER_TEMP/voice.log"
+          rc=${PIPESTATUS[0]}
+          echo "check_rc=$rc"
+          if [ "$SELFTEST" = "true" ]; then
+            python3 .github/scripts/earshot/voice_take_check.py --dir "private/$VPATH" --out "$RUNNER_TEMP/out-selftest" --selftest 2>&1 | tee "$RUNNER_TEMP/voice-selftest.log"
+            rc2=${PIPESTATUS[0]}
+            echo "selftest_rc=$rc2"
+            [ "$rc2" -eq 0 ] || rc=$rc2
+          fi
+          mkdir -p "$RUNNER_TEMP/result"
+          cp -R "$RUNNER_TEMP"/out/. "$RUNNER_TEMP/result/" 2>/dev/null || true
+          [ -d "$RUNNER_TEMP/out-selftest" ] && cp -R "$RUNNER_TEMP/out-selftest" "$RUNNER_TEMP/result/selftest" || true
+          rm -rf "$RUNNER_TEMP/result/injected" "$RUNNER_TEMP/result/selftest/injected"
+          exit $rc
+      - name: Mix, fetch and verify the gate bundle
+        if: inputs.kind == 'mix'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE: ${{ inputs.release }}
+          BUNDLE_SHA256: ${{ inputs.bundle_sha256 }}
+          SHORT_ID: ${{ inputs.short_id }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$BUNDLE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$SHORT_ID" =~ ^[SCP][0-9]{2,3}$ ]]
+          test "$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE" --jq '[.assets[].name] | sort | join(",")')" = "gate-bundle.tar.gz"
+          mkdir -p "$RUNNER_TEMP/in" "$RUNNER_TEMP/w"
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p gate-bundle.tar.gz -D "$RUNNER_TEMP/in"
+          test "$(sha256sum "$RUNNER_TEMP/in/gate-bundle.tar.gz" | cut -d' ' -f1)" = "$BUNDLE_SHA256"
+          python3 - <<'PY'
+          import os, tarfile
+          dest = os.path.join(os.environ["RUNNER_TEMP"], "w")
+          src = os.path.join(os.environ["RUNNER_TEMP"], "in", "gate-bundle.tar.gz")
+          want = ("v2/kit/out/" + os.environ["SHORT_ID"] + "/FINAL.mp4", "v2/kit/out/" + os.environ["SHORT_ID"] + "/audio/")
+          tf = tarfile.open(src)
+          n = 0
+          for m in tf:
+              assert not m.name.startswith("/") and ".." not in m.name.split("/"), "unsafe path " + m.name
+              assert m.isfile() or m.isdir(), "unsupported member " + m.name
+              if m.name.startswith(want[1]) or m.name == want[0] or m.name.startswith("v2/kit/out/" + os.environ["SHORT_ID"] + "/audio"):
+                  tf.extract(m, dest); n += 1
+          print("extracted", n)
+          PY
+          rm -f "$RUNNER_TEMP/in/gate-bundle.tar.gz"
+      - name: Mix, earshot final-mix gate
+        if: inputs.kind == 'mix'
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/result"
+          extra=""
+          [ "$SELFTEST" = "true" ] && extra="--selftest"
+          python3 .github/scripts/earshot/mix_gate.py --root "$RUNNER_TEMP/w/v2/kit/out/${{ inputs.short_id }}" --id "${{ inputs.short_id }}" --out "$RUNNER_TEMP/result" --mode "$MODE" $extra 2>&1 | tee "$RUNNER_TEMP/result/run.log"
+          exit ${PIPESTATUS[0]}
+      - name: SFX, render the launch kit once
+        if: inputs.kind == 'sfx'
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/earshot/sfx_render.py "$RUNNER_TEMP/result" 2>&1 | tee "$RUNNER_TEMP/sfx.log"
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: earshot-${{ inputs.kind }}-${{ inputs.label }}
+          path: ${{ runner.temp }}/result
+          retention-days: 7
+          if-no-files-found: warn

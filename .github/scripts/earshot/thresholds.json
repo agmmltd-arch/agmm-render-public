@@ -1,0 +1,30 @@
+{
+  "version": "2026-10-26",
+  "note": "Every number the earshot audio gates fail on. Change here, nowhere else. Calibrated from the first Actions runs (see CALIBRATION in the run output).",
+  "voice": {
+    "lufs_min": -20.0,
+    "lufs_max": -16.0,
+    "true_peak_max_dbtp": -1.0,
+    "clipped_samples_max": 0,
+    "speech_frame_ms": 10,
+    "speech_floor_dbfs": -50.0,
+    "speech_below_p95_db": 28.0,
+    "speech_merge_gap_ms": 150,
+    "speech_min_ms": 120,
+    "click": {"ratio_min": 14.0, "floor_peak": 0.02, "max_width_frames": 4, "interior_margin_ms": 60, "max_clicks": 0},
+    "stray": {"max_ms": 350, "isolation_ms": 250, "edge_margin_ms": 150, "max_strays": 0},
+    "nonspeech_event": {"min_prominence_db": 12.0, "min_z": 2.5, "max_length_ms": 400, "max_events": 0},
+    "breath": {"min_z": 2.0, "min_peak_dbfs": -30.0, "max_breaths": 0}
+  },
+  "mix": {
+    "first_sound_max_s": 1.0,
+    "cue_offset_max_ms": 80,
+    "cue_off_fraction_max": 0.10,
+    "cut_offset_max_ms": 80,
+    "cut_off_fraction_max": 0.20,
+    "voice_gap_min_s": 0.30,
+    "bed_swell_min_rise_db": 8.0,
+    "bed_swell_gap_pad_s": 0.05,
+    "max_bed_swells_in_gaps": 0
+  }
+}
