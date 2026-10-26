@@ -184,6 +184,8 @@ jobs:
           I2=$(LUFS m1.wav); G2=$(python3 -c "print(-14-($I2))"); echo "master: mix $I1 LUFS, gain $G1, after limit $I2, trim $G2"
           ffmpeg -nostdin -y -loglevel error -i picture.mp4 -i m1.wav -map 0:v -map 1:a -c:v copy -af "volume=${G2}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled,aresample=48000" -c:a aac -b:a 256k -shortest -movflags +faststart FINAL.mp4
           python3 film/qa.py FINAL.mp4 film/assets/timeline.json qa | tee qa.txt
+          # a phone-sized share copy (under 30 MB) for sending to the founder
+          ffmpeg -nostdin -y -loglevel error -i FINAL.mp4 -c:v libx264 -preset slow -crf 26 -maxrate 4.5M -bufsize 9M -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart SHARE.mp4 || true
           cp film/BUILD.json film/assets/timeline.json film/film.html film/mix.json qa/ 2>/dev/null || true
           rm -rf qa/f10 qa/f2
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -192,5 +194,6 @@ jobs:
           name: hailmary-${{ inputs.label }}
           path: |
             FINAL.mp4
+            SHARE.mp4
             qa
           retention-days: 7
