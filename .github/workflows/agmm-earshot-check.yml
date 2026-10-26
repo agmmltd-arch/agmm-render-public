@@ -118,6 +118,7 @@ jobs:
       - name: Voice takes, listening check
         if: inputs.kind == 'voice'
         run: |
+          set +e
           set -uo pipefail
           mkdir -p "$RUNNER_TEMP/out"
           args=(--dir "private/$VPATH" --out "$RUNNER_TEMP/out" --mode "$MODE" --inject "$INJECT")
@@ -169,6 +170,7 @@ jobs:
       - name: Mix, earshot final-mix gate
         if: inputs.kind == 'mix'
         run: |
+          set +e
           set -uo pipefail
           mkdir -p "$RUNNER_TEMP/result"
           extra=""

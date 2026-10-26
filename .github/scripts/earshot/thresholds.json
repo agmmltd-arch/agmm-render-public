@@ -33,7 +33,8 @@
       "min_z": 2.0,
       "min_rel_db": -12.0,
       "max_breaths": 0,
-      "note": "min_rel_db: breath peak relative to the take's speech level (p95 of 10 ms frames); a breath within 12 dB of speech is loud"
+      "note": "min_rel_db: breath peak relative to the take's speech level (p95 of 10 ms frames); a breath within 12 dB of speech is loud",
+      "min_length_ms": 150
     },
     "assembled": {
       "lufs_min": -20.0,

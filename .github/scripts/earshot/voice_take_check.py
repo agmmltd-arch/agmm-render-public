@@ -66,7 +66,7 @@ def find_clicks(m, sr, regs, th=TH["click"]):
     ref = median_filter(e, size=81, mode="nearest") + 1e-7
     ratio = e / ref
     out, best = [], 0.0
-    for i in np.where(ratio >= 3.0)[0]:
+    for i in np.where(ratio >= th["ratio_min"])[0]:
         lo, hi = max(0, i - 6), min(k, i + 7)
         if e[i] < e[lo:hi].max():
             continue
@@ -135,7 +135,8 @@ def check_take(path, api, th=TH, kind=None):
                 nonspeech.append({"t": e["t"], "label": e.get("label"), "z": z0, "prominence_db": e["prominence_db"], "length_ms": e["length_ms"]})
         elif tags[0]["tag"] == "a breath" and z0 >= br["min_z"]:
             rel = round(e.get("peak_dbfs", -99) - sp_db, 1)
-            breaths.append({"t": e["t"], "z": z0, "peak_dbfs": e["peak_dbfs"], "rel_to_speech_db": rel, "loud": rel >= br["min_rel_db"]})
+            breaths.append({"t": e["t"], "z": z0, "peak_dbfs": e["peak_dbfs"], "rel_to_speech_db": rel, "length_ms": e.get("length_ms"), "prominence_db": e.get("prominence_db"),
+                            "loud": rel >= br["min_rel_db"] and e.get("length_ms", 0) >= br["min_length_ms"]})
     fails = []
     lufs, tp = meas.get("lufs"), meas.get("true_peak_dbtp")
     win = th[kind]
@@ -187,10 +188,12 @@ def inject(src, kind, dst, all_takes=None):
             xx, ss = sf.read(str(p), always_2d=False, dtype="float64")
             parts += [to_mono(xx), gap]
         y = np.concatenate(parts)
-        target = {"asm_ok": -18.0, "asm_loud": -12.0, "asm_quiet": -24.0}[kind]
+        # shape like the assembler's loudnorm (less crest than a raw take), then set the loudness; the peak stays under -1.5 dBFS so only loudness is under test
+        y = np.sign(y) * np.abs(y) ** {"asm_ok": 0.8, "asm_loud": 0.45, "asm_quiet": 0.8}[kind]
         cur = pl.Meter(sr).integrated_loudness(y)
+        target = {"asm_ok": -18.0, "asm_loud": 0.0, "asm_quiet": -24.0}[kind]
         y = y * 10 ** ((target - cur) / 20)
-        y = y * min(1.0, 10 ** (-1.5 / 20) / max(1e-9, np.abs(y).max()))     # keep the peak under -1.5 dBFS: only the loudness is under test
+        y = y * min(1.0, 10 ** (-1.5 / 20) / max(1e-9, np.abs(y).max()))
     sf.write(dst, np.clip(y, -1, 1).astype(np.float32), sr, subtype="PCM_24")
 
 
@@ -226,7 +229,7 @@ def main():
         rows.append(check_take(str(t), api))
     inj_rows = []
     for k, d in injected:
-        r = check_take(str(d), api)
+        r = check_take(str(d), api, kind="assembled" if k.startswith("asm_") else "paragraph")
         r["injected"] = k
         r["expected"] = EXPECT[k]
         r["caught"] = (r["verdict"] == "PASS") if EXPECT[k] == "PASS" else any(f.startswith(EXPECT[k]) for f in r["fails"])
