@@ -225,10 +225,11 @@ def inject(src, kind, dst, all_takes=None):
         pause = kind == "sfx_knock_pause"
         if pause:
             ga, gb = max(gaps_, key=lambda g: g[1] - g[0])
-            a, b = ga, gb - 0.3      # centre of the largest pause (t below adds 0.3 s)
+            print("INJECT sfx_knock_pause: largest pause %.2f-%.2f s (%.2f s)" % (ga, gb, gb - ga))
+            a, b = ga, gb - 0.6      # t below = centre of the pause - 0.09 s (the 0.18 s knock sits in the middle)
         snd = snd * 10 ** ((20 * np.log10(np.abs(m).max()) - 4.0 - 20 * np.log10(max(1e-9, np.abs(snd).max()))) / 20)     # its peak 4 dB under the take's own peak, like a real stray knock or ding
-        t = int(((a + b) / 2 + 0.3) * sr)
-        snd = snd[: int(0.3 * sr)] if pause else snd      # a stray knock, not a ring-out into the next word
+        t = int(((a + b) / 2 + 0.3 - (0.09 if pause else 0.0)) * sr)
+        snd = snd[: int(0.18 * sr)] if pause else snd      # a stray knock, not a ring-out into the next word
         if y.ndim == 2:
             y[t: t + len(snd), :] += snd[:, None]
         else:

@@ -18,7 +18,7 @@
     },
     "stray": {
       "max_ms": 350,
-      "isolation_ms": 250,
+      "isolation_ms": 150,
       "edge_margin_ms": 150,
       "max_strays": 0
     },
