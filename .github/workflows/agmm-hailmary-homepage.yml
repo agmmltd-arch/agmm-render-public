@@ -1,17 +1,17 @@
 name: AGMM hailmary homepage capture
 run-name: AGMM hailmary homepage ${{ inputs.label }}
 # Hail Mary end card (26 Oct 2026): a frame sequence of the live agmm.co.uk homepage on a 1440x900 desktop viewport at device scale 2
-# (headless Chromium via Playwright). The page runs on a virtual clock (rAF, timers, Date, CSS animations stepped 1/30 s per frame) so every
+# (headless Chromium via Playwright). The page runs on a virtual clock (rAF, timers, Date, CSS animations stepped 1/30 s per frame). The hero sequence is scroll-driven: the clip is the end of it, then on down the page so every
 # frame is exact. utm_source=qa tags it as QA traffic in the CRM. No apt, no media committed here: the frames leave as an artifact.
 on:
   workflow_dispatch:
     inputs:
       label: { description: short label, required: true }
       mode: { description: 'explore (contact sheets, timings) or capture (the frame sequence)', required: false, default: capture }
-      lead_at: { description: 'capture: virtual second where the clip starts (end of the first hero sequence)', required: false, default: '5.0' }
-      hold: { description: 'capture: seconds of the settled hero before the scroll', required: false, default: '1.0' }
-      scroll_dur: { description: 'capture: seconds of the scroll', required: false, default: '3.0' }
-      scroll_y: { description: 'capture: css px scrolled', required: false, default: '1800' }
+      start_y: { description: 'capture: css px scroll position where the clip starts (late in the hero scroll-driven sequence)', required: false, default: '2000' }
+      end_y: { description: 'capture: css px scroll position where it ends', required: false, default: '4300' }
+      hold: { description: 'capture: seconds held at the start before the scroll', required: false, default: '0.4' }
+      scroll_dur: { description: 'capture: seconds of the scroll', required: false, default: '3.6' }
 permissions:
   contents: read
 concurrency:
@@ -31,10 +31,10 @@ jobs:
       - name: Capture
         env:
           MODE: ${{ inputs.mode }}
-          LEAD_AT: ${{ inputs.lead_at }}
+          START_Y: ${{ inputs.start_y }}
+          END_Y: ${{ inputs.end_y }}
           HOLD: ${{ inputs.hold }}
           SCROLL_DUR: ${{ inputs.scroll_dur }}
-          SCROLL_Y: ${{ inputs.scroll_y }}
         run: |
           set -euo pipefail
           cat > hp_capture.py <<'PYEOF'
@@ -43,10 +43,10 @@ jobs:
           from PIL import Image
 
           MODE = os.environ.get("MODE", "explore")
-          LEAD_AT = float(os.environ.get("LEAD_AT", "5.0"))      # virtual second at which the clip starts (end of the hero's first sequence)
-          HOLD = float(os.environ.get("HOLD", "1.0"))            # seconds of the settled hero before the scroll starts
-          SCROLL_DUR = float(os.environ.get("SCROLL_DUR", "3.0"))
-          SCROLL_Y = float(os.environ.get("SCROLL_Y", "1800"))
+          START_Y = float(os.environ.get("START_Y", "2000"))     # css px where the clip starts: late in the hero's scroll-driven first sequence
+          HOLD = float(os.environ.get("HOLD", "0.4"))            # seconds of the settled hero before the scroll starts
+          SCROLL_DUR = float(os.environ.get("SCROLL_DUR", "3.6"))
+          END_Y = float(os.environ.get("END_Y", "4300"))
           BUDGET_MB = float(os.environ.get("BUDGET_MB", "24"))
           URL = "https://agmm.co.uk/?utm_source=qa"
           FPS = 30
@@ -165,11 +165,13 @@ jobs:
 
           async def capture(page):
               dt = 1000 / FPS
-              # run the page to LEAD_AT with no pictures, stepping at the film rate
-              n0 = int(round(LEAD_AT * FPS))
-              for i in range(n0):
-                  await page.evaluate("dt => window.__vt.step(dt)", dt)
-                  await settle(page, 6)
+              # walk down to START_Y in steps so every reveal on the way fires, then let it settle (no pictures yet)
+              for k in range(1, 31):
+                  await scroll_to(page, START_Y * k / 30)
+                  for _ in range(4):
+                      await page.evaluate("dt => window.__vt.step(dt)", dt); await settle(page, 6)
+              for _ in range(45):
+                  await page.evaluate("dt => window.__vt.step(dt)", dt); await settle(page, 8)
               total = HOLD + SCROLL_DUR
               N = int(round(total * FPS))
               raw = []
@@ -177,7 +179,7 @@ jobs:
               for i in range(N):
                   t = i / FPS
                   if t >= HOLD:
-                      y = SCROLL_Y * ease((t - HOLD) / SCROLL_DUR)
+                      y = START_Y + (END_Y - START_Y) * ease((t - HOLD) / SCROLL_DUR)
                       await scroll_to(page, y)
                   await page.evaluate("dt => window.__vt.step(dt)", dt)
                   await settle(page, 20)
@@ -199,7 +201,7 @@ jobs:
               W, H, bufs, mb = choice
               d = f"{OUT}/homepage"; os.makedirs(d, exist_ok=True)
               for i, x in enumerate(bufs): open(f"{d}/f{i:04d}.jpg", "wb").write(x)
-              json.dump({"fps": FPS, "frames": N, "width": W, "height": H, "mb": round(mb, 1), "src": URL, "viewport": [1440, 900], "dsf": 2, "lead_at": LEAD_AT, "hold": HOLD, "scroll_dur": SCROLL_DUR, "scroll_y": SCROLL_Y,
+              json.dump({"fps": FPS, "frames": N, "width": W, "height": H, "mb": round(mb, 1), "src": URL, "viewport": [1440, 900], "dsf": 2, "start_y": START_Y, "end_y": END_Y, "hold": HOLD, "scroll_dur": SCROLL_DUR,
                          "pattern": "f%04d.jpg", "captured": time.strftime("%Y-%m-%d")}, open(f"{d}/manifest.json", "w"), indent=1)
               # contact sheet of 12 evenly spaced frames to read
               from PIL import ImageDraw
