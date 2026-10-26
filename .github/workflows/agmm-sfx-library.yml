@@ -1,0 +1,86 @@
+name: AGMM SFX library
+run-name: AGMM SFX library ${{ inputs.label }}
+
+# Sam, 26 Oct 2026: "use the Openverse API, millions of sound effects". Candidates (metadata only: source URL, licence, attribution) are harvested from
+# Openverse audio on the operator's machine (license_type=commercial, then only cc0 / pdm / by / by-sa) and committed as
+# .github/scripts/earshot/sfxlib/candidates.json. This workflow downloads each candidate, trims it to the real sound, measures it and judges it with
+# earshot (MIT, CPU, pinned) - one job per role, models cached. Rejects: music bed, voice, clipping, long silence, noise bed, too quiet, sustained,
+# off-role. Output per role: accepted.json (+ trimmed wav, peak -1 dBFS) and rejected.json with the reason. No secrets, no paid call.
+on:
+  workflow_dispatch:
+    inputs:
+      label:
+        description: unique safe label (run title, artifact names)
+        required: true
+      roles:
+        description: JSON array of roles to run
+        required: false
+        default: '["whoosh","tick","pop","stamp","ding","impact","cash","paper","typing","error","riser"]'
+      limit:
+        description: max candidates per role (0 = all)
+        required: false
+        default: '0'
+permissions:
+  contents: read
+jobs:
+  analyse:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        role: ${{ fromJSON(inputs.roles) }}
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      EARSHOT_HOME: /home/runner/.cache/earshot
+      EARSHOT_THREADS: '4'
+      LABEL: ${{ inputs.label }}
+      ROLE: ${{ matrix.role }}
+      LIMIT: ${{ inputs.limit }}
+    steps:
+      - name: Validate
+        run: |
+          set -euo pipefail
+          [[ "$LABEL" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          [[ "$ROLE" =~ ^[a-z]{2,12}$ ]]
+          [[ "$LIMIT" =~ ^[0-9]{1,3}$ ]]
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/scripts/earshot
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12.8'
+      - name: Cache earshot models
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/earshot
+          key: earshot-models-v1-591fa3e
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: earshot-pip-${{ runner.os }}-${{ hashFiles('.github/scripts/earshot/install.sh') }}
+      - name: Install earshot (pinned commit, CPU torch)
+        timeout-minutes: 15
+        run: bash .github/scripts/earshot/install.sh
+      - name: Judge the candidates
+        run: |
+          set +e
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/out"
+          python3 .github/scripts/earshot/sfx_analyse.py --role "$ROLE" --out "$RUNNER_TEMP/out" --limit "$LIMIT" 2>&1 | tee "$RUNNER_TEMP/out/run.log" | tail -n 40
+          exit 0
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sfx-${{ inputs.label }}-${{ matrix.role }}
+          path: ${{ runner.temp }}/out
+          retention-days: 7
+          if-no-files-found: warn

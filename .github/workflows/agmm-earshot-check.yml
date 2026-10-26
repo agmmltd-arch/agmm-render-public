@@ -4,6 +4,7 @@ run-name: AGMM earshot ${{ inputs.kind }} ${{ inputs.label }}
 # earshot (MIT, github.com/Leonxlnx/earshot) gives the video programme ears: CPU-only listening checks on ubuntu, models cached.
 #   kind=voice  sealed paragraph takes from the PRIVATE repo (deploy key): loudness, true peak, clicks, strays, non-speech events, breaths
 #   kind=mix    one short's final mix from a gate bundle release: critique scorecard + timeline sync, FAIL on the three named majors
+#   kind=sfxproof  do an engine build's cues land on their beats (earshot timeline sync, measured onset vs file start)
 #   kind=sfx    render earshot's code-made 'launch' kit once and publish the measured registry (onset / peak / end per take)
 # Thresholds: .github/scripts/earshot/thresholds.json. mode=warn records; mode=required turns a FAIL into a red run.
 # No paid call: earshot's optional Gemini `llm` command is never run. Nothing is committed back; the artifact holds numbers (and, for
@@ -74,7 +75,7 @@ jobs:
       - name: Validate labels
         run: |
           set -euo pipefail
-          [[ "$KIND" =~ ^(voice|mix|sfx)$ ]]
+          [[ "$KIND" =~ ^(voice|mix|sfx|sfxproof)$ ]]
           [[ "$LABEL" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
           [[ "$MODE" =~ ^(warn|required)$ ]]
           [[ "$INJECT" =~ ^(none|click|click_soft|sfx_knock_pause|sfx_in_speech|clip|quiet|asm_ok|asm_loud|asm_quiet|all)$ ]]
@@ -88,7 +89,7 @@ jobs:
             .github/scripts/earshot
           sparse-checkout-cone-mode: false
       - name: Fetch takes (read-only deploy key)
-        if: inputs.kind == 'voice'
+        if: inputs.kind == 'voice' || inputs.kind == 'sfxproof'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: agmmltd-arch/agmm-video-render
@@ -177,6 +178,14 @@ jobs:
           extra=""
           [ "$SELFTEST" = "true" ] && extra="--selftest"
           python3 .github/scripts/earshot/mix_gate.py --root "$RUNNER_TEMP/w/v2/kit/out/${{ inputs.short_id }}" --id "${{ inputs.short_id }}" --out "$RUNNER_TEMP/result" --mode "$MODE" $extra 2>&1 | tee "$RUNNER_TEMP/result/run.log"
+          exit ${PIPESTATUS[0]}
+      - name: SFX cue proof, engine build cues vs their beats
+        if: inputs.kind == 'sfxproof'
+        run: |
+          set +e
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/result"
+          python3 .github/scripts/earshot/sfx_cue_proof.py "private/$VPATH" "$RUNNER_TEMP/result" 2>&1 | tee "$RUNNER_TEMP/result/run.log"
           exit ${PIPESTATUS[0]}
       - name: SFX, render the launch kit once
         if: inputs.kind == 'sfx'

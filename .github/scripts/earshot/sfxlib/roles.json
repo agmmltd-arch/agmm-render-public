@@ -1,0 +1,160 @@
+{
+ "whoosh": {
+  "desc": "a fast air whoosh",
+  "max_s": 1.4,
+  "kinds": [
+   "whoosh",
+   "seam"
+  ],
+  "queries": [
+   "whoosh",
+   "swoosh",
+   "swish",
+   "air whoosh transition"
+  ]
+ },
+ "tick": {
+  "desc": "a short light tick",
+  "max_s": 0.3,
+  "kinds": [
+   "tick",
+   "click",
+   "flap"
+  ],
+  "queries": [
+   "tick",
+   "clock tick",
+   "small click",
+   "light tap"
+  ]
+ },
+ "pop": {
+  "desc": "a soft rounded pop",
+  "max_s": 0.45,
+  "kinds": [
+   "pop"
+  ],
+  "queries": [
+   "pop",
+   "bubble pop",
+   "ui pop",
+   "cork pop"
+  ]
+ },
+ "stamp": {
+  "desc": "a rubber stamp thud on paper",
+  "max_s": 0.8,
+  "kinds": [
+   "stamp",
+   "press"
+  ],
+  "queries": [
+   "rubber stamp",
+   "stamp thud",
+   "stamping paper",
+   "ink stamp",
+   "stamp",
+   "desk thud",
+   "book drop",
+   "approved stamp"
+  ]
+ },
+ "ding": {
+  "desc": "a bright notification ding",
+  "max_s": 1.6,
+  "kinds": [
+   "ping"
+  ],
+  "queries": [
+   "ding",
+   "notification",
+   "bell ping",
+   "chime"
+  ]
+ },
+ "impact": {
+  "desc": "a punchy impact hit",
+  "max_s": 1.4,
+  "kinds": [
+   "slam",
+   "hit",
+   "sub"
+  ],
+  "queries": [
+   "impact",
+   "hit",
+   "boom",
+   "thud",
+   "punch"
+  ]
+ },
+ "cash": {
+  "desc": "a coin clink",
+  "max_s": 1.4,
+  "kinds": [
+   "money",
+   "coin",
+   "counter"
+  ],
+  "queries": [
+   "coin",
+   "cash register",
+   "coins drop",
+   "money"
+  ]
+ },
+ "paper": {
+  "desc": "a paper rustle",
+  "max_s": 1.2,
+  "kinds": [
+   "paper"
+  ],
+  "queries": [
+   "paper",
+   "page turn",
+   "paper rustle",
+   "paper slide"
+  ]
+ },
+ "typing": {
+  "desc": "a mechanical keyboard key press",
+  "max_s": 1.6,
+  "kinds": [
+   "type",
+   "pen"
+  ],
+  "queries": [
+   "keyboard typing",
+   "key press",
+   "typewriter",
+   "computer keyboard"
+  ]
+ },
+ "error": {
+  "desc": "a short error buzz",
+  "max_s": 1.2,
+  "kinds": [
+   "error"
+  ],
+  "queries": [
+   "error buzz",
+   "error beep",
+   "wrong answer buzzer",
+   "denied"
+  ]
+ },
+ "riser": {
+  "desc": "a rising riser building up",
+  "max_s": 3.0,
+  "kinds": [
+   "riser",
+   "count"
+  ],
+  "queries": [
+   "riser",
+   "rising sweep",
+   "count up",
+   "ascending beeps"
+  ]
+ }
+}

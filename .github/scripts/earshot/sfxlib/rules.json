@@ -1,0 +1,16 @@
+{
+  "max_source_bytes": 12000000,
+  "min_peak_dbfs": -45.0,
+  "find_over_factor": 1.6,
+  "sustained_db": 20.0,
+  "bed_margin_db": 24.0,
+  "max_clipped_samples": 2,
+  "max_source_true_peak_dbtp": 0.5,
+  "silence_db": 50.0,
+  "max_inner_silence_s": 0.35,
+  "peak_target_dbfs": -1.0,
+  "max_music_p": 0.35,
+  "max_voice_p": 0.30,
+  "role_min_z": 1.0,
+  "note": "Every rejection rule of the Openverse SFX library. role_min_z: earshot match z of the trimmed sound against its own role description (z 1.0 is below 'weak')."
+}
