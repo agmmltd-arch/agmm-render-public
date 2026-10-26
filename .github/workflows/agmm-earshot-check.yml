@@ -75,7 +75,7 @@ jobs:
       - name: Validate labels
         run: |
           set -euo pipefail
-          [[ "$KIND" =~ ^(voice|mix|sfx|sfxproof)$ ]]
+          [[ "$KIND" =~ ^(voice|mix|sfx|sfxproof|sfxbank)$ ]]
           [[ "$LABEL" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
           [[ "$MODE" =~ ^(warn|required)$ ]]
           [[ "$INJECT" =~ ^(none|click|click_soft|sfx_knock_pause|sfx_in_speech|clip|quiet|asm_ok|asm_loud|asm_quiet|all)$ ]]
@@ -187,6 +187,11 @@ jobs:
           mkdir -p "$RUNNER_TEMP/result"
           python3 .github/scripts/earshot/sfx_cue_proof.py "private/$VPATH" "$RUNNER_TEMP/result" 2>&1 | tee "$RUNNER_TEMP/result/run.log"
           exit ${PIPESTATUS[0]}
+      - name: SFX bank variants, many unique takes with role scores
+        if: inputs.kind == 'sfxbank'
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/earshot/sfx_bank_variants.py "$RUNNER_TEMP/result" 2>&1 | tee "$RUNNER_TEMP/bank.log"
       - name: SFX, render the launch kit once
         if: inputs.kind == 'sfx'
         run: |
