@@ -76,7 +76,7 @@ jobs:
       - name: Validate labels
         run: |
           set -euo pipefail
-          [[ "$KIND" =~ ^(voice|mix|sfx|sfxproof|sfxbank|sfxaudit|sfxremeasure|sfxthin)$ ]]
+          [[ "$KIND" =~ ^(voice|mix|sfx|sfxproof|sfxbank|sfxaudit|sfxremeasure|sfxthin|sfxflipdry)$ ]]
           [[ "$LABEL" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
           [[ "$MODE" =~ ^(warn|required)$ ]]
           [[ "$INJECT" =~ ^(none|click|click_soft|sfx_knock_pause|sfx_in_speech|clip|quiet|asm_ok|asm_loud|asm_quiet|all)$ ]]
@@ -88,9 +88,10 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             .github/scripts/earshot
+            .github/scripts/sound-audit-native
           sparse-checkout-cone-mode: false
       - name: Fetch takes (read-only deploy key)
-        if: inputs.kind == 'voice' || inputs.kind == 'sfxproof' || inputs.kind == 'sfxaudit' || inputs.kind == 'sfxremeasure' || inputs.kind == 'sfxthin'
+        if: inputs.kind == 'voice' || inputs.kind == 'sfxproof' || inputs.kind == 'sfxaudit' || inputs.kind == 'sfxremeasure' || inputs.kind == 'sfxthin' || inputs.kind == 'sfxflipdry'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: agmmltd-arch/agmm-video-render
@@ -116,13 +117,13 @@ jobs:
           path: ~/.cache/pip
           key: earshot-pip-${{ runner.os }}-${{ hashFiles('.github/scripts/earshot/install.sh') }}
       - name: Install earshot (pinned commit, CPU torch)
-        if: inputs.kind != 'sfxaudit' && inputs.kind != 'sfxremeasure'
+        if: inputs.kind != 'sfxaudit' && inputs.kind != 'sfxremeasure' && inputs.kind != 'sfxflipdry'
         timeout-minutes: 15
         env:
           EARSHOT_NO_FFMPEG: ${{ (inputs.kind == 'sfxthin' || inputs.kind == 'sfxbank' || inputs.kind == 'sfx') && '1' || '' }}
         run: bash .github/scripts/earshot/install.sh
       - name: Install ffmpeg + numpy (audio remix audit needs no models)
-        if: inputs.kind == 'sfxaudit' || inputs.kind == 'sfxremeasure'
+        if: inputs.kind == 'sfxaudit' || inputs.kind == 'sfxremeasure' || inputs.kind == 'sfxflipdry'
         timeout-minutes: 12
         run: |
           set -euo pipefail
@@ -205,6 +206,25 @@ jobs:
           set -uo pipefail
           mkdir -p "$RUNNER_TEMP/result"
           python3 .github/scripts/earshot/sfx_cue_proof.py "private/$VPATH" "$RUNNER_TEMP/result" 2>&1 | tee "$RUNNER_TEMP/result/run.log"
+          exit ${PIPESTATUS[0]}
+      - name: Checkout the flip branch closure
+        if: inputs.kind == 'sfxflipdry'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: sfx-library-flip
+          path: flipbranch
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/scripts/sound-audit-native
+          sparse-checkout-cone-mode: false
+      - name: SFX flip dry run, a maker short's pinned audit under the new pins
+        if: inputs.kind == 'sfxflipdry'
+        run: |
+          set +e
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/result"
+          python3 .github/scripts/earshot/sfx_flip_dryrun.py .github/scripts/sound-audit-native flipbranch/.github/scripts/sound-audit-native "private/$VPATH/v2" "$RUNNER_TEMP/result" 2>&1 | tee "$RUNNER_TEMP/result/run.log"
           exit ${PIPESTATUS[0]}
       - name: SFX thin-vs-pilots check
         if: inputs.kind == 'sfxthin'
