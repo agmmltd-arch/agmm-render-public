@@ -176,6 +176,23 @@ def inject(src, kind, dst, all_takes=None):
             y[t: t + n, :] += burst[:, None]
         else:
             y[t: t + n] += burst
+    elif kind in ("sfx_knock", "sfx_ping"):
+        # a real non-speech sound from earshot's code-made bank, mixed into the middle of the longest speech region
+        from earshot.forge import bank
+        sid = {"sfx_knock": "knock/wood", "sfx_ping": "notify/mid_tine"}[kind]
+        snd, _meta = bank.render(sid)
+        snd = to_mono(np.asarray(snd, np.float64))
+        if sr != 48000:
+            import soxr
+            snd = soxr.resample(snd, 48000, sr)
+        a, b = max(regs, key=lambda r: r[1] - r[0])
+        sp95 = float(np.percentile(frames_db(m.astype(np.float32), sr, 10)[0], 95))
+        snd = snd * 10 ** ((sp95 - 6.0 - 20 * np.log10(max(1e-9, np.abs(snd).max()))) / 20)     # its peak 6 dB under the take's speech level
+        t = int(((a + b) / 2 + 0.3) * sr)
+        if y.ndim == 2:
+            y[t: t + len(snd), :] += snd[:, None]
+        else:
+            y[t: t + len(snd)] += snd
     elif kind == "clip":
         y = np.clip(y * (2.0 / max(1e-6, np.abs(y).max())), -1.0, 1.0)
     elif kind == "quiet":
@@ -197,7 +214,7 @@ def inject(src, kind, dst, all_takes=None):
     sf.write(dst, np.clip(y, -1, 1).astype(np.float32), sr, subtype="PCM_24")
 
 
-EXPECT = {"click": "V3", "click_soft": "V3", "clip": "V2", "quiet": "V1", "asm_ok": "PASS", "asm_loud": "V1", "asm_quiet": "V1"}
+EXPECT = {"click": "V3", "click_soft": "V3", "sfx_knock": "V5", "sfx_ping": "V5", "clip": "V2", "quiet": "V1", "asm_ok": "PASS", "asm_loud": "V1", "asm_quiet": "V1"}
 
 
 def main():
@@ -205,7 +222,7 @@ def main():
     ap.add_argument("--dir", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--mode", choices=("warn", "required"), default="warn")
-    ap.add_argument("--inject", default="none", help="none | click | click_soft | clip | quiet | asm_ok | asm_loud | asm_quiet | all : add injected copies of the first take to the set")
+    ap.add_argument("--inject", default="none", help="none | click | click_soft | sfx_knock | sfx_ping | clip | quiet | asm_ok | asm_loud | asm_quiet | all : add injected copies of the first take to the set")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
     out = Path(a.out)
@@ -232,7 +249,7 @@ def main():
         r = check_take(str(d), api, kind="assembled" if k.startswith("asm_") else "paragraph")
         r["injected"] = k
         r["expected"] = EXPECT[k]
-        r["caught"] = (r["verdict"] == "PASS") if EXPECT[k] == "PASS" else any(f.startswith(EXPECT[k]) for f in r["fails"])
+        r["caught"] = (r["verdict"] == "PASS") if EXPECT[k] == "PASS" else any(f.startswith(EXPECT[k]) or (EXPECT[k] == "V5" and f.startswith("V3")) for f in r["fails"])
         inj_rows.append(r)
     pl_rows = [r for r in rows if r["kind"] == "paragraph" and r["lufs"] is not None]
     if len(pl_rows) > 1:

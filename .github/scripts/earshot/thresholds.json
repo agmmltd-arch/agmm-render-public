@@ -24,7 +24,7 @@
     },
     "nonspeech_event": {
       "min_prominence_db": 12.0,
-      "min_z": 2.5,
+      "min_z": 3.2,
       "max_length_ms": 400,
       "max_events": 0,
       "interior_margin_ms": 100
