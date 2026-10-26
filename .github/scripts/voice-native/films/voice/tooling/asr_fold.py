@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""asr_fold.py - deterministic transcript-spelling normaliser for the whole-file ASR check (runtime delta 5, proposed 26 Oct 2026; root-approved terms).
+"""asr_fold.py - deterministic transcript-spelling normaliser for the whole-file ASR check (runtime delta 5 qualified 26 Oct 2026; delta 6 PROPOSED same day: phonetic auto-alias replaces aliases.txt).
 
 WHAT IT IS FOR. The whole-file check (post_checks_local.py: local small.en, folded script-vs-heard word diff, ratio >= 0.97) fails a take when the AUDIO IS RIGHT and only the
 transcript's SPELLING differs from the script: a Whisper transcript writes "maximize" for a British "maximise", "Morrison's" for "Morrisons", "£4.75" for "four pounds seventy-five".
@@ -8,13 +8,17 @@ word) must still be a diff, so every fold below is explicit, fixed, and applied 
 
   1 UK/US spelling pairs   a FIXED list in this file (UK_US_STEMS + UK_US_WORDS). No fuzzy matching, no suffix guessing outside the listed stems. The UK form is the canonical form.
   2 possessive / plural    ONLY for tokens listed in that short's names.txt (Morrisons == Morrison's == Morrison). A token that is not a listed name is never folded.
-  3 name aliases           ONLY from the short's aliases.txt (read only here; prepare.py rewrites names.txt on every run, so declarations live in their own file):\n                           <script form> = <heard form> | <reason>
-                           The reason is mandatory; a line without one is ignored (and reported). "euston = houston" with no declaration stays a FAIL: a misheard word is a defect.
+  3 name aliases           DERIVED, never written. After the folds above, a diff block that replaces 1-3 names.txt tokens with 1-3 heard tokens is treated as the same word ONLY when
+                           both sides have the identical primary Double Metaphone code (vendored dmetaphone.py, pure Python, BSD; apostrophes and spaces ignored; code >= 3 letters):
+                           Greggs/Greg's KRKS, Evolv/evolve AFLF, Morrisons/Morrison's MRSNS, copilot/"co pilot" KPLT fold; Euston ASTN vs Houston HSTN stays a diff; a word that is
+                           not in names.txt (total/tonal) is never folded. No file, human or agent declares an alias (aliases.txt is no longer read). Each fold is listed in `applied`
+                           as "auto_alias: <script> <- <heard> | phonetic match <code>".
   4 currency and numbers   "£4.75" == "four pounds seventy-five" == "4.75";  "£150,000" == "150,000 pounds" == "a hundred and fifty thousand pounds" (pound amounts only, pence 1-99).
 
 fold_pair(script_text, heard_text, names_text) -> (script_tokens, heard_tokens, applied) where tokens are asr_compare._canon tokens after the folds and `applied` lists every fold
 that fired as a string ("uk_us: maximize->maximise"), so the check output shows exactly what was normalised.
 `python3 asr_fold.py --selftest` runs the fixtures (folds that must fire; defects that must NOT be folded away)."""
+import difflib
 import re
 import sys
 from pathlib import Path
@@ -90,30 +94,6 @@ def parse_names(names_text):
             for t in _toks(line):
                 names.add(_base(t))
     return names
-
-
-def parse_aliases(aliases_text):
-    """-> ({script token tuple: set of heard token tuples}, ignored lines). aliases.txt (read ONLY by this module; prepare.py never touches it) has one declaration per line:
-        <script form> = <heard form> | <reason>
-    The reason is mandatory; a line without one is ignored and reported. A leading '@alias' is tolerated."""
-    aliases, ignored = {}, []
-    for raw in (aliases_text or "").splitlines():
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        if line.lower().startswith("@alias"):
-            line = line[6:].strip()
-        pair, _, reason = line.partition("|")
-        if "=" not in pair or not reason.strip():
-            ignored.append(line)
-            continue
-        a, b = pair.split("=", 1)
-        sa, sb = tuple(_toks(a)), tuple(_toks(b))
-        if sa and sb:
-            aliases.setdefault(sa, set()).add(sb)
-        else:
-            ignored.append(line)
-    return aliases, ignored
 
 
 def _toks(s):
@@ -196,27 +176,63 @@ def money_fold(text):
 
 
 # ------------------------------------------------------------------------------------------------------------------------------ the fold
-def _replace_seq(tokens, pat, rep):
-    """replace every occurrence of the token sequence `pat` by `rep` (tuples); returns (tokens, count)"""
-    n, out, i, c = len(pat), [], 0, 0
-    while i < len(tokens):
-        if tuple(tokens[i:i + n]) == pat:
-            out.extend(rep)
-            i += n
-            c += 1
-        else:
-            out.append(tokens[i])
-            i += 1
-    return out, c
+_MIN_CODE = 3
 
 
-def fold_pair(script_text, heard_text, names_text="", canon=None, aliases_text=""):
+def _phon(tokens):
+    """primary Double Metaphone code of a token run: apostrophes/spaces dropped, letters only; '' if it is not purely alphabetic."""
+    s = "".join(t.replace("'", "").replace("\u2019", "") for t in tokens)
+    if not s or not s.isalpha() or not s.isascii():
+        return ""
+    from dmetaphone import doublemetaphone
+    return doublemetaphone(s)[0]
+
+
+def auto_alias(a, b, names, a_orig=None, b_orig=None):
+    """-> (b with phonetic name aliases folded to the script form, applied list). Deterministic: the only inputs are the two folded token lists, their pre-fold surface forms (a_orig/b_orig: the phonetic code is taken from what was written/heard, e.g. 'greggs', not its de-pluralised base) and names.txt."""
+    a_orig, b_orig = a_orig or a, b_orig or b
+    sm = difflib.SequenceMatcher(a=[str(t) for t in a], b=[str(t) for t in b], autojunk=False)
+    edits, counts = [], {}
+
+    def try_pair(sa, hb, oa, ob):
+        if not (1 <= len(sa) <= 3 and 1 <= len(hb) <= 3):
+            return None
+        if any(not isinstance(t, str) for t in sa + hb) or sa == hb:
+            return None
+        if not all(t in names or _base(t) in names for t in sa):          # every script token must be a names.txt token
+            return None
+        ca, cb = _phon([t for t in oa if isinstance(t, str)]), _phon([t for t in ob if isinstance(t, str)])
+        if len(ca) < _MIN_CODE or ca != cb:
+            return None
+        return ca
+    for op, i1, i2, j1, j2 in sm.get_opcodes():
+        if op != "replace":
+            continue
+        sa, hb = list(a[i1:i2]), list(b[j1:j2])
+        code = try_pair(sa, hb, a_orig[i1:i2], b_orig[j1:j2])
+        if code:
+            edits.append((j1, j2, sa, hb, code))
+        elif len(sa) == len(hb) > 1:                                        # a block that merged a name with a neighbouring diff: judge each aligned pair alone
+            for k in range(len(sa)):
+                code = try_pair([sa[k]], [hb[k]], [a_orig[i1 + k]], [b_orig[j1 + k]])
+                if code:
+                    edits.append((j1 + k, j1 + k + 1, [sa[k]], [hb[k]], code))
+    out = list(b)
+    for j1, j2, sa, hb, code in sorted(edits, reverse=True):
+        out[j1:j2] = sa
+    for j1, j2, sa, hb, code in edits:
+        key = (" ".join(sa), " ".join(hb), code)
+        counts[key] = counts.get(key, 0) + 1
+    applied = ["auto_alias: %s <- %s | phonetic match %s%s" % (k[0], k[1], k[2], (" x%d" % n) if n > 1 else "") for k, n in counts.items()]
+    return out, applied
+
+
+def fold_pair(script_text, heard_text, names_text="", canon=None):
     """-> (script tokens, heard tokens, applied list). `canon` is asr_compare._canon (injected so this module has no import cycle in tests)."""
     if canon is None:
         from asr_compare import _canon as canon
     names = parse_names(names_text)
-    aliases, ignored = parse_aliases(aliases_text)
-    applied = ["alias line ignored (no reason or malformed): " + l for l in ignored]
+    applied = []
     a_txt, b_txt = money_fold(script_text), money_fold(heard_text)
     a, b = canon(a_txt), canon(b_txt)
 
@@ -238,14 +254,11 @@ def fold_pair(script_text, heard_text, names_text="", canon=None, aliases_text="
                 t2 = base
             out.append(t2)
         return out
+    a_orig, b_orig = list(a), list(b)
     a, b = norm(a, "script"), norm(b, "heard")
-    for sa, heards in aliases.items():
-        script_alias = tuple(norm(list(sa), "alias"))
-        for sb in heards:
-            hb = tuple(norm(list(sb), "alias"))
-            b, c = _replace_seq(b, hb, script_alias)
-            if c:
-                applied.append("alias: %s -> %s x%d" % (" ".join(sb), " ".join(sa), c))
+    if names:
+        b, aa = auto_alias(a, b, names, a_orig, b_orig)
+        applied.extend(aa)
     return a, b, applied
 
 
@@ -268,8 +281,8 @@ def selftest():
     def old(s, h):
         return _ratio(_canon(s.lower()), _canon(h.lower()))
 
-    def new(s, h, names="", aliases=""):
-        a, b, ap = fold_pair(s, h, names, _canon, aliases)
+    def new(s, h, names=""):
+        a, b, ap = fold_pair(s, h, names, _canon)
         return _ratio(a, b) + (ap,)
     # ---- folds that must fire
     s = "the plan will maximise growth and the programme will organise the whole organisation"
@@ -281,19 +294,39 @@ def selftest():
     r1, d1, ap = new("Morrisons plans cuts", "Morrison's plans cuts", "Morrisons\n")
     r2, d2, ap2 = new("Morrisons plans cuts", "Morrison's plans cuts", "")
     expect("possessive fold fires only for a name listed in names.txt", d0 and not d1 and d2, "listed=%s unlisted=%s" % (d1, d2))
-    r1, d1, ap = new("Greggs has built a weather formula", "Greg's has built a weather formula", "Greggs\n", "greggs = greg's | whisper writes the possessive and drops a g\n")
-    r2, d2, ap2 = new("Greggs has built a weather formula", "Greg's has built a weather formula", "Greggs\n")
-    expect("declared alias (aliases.txt, with reason) folds Greggs/Greg's, undeclared stays a diff", not d1 and d2, "declared=%s undeclared=%s" % (d1, d2))
-    r1, d1, ap = new("the Evolv system", "the evolve system", "Evolv\n", "evolv = evolve | brand is pronounced evolve\n")
-    r2, d2, ap2 = new("the Evolv system", "the evolve system", "Evolv\n", "evolv = evolve\n")
-    expect("an alias without a reason is ignored (and reported)", not d1 and d2 and any("ignored" in x for x in ap2))
-    r2, d2, ap2 = new("the Evolv system", "the evolve system", "Evolv\n@alias evolv = evolve | brand is pronounced evolve\n", "")
-    expect("an @alias line inside names.txt is NOT honoured (aliases come only from aliases.txt)", d2)
+    # ---- phonetic auto-alias (delta 6): derived from names.txt + identical primary Double Metaphone code, never declared
+    from dmetaphone import doublemetaphone as _dm
+    codes = {w: _dm(w)[0] for w in ("Greggs", "Greg's", "gregs", "Evolv", "evolve", "Euston", "Houston", "Morrisons", "Morrison's", "total", "tonal")}
+    expect("Double Metaphone codes: Greggs/Greg's both KRKS", _dm("Greggs")[0] == "KRKS" == _dm("Greg's".replace("'", ""))[0], str(codes))
+    expect("Double Metaphone codes: Evolv/evolve both AFLF", _dm("Evolv")[0] == "AFLF" == _dm("evolve")[0])
+    expect("Double Metaphone codes: Euston ASTN differs from Houston HSTN", _dm("Euston")[0] == "ASTN" and _dm("Houston")[0] == "HSTN")
+    r1, d1, ap = new("Greggs has built a weather formula", "Greg's has built a weather formula", "Greggs\n")
+    expect("auto-alias: Greggs/Greg's (KRKS) folds, reason logged", not d1 and any("phonetic match KRKS" in x for x in ap), str(ap))
+    r1, d1, ap = new("Greggs has built a weather formula", "Greg's has built a weather formula", "")
+    expect("auto-alias refused when the token is not in names.txt (Greggs/Greg's stays a diff)", d1 and not any("auto_alias" in x for x in ap), str(d1))
+    r1, d1, ap = new("the Evolv system is live", "the evolve system is live", "Evolv\n")
+    expect("auto-alias: Evolv/evolve (AFLF) folds", not d1 and any("phonetic match AFLF" in x for x in ap), str(ap))
     r1, d1, ap = new("trains stop at Euston tonight", "trains stop at Houston tonight", "Euston\n")
-    r2, d2, ap2 = new("trains stop at Euston tonight", "trains stop at Houston tonight", "Euston\n", "euston = houston\n")
-    expect("Euston/Houston is NOT folded without a declared reason (a misheard word stays a fail)", d1 and d2, str(d1))
-    r1, d1, ap = new("trains stop at Euston tonight", "trains stop at Houston tonight", "Euston\n", "euston = houston | Whisper hears the station name as Houston and the audio says Euston\n")
-    expect("...and is folded when aliases.txt declares it with a reason", not d1)
+    expect("Euston/Houston (ASTN vs HSTN) is NOT folded: a misheard word stays a fail", d1 and not any("auto_alias" in x for x in ap), str(d1))
+    r1, d1, ap = new("Morrisons plans cuts across stores", "Morrison's plans cuts across stores", "Morrisons\n")
+    expect("Morrisons/Morrison's folds (possessive fold or MRSNS)", not d1, str(ap))
+    r1, d1, ap = new("a Morrisons spokesperson said Morrisons will cut", "a Morrison's spokesperson said Morrisons will cut", "Morrisons\n")
+    expect("...also when only one of two mentions is heard as the possessive", not d1, str(ap))
+    r0, d0 = old("the total cost is another twelve thousand pounds this year", "the tonal cost is another twelve thousand pounds this year")
+    r1, d1, ap = new("the total cost is another twelve thousand pounds this year", "the tonal cost is another twelve thousand pounds this year", "Evolv\n")
+    expect("common word total/tonal is refused: not in names.txt", d1 and abs(r1 - r0) < 1e-9 and not any("auto_alias" in x for x in ap), str(d1))
+    r1, d1, ap = new("open Copilot and Copilot again", "open co pilot and co pilot again", "Copilot\n")
+    expect("auto-alias: one names token heard as two words (copilot / co pilot, KPLT), counted", not d1 and any("phonetic match KPLT x2" in x for x in ap), str(ap))
+    r1, d1, ap = new("Pavan Davuluri said so", "Pavan Davuluri's said so", "Pavan Davuluri\n")
+    expect("a run of names tokens (Pavan Davuluri) heard with a possessive still folds", not d1, str(ap))
+    r1, d1, ap = new("your Evolv rollout is done", "you're evolve rollout is done", "Evolv\n")
+    expect("a block merging a name with a defect: the name folds, the defect (your/you're) stays a diff", d1 == [("replace", "your", "you're")] and any("AFLF" in x for x in ap), str(d1))
+    r1, d1, ap = new("the Evolv system is live", "the involve system is live", "Evolv\n")
+    expect("a different code (Evolv AFLF vs involve ANFLF) is not folded", d1 and not any("auto_alias" in x for x in ap), str(d1))
+    r1, d1, ap = new("Ed said so now", "add said so now", "Ed\n")
+    expect("codes shorter than 3 letters never alias (Ed/add)", d1 and not any("auto_alias" in x for x in ap), str(d1))
+    r1, d1, ap = new("the Evolv system is live", "the evolve system is live", "")
+    expect("no names.txt, no auto-alias at all", d1 and not any("auto_alias" in x for x in ap))
     r1, d1, ap = new("she must practise and renew the licence and the defence plan", "She must practice and renew the license and the defense plan.")
     expect("one spoken word, two spellings: licence/license, practise/practice, defence/defense", not d1, str(d1))
     r1, d1, ap = new("the offence was licenced", "The offense was licensed.")
