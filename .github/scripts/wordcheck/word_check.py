@@ -171,8 +171,9 @@ def judge(take, thr=None):
     ex = take.get("extras") or []
     if ex: why.append("extra heard %s" % ", ".join(repr(e.get("heard")) for e in ex[:5]))
     low = []
-    for it in items:
+    for k, it in enumerate(items):
         if it["st"] != "ok": continue
+        if k == 0: continue      # Whisper's probability for the very first word of a clip is unstable (same audio: 0.84 on one runner, 0.08 on another); a garbled first word shows as replaced/missing instead
         lim = T["p_min_letter"] if it.get("letter") else T["p_min"]
         if it.get("p") is not None and it["p"] < lim: low.append("w%d p=%.2f" % (it["w"], it["p"]))
     if low: why.append("low confidence %s" % ", ".join(low[:6]))
