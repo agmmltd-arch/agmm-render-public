@@ -44,7 +44,7 @@ TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eight
 NUMW = set(ONES + [t for t in TENS if t] + ["hundred", "thousand", "million", "billion"])
 SPELL = {"metres": "metres", "meters": "metres", "metre": "metre", "meter": "metre", "kilometers": "kilometres", "kilometre": "kilometres", "kilometres": "kilometres",
          "kilometer": "kilometre", "okay": "ok", "tonnes": "tonnes", "tons": "tonnes", "ton": "tonne", "centre": "center", "grey": "gray", "colour": "color",
-         "kilograms": "kilos", "kilogram": "kilo", "kgs": "kilos", "kg": "kilo"}
+         "chord": "cord", "rose": "rows", "plow": "plough", "kilograms": "kilos", "kilogram": "kilo", "kgs": "kilos", "kg": "kilo"}
 
 
 def say(n):
