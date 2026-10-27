@@ -1,0 +1,77 @@
+name: pkg whisper beats test
+run-name: pkg whisper beats test
+on:
+  workflow_dispatch:
+    inputs:
+      run_id: { description: run holding hailmary-H02-pkgtest3, required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  t:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Runtime
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+          python3 -m pip install --quiet pillow
+      - name: Fetch the packager artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download "${{ inputs.run_id }}" -R "${{ github.repository }}" -n hailmary-H02-pkgtest3 -D art
+          mkdir -p gate-input film/assets
+          cp art/gate-input/POST1080.mp4 art/gate-input/mix.wav gate-input/; cp -r art/gate-input/stems gate-input/; cp art/qa/timeline.json film/assets/timeline.json
+      - name: Whisper and beats, the packager step's own code
+        run: |
+          set -euo pipefail
+          # 3. intelligibility evidence (H check 15 part D): Whisper on the delivered mix and on the voice stem alone, bound to the master's sha256
+          python3 -m pip install --quiet --retries 4 faster-whisper soundfile numpy
+          python3 - <<'PY'
+          import hashlib, json, subprocess
+          import numpy as np
+          from faster_whisper import WhisperModel
+          m = WhisperModel("small.en", device="cpu", compute_type="int8")
+          def text(path):      # decode with ffmpeg ourselves: the runner's preinstalled PyAV is too old for faster-whisper's own decoder
+              raw = subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-i", path, "-vn", "-ac", "1", "-ar", "16000", "-f", "f32le", "-"], capture_output=True, check=True).stdout
+              segs, _ = m.transcribe(np.frombuffer(raw, dtype=np.float32), language="en", beam_size=5, vad_filter=False, condition_on_previous_text=False)
+              return " ".join(s.text.strip() for s in segs)
+          h = hashlib.sha256(open("gate-input/POST1080.mp4", "rb").read()).hexdigest()
+          json.dump({"video_sha256": h, "model": "faster-whisper small.en int8", "text": text("gate-input/POST1080.mp4"),
+                     "voice_only_text": text("gate-input/stems/voice.wav")}, open("gate-input/whisper.json", "w"), indent=1)
+          print(open("gate-input/whisper.json").read()[:600])
+          PY
+          # 4. the beats contact sheet: 16 frames at the film's own anchor times, each labelled with its second
+          python3 - <<'PY'
+          import json, subprocess
+          from PIL import Image, ImageDraw
+          tl = json.load(open("film/assets/timeline.json")); T = tl["total"]
+          ts = sorted({round(v, 2) for v in tl.get("a", {}).values() if 0.2 < v < T - 0.3})
+          while len(ts) > 14:                      # thin the closest pair until 14 anchors remain
+              i = min(range(1, len(ts)), key=lambda k: ts[k] - ts[k - 1])
+              ts.pop(i)
+          ts = sorted(set(ts + [0.3, round(T - 0.4, 2)]))
+          for u in [i * T / 16 for i in range(1, 16)]:
+              if len(ts) >= 16:
+                  break
+              ts.append(round(u, 2))
+          ts = sorted(set(ts))[:16]
+          W, H = 270, 480
+          sheet = Image.new("RGB", (W * 4, H * 4), "black")
+          for i, t in enumerate(ts):
+              subprocess.run(["ffmpeg", "-nostdin", "-y", "-loglevel", "error", "-ss", str(t), "-i", "gate-input/POST1080.mp4", "-frames:v", "1", "-vf", "scale=270:480", "f.png"], check=True)
+              im = Image.open("f.png").convert("RGB"); d = ImageDraw.Draw(im); d.rectangle([0, 0, 62, 16], fill="black"); d.text((3, 2), "%.1fs" % t, fill="white")
+              sheet.paste(im, ((i % 4) * W, (i // 4) * H))
+          sheet.save("gate-input/beats.jpg", quality=88)
+          json.dump(ts, open("gate-input/beats.json", "w"))
+          print("beats at", ts)
+          PY
+          ls -la gate-input gate-input/stems
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pkg-whisper-beats-test
+          path: gate-input
