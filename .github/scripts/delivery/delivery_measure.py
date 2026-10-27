@@ -38,7 +38,11 @@ def demucs_vocals(src, work):
 def whisper_words(path, model="small.en", prompt=None):
     from faster_whisper import WhisperModel
     m = WhisperModel(model, device="cpu", compute_type="int8")
-    segs, _ = m.transcribe(path, word_timestamps=True, language="en", beam_size=5, initial_prompt=prompt, condition_on_previous_text=False)
+    import soundfile as sf
+    audio, _sr = sf.read(path, dtype="float32")
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    segs, _ = m.transcribe(audio, word_timestamps=True, language="en", beam_size=5, initial_prompt=prompt, condition_on_previous_text=False)
     out = []
     for s in segs:
         for w in (s.words or []):
@@ -140,7 +144,7 @@ def emphasis(ws):
         if w.get("stmax") is None or w.get("rel_db") is None:
             continue
         sc = z(w["stmax"], sts) + z(w["rel_db"], rl) + 0.5 * z(w["e"] - w["s"], du)
-        rows.append((round(float(sc), 2), w["w"]))
+        rows.append((round(float(sc), 2), w.get("i"), w["w"]))
     rows.sort(reverse=True)
     return rows[:3]
 
@@ -173,6 +177,8 @@ def measure(wav16, words=None, pivot=None, name="", whisper_prompt=None):
         speak |= (t_e >= w["s"]) & (t_e <= w["e"])
     spk_db = float(np.median(db[speak])) if speak.any() else float(np.median(db))
     words = metrics(words, t_f, f0, t_e, db, spk_f0, spk_db)
+    for i, w in enumerate(words):
+        w["i"] = i
     sents = sentences_of(words)
     srows = []
     prev_end = None
