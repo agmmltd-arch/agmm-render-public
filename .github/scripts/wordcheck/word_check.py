@@ -34,7 +34,7 @@ THR = {"p_min": 0.55,            # lowest accepted Whisper word probability (see
        "sil_max": 0.60,          # silence inside a line
        "hook_sil_max": 0.70,     # the single hook pause
        "breath_max": 0.30,       # silence right before the reveal word
-       "word_silent_db": 30.0,   # a heard word whose loudest 20 ms is this far under the line's p95 level was not spoken
+       "word_silent_db": 42.0,   # a heard word whose loudest 20 ms is this far under the line's p95 level was not spoken (30 flagged quiet "then")
        "hook_lo": 185.0, "hook_hi": 195.0}
 
 # ---------------------------------------------------------------- text normalisation
@@ -70,6 +70,7 @@ def _word_tokens(raw, mode="auto"):
     pound = "\u00a3" in t
     t = t.replace("\u00a3", " ")
     t = re.sub(r"(?<=[a-z0-9])\.(?=[a-z]{2,}\b)", " dot ", t)            # agmm.co.uk -> agmm dot co dot uk
+    t = re.sub(r"^\.(?=[a-z]{2,}\b)", "dot ", t)                          # ".co" ".uk" (Whisper writes "AGMM .co .uk")
     t = re.sub(r"\d[\d,]*(?:\.\d+)?", _num, t)
     t = re.sub(r"[^a-z' ]", " ", t.replace("-", " "))
     out = []
@@ -183,7 +184,7 @@ def judge(take, thr=None):
     else:
         bad = longs
     if bad: why.append("silence inside the line %s s" % ", ".join("%.2f@%.2f" % (s["d"], s["s"]) for s in bad[:4]))
-    ws = [it for it in items if it.get("silent")]
+    ws = [it for it in items if it["st"] == "ok" and it.get("rel") is not None and it["rel"] < -T["word_silent_db"]]
     if ws: why.append("word not spoken (silent audio) %s" % ", ".join("w%d" % it["w"] for it in ws[:5]))
     br = take.get("breath")
     if cls == "reveal" and br is not None and br > T["breath_max"]: why.append("%.2f s of silence before the name (limit %.2f)" % (br, T["breath_max"]))
@@ -221,9 +222,6 @@ def build_take(key, text, cls, words, silences, first_v, last_v, levels=None, du
         if any(st[i][1] is not None and ht[st[i][1]]["wi"] == wi for i in range(len(st))): continue
         w = words[wi]
         extras.append({"heard": w["t"], "s": round(w["s"], 3), "e": round(w["e"], 3), "p": round(float(w.get("p", 1.0)), 3)})
-    thr_ = dict(THR); thr_.update(thr or {})
-    for it in items:
-        if levels is not None and it.get("rel") is not None and it["st"] == "ok" and it["rel"] < -thr_["word_silent_db"]: it["silent"] = True
     rec = {"cls": cls, "n_words": len((text or "").split()), "exp": items, "extras": extras,
            "silences": [{"s": round(r["s"], 3), "d": round(r["e"] - r["s"], 3)} for r in silences], "first_v": round(first_v, 3), "last_v": round(last_v, 3),
            "dur": dur, "heard_n": len(words)}
@@ -538,7 +536,7 @@ def selftest():
     nm = r.get("name_s", 0)
     r = take(REV, "reveal", _w("So the building gives way and your last penny drops straight into", 0.0) + [{"t": "AGM", "s": 4.6, "e": 5.0, "p": 0.9}], sil=[(4.1, 4.6)])
     chk("0.5 s before the name fails (one breath)", not r["judge"]["pass"] and r["breath"] > 0.3, "breath=%s %s" % (r.get("breath"), r["judge"]["reasons"]))
-    lv = [0.0] * 12; lv[6] = -40.0
+    lv = [0.0] * 12; lv[6] = -50.0
     r = take(HOOK, "hook", "What if 33,000 hours of meetings all happened at once", levels=lv[:11])
     chk("word with silent audio fails", not r["judge"]["pass"], str(r["judge"]["reasons"]))
     # pace
