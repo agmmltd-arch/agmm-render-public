@@ -12,6 +12,7 @@ on:
       run_label: { description: label of that run, required: true }
       label: { description: short label, required: true }
       nframes: { description: 'frames in the quality span', required: false, default: '36' }
+      only: { description: 'seams = skip the quality job', required: false, default: both }
       scale: { description: device scale of the quality span (the run used 2), required: false, default: '2' }
 permissions:
   contents: read
@@ -63,11 +64,11 @@ jobs:
           json.dump(counts, open("counts.json", "w"))
           PY
           echo "== decoded frames: copy join vs the segments' own frames (every seam)"
-          ffmpeg -nostdin -v error -i picture_copy.mp4 -f framemd5 - | grep -v '^#' | awk -F, '{print $6}' > copy.md5
+          ffmpeg -nostdin -v error -i picture_copy.mp4 -fps_mode passthrough -f framemd5 - | grep -v '^#' | awk -F, '{print $6}' > copy.md5
           : > segs.md5
-          for f in $(ls segs/seg_*.mp4 | sort -V); do ffmpeg -nostdin -v error -i $f -f framemd5 - | grep -v '^#' | awk -F, '{print $6}' >> segs.md5; done
+          for f in $(ls segs/seg_*.mp4 | sort -V); do ffmpeg -nostdin -v error -i $f -fps_mode passthrough -f framemd5 - | grep -v '^#' | awk -F, '{print $6}' >> segs.md5; done
           wc -l copy.md5 segs.md5
-          if cmp -s copy.md5 segs.md5; then echo "SEAMS_EXACT: every decoded frame of the copy join equals the segments' own frame, in order"; else echo "SEAMS_DIFFER"; diff <(cat copy.md5) <(cat segs.md5) | head; fi
+          if cmp -s copy.md5 segs.md5; then echo "SEAMS_EXACT: every decoded frame of the copy join equals the segments' own frame, in order"; else echo "SEAMS_DIFFER"; diff copy.md5 segs.md5 > md5.diff || true; head -5 md5.diff; fi
           echo "== copy join vs old FINAL, per frame PSNR (luma)"
           ffmpeg -nostdin -v error -threads 4 -i picture_copy.mp4 -i old/FINAL.mp4 -lavfi "[0:v][1:v]psnr=stats_file=psnr.log" -f null - 2>&1 | tail -2 || true
           python3 - <<'PY'
@@ -100,7 +101,7 @@ jobs:
             counts.json
           retention-days: 3
   quality:
-    if: github.repository == 'agmmltd-arch/agmm-render-public' || github.repository == 'SamAGMM/agmm-render-b'
+    if: inputs.only != 'seams' && (github.repository == 'agmmltd-arch/agmm-render-public' || github.repository == 'SamAGMM/agmm-render-b')
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     steps:
