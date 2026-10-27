@@ -190,7 +190,7 @@ jobs:
           # the built-in timeline gives each page only 10 s to define window.film (browser-side, so a literal): heavy 3D pages on a busy runner miss it
           TL="$RUNNER_TEMP/of/node_modules/openfilm/src/timeline.mjs"
           sed -i 's/performance.now() - t0 > 10000) throw new Error(`${c.row.src}: window.film/performance.now() - t0 > 120000) throw new Error(`${c.row.src}: window.film/' "$TL"
-          test "$(grep -c 't0 > 120000) throw new Error(`${c.row.src}: window.film' "$TL")" = 1
+          test "$(grep -F -c 't0 > 120000) throw new Error(`${c.row.src}: window.film' "$TL")" = 1
           node --check "$TL"
           echo "patched openfilm: $(grep -n 'process.env.OF_' "$HM" | cut -c1-60 | tr '\n' ' ')"
       - name: Render this segment (frame-exact range)
