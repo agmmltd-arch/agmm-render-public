@@ -29,7 +29,7 @@ Python 3.9 compatible.
 import argparse, difflib, glob, hashlib, json, os, re, sys
 
 VERSION = 1
-THR = {"p_min": 0.55,            # lowest accepted Whisper word probability (see CALIBRATION in VOICE-V3.md)
+THR = {"p_min": 0.50,            # lowest accepted Whisper word probability (calibration in VOICE-V3.md: 0.50 fails ~25% of otherwise matching takes; every known bad H05 take fails on replaced words at any value)
        "p_min_letter": 0.30,     # the spelled letters (A G M, A G M M, U K) are one Whisper token each and read lower
        "sil_max": 0.60,          # silence inside a line
        "hook_sil_max": 0.70,     # the single hook pause
@@ -448,7 +448,10 @@ def cmd_pick(a):
     allt = {}
     for p in a.files:
         d = json.load(open(p))
-        for t, r in d["takes"].items(): allt[t] = r
+        for t, r in d["takes"].items():
+            if r.get("source") == "mix": continue
+            if any(x and x in t for x in a.exclude.split(",")): continue
+            allt[t] = r
     by = {}
     for t, r in allt.items(): by.setdefault(r["key"], []).append((rank_key(r), t, r))
     for key in sorted(by):
@@ -457,6 +460,15 @@ def cmd_pick(a):
         best = rows[0]
         print("%s: %d takes, %d pass; best %s %s%s" % (key, len(rows), n_pass, best[1], "PASS" if not best[0][0] else "FAIL(" + "; ".join(best[2]["judge"]["reasons"])[:80] + ")",
                                                        (" wpm=%s" % best[2].get("hook_wpm")) if best[2]["cls"] == "hook" else ""))
+    if a.spec:
+        spec, missing = [], []
+        for key in sorted(by):
+            best = sorted(by[key], key=lambda x: x[0])[0]
+            if best[0][0]: missing.append(key); continue
+            run, label = best[2]["tag"].split(":", 1)
+            spec.append({"run": int(run), "label": label, "key": key, "take": best[2]["take"], "as": 1})
+        json.dump({"spec": spec, "no_passing_take": missing}, open(a.spec, "w"), indent=1)
+        print("spec", len(spec), "lines; no passing take for", missing)
     return 0
 
 
@@ -554,7 +566,7 @@ def main():
     r.add_argument("--tag"); r.add_argument("--pick"); r.add_argument("--keys"); r.add_argument("--takes", type=int); r.add_argument("--model", default="large-v3"); r.add_argument("--out", required=True)
     q = sub.add_parser("read"); q.add_argument("words"); q.add_argument("--only"); q.add_argument("--p-min", dest="p_min", type=float); q.add_argument("--p-min-letter", dest="p_min_letter", type=float)
     q.add_argument("--sil-max", dest="sil_max", type=float); q.add_argument("--breath-max", dest="breath_max", type=float)
-    k = sub.add_parser("pick"); k.add_argument("files", nargs="+")
+    k = sub.add_parser("pick"); k.add_argument("files", nargs="+"); k.add_argument("--spec", help="write the assemble spec [{run,label,key,take,as}] of the best PASSING take per line here"); k.add_argument("--exclude", default="", help="comma list of tags (run:label substrings) to ignore")
     a = ap.parse_args()
     if a.selftest: sys.exit(selftest())
     if a.cmd == "run": return cmd_run(a)
