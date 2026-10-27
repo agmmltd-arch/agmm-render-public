@@ -69,16 +69,16 @@ jobs:
           set -euo pipefail
           cat > pub.pem <<'PEM'
           -----BEGIN PUBLIC KEY-----
-                    MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAqkFPrJjqJEb8aRKQCUZG
-                    G9908H5tfI3FuTNjQzprgrCEfNyHzzh0reo7keyAi5NLSTnfoRmojenngewXWENm
-                    oogYZOSBMmXIDW9X4tnL0a2f7j0xupfggb1opInG+5WhV4BeLCnWXlRSFyV8f7DX
-                    H024Vb49I/xZszBGR3rF9zIgZN0gntf633q/nYCHuM6DyPHG0FAvfm7qtx7b7cy9
-                    lfsT7IdLZLPpvD7CvnzHCyxQZgVr5LStB1HM2OK4jst7KvlfWzsQ6wfvcUePYSWx
-                    VD0sj2OOZHzRB1xqUVzQ7ttFmrQ0JcDCzB5q5hQF58QMAZ/gD+zocUVbbfCUGSaE
-                    eqVkr9iYF3gjV74iOu38+TExh9t5e1GfWeKbn9x2mUepWsnorIJ68M/aNFmh8Wmu
-                    OI/BfdT8T0dCIYxPwlOJfqd2L177xLUuQiY6NU/h9WnBl4sHjT/8sPpvIXcELE4p
-                    HRog9J28wHncIk0PsCTMPBDX1ZgcCMe+SJ8KsDK0Tb1vAgMBAAE=
-                    -----END PUBLIC KEY-----
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAqkFPrJjqJEb8aRKQCUZG
+          G9908H5tfI3FuTNjQzprgrCEfNyHzzh0reo7keyAi5NLSTnfoRmojenngewXWENm
+          oogYZOSBMmXIDW9X4tnL0a2f7j0xupfggb1opInG+5WhV4BeLCnWXlRSFyV8f7DX
+          H024Vb49I/xZszBGR3rF9zIgZN0gntf633q/nYCHuM6DyPHG0FAvfm7qtx7b7cy9
+          lfsT7IdLZLPpvD7CvnzHCyxQZgVr5LStB1HM2OK4jst7KvlfWzsQ6wfvcUePYSWx
+          VD0sj2OOZHzRB1xqUVzQ7ttFmrQ0JcDCzB5q5hQF58QMAZ/gD+zocUVbbfCUGSaE
+          eqVkr9iYF3gjV74iOu38+TExh9t5e1GfWeKbn9x2mUepWsnorIJ68M/aNFmh8Wmu
+          OI/BfdT8T0dCIYxPwlOJfqd2L177xLUuQiY6NU/h9WnBl4sHjT/8sPpvIXcELE4p
+          HRog9J28wHncIk0PsCTMPBDX1ZgcCMe+SJ8KsDK0Tb1vAgMBAAE=
+          -----END PUBLIC KEY-----
           PEM
           mkdir -p pack
           head -c 32 /dev/urandom | base64 > key.txt
