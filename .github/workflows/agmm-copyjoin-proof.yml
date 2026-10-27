@@ -64,11 +64,21 @@ jobs:
           json.dump(counts, open("counts.json", "w"))
           PY
           echo "== decoded frames: copy join vs the segments' own frames (every seam)"
-          ffmpeg -nostdin -v error -i picture_copy.mp4 -fps_mode passthrough -f framemd5 - | grep -v '^#' | awk -F, '{print $6}' > copy.md5
+          ffmpeg -nostdin -v error -i picture_copy.mp4 -map 0:v:0 -fps_mode passthrough -f framemd5 - | grep -v '^#' | awk -F, '{print $6}' > copy.md5
           : > segs.md5
-          for f in $(ls segs/seg_*.mp4 | sort -V); do ffmpeg -nostdin -v error -i $f -fps_mode passthrough -f framemd5 - | grep -v '^#' | awk -F, '{print $6}' >> segs.md5; done
+          for f in $(ls segs/seg_*.mp4 | sort -V); do ffmpeg -nostdin -v error -i $f -map 0:v:0 -fps_mode passthrough -f framemd5 - | grep -v '^#' | awk -F, '{print $6}' >> segs.md5; done
           wc -l copy.md5 segs.md5
           if cmp -s copy.md5 segs.md5; then echo "SEAMS_EXACT: every decoded frame of the copy join equals the segments' own frame, in order"; else echo "SEAMS_DIFFER"; diff copy.md5 segs.md5 > md5.diff || true; head -5 md5.diff; fi
+          echo "== alignment diagnostics: mean psnr_y of 100 frames from a few places, shifting the old FINAL by -3..+3 frames"
+          ffprobe -v error -show_entries stream=index,codec_type,start_time,duration -of csv=p=0 picture_copy.mp4
+          ffprobe -v error -show_entries stream=index,codec_type,start_time,duration -of csv=p=0 old/FINAL.mp4
+          for F in 200 600 1000; do
+            for s in -3 -2 -1 0 1 2 3; do
+              A=$((F)); B=$((F+s))
+              r=$(ffmpeg -nostdin -v error -i picture_copy.mp4 -i old/FINAL.mp4 -filter_complex "[0:v]select='between(n\\,$A\\,$((A+59)))',setpts=N/30/TB[a];[1:v]select='between(n\\,$B\\,$((B+59)))',setpts=N/30/TB[b];[a][b]psnr=stats_file=d.log" -f null - 2>&1 | tail -1 || true)
+              awk -v F=$F -v s=$s '{split($6,a,":"); v=a[2]; if(v=="inf") v=100; t+=v; n++} END {if(n) printf "start %d shift %+d: mean psnr_y %.2f over %d frames\n", F, s, t/n, n}' d.log
+            done
+          done
           echo "== copy join vs old FINAL, per frame PSNR (luma)"
           ffmpeg -nostdin -v error -threads 4 -i picture_copy.mp4 -i old/FINAL.mp4 -lavfi "[0:v][1:v]psnr=stats_file=psnr.log" -f null - 2>&1 | tail -2 || true
           python3 - <<'PY'
