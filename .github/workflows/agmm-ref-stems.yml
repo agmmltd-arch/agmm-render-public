@@ -1,0 +1,83 @@
+name: AGMM ref stems
+run-name: AGMM ref stems ${{ inputs.label }}
+# EARS (27 Oct 2026): demucs the story half of the reference reels into a vocals-free bed (no_vocals) so the machine listener can be calibrated on
+# the beds Sam likes. Audio from the PRIVATE repo; output encrypted with the founder's RSA-wrapped AES key (private half stays on the Mac).
+on:
+  workflow_dispatch:
+    inputs:
+      private_commit: { description: 40-hex commit of agmm-video-render holding the clips, required: true }
+      path: { description: folder of mp3 clips inside that commit, required: true }
+      label: { description: short label, required: true }
+permissions:
+  contents: read
+concurrency:
+  group: agmm-ref-stems-${{ inputs.label }}
+  cancel-in-progress: false
+jobs:
+  stems:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            ${{ inputs.path }}
+          sparse-checkout-cone-mode: false
+      - name: Runtime (static ffmpeg, no apt)
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+      - name: Demucs
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/venv"; . "$RUNNER_TEMP/venv/bin/activate"
+          pip install --quiet --retries 4 "numpy<2" soundfile
+          pip install --quiet --retries 4 torch==2.2.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/cpu
+          pip install --quiet --retries 4 demucs==4.0.1 "numpy<2"
+          mkdir -p out/export work
+          for f in private/${{ inputs.path }}/*.mp3; do
+            b=$(basename "$f" .mp3)
+            ffmpeg -v error -y -i "$f" -ac 2 -ar 44100 "work/$b.wav"
+            python -m demucs --two-stems=vocals -n htdemucs -d cpu -o work/sep "work/$b.wav" 2>&1 | tail -2
+            ffmpeg -v error -y -i "work/sep/htdemucs/$b/no_vocals.wav" -ac 2 -b:a 160k "out/export/${b}_bed.mp3"
+          done
+          ls -la out/export
+      - name: Encrypt the audio pack
+        if: always()
+        run: |
+          set -euo pipefail
+          cat > pub.pem <<'PEM'
+          -----BEGIN PUBLIC KEY-----
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAqkFPrJjqJEb8aRKQCUZG
+          G9908H5tfI3FuTNjQzprgrCEfNyHzzh0reo7keyAi5NLSTnfoRmojenngewXWENm
+          oogYZOSBMmXIDW9X4tnL0a2f7j0xupfggb1opInG+5WhV4BeLCnWXlRSFyV8f7DX
+          H024Vb49I/xZszBGR3rF9zIgZN0gntf633q/nYCHuM6DyPHG0FAvfm7qtx7b7cy9
+          lfsT7IdLZLPpvD7CvnzHCyxQZgVr5LStB1HM2OK4jst7KvlfWzsQ6wfvcUePYSWx
+          VD0sj2OOZHzRB1xqUVzQ7ttFmrQ0JcDCzB5q5hQF58QMAZ/gD+zocUVbbfCUGSaE
+          eqVkr9iYF3gjV74iOu38+TExh9t5e1GfWeKbn9x2mUepWsnorIJ68M/aNFmh8Wmu
+          OI/BfdT8T0dCIYxPwlOJfqd2L177xLUuQiY6NU/h9WnBl4sHjT/8sPpvIXcELE4p
+          HRog9J28wHncIk0PsCTMPBDX1ZgcCMe+SJ8KsDK0Tb1vAgMBAAE=
+          -----END PUBLIC KEY-----
+          PEM
+          mkdir -p pack
+          head -c 32 /dev/urandom | base64 > key.txt
+          tar -C out -cz export | openssl enc -aes-256-cbc -pbkdf2 -pass file:key.txt -out pack/audio.enc
+          openssl pkeyutl -encrypt -pubin -inkey pub.pem -pkeyopt rsa_padding_mode:oaep -in key.txt -out pack/key.rsa
+          rm -rf out/export key.txt
+          ls -la pack
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: peek-${{ inputs.label }}
+          path: |
+            out
+            pack
+          retention-days: 2
