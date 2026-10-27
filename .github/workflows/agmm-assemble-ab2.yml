@@ -1,0 +1,329 @@
+name: AGMM assemble A/B 2
+run-name: AGMM assemble A/B 2 ${{ inputs.label }}
+# Byte-identity proof for par2's parallel assemble (27 Oct 2026): the SAME segments and film go through par.yml's serial assemble and par2's parallel one on the same runner,
+# and every deliverable is compared by sha256. Segments and film come from an earlier run (cross-repo artifact reads work for public repos).
+on:
+  workflow_dispatch:
+    inputs:
+      run_id: { description: 'run id that holds film-<run_label> and seg-<run_label>-N', required: true }
+      run_repo: { description: 'repo of that run (owner/name)', required: true }
+      run_label: { description: label of that run, required: true }
+      label: { description: short label, required: true }
+      runner: { description: runs-on label, required: false, default: ubuntu-22.04 }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  ab:
+    if: github.repository == 'agmmltd-arch/agmm-render-public' || github.repository == 'SamAGMM/agmm-render-b'
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 90
+    steps:
+      - name: Inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p src/segs
+          gh run download "${{ inputs.run_id }}" -R "${{ inputs.run_repo }}" -n "film-${{ inputs.run_label }}" -D src/film
+          gh run download "${{ inputs.run_id }}" -R "${{ inputs.run_repo }}" -p "seg-${{ inputs.run_label }}-*" -D src/segraw
+          find src/segraw -name 'seg_*.mp4' -exec cp {} src/segs/ \;
+          ls src/segs | wc -l
+          for v in old new; do mkdir -p $v; cp -r src/film $v/film; cp -r src/segs $v/segs; done
+      - name: Scripts (verbatim copies of the assemble steps of par.yml and par2)
+        run: |
+          set -euo pipefail
+          cat > old_runtime.sh <<'__SCRIPT_EOF__'
+          set -euo pipefail
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+          python3 -m pip install --quiet --retries 4 pillow rapidocr-onnxruntime==1.3.24
+          __SCRIPT_EOF__
+          cat > old_join.sh <<'__SCRIPT_EOF__'
+          set -euo pipefail
+          ls -la segs
+          for f in $(ls segs/seg_*.mp4 | sort -V); do echo "file '$PWD/$f'" ; done > list.txt
+          ffmpeg -nostdin -y -loglevel error -f concat -safe 0 -i list.txt -an -c:v libx264 -preset slow -crf 15 -profile:v high -level 5.2 -pix_fmt yuv420p -r 30 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv picture.mp4
+          cd film && python3 mix.py mix.json ../mix.wav && cd ..
+          # master: a straight gain to -14 LUFS plus a peak limiter, twice. Two-pass loudnorm fell back to its dynamic mode
+          # and flattened every hit to voice level (26 Oct), which is the 'monotone' Sam heard.
+          LUFS() { ffmpeg -nostdin -i "$1" -af ebur128 -f null - 2>&1 | grep -E '^\s+I:' | tail -1 | awk '{print $2}'; }
+          I1=$(LUFS mix.wav); G1=$(python3 -c "print(-14-($I1))")
+          ffmpeg -nostdin -y -loglevel error -i mix.wav -af "volume=${G1}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled" -c:a pcm_f32le m1.wav
+          I2=$(LUFS m1.wav); G2=$(python3 -c "print(-14-($I2))"); echo "master: mix $I1 LUFS, gain $G1, after limit $I2, trim $G2"
+          echo "$G1 $G2" > gain.txt
+          ffmpeg -nostdin -y -loglevel error -i picture.mp4 -i m1.wav -map 0:v -map 1:a -c:v copy -af "volume=${G2}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled,aresample=48000" -c:a aac -b:a 256k -shortest -movflags +faststart FINAL.mp4
+          # qa.py was written and calibrated at 1080x1920 (frame-size check, OCR box heights), so it gets a lanczos 1080 copy of the master
+          ffmpeg -nostdin -y -loglevel error -i FINAL.mp4 -vf scale=1080:1920:flags=lanczos -c:v libx264 -preset veryfast -crf 14 -pix_fmt yuv420p -c:a copy QA.mp4
+          python3 film/qa.py QA.mp4 film/assets/timeline.json qa | tee qa.txt
+          # a phone-sized share copy (under 30 MB): the 4K master supersampled to 1080x1920 with lanczos, which beats 4K squeezed to the same bitrate
+          ffmpeg -nostdin -y -loglevel error -i FINAL.mp4 -vf scale=1080:1920:flags=lanczos -c:v libx264 -preset slow -crf 22 -maxrate 4.5M -bufsize 9M -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a aac -b:a 160k -movflags +faststart SHARE.mp4 || true
+          ls -la FINAL.mp4 SHARE.mp4 || true
+          cp film/BUILD.json film/assets/timeline.json film/film.html film/mix.json qa/ 2>/dev/null || true
+          rm -rf qa/f10 qa/f2
+          __SCRIPT_EOF__
+          cat > old_gate.sh <<'__SCRIPT_EOF__'
+          set -euo pipefail
+          mkdir -p gate-input/stems
+          trap 'echo "packager step failed at line $LINENO" > gate-input/STEP_FAILED.txt' ERR
+          # 1. the 1080x1920 post master (crf 17). FINAL.mp4 stays the 4K; its audio stream is copied bit for bit.
+          ffmpeg -nostdin -y -loglevel error -i FINAL.mp4 -vf scale=1080:1920:flags=lanczos -c:v libx264 -preset slow -crf 17 -maxrate 16M -bufsize 32M -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a copy -movflags +faststart gate-input/POST1080.mp4
+          ffmpeg -nostdin -y -loglevel error -i gate-input/POST1080.mp4 -vn -ar 48000 -c:a pcm_s16le gate-input/mix.wav
+          # 2. stems: mix.py on the SAME mix.json filtered to voice / music / sound effects, then the master gain (G1+G2 from the master step, no limiter)
+          python3 - <<'PY'
+          import json
+          m = json.load(open("film/mix.json"))
+          def part(name, pred):
+              d = {k: v for k, v in m.items() if k != "clips"}
+              d["clips"] = [c for c in m["clips"] if pred(c)]
+              json.dump(d, open("stem_%s.json" % name, "w"))
+              print(name, len(d["clips"]), "clips")
+          part("voice", lambda c: c.get("voice"))
+          isbed = lambda c: bool(c.get("bed")) or "/music/" in c["src"]      # H02 has TWO beds: assets/sfx2/story2.mp3 (flagged bed) and assets/music/alfred.mp3
+          part("music", lambda c: not c.get("voice") and isbed(c))
+          part("sfx", lambda c: not c.get("voice") and not isbed(c))
+          PY
+          G=$(python3 -c "g=open('gain.txt').read().split(); print(float(g[0])+float(g[1]))")
+          for s in voice music sfx; do
+            (cd film && python3 mix.py ../stem_$s.json ../stem_$s.raw.wav)
+            ffmpeg -nostdin -y -loglevel error -i stem_$s.raw.wav -af "volume=${G}dB" -ar 48000 -c:a pcm_s16le gate-input/stems/$s.wav
+          done
+          cp film/mix.json gate-input/mix.json
+          # 3. intelligibility evidence (H check 15 part D): Whisper on the delivered mix and on the voice stem alone, bound to the master's sha256
+          python3 -m pip install --quiet --retries 4 faster-whisper soundfile numpy
+          python3 - <<'PY'
+          import hashlib, json, subprocess
+          import numpy as np
+          from faster_whisper import WhisperModel
+          m = WhisperModel("small.en", device="cpu", compute_type="int8")
+          def text(path):      # decode with ffmpeg ourselves: the runner's preinstalled PyAV is too old for faster-whisper's own decoder
+              raw = subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-i", path, "-vn", "-ac", "1", "-ar", "16000", "-f", "f32le", "-"], capture_output=True, check=True).stdout
+              segs, _ = m.transcribe(np.frombuffer(raw, dtype=np.float32), language="en", beam_size=5, vad_filter=False, condition_on_previous_text=False)
+              return " ".join(s.text.strip() for s in segs)
+          h = hashlib.sha256(open("gate-input/POST1080.mp4", "rb").read()).hexdigest()
+          json.dump({"video_sha256": h, "model": "faster-whisper small.en int8", "text": text("gate-input/POST1080.mp4"),
+                     "voice_only_text": text("gate-input/stems/voice.wav")}, open("gate-input/whisper.json", "w"), indent=1)
+          print(open("gate-input/whisper.json").read()[:600])
+          PY
+          # 4. the beats contact sheet: 16 frames at the film's own anchor times, each labelled with its second
+          python3 - <<'PY'
+          import json, subprocess
+          from PIL import Image, ImageDraw
+          tl = json.load(open("film/assets/timeline.json")); T = tl["total"]
+          ts = sorted({round(v, 2) for v in tl.get("a", {}).values() if 0.2 < v < T - 0.3})
+          while len(ts) > 14:                      # thin the closest pair until 14 anchors remain
+              i = min(range(1, len(ts)), key=lambda k: ts[k] - ts[k - 1])
+              ts.pop(i)
+          ts = sorted(set(ts + [0.3, round(T - 0.4, 2)]))
+          for u in [i * T / 16 for i in range(1, 16)]:
+              if len(ts) >= 16:
+                  break
+              ts.append(round(u, 2))
+          ts = sorted(set(ts))[:16]
+          W, H = 270, 480
+          sheet = Image.new("RGB", (W * 4, H * 4), "black")
+          for i, t in enumerate(ts):
+              subprocess.run(["ffmpeg", "-nostdin", "-y", "-loglevel", "error", "-ss", str(t), "-i", "gate-input/POST1080.mp4", "-frames:v", "1", "-vf", "scale=270:480", "f.png"], check=True)
+              im = Image.open("f.png").convert("RGB"); d = ImageDraw.Draw(im); d.rectangle([0, 0, 62, 16], fill="black"); d.text((3, 2), "%.1fs" % t, fill="white")
+              sheet.paste(im, ((i % 4) * W, (i // 4) * H))
+          sheet.save("gate-input/beats.jpg", quality=88)
+          json.dump(ts, open("gate-input/beats.json", "w"))
+          print("beats at", ts)
+          PY
+          ls -la gate-input gate-input/stems
+          __SCRIPT_EOF__
+          cat > new_join.sh <<'__SCRIPT_EOF__'
+          set -euo pipefail
+          T0=$(date +%s); stamp() { echo "[t+$(( $(date +%s) - T0 ))s] $*"; }
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+          export PATH="$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin:$PATH"
+          ls -la segs
+          for f in $(ls segs/seg_*.mp4 | sort -V); do echo "file '$PWD/$f'" ; done > list.txt
+          mkdir -p gate-input/stems
+          # 1. the 4K join (the long pole: x264 slow, crf 15) starts now and runs while everything it does not need is prepared
+          join_encode() {
+            ffmpeg -nostdin -y -loglevel error -f concat -safe 0 -i list.txt -an -c:v libx264 -preset slow -crf 15 -profile:v high -level 5.2 -pix_fmt yuv420p -r 30 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv picture.mp4
+          }
+          join_picture() {
+            if [ "${{ inputs.join }}" = "encode" ]; then join_encode; return; fi
+            ffmpeg -nostdin -y -loglevel error -f concat -safe 0 -i list.txt -an -c:v copy -movflags +faststart picture.mp4
+            N_SEG=$(for f in $(ls segs/seg_*.mp4 | sort -V); do ffprobe -v error -count_packets -select_streams v:0 -show_entries stream=nb_read_packets -of csv=p=0 "$f"; done | awk '{s+=$1} END {print s}')
+            N_OUT=$(ffprobe -v error -count_packets -select_streams v:0 -show_entries stream=nb_read_packets -of csv=p=0 picture.mp4)
+            echo "copy join: $N_OUT frames from $N_SEG in the segments"
+            if [ "$N_SEG" != "$N_OUT" ] || [ -z "$N_OUT" ] || [ "$N_OUT" = 0 ]; then echo "copy join frame count mismatch: falling back to the re-encode"; join_encode; fi
+          }
+          ( join_picture; stamp "picture.mp4 done" ) &
+          PV=$!
+          # 2. Python packages for qa.py (as before, before any python tool runs), then the Whisper venv in the background
+          python3 -m pip install --quiet --retries 4 pillow rapidocr-onnxruntime==1.3.24
+          stamp "qa packages in"
+          ( python3 -m venv wv && wv/bin/pip install --quiet --retries 4 faster-whisper soundfile numpy && wv/bin/python -c "from faster_whisper import WhisperModel; WhisperModel('small.en', device='cpu', compute_type='int8')"; stamp "whisper venv and model ready" ) > wv.log 2>&1 &
+          WV=$!
+          # 3. sound: the project's own mix.py, then the master gain to -14 LUFS (a straight gain plus a peak limiter, twice; two-pass loudnorm flattened every hit on 26 Oct)
+          audio() {
+            (cd film && python3 mix.py mix.json ../mix.wav)
+            LUFS() { ffmpeg -nostdin -i "$1" -af ebur128 -f null - 2>&1 | grep -E '^\s+I:' | tail -1 | awk '{print $2}'; }
+            I1=$(LUFS mix.wav); G1=$(python3 -c "print(-14-($I1))")
+            ffmpeg -nostdin -y -loglevel error -i mix.wav -af "volume=${G1}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled" -c:a pcm_f32le m1.wav
+            I2=$(LUFS m1.wav); G2=$(python3 -c "print(-14-($I2))"); echo "master: mix $I1 LUFS, gain $G1, after limit $I2, trim $G2"
+            echo "$G1 $G2" > gain.txt
+            stamp "audio master done"
+          }
+          # 3b. stems for the gate (voice / music / sfx through the same mix.py on the same mix.json; the master gain is applied in the gate step)
+          stems() {
+            python3 - <<'PY'
+          import json
+          m = json.load(open("film/mix.json"))
+          def part(name, pred):
+              d = {k: v for k, v in m.items() if k != "clips"}
+              d["clips"] = [c for c in m["clips"] if pred(c)]
+              json.dump(d, open("stem_%s.json" % name, "w"))
+              print(name, len(d["clips"]), "clips")
+          part("voice", lambda c: c.get("voice"))
+          isbed = lambda c: bool(c.get("bed")) or "/music/" in c["src"]      # H02 has TWO beds: assets/sfx2/story2.mp3 (flagged bed) and assets/music/alfred.mp3
+          part("music", lambda c: not c.get("voice") and isbed(c))
+          part("sfx", lambda c: not c.get("voice") and not isbed(c))
+          PY
+            for s in voice music sfx; do (cd film && python3 mix.py ../stem_$s.json ../stem_$s.raw.wav); done
+            stamp "stems done"
+          }
+          audio &
+          AU=$!
+          stems > stems.log 2>&1 &
+          ST=$!
+          wait $AU
+          wait $PV
+          # 4. the 4K master: the picture with the mixed sound (video stream copied)
+          read G1 G2 < gain.txt
+          ffmpeg -nostdin -y -loglevel error -i picture.mp4 -i m1.wav -map 0:v -map 1:a -c:v copy -af "volume=${G2}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled,aresample=48000" -c:a aac -b:a 256k -shortest -movflags +faststart FINAL.mp4
+          stamp "FINAL.mp4 written"
+          # 5. three independent jobs from FINAL.mp4, run together
+          qa_job() {
+            # qa.py was written and calibrated at 1080x1920 (frame-size check, OCR box heights), so it gets a lanczos 1080 copy of the master
+            ffmpeg -nostdin -y -loglevel error -i FINAL.mp4 -vf scale=1080:1920:flags=lanczos -c:v libx264 -preset veryfast -crf 14 -pix_fmt yuv420p -c:a copy QA.mp4
+            python3 film/qa.py QA.mp4 film/assets/timeline.json qa | tee qa.txt
+            stamp "qa done"
+          }
+          share_job() {
+            # a phone-sized share copy (under 30 MB): the 4K master supersampled to 1080x1920 with lanczos, which beats 4K squeezed to the same bitrate
+            ffmpeg -nostdin -y -loglevel error -i FINAL.mp4 -vf scale=1080:1920:flags=lanczos -c:v libx264 -preset slow -crf 22 -maxrate 4.5M -bufsize 9M -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a aac -b:a 160k -movflags +faststart SHARE.mp4 || true
+            stamp "share done"
+          }
+          post_job() {
+            # the 1080x1920 post master (crf 17). FINAL.mp4 stays the 4K; its audio stream is copied bit for bit.
+            ffmpeg -nostdin -y -loglevel error -i FINAL.mp4 -vf scale=1080:1920:flags=lanczos -c:v libx264 -preset slow -crf 17 -maxrate 16M -bufsize 32M -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a copy -movflags +faststart gate-input/POST1080.mp4
+            ffmpeg -nostdin -y -loglevel error -i gate-input/POST1080.mp4 -vn -ar 48000 -c:a pcm_s16le gate-input/mix.wav
+            stamp "post1080 done"
+          }
+          qa_job &
+          Q=$!
+          share_job &
+          S=$!
+          post_job &
+          P=$!
+          wait $Q
+          wait $S
+          wait $P || echo "post1080 step failed" > gate-input/STEP_FAILED.txt
+          wait $ST || echo "stems step failed" > gate-input/STEP_FAILED.txt
+          wait $WV || echo "whisper venv failed" > gate-input/STEP_FAILED.txt
+          cat stems.log wv.log || true
+          ls -la FINAL.mp4 SHARE.mp4 || true
+          cp film/BUILD.json film/assets/timeline.json film/film.html film/mix.json qa/ 2>/dev/null || true
+          rm -rf qa/f10 qa/f2
+          stamp "main step done"
+          __SCRIPT_EOF__
+          cat > new_gate.sh <<'__SCRIPT_EOF__'
+          set -euo pipefail
+          trap 'echo "packager step failed at line $LINENO" > gate-input/STEP_FAILED.txt' ERR
+          # the 1080 post master and its mix.wav were made in the step above; stems: the master gain (G1+G2 from the master step, no limiter)
+          [ ! -f gate-input/STEP_FAILED.txt ] || { cat gate-input/STEP_FAILED.txt; false; }
+          G=$(python3 -c "g=open('gain.txt').read().split(); print(float(g[0])+float(g[1]))")
+          for s in voice music sfx; do
+            ffmpeg -nostdin -y -loglevel error -i stem_$s.raw.wav -af "volume=${G}dB" -ar 48000 -c:a pcm_s16le gate-input/stems/$s.wav
+          done
+          cp film/mix.json gate-input/mix.json
+          # intelligibility evidence (H check 15 part D): Whisper on the delivered mix and on the voice stem alone, bound to the master's sha256
+          wv/bin/python - <<'PY'
+          import hashlib, json, subprocess
+          import numpy as np
+          from faster_whisper import WhisperModel
+          m = WhisperModel("small.en", device="cpu", compute_type="int8")
+          def text(path):      # decode with ffmpeg ourselves: the runner's preinstalled PyAV is too old for faster-whisper's own decoder
+              raw = subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-i", path, "-vn", "-ac", "1", "-ar", "16000", "-f", "f32le", "-"], capture_output=True, check=True).stdout
+              segs, _ = m.transcribe(np.frombuffer(raw, dtype=np.float32), language="en", beam_size=5, vad_filter=False, condition_on_previous_text=False)
+              return " ".join(s.text.strip() for s in segs)
+          h = hashlib.sha256(open("gate-input/POST1080.mp4", "rb").read()).hexdigest()
+          json.dump({"video_sha256": h, "model": "faster-whisper small.en int8", "text": text("gate-input/POST1080.mp4"),
+                     "voice_only_text": text("gate-input/stems/voice.wav")}, open("gate-input/whisper.json", "w"), indent=1)
+          print(open("gate-input/whisper.json").read()[:600])
+          PY
+          # the beats contact sheet: 16 frames at the film's own anchor times, each labelled with its second
+          python3 - <<'PY'
+          import json, subprocess
+          from PIL import Image, ImageDraw
+          tl = json.load(open("film/assets/timeline.json")); T = tl["total"]
+          ts = sorted({round(v, 2) for v in tl.get("a", {}).values() if 0.2 < v < T - 0.3})
+          while len(ts) > 14:                      # thin the closest pair until 14 anchors remain
+              i = min(range(1, len(ts)), key=lambda k: ts[k] - ts[k - 1])
+              ts.pop(i)
+          ts = sorted(set(ts + [0.3, round(T - 0.4, 2)]))
+          for u in [i * T / 16 for i in range(1, 16)]:
+              if len(ts) >= 16:
+                  break
+              ts.append(round(u, 2))
+          ts = sorted(set(ts))[:16]
+          W, H = 270, 480
+          sheet = Image.new("RGB", (W * 4, H * 4), "black")
+          for i, t in enumerate(ts):
+              subprocess.run(["ffmpeg", "-nostdin", "-y", "-loglevel", "error", "-ss", str(t), "-i", "gate-input/POST1080.mp4", "-frames:v", "1", "-vf", "scale=270:480", "f.png"], check=True)
+              im = Image.open("f.png").convert("RGB"); d = ImageDraw.Draw(im); d.rectangle([0, 0, 62, 16], fill="black"); d.text((3, 2), "%.1fs" % t, fill="white")
+              sheet.paste(im, ((i % 4) * W, (i // 4) * H))
+          sheet.save("gate-input/beats.jpg", quality=88)
+          json.dump(ts, open("gate-input/beats.json", "w"))
+          print("beats at", ts)
+          PY
+          ls -la gate-input gate-input/stems
+          __SCRIPT_EOF__
+      - name: Serial assemble (par.yml)
+        run: |
+          set -euo pipefail
+          cd old
+          S=$(date +%s)
+          bash ../old_runtime.sh
+          export PATH="$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin:$PATH"
+          bash ../old_join.sh > join.log 2>&1 || { tail -30 join.log; exit 1; }
+          bash ../old_gate.sh > gate.log 2>&1 || true
+          echo "serial assemble: $(( $(date +%s) - S )) s"
+      - name: Parallel assemble (par2)
+        run: |
+          set -euo pipefail
+          cd new
+          S=$(date +%s)
+          export PATH="$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin:$PATH"
+          bash ../new_join.sh > join.log 2>&1 || { tail -30 join.log; exit 1; }
+          bash ../new_gate.sh > gate.log 2>&1 || true
+          echo "parallel assemble: $(( $(date +%s) - S )) s"
+          grep -E "^\[t\+" join.log || true
+      - name: Compare
+        run: |
+          set -u
+          for f in FINAL.mp4 SHARE.mp4 gate-input/POST1080.mp4 gate-input/mix.wav gate-input/stems/voice.wav gate-input/stems/music.wav gate-input/stems/sfx.wav gate-input/mix.json gate-input/beats.json qa.txt; do
+            a=$(sha256sum old/$f 2>/dev/null | cut -c1-16); b=$(sha256sum new/$f 2>/dev/null | cut -c1-16)
+            if [ -n "$a" ] && [ "$a" = "$b" ]; then echo "SAME      $f $a"; else echo "DIFFERENT $f old=$a new=$b"; fi
+          done | tee compare.txt
+          ls old/gate-input new/gate-input
+          grep -h '"text"' old/gate-input/whisper.json new/gate-input/whisper.json | cut -c1-120 || true
+          ls -la old/FINAL.mp4 new/FINAL.mp4
+          grep -h 'copy join' new/join.log || true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ab-${{ inputs.label }}
+          path: |
+            compare.txt
+            old/join.log
+            new/join.log
+            old/gate.log
+            new/gate.log
+          retention-days: 3
