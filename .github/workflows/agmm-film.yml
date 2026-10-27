@@ -186,7 +186,15 @@ jobs:
           else
             CAP="-map 0:v:0 -an -c:v libx264 -profile:v high -preset slow -crf 16 -maxrate 25M -bufsize 50M -level:v 4.2 -pix_fmt yuv420p -r 30 -g 60 -video_track_timescale 15360 -movflags +faststart"
           fi
-          ffmpeg -hide_banner -loglevel error -y -i "$GITHUB_WORKSPACE/out/SEG$I.raw.mp4" $CAP "$GITHUB_WORKSPACE/out/SEG$I.mp4"
+          # Fractional tail (root, 27 Oct 2026): hyperframes renders ceil(len*30) frames, while the hosted
+          # verifier and the assemble manifest define a segment by round(len*30). F04 v3 ends at 640.577042 s,
+          # so its last segment rendered 384 frames against an expected 383 and run 39976545238 died at seg 74.
+          # Cap the encode at the declared count; integer segment lengths are untouched (the guard is a no-op).
+          FRAMES=$(python3 -c 'import os; print(round(float(os.environ["LN"]) * 30))')
+          RAWFRAMES=$(python3 -c 'import os,math; print(math.ceil(float(os.environ["LN"]) * 30 - 1e-9))')
+          TRIM=""
+          if [ "$RAWFRAMES" != "$FRAMES" ]; then TRIM="-frames:v $FRAMES"; fi
+          ffmpeg -hide_banner -loglevel error -y -i "$GITHUB_WORKSPACE/out/SEG$I.raw.mp4" $CAP $TRIM "$GITHUB_WORKSPACE/out/SEG$I.mp4"
           rm -f "$GITHUB_WORKSPACE/out/SEG$I.raw.mp4"
           ffprobe -v error -select_streams v:0 -show_entries stream=width,height,nb_frames -of csv=p=0 "$GITHUB_WORKSPACE/out/SEG$I.mp4"
       - name: Hosted full decode, probe and flicker verification
