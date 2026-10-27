@@ -12,7 +12,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: agmm-music4-${{ inputs.label }}-${{ matrix.shard }}
+  group: agmm-music4-${{ inputs.label }}
   cancel-in-progress: false
 jobs:
   score:
