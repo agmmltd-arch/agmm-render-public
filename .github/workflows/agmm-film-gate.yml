@@ -1,0 +1,231 @@
+name: AGMM film gate
+run-name: AGMM film gate ${{ inputs.tag }}
+
+# The full gate for one long-form film master at 1920x1080 (films/tools/gate_film.py: qa/gate.py checks 1-10, kit checks 11-13,
+# film check 14 music-in-gaps + sealed mix, film check 15 frame flicker), run on a hosted Intel macOS runner so the operator's Mac
+# decodes nothing. Same runner class as agmm-short-gate.yml (the Mac that used to run it is Intel x86_64) and macOS, because check 2
+# is Apple Vision OCR (kit/tools/ocr_vision, a macOS binary).
+# The 1080 review master is NOT in the bundle: it is the REVIEW-1080 artifact of the render run, downloaded here from the same repo.
+# The bundle (the exact gate code, the film's script, voice words, stems and sealed mix) comes from a release holding exactly one
+# asset, gate-bundle.tar.gz, verified against the dispatched SHA256.
+# Check 9 (the critic) needs API keys and this runner holds none: GATE_CRITIC=skip makes it an UNJUDGED row, the 360p copy the Mac's
+# critic needs is shipped first as artifact <tag>-CRITIC, and the Mac runs the critic on it. Mechanical only: it cannot approve, arm,
+# post or publish anything, and it holds no secrets.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release tag holding exactly one asset, gate-bundle.tar.gz
+        required: true
+      bundle_sha256:
+        description: Exact SHA256 of gate-bundle.tar.gz
+        required: true
+      tag:
+        description: Unique safe label used for run title, concurrency and artifact names
+        required: true
+      film_id:
+        description: Film folder name (F04-mands)
+        required: true
+      render_tag:
+        description: Render tag the master and sealed mix belong to (r6-20261027)
+        required: true
+      render_run_id:
+        description: Actions run id (this repo) holding the REVIEW-1080 artifact
+        required: true
+      review_artifact:
+        description: Exact name of the REVIEW-1080 artifact in that run
+        required: true
+      runner:
+        description: Runner label (default macos-15-intel, as the short gate)
+        required: false
+        default: macos-15-intel
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: agmm-film-gate-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 150
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE: ${{ inputs.release }}
+      BUNDLE_SHA256: ${{ inputs.bundle_sha256 }}
+      TAG: ${{ inputs.tag }}
+      FILM_ID: ${{ inputs.film_id }}
+      RENDER_TAG: ${{ inputs.render_tag }}
+      RENDER_RUN_ID: ${{ inputs.render_run_id }}
+      REVIEW_ARTIFACT: ${{ inputs.review_artifact }}
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+      HOMEBREW_NO_ENV_HINTS: '1'
+    steps:
+      - name: Validate labels, download and verify the exact bundle
+        run: |
+          set -euo pipefail
+          date +%s > "$RUNNER_TEMP/t_start"
+          [[ "$RELEASE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          [[ "$BUNDLE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$FILM_ID" =~ ^F[0-9]{2}-[a-z0-9-]{2,30}$ ]]
+          [[ "$RENDER_TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          [[ "$RENDER_RUN_ID" =~ ^[0-9]{6,15}$ ]]
+          [[ "$REVIEW_ARTIFACT" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,200}$ ]]
+          assets="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE" --jq '[.assets[].name] | sort | join(",")')"
+          test "$assets" = "gate-bundle.tar.gz"
+          mkdir -p "$RUNNER_TEMP/in"
+          gh release download "$RELEASE" -R "$GITHUB_REPOSITORY" -p gate-bundle.tar.gz -D "$RUNNER_TEMP/in"
+          got="$(shasum -a 256 "$RUNNER_TEMP/in/gate-bundle.tar.gz" | cut -d' ' -f1)"
+          test "$got" = "$BUNDLE_SHA256"
+          ls -la "$RUNNER_TEMP/in"
+      - name: Extract the bundle (names checked, no links, no escapes)
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/w"
+          python3 - <<'PY'
+          import os, tarfile
+          dest = os.path.join(os.environ["RUNNER_TEMP"], "w")
+          p = os.path.join(os.environ["RUNNER_TEMP"], "in", "gate-bundle.tar.gz")
+          tf = tarfile.open(p)
+          n = 0
+          for m in tf:
+              n += 1
+              assert n <= 5000, "too many entries"
+              assert not m.name.startswith("/") and ".." not in m.name.split("/"), "unsafe path " + m.name
+              assert m.isfile() or m.isdir(), "unsupported member " + m.name
+              assert m.name.split("/")[0] == "v2", "unexpected root " + m.name
+          tf.close()
+          tarfile.open(p).extractall(dest)
+          print("extracted", n, "entries")
+          PY
+          rm -f "$RUNNER_TEMP/in/gate-bundle.tar.gz"
+          du -sh "$RUNNER_TEMP/w"
+      - name: Download the 1080 review master from the render run
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/w/v2/films/$FILM_ID/build/renders/$RENDER_TAG/final1080"
+          mkdir -p "$d"
+          gh run download "$RENDER_RUN_ID" -R "$GITHUB_REPOSITORY" -n "$REVIEW_ARTIFACT" -D "$d"
+          find "$d" -type f | sed "s#$d/##"
+          test "$(find "$d" -type f -name '*.mp4' | wc -l | tr -d ' ')" = "1"
+          M="$(find "$d" -type f -name '*.mp4')"
+          echo "MASTER=$M" >> "$GITHUB_ENV"
+          ls -la "$M"
+      - name: Install ffmpeg and the Python libraries
+        run: |
+          set -euo pipefail
+          t0=$(date +%s)
+          # ffmpeg 7 on purpose, as the short gate: the Mac that ran the film gate has 7.1 and ffmpeg 9 drops options the gate uses.
+          brew install ffmpeg@7
+          echo "$(brew --prefix ffmpeg@7)/bin" >> "$GITHUB_PATH"
+          export PATH="$(brew --prefix ffmpeg@7)/bin:$PATH"
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet numpy pillow
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
+          echo "install_s=$(( $(date +%s) - t0 ))" | tee "$RUNNER_TEMP/install.txt"
+          ffmpeg -version | head -1
+          ffmpeg -version | head -1 | grep -q "version 7\."
+      - name: Make the critic's 360p copy first (the recipe gate_film.py uses for checks 2 and 9 on a long film)
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/critic"
+          nice -n 15 ffmpeg -v error -y -threads 2 -i "$MASTER" -vf scale=-2:360 -c:v libx264 -b:v 110k -maxrate 140k -bufsize 280k \
+            -x264-params threads=2 -c:a aac -ac 1 -b:a 48k "$RUNNER_TEMP/critic/film_for_gemini_360p.mp4"
+          ls -la "$RUNNER_TEMP/critic"
+          test "$(stat -f %z "$RUNNER_TEMP/critic/film_for_gemini_360p.mp4")" -le 18000000
+      - name: Ship the critic's copy now
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-CRITIC
+          path: ${{ runner.temp }}/critic
+          retention-days: 1
+          if-no-files-found: error
+      - name: Vision OCR binary smoke test (fails early, not 30 minutes in)
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/w/v2/kit/tools"
+          chmod +x ocr_vision
+          python3 - <<'PY'
+          from PIL import Image, ImageDraw
+          im = Image.new("RGB", (540, 304), "white")
+          ImageDraw.Draw(im).text((40, 120), "SMOKE TEST 2026", fill="black")
+          im.save("/tmp/ocr_smoke.png")
+          PY
+          if ./ocr_vision /tmp/ocr_smoke.png > "$RUNNER_TEMP/ocr_smoke.txt" 2>&1; then
+            echo "binary=prebuilt" | tee "$RUNNER_TEMP/ocr_binary.txt"
+          else
+            cat "$RUNNER_TEMP/ocr_smoke.txt"
+            echo "prebuilt binary failed, compiling the swift source"
+            swiftc -O ocr_vision.swift -o ocr_vision.compiled
+            mv ocr_vision.compiled ocr_vision
+            chmod +x ocr_vision
+            ./ocr_vision /tmp/ocr_smoke.png > "$RUNNER_TEMP/ocr_smoke.txt" 2>&1
+            echo "binary=compiled-on-runner" | tee "$RUNNER_TEMP/ocr_binary.txt"
+          fi
+          cat "$RUNNER_TEMP/ocr_smoke.txt"
+      - name: Run the gate (gate_film.py, unchanged)
+        env:
+          GATE_CRITIC: skip
+          HEAVY_MAX_S: '7200'     # heavy.py's default 30 min cap is a Mac slot guard, not a gate threshold; the job's own timeout bounds this
+        run: |
+          set -uo pipefail
+          t0=$(date +%s)
+          cd "$RUNNER_TEMP/w/v2/films"
+          OUT="$RUNNER_TEMP/w/v2/films/$FILM_ID/build/gate/runner"
+          python3 tools/gate_film.py "$MASTER" --build "$FILM_ID/build" --tag "$RENDER_TAG" --out "$OUT" 2>&1 | tee "$RUNNER_TEMP/gate_film.stdout.txt"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$RUNNER_TEMP/gate.rc"
+          echo "gate_s=$(( $(date +%s) - t0 ))" | tee "$RUNNER_TEMP/gate.txt"
+          exit 0
+      - name: Collect the result
+        if: always()
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          set -uo pipefail
+          R="$RUNNER_TEMP/result"; S="$RUNNER_TEMP/sheets"
+          mkdir -p "$R" "$S"
+          G="$RUNNER_TEMP/w/v2/films/$FILM_ID/build/gate/runner"
+          for f in GATE.json GATE.md captions-from-words.json gate.stdout.txt; do if [ -f "$G/$f" ]; then cp "$G/$f" "$R/"; fi; done
+          cp "$RUNNER_TEMP/gate_film.stdout.txt" "$R/gate_film.stdout.txt" 2>/dev/null || true
+          if [ -d "$G/contact-sheets" ]; then cp "$G"/contact-sheets/*.jpg "$G"/contact-sheets/*.json "$S"/ 2>/dev/null || true; fi
+          cp "$RUNNER_TEMP/install.txt" "$RUNNER_TEMP/gate.txt" "$RUNNER_TEMP/ocr_binary.txt" "$R"/ 2>/dev/null || true
+          export M_SHA="$(shasum -a 256 "$MASTER" | cut -d' ' -f1)"
+          export M_BYTES="$(stat -f %z "$MASTER")"
+          python3 - <<'PY'
+          import json, os, platform, subprocess
+          T = os.environ["RUNNER_TEMP"]
+          ff = subprocess.run(["ffmpeg", "-version"], capture_output=True, text=True).stdout.splitlines()[:1]
+          rc = open(T + "/gate.rc").read().strip() if os.path.exists(T + "/gate.rc") else None
+          ob = open(T + "/ocr_binary.txt").read().strip() if os.path.exists(T + "/ocr_binary.txt") else None
+          json.dump({"film_id": os.environ["FILM_ID"], "render_tag": os.environ["RENDER_TAG"], "render_run_id": os.environ["RENDER_RUN_ID"],
+                     "review_artifact": os.environ["REVIEW_ARTIFACT"], "master_name": os.path.basename(os.environ["MASTER"]),
+                     "master_sha256": os.environ["M_SHA"], "master_bytes": int(os.environ["M_BYTES"]), "gate_rc": rc,
+                     "ffmpeg": ff[0] if ff else "?", "host": platform.platform(), "python": platform.python_version(), "ocr_binary": ob,
+                     "critic": "skipped on the runner (GATE_CRITIC=skip, no API keys): the Mac runs check 9 on artifact <tag>-CRITIC"},
+                    open(T + "/result/_meta.json", "w"), indent=1)
+          PY
+          echo "job_s=$(( $(date +%s) - $(cat "$RUNNER_TEMP/t_start") ))" > "$R/job.txt"
+          ls -la "$R"
+          ls "$S" | wc -l
+      - name: Upload the gate result (text)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-GATE
+          path: ${{ runner.temp }}/result
+          retention-days: 1
+          if-no-files-found: error
+      - name: Upload the contact sheets (jpg)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.tag }}-SHEETS
+          path: ${{ runner.temp }}/sheets
+          retention-days: 1
+          if-no-files-found: warn
