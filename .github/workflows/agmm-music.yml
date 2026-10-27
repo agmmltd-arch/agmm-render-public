@@ -8,6 +8,7 @@ on:
     inputs:
       private_commit: { description: 40-hex commit of agmm-video-render holding hailmary/music and hailmary/soundref, required: true }
       label: { description: short label, required: true }
+      script: { description: script name inside hailmary/music, required: false, default: music_score.py }
 permissions:
   contents: read
 concurrency:
@@ -49,7 +50,7 @@ jobs:
           set -euo pipefail
           . "$RUNNER_TEMP/venv/bin/activate"
           mkdir -p out
-          python private/hailmary/music/music_score.py out private/hailmary/soundref private/hailmary/music 2>&1 | grep -v -i warning | tee out/log.txt | tail -250
+          python private/hailmary/music/${{ inputs.script }} out private/hailmary/soundref private/hailmary/music 2>&1 | grep -v -i warning | tee out/log.txt | tail -250
           ls -la out out/export
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
