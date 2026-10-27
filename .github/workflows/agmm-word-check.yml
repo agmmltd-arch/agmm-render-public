@@ -57,8 +57,10 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --quiet --retries 4 faster-whisper==1.2.1 soundfile numpy
-          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
-          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+          # ffmpeg is only needed to decode an mp4 mix; a packs-only run must not die on a release 404
+          if curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"; then
+            echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+          else echo "no static ffmpeg (packs only)"; fi
       - name: Word check
         env:
           GH_TOKEN: ${{ github.token }}
