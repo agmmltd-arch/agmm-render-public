@@ -77,6 +77,7 @@ def _word_tokens(raw, mode="auto"):
     for w in t.split():
         w = w.strip("'")
         if not w: continue
+        if w.endswith("'s") and len(w) > 3 and w not in ("it's", "that's", "he's", "she's", "there's", "what's", "let's", "here's", "who's"): w = w[:-2] + "s"      # guy's == guys (same sound)
         if w == "agmm": out += (["a", "g", "m"] if mode == "reveal" else ["a", "g", "m", "m"])
         elif w == "agm": out += ["a", "g", "m"]
         elif w == "uk": out += ["u", "k"]
@@ -301,6 +302,17 @@ def word_levels(db, step, ref, words):
     return out
 
 
+def merge_digit_fragments(words):
+    """Whisper splits "638,000" into "638" + ",000" (or "33" + "000"): one word, the lower probability."""
+    merged = []
+    for w in words:
+        if merged and (re.match(r"^[.,]\d", w["t"]) or re.match(r"^\d{3}$", w["t"])) and re.search(r"\d$", merged[-1]["t"]):
+            if re.match(r"^\d{3}$", w["t"]): w = dict(w, t="," + w["t"])
+            merged[-1] = dict(merged[-1], t=merged[-1]["t"] + w["t"], e=w["e"], p=min(merged[-1]["p"], w["p"]))
+        else: merged.append(w)
+    return merged
+
+
 _MODEL = {}
 
 
@@ -315,13 +327,7 @@ def whisper_words(path, model_name="large-v3"):
         for w in (s.words or []):
             t = w.word.strip()
             if t: words.append({"t": t, "s": float(w.start), "e": float(w.end), "p": float(w.probability)})
-    # a digit fragment split by Whisper ("638" ",000") is one word
-    merged = []
-    for w in words:
-        if merged and re.match(r"^[.,]\d", w["t"]) and re.search(r"\d$", merged[-1]["t"]):
-            merged[-1] = dict(merged[-1], t=merged[-1]["t"] + w["t"], e=w["e"], p=min(merged[-1]["p"], w["p"]))
-        else: merged.append(w)
-    return merged
+    return merge_digit_fragments(words)
 
 
 def load_script(path):
@@ -432,7 +438,7 @@ def cmd_read(a):
     return 0 if ok else 1
 
 
-def rank_key(rec):
+def rank_key(rec, prefer=()):
     j = judge(rec)
     ps = [it["p"] for it in rec["exp"] if it.get("p") is not None]
     mean_p = sum(ps) / len(ps) if ps else 0.0
@@ -440,8 +446,11 @@ def rank_key(rec):
     pen = 0.0
     if rec["cls"] == "hook":
         w = rec.get("hook_wpm") or 0.0
-        pen = 0.0 if THR["hook_lo"] <= w <= THR["hook_hi"] else min(abs(w - THR["hook_lo"]), abs(w - THR["hook_hi"])) / 10.0
-    return (not j["pass"], round(pen, 2), -round(minp, 2), -round(mean_p, 3))
+        import math
+        pen = 0.0 if THR["hook_lo"] <= w <= THR["hook_hi"] else abs(math.log(190.0 / max(w, 1.0)))     # distance (log) to the 190 wpm target: the cheapest retempo wins
+        if not (0.8 <= 190.0 / max(w, 1.0) <= 1.3): pen += 5.0                                         # needs more than a 0.8-1.3 tempo change: a fresh take is better
+    pref = 0 if (not prefer or any(x in rec.get("tag", "") for x in prefer)) else 1
+    return (not j["pass"], round(pen, 2), pref, -round(minp, 2), -round(mean_p, 3))
 
 
 def cmd_pick(a):
@@ -453,7 +462,7 @@ def cmd_pick(a):
             if any(x and x in t for x in a.exclude.split(",")): continue
             allt[t] = r
     by = {}
-    for t, r in allt.items(): by.setdefault(r["key"], []).append((rank_key(r), t, r))
+    for t, r in allt.items(): by.setdefault(r["key"], []).append((rank_key(r, tuple(x for x in a.prefer.split(",") if x)), t, r))
     for key in sorted(by):
         rows = sorted(by[key], key=lambda x: x[0])
         n_pass = sum(1 for x in rows if not x[0][0])
@@ -466,7 +475,12 @@ def cmd_pick(a):
             best = sorted(by[key], key=lambda x: x[0])[0]
             if best[0][0]: missing.append(key); continue
             run, label = best[2]["tag"].split(":", 1)
-            spec.append({"run": int(run), "label": label, "key": key, "take": best[2]["take"], "as": 1})
+            row = {"run": int(run), "label": label, "key": key, "take": best[2]["take"], "as": 1}
+            w = best[2].get("hook_wpm")
+            if best[2]["cls"] == "hook" and w and not (THR["hook_lo"] <= w <= THR["hook_hi"]):
+                if not (0.8 <= 190.0 / w <= 1.3): missing.append(key + "(hook %.0f wpm, tempo change too big)" % w); continue
+                row["post"] = {"tempo": round(190.0 / w, 4), "max_gap": 9}      # pitch-preserving atempo to 190 wpm; gaps kept (the hook pause stays)
+            spec.append(row)
         json.dump({"spec": spec, "no_passing_take": missing}, open(a.spec, "w"), indent=1)
         print("spec", len(spec), "lines; no passing take for", missing)
     return 0
@@ -554,6 +568,9 @@ def selftest():
     # pace
     r = take(HOOK, "hook", "What if 33,000 hours of meetings all happened at once", fv=0.0, lv=3.5)
     chk("hook wpm = words/span", abs(r["hook_wpm"] - 11 / 3.5 * 60) < 0.2, str(r["hook_wpm"]))
+    mw = merge_digit_fragments([{"t": "33", "s": 0, "e": 1, "p": .9}, {"t": "000", "s": 1, "e": 2, "p": .8}, {"t": "hours", "s": 2, "e": 3, "p": .9}])
+    chk("whisper '33' '000' = 33,000", len(mw) == 2 and mw[0]["t"] == "33,000", str(mw))
+    chk("guy's == guys", norm_tokens("One guy's still") == norm_tokens("One guys still"))
     print("SELFTEST %s" % ("PASS" if not bad else "FAIL: %s" % bad))
     return 0 if not bad else 1
 
@@ -566,7 +583,7 @@ def main():
     r.add_argument("--tag"); r.add_argument("--pick"); r.add_argument("--keys"); r.add_argument("--takes", type=int); r.add_argument("--model", default="large-v3"); r.add_argument("--out", required=True)
     q = sub.add_parser("read"); q.add_argument("words"); q.add_argument("--only"); q.add_argument("--p-min", dest="p_min", type=float); q.add_argument("--p-min-letter", dest="p_min_letter", type=float)
     q.add_argument("--sil-max", dest="sil_max", type=float); q.add_argument("--breath-max", dest="breath_max", type=float)
-    k = sub.add_parser("pick"); k.add_argument("files", nargs="+"); k.add_argument("--spec", help="write the assemble spec [{run,label,key,take,as}] of the best PASSING take per line here"); k.add_argument("--exclude", default="", help="comma list of tags (run:label substrings) to ignore")
+    k = sub.add_parser("pick"); k.add_argument("files", nargs="+"); k.add_argument("--spec", help="write the assemble spec [{run,label,key,take,as}] of the best PASSING take per line here"); k.add_argument("--prefer", default="", help="comma list: tags containing one of these rank first among passing takes"); k.add_argument("--exclude", default="", help="comma list of tags (run:label substrings) to ignore")
     a = ap.parse_args()
     if a.selftest: sys.exit(selftest())
     if a.cmd == "run": return cmd_run(a)
