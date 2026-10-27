@@ -1,0 +1,75 @@
+name: AGMM voice peek
+run-name: AGMM voice peek ${{ inputs.label }}
+# EARS (27 Oct 2026): hand the founder's machine listener the voice audio of a voicefree pack. Decrypts the pack on the runner,
+# converts every wav/mp3 to a 128k mp3, re-encrypts with the founder's RSA-wrapped AES key (private half stays on the Mac). Nothing plain leaves.
+on:
+  workflow_dispatch:
+    inputs:
+      voice_run_id: { description: voicefree run id, required: true }
+      voice_label: { description: label of that run, required: true }
+      label: { description: short label, required: true }
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: agmm-voice-peek-${{ inputs.label }}
+  cancel-in-progress: false
+jobs:
+  peek:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Runtime (static ffmpeg, no apt)
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+      - name: Voice pack (decrypt) and convert
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          set -euo pipefail
+          gh run download "${{ inputs.voice_run_id }}" -R "${{ github.repository }}" -n "voicefree-chatterbox-${{ inputs.voice_label }}-ENC" -D "$RUNNER_TEMP/vpack"
+          mkdir -p "$RUNNER_TEMP/voice" out/export pack
+          openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/vpack/synth-pack.enc" | tar -x -C "$RUNNER_TEMP/voice"
+          (cd "$RUNNER_TEMP/voice" && find . -type f | sort) > out/listing.txt
+          wc -l out/listing.txt; head -80 out/listing.txt
+          find "$RUNNER_TEMP/voice" -type f \( -name '*.wav' -o -name '*.mp3' -o -name '*.flac' \) | sort | while read f; do
+            rel="${f#$RUNNER_TEMP/voice/}"; safe=$(echo "$rel" | tr '/ ' '__' | sed 's/\.[a-z0-9]*$//')
+            ffmpeg -v error -y -i "$f" -ac 1 -b:a 128k "out/export/${safe}.mp3" || true
+          done
+          find "$RUNNER_TEMP/voice" -type f \( -name '*.json' -o -name '*.txt' -o -name '*.md' \) -size -300k | while read f; do
+            rel="${f#$RUNNER_TEMP/voice/}"; safe=$(echo "$rel" | tr '/ ' '__'); cp "$f" "out/export/$safe"
+          done
+          ls -la out/export | head -100
+      - name: Encrypt the audio pack
+        run: |
+          set -euo pipefail
+          cat > pub.pem <<'PEM'
+          -----BEGIN PUBLIC KEY-----
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAqkFPrJjqJEb8aRKQCUZG
+          G9908H5tfI3FuTNjQzprgrCEfNyHzzh0reo7keyAi5NLSTnfoRmojenngewXWENm
+          oogYZOSBMmXIDW9X4tnL0a2f7j0xupfggb1opInG+5WhV4BeLCnWXlRSFyV8f7DX
+          H024Vb49I/xZszBGR3rF9zIgZN0gntf633q/nYCHuM6DyPHG0FAvfm7qtx7b7cy9
+          lfsT7IdLZLPpvD7CvnzHCyxQZgVr5LStB1HM2OK4jst7KvlfWzsQ6wfvcUePYSWx
+          VD0sj2OOZHzRB1xqUVzQ7ttFmrQ0JcDCzB5q5hQF58QMAZ/gD+zocUVbbfCUGSaE
+          eqVkr9iYF3gjV74iOu38+TExh9t5e1GfWeKbn9x2mUepWsnorIJ68M/aNFmh8Wmu
+          OI/BfdT8T0dCIYxPwlOJfqd2L177xLUuQiY6NU/h9WnBl4sHjT/8sPpvIXcELE4p
+          HRog9J28wHncIk0PsCTMPBDX1ZgcCMe+SJ8KsDK0Tb1vAgMBAAE=
+          -----END PUBLIC KEY-----
+          PEM
+          head -c 32 /dev/urandom | base64 > key.txt
+          tar -C out -cz export | openssl enc -aes-256-cbc -pbkdf2 -pass file:key.txt -out pack/audio.enc
+          openssl pkeyutl -encrypt -pubin -inkey pub.pem -pkeyopt rsa_padding_mode:oaep -in key.txt -out pack/key.rsa
+          rm -rf out/export key.txt
+          ls -la pack out
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: peek-${{ inputs.label }}
+          path: |
+            out
+            pack
+          retention-days: 2
