@@ -1,0 +1,72 @@
+name: AGMM delivery ref2
+run-name: AGMM delivery ref2 ${{ inputs.label }}
+# Narrator delivery forensics (27 Oct 2026): demucs vocals stem of each reference reel, Whisper word times, pitch (Praat) and energy per word.
+# Reels and nothing else come from the PRIVATE repo via the read-only deploy key. Only JSON leaves (numbers and the reels' own words).
+on:
+  workflow_dispatch:
+    inputs:
+      private_commit: { description: 40-hex commit of agmm-video-render holding hailmary/soundref, required: true }
+      label: { description: short label, required: true }
+permissions:
+  contents: read
+concurrency:
+  group: agmm-delivery-ref2-${{ inputs.label }}
+  cancel-in-progress: false
+jobs:
+  measure:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { v: r1, pivot: '24.0' }
+          - { v: r2, pivot: '18.0' }
+          - { v: r3, pivot: '11.0' }
+          - { v: r4, pivot: '29.0' }
+          - { v: r5, pivot: '12.0' }
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/scripts/delivery
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            hailmary/soundref2
+      - name: Runtime (static ffmpeg, no apt)
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+      - name: Python deps
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/venv"
+          . "$RUNNER_TEMP/venv/bin/activate"
+          pip install --quiet --retries 4 "numpy<2" scipy soundfile praat-parselmouth
+          pip install --quiet --retries 4 torch==2.2.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/cpu
+          pip install --quiet --retries 4 demucs==4.0.1 "numpy<2" faster-whisper
+          python -c "import torch,demucs,parselmouth,faster_whisper;print(torch.__version__)"
+      - name: Measure
+        run: |
+          set -euo pipefail
+          . "$RUNNER_TEMP/venv/bin/activate"
+          mkdir -p out work
+          PV=""; [ -n "${{ matrix.pivot }}" ] && PV="--pivot ${{ matrix.pivot }}"
+          python .github/scripts/delivery/delivery_measure.py ref "private/hailmary/soundref2/${{ matrix.v }}.mp4" "out/${{ matrix.v }}.delivery.json" --name "${{ matrix.v }}" $PV --work work 2>&1 | grep -v -i warning | tail -60
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: delivery-ref2-${{ inputs.label }}-${{ matrix.v }}
+          path: out
+          retention-days: 7
