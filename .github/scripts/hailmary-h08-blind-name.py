@@ -8,7 +8,7 @@ req=urllib.request.Request('https://generativelanguage.googleapis.com/v1beta/mod
 try:
  with urllib.request.urlopen(req,timeout=240) as r: result=json.load(r)
 except urllib.error.HTTPError as e: raise SystemExit('Audio listener HTTP status '+str(e.code))
-txt=''.join(p.get('text','') for p in result['candidates'][0]['content']['parts']); answer=json.loads(txt); heard=str(answer.get('heard',''))[:50]
-if not re.fullmatch(r'[A-Za-z .,!-]{1,50}',heard): heard='unparseable'
+txt=''.join(p.get('text','') for p in result['candidates'][0]['content']['parts']); answer=json.loads(txt); heard=str(answer.get('heard',''))[:80]
+heard=re.sub(r'[^A-Za-z .,!\-?]',' ',heard).strip()[:50] or 'unparseable'
 out={'take':int(take),'heard':heard,'range_seconds':[start,end]}
 os.makedirs('out',exist_ok=True); json.dump(out,open('out/blind.json','w'),indent=2); print(json.dumps(out))
