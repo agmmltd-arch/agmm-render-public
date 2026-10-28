@@ -37,7 +37,7 @@ jobs:
           from pathlib import Path
           rid=os.environ['PRODUCER_RUN']; commit=os.environ['PRODUCER_COMMIT']; artifact=os.environ['ENCRYPTED_ARTIFACT']
           assert rid.isdigit() and artifact.isdigit() and re.fullmatch(r'[0-9a-f]{40}',commit)
-          assert commit == 'df9fe186f6f30cd4546a776c6725f00f8e1ff92e', 'test producer source not pinned'
+          assert commit == '9860b635d0d96e5192649bc4153572a49573c775', 'test producer source not pinned'
           temp=Path(os.environ['RUNNER_TEMP']); meta=temp/'metadata';meta.mkdir()
           subprocess.run(['gh','run','download',rid,'--repo','agmmltd-arch/agmm-render-public','--name','voice-selection-'+rid+'-METADATA','--dir',str(meta)],check=True)
           files=list(meta.iterdir());assert len(files)==1 and files[0].name=='selection-metadata.json'
