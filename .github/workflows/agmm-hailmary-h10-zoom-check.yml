@@ -1,0 +1,32 @@
+name: AGMM H10 close-up motion comparison
+run-name: H10 original versus head proof
+on:
+  workflow_dispatch:
+    inputs:
+      new_run: { description: Corrected picture render ID, required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      NEW_RUN: ${{ inputs.new_run }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-h10-zoom-check.py
+          sparse-checkout-cone-mode: false
+      - name: Compare hosted video openings
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          [[ "$NEW_RUN" =~ ^[0-9]+$ ]]
+          gh run download 40640672767 -R "$GITHUB_REPOSITORY" -n hailmary-H10-v4c -D old
+          gh run download "$NEW_RUN" -R "$GITHUB_REPOSITORY" -n hailmary-H10-headfix-proof28 -D new
+          python3 -m pip install --quiet imageio-ffmpeg==0.6.0
+          python3 .github/scripts/hailmary-h10-zoom-check.py
