@@ -8,6 +8,7 @@ on:
       para: { description: Paragraph ID, required: true }
       voice_run: { description: Voice pack run ID, required: true }
       voice_label: { description: Voice pack label, required: true }
+      order: { description: Take order as five digits, required: false, default: '12345' }
 permissions:
   contents: read
   actions: read
@@ -21,6 +22,7 @@ jobs:
       PARA: ${{ inputs.para }}
       VOICE_RUN: ${{ inputs.voice_run }}
       VOICE_LABEL: ${{ inputs.voice_label }}
+      ORDER: ${{ inputs.order }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -38,6 +40,7 @@ jobs:
           [[ "$PARA" =~ ^P[1-8]$ ]]
           [[ "$VOICE_RUN" =~ ^[0-9]+$ ]]
           [[ "$VOICE_LABEL" =~ ^[A-Za-z0-9-]+$ ]]
+          [[ "$ORDER" =~ ^[1-5]{5}$ ]]
           gh run download "$VOICE_RUN" -R "$GITHUB_REPOSITORY" -n "voicefree-chatterbox-$VOICE_LABEL-ENC" -D "$RUNNER_TEMP/vpack"
           mkdir -p voice
           openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/vpack/synth-pack.enc" | tar -x -C voice
