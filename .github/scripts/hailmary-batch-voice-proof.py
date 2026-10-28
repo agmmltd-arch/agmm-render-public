@@ -27,7 +27,7 @@ for item in plan:
  start=float(item.get('replace_from',original_start)); assert original_start<=start<end
  target=end-start
  first=float(item['first']);last=float(item['last']);cut0=max(0,first-.04);cut1=last+.04;tempo=(cut1-cut0)/target
- if tempo<.82 and item.get('pad_short') is True:
+ if (tempo<.82 and item.get('pad_short') is True) or (tempo<1 and item.get('native_short') is True):
   target=cut1-cut0;end=start+target;tempo=1.0
  if not .82<=tempo<=1.18:report.append({'para':para,'status':'timing mismatch','tempo':tempo,'start':start,'end':end});continue
  source_para=item.get('source_para',para);assert re.fullmatch(r'P[1-8]',source_para)
