@@ -1,0 +1,40 @@
+import json,math,os,re,subprocess,wave
+import numpy as np
+
+film=os.environ['FILM']; plan=json.loads(os.environ['PLAN']); assert len(plan)<=4
+def run(args,**kw): return subprocess.run(args,check=True,**kw)
+for item in plan:
+ para=item['para']; label=item['label']; rid=str(item['run']); take=int(item['take'])
+ assert re.fullmatch(r'P[1-8]',para) and re.fullmatch(r'H(?:0[2-9]|1[01])-[A-Za-z0-9-]+',label) and rid.isdigit() and 1<=take<=10
+ enc='pack-'+para;dest='voice-'+para;os.makedirs(enc,exist_ok=True);os.makedirs(dest,exist_ok=True)
+ run(['gh','run','download',rid,'-R',os.environ['GITHUB_REPOSITORY'],'-n','voicefree-chatterbox-'+label+'-ENC','-D',enc])
+ with open(enc+'/synth-pack.enc','rb') as inp, open(enc+'/decoded.tar','wb') as out:
+  run(['openssl','enc','-d','-aes-256-cbc','-pbkdf2','-pass','env:VOICEFREE_PASS'],stdin=inp,stdout=out)
+ run(['tar','-xf',enc+'/decoded.tar','-C',dest])
+os.chdir('film'); spec=json.load(open('mix.json'))
+def pcm(path):
+ with wave.open(path,'rb') as f:
+  assert f.getsampwidth()==2 and f.getnchannels()==2 and f.getframerate()==48000
+  return np.frombuffer(f.readframes(f.getnframes()),dtype='<i2').astype(float)/32768
+def rms(a):return float(np.sqrt(np.mean(a*a)))
+report=[]
+for item in plan:
+ para=item['para'];old=[c for c in spec['clips'] if c.get('voice') and os.path.basename(c['src'])==para+'.wav']
+ if not old: report.append({'para':para,'status':'missing original voice'});continue
+ start=min(c['at'] for c in old);end=max(c['at']+c['out']-c['in'] for c in old);target=end-start
+ first=float(item['first']);last=float(item['last']);cut0=max(0,first-.04);cut1=last+.04;tempo=(cut1-cut0)/target
+ if not .82<=tempo<=1.18:report.append({'para':para,'status':'timing mismatch','tempo':tempo,'start':start,'end':end});continue
+ path=f'../voice-{para}/{para}.t{int(item["take"])}.wav'; dst='proof-'+para+'.wav'
+ run(['ffmpeg','-nostdin','-v','error','-y','-i',path,'-af',f'atrim=start={cut0}:end={cut1},asetpts=PTS-STARTPTS,atempo={tempo}','-ar','48000','-ac','2','-c:a','pcm_s16le',dst])
+ orig=dict(spec);orig['clips']=old;json.dump(orig,open('old-'+para+'.json','w'))
+ run(['python3','mix.py','old-'+para+'.json','../old-'+para+'.wav'])
+ run(['ffmpeg','-nostdin','-v','error','-y','-i','../old-'+para+'.wav','-ar','48000','-ac','2','-c:a','pcm_s16le','../old-'+para+'-s16.wav'])
+ a=pcm('../old-'+para+'-s16.wav')[int(start*48000)*2:int(end*48000)*2];b=pcm(dst); gain=20*math.log10(rms(a)/rms(b))
+ if not -12<gain<12:report.append({'para':para,'status':'level mismatch','gain_db':gain});continue
+ spec['clips']=[c for c in spec['clips'] if c not in old]
+ spec['clips'].append({'src':dst,'in':0,'out':target,'at':start,'gain_db':gain,'pan':0,'fade_in':.008,'fade_out':.012,'voice':True})
+ report.append({'para':para,'status':'proof inserted','start':start,'end':end,'tempo':tempo,'gain_db':gain,'clips_replaced':len(old),'take':item['take']})
+json.dump(spec,open('mix-batch-proof.json','w'),indent=1)
+run(['python3','mix.py','mix-batch-proof.json','../mix-proof.wav'])
+json.dump({'film':film,'items':report,'music_and_effect_plan_unchanged':True,'voice_spans_unchanged':True},open('../proof-details.json','w'),indent=2)
+print(json.dumps({'film':film,'items':report}))
