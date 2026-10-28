@@ -2,7 +2,7 @@ import json,math,os,subprocess,wave
 import numpy as np
 os.chdir('film')
 spec=json.load(open('mix-hook-proof.json'))
-items=[('P6','../v-reveal/P6.t2.wav',0.1,4.04),('P7','../v-ai/P7.t4.wav',0.21,10.98),('P8','../v-website/P8.t4.wav',0.11,3.66)]
+items=[('P6','../v-reveal/P6.t2.wav',0.1,4.04),('P7','../v-ai/P7.t2.wav',0.25,12.85),('P8','../v-website/P8.t4.wav',0.11,3.66)]
 def pcm(path):
  with wave.open(path,'rb') as f:
   assert f.getsampwidth()==2 and f.getnchannels()==2 and f.getframerate()==48000
