@@ -292,7 +292,7 @@ def scheduled_evidence(row: str, record: dict, when: datetime) -> dict:
     walk(details)
     target = int(when.timestamp())
     private = str(record.get("privacy") or "").endswith("PRIVATE")
-    ok = (private and target in stamps) or (row == "SCHEDULED" and (target in stamps or not details))
+    ok = target in stamps and (private or row == "SCHEDULED")
     return {"ok":ok,"row":row,"server_privacy":record.get("privacy"),"server_scheduled_details":details,
             "server_scheduled_epoch_matches_slot":target in stamps,"slot_epoch":target}
 
