@@ -94,7 +94,28 @@
     ".github/workflows/agmm-short-voice-checkpoint.yml": "175d586caa565e9830501cd88425e9816228fb8fb0a0b6bb37812176f36a76b7",
     ".github/workflows/agmm-short-voice.yml": "943a31a255cfd1a7e767b52371dbdb2ca655cfc262bb1b61bfd38e769ef3cfa9",
     ".github/scripts/voicefree/validate_selected.py": "dd7efa2a11731982d05da28890ac59a6cd54bdcaf28286306628d48623fd2227",
-    ".github/scripts/voicefree/vf_common.py": "8121a1c7d2a297514eee1b6816f78d044e100b77c0a889652d27c4a91ebda461"
+    ".github/scripts/voicefree/vf_common.py": "8121a1c7d2a297514eee1b6816f78d044e100b77c0a889652d27c4a91ebda461",
+    ".github/scripts/voice-native/kit/tools/assets.py": "2f4e422ddcadd7a939ab243acd899c796847c1f0d602d69eb99bd4f868c2bd39",
+    ".github/scripts/voice-native/kit/tools/autofix.py": "e59b6b2af864e4a866f6c956eb5b625c015b633d494d909c3657c636ca479116",
+    ".github/scripts/voice-native/kit/tools/autostereo.py": "02e3abc92fdb9625ac884a5a0439be06d698a0448496f3f0fb9fd13fc80b58c6",
+    ".github/scripts/voice-native/kit/tools/crop_clause.py": "bd919246e574611f117c45ba77bbec1886a980d6eac6222e087902c6ef243f46",
+    ".github/scripts/voice-native/kit/tools/dom_lint.py": "3fa85743d6d38c026da402c9cc3ef03929bb6e363d4d3f2d481e8a9eede3839d",
+    ".github/scripts/voice-native/kit/tools/dom_lint_hosted.py": "d78b79385c51b850248d9c9012f95649c8fdec5e6a7b55d6e409bf8bad02e51f",
+    ".github/scripts/voice-native/kit/tools/earshot_sfx_register.py": "ca072bb825bf1bc4b531e09c9e22b5f537d9c92820f8a9d19159042cade91ed5",
+    ".github/scripts/voice-native/kit/tools/fe_layout.py": "57179eaa2b88cd9ba5bc7d87df98d5eda241500e0ba3c88aeef911a9d582c77e",
+    ".github/scripts/voice-native/kit/tools/fe_places.py": "991564cb789ef1d43e7f1145f0740a83fbcf0bf33ad9fbe4fae10522367d0a8f",
+    ".github/scripts/voice-native/kit/tools/frame_mask.py": "c1407afeada1e9a5af9d86d11d04def517c2923657d631509cdf7a54295106af",
+    ".github/scripts/voice-native/kit/tools/frame_precheck.py": "fd4e8e45848460d647bc11478c6ec84401cf2fbb66982e8d83a5aa5b61c3911b",
+    ".github/scripts/voice-native/kit/tools/heavy.py": "a35e46c4c16a81d9e5b4635cdb414c9951e71db208fa16818f4b2cab75556628",
+    ".github/scripts/voice-native/kit/tools/polish_check.py": "dba4d80c69b3dc2b770e01d3f0efef5d57d3e2b747242fdf0ba9eda875de6708",
+    ".github/scripts/voice-native/kit/tools/public_repo_guard.py": "71bf42bd01e70769f2cfa46e23726b14f1ab8ed297e3c13152acae79b5635400",
+    ".github/scripts/voice-native/kit/tools/sheet_check.py": "7d736c72a63600072c6f8c7cb723cd756bd71758ad2283a9ca9da362ef40fe64",
+    ".github/scripts/voice-native/kit/tools/sheet_occupancy.py": "c731d5e79f41378bdb1dfb9c9e739ff82dd63f55074e6b217fc383c5fc88c319",
+    ".github/scripts/voice-native/kit/tools/snap.py": "b48a5b7f2e9e50e4150a3acef7e16db1aa06554c6c93ff309f9bbff81d9ef451",
+    ".github/scripts/voice-native/kit/tools/sources_from_media.py": "12c32f3462f1111b22685428f65501676d51d008bfa93272e30f170f15e685f8",
+    ".github/scripts/voice-native/kit/tools/static_precheck.py": "fa4c90c628b0dd41c67b196c927a9e669c490c649574b194bbb88e030b5a7737",
+    ".github/scripts/voice-native/kit/tools/voice_install.py": "3854b5b1609b60d520a8c3549748e9ad2d8c18916a476ada54612d6e898f270c",
+    ".github/scripts/voice-native/kit/tools/format_engine_rt.js": "d2130107a2b88f2bf7ae2f641ef9f29e33bb0c613fa7cb8a7356824a98171889"
   },
   "allowed_no_effect_workflow_blobs": [
     "8c397854ddbfa415d4574de0e35a946b58145b32"
@@ -104,5 +125,6 @@
   ],
   "qualified_selection_commits": [
     "9860b635d0d96e5192649bc4153572a49573c775"
-  ]
+  ],
+  "format_engine_status": "PARTIAL_UNQUALIFIED_NO_PRODUCTION"
 }
