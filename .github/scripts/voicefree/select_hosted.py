@@ -59,7 +59,12 @@ def select(packs, paragraphs, destination):
         for field, suffix in [('wav', '.wav'), ('words', '.words.json'), ('receipt', '.receipt.json')]:
             target = destination / (key + suffix)
             shutil.copyfile(best[field], target)
-        rows.append({'paragraph': key, 'wav_sha256': best['sha256'], 'span_wpm': best['span_wpm'],
+        files = {}
+        for suffix in ('.wav', '.words.json', '.receipt.json'):
+            path = destination / (key + suffix)
+            data = path.read_bytes()
+            files[key + suffix] = {'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+        rows.append({'paragraph': key, 'files': files, 'span_wpm': best['span_wpm'],
                      'native_ratio': best['native_ratio']})
     (destination / 'SELECTION.json').write_text(json.dumps({'status': 'SELECTED_REQUIRES_NATIVE_VOICE_CHECK',
         'release_approval': False, 'rows': rows}, indent=2) + '\n')
@@ -155,6 +160,14 @@ def run_hosted(request, private, work):
     if not paras:
         raise ValueError('no source paragraphs')
     select(packs,paras,work/'selected')
+    manifest = json.loads((work/'selected'/'SELECTION.json').read_text())
+    manifest.update({'schema': 'agmm-hosted-selected-takes-v1', 'id': sid,
+                     'private_commit': request['private_commit'], 'sources': request['runs'],
+                     'selector_run_id': os.environ['GITHUB_RUN_ID'],
+                     'selector_commit': os.environ['GITHUB_SHA']})
+    (work/'selected'/'SELECTION.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    # Metadata has hashes and provenance only: no source text or audio.
+    (work/'selection-metadata.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
 
 if __name__ == '__main__':

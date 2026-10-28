@@ -73,3 +73,11 @@ jobs:
           path: ${{ runner.temp }}/selected.enc
           retention-days: 7
           if-no-files-found: error
+
+      - name: Return source binding metadata only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: voice-selection-${{ github.run_id }}-METADATA
+          path: ${{ runner.temp }}/voice-selection/selection-metadata.json
+          retention-days: 7
+          if-no-files-found: error
