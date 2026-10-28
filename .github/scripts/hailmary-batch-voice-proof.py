@@ -24,14 +24,22 @@ for item in plan:
  original_start=min(c['at'] for c in old);original_end=max(c['at']+c['out']-c['in'] for c in old)
  extension=float(item.get('extend',0));assert 0<=extension<=1.0
  end=min(float(spec['duration'])-.1,original_end+extension)
- start=float(item.get('replace_from',original_start)); assert original_start<=start<end
+ advance=float(item.get('advance',0));assert 0<=advance<=.2 and ('replace_from' not in item or advance==0)
+ start=float(item.get('replace_from',original_start-advance)); assert original_start-.2<=start<end
+ if advance:
+  before=[c['at']+c['out']-c['in'] for c in spec['clips'] if c.get('voice') and c not in old and c['at']<original_start]
+  assert not before or max(before)<=start+.001,('overlaps earlier voice',para,start,max(before))
  target=end-start
- first=float(item['first']);last=float(item['last']);cut0=max(0,first-.04);cut1=last+.04;tempo=(cut1-cut0)/target
+ source_para=item.get('source_para',para);assert re.fullmatch(r'P[1-8]',source_para)
+ path=f'../voice-{para}/{source_para}.t{int(item["take"])}.wav'
+ with wave.open(path,'rb') as wf: source_duration=wf.getnframes()/wf.getframerate()
+ first=float(item['first']);last=float(item['last'])
+ cut0=max(0,first-.04) if 'replace_from' in item else 0
+ cut1=min(source_duration,last+(.04 if 'replace_from' in item else .12));tempo=(cut1-cut0)/target
  if (tempo<.82 and item.get('pad_short') is True) or (tempo<1 and item.get('native_short') is True):
   target=cut1-cut0;end=start+target;tempo=1.0
  if not .82<=tempo<=1.18:report.append({'para':para,'status':'timing mismatch','tempo':tempo,'start':start,'end':end});continue
- source_para=item.get('source_para',para);assert re.fullmatch(r'P[1-8]',source_para)
- path=f'../voice-{para}/{source_para}.t{int(item["take"])}.wav'; dst='proof-'+para+'.wav'
+ dst='proof-'+para+'.wav'
  run(['ffmpeg','-nostdin','-v','error','-y','-i',path,'-af',f'atrim=start={cut0}:end={cut1},asetpts=PTS-STARTPTS,atempo={tempo}','-ar','48000','-ac','2','-c:a','pcm_s16le',dst])
  orig=dict(spec);orig['clips']=old;json.dump(orig,open('old-'+para+'.json','w'))
  run(['python3','mix.py','old-'+para+'.json','../old-'+para+'.wav'])
