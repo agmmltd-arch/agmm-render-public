@@ -121,7 +121,11 @@
     ".github/scripts/voice-native/kit/tools/extract_story.py": "d4bb3d5ae2205fc7c523f85104d23bb8b38b88f501e3ca812df6631a10881144",
     ".github/scripts/voice-native/kit/tools/fe_formats.py": "5c48e11973dbcc5979db80ea0d91be34f8b8314b542c91754c491ab77cd0eb83",
     ".github/scripts/voice-native/kit/tools/engine_learn.py": "89c6798cf59d85b6d08df012b4d566b170edc1f07f3042ccb293ff16b0f43b42",
-    ".github/scripts/voice-native/kit/tools/precheck_all.py": "c291bab4f6c20a73dbcc1cfedf2adeb98d402d5c617ac97eb5e2e55f5d902a59"
+    ".github/scripts/voice-native/kit/tools/precheck_all.py": "c291bab4f6c20a73dbcc1cfedf2adeb98d402d5c617ac97eb5e2e55f5d902a59",
+    ".github/scripts/voice-native/kit/platforms/universal.py": "5087ff22c15decc0c2e58694e5d6639a23bbc2afd129119290803f4504e7c8bb",
+    ".github/scripts/voice-native/kit/platforms/universal.json": "171c56e9b799fa1a5028f2352474c0d7eb26ecf9b0b75c67b46773fa364fe05b",
+    ".github/scripts/voice-native/kit/produce.py": "3a2f2205f910905552d27efdaf04b843afddd7af1caec4975e8baaafd33dd343",
+    ".github/scripts/voice-native/slate/daily/lib/nums.py": "49de687bc5ee7aeab2f84fed01e68de3b6ab1cffc84249e9905aad80825b7839"
   },
   "allowed_no_effect_workflow_blobs": [
     "8c397854ddbfa415d4574de0e35a946b58145b32"
