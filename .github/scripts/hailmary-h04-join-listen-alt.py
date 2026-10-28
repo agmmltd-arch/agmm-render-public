@@ -6,7 +6,7 @@ subprocess.run([ff,'-nostdin','-y','-v','error','-i','/tmp/full.wav','-filter_co
 for n in ('full','glitch'):
  subprocess.run([ff,'-nostdin','-y','-v','error','-i','/tmp/'+n+'.wav','-b:a','64k','/tmp/'+n+'.mp3'],check=True)
  prompt='Listen to this short speech excerpt. Is any spoken word audibly cut off, mechanically chopped, or does the voice abruptly jump? Choose clear, defect, or uncertain. Focus only on audible sounds; do not assume an edit. Return JSON only {"integrity":"clear" or "defect" or "uncertain"}.'
- body={'generationConfig':{'temperature':0.1,'maxOutputTokens':200,'responseMimeType':'application/json'},'contents':[{'parts':[{'text':prompt},{'inline_data':{'mime_type':'audio/mp3','data':base64.b64encode(open('/tmp/'+n+'.mp3','rb').read()).decode()}}]}]}
+ body={'generationConfig':{'temperature':0.1,'maxOutputTokens':1200,'responseMimeType':'application/json'},'contents':[{'parts':[{'text':prompt},{'inline_data':{'mime_type':'audio/mp3','data':base64.b64encode(open('/tmp/'+n+'.mp3','rb').read()).decode()}}]}]}
  req=urllib.request.Request('https://generativelanguage.googleapis.com/v1beta/models/'+os.environ.get('MODEL','gemini-3-flash-preview')+':generateContent',json.dumps(body).encode(),{'Content-Type':'application/json','x-goog-api-key':os.environ['GEMINI_API_KEY']})
  try:
   with urllib.request.urlopen(req,timeout=180) as r: result=json.load(r)
