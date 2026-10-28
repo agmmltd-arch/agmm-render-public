@@ -247,6 +247,9 @@ def run_hosted(request, private, work):
     manifest = json.loads((work/'selected'/'SELECTION.json').read_text())
     manifest.update({'schema': 'agmm-hosted-selected-takes-v1', 'id': sid,
                      'private_commit': request['private_commit'], 'sources': request['runs'],
+                     'web_exclusion_prefix': request['web_exclusion_prefix'],
+                     'web_exclusion_manifest_blob': request['web_exclusion_manifest_blob'],
+                     'web_exclusion_count': len(rows),
                      'selector_run_id': os.environ['GITHUB_RUN_ID'],
                      'selector_commit': os.environ['GITHUB_SHA']})
     (work/'selected'/'SELECTION.json').write_text(json.dumps(manifest, indent=2) + '\n')
