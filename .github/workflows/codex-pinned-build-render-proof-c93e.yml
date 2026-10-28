@@ -13,7 +13,7 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: c93ea4b9fdaaec17ec670b485e3b3472ccc8ea4f
+          ref: c93ea4b94d71c23c9609a5b13bfe4bf5478ceacc
           path: workflow-source
           persist-credentials: false
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -25,7 +25,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = 00762f35505d51ea41098977e9658bc8e6cb724d
-          test "$(git -C workflow-source rev-parse HEAD)" = c93ea4b9fdaaec17ec670b485e3b3472ccc8ea4f
+          test "$(git -C workflow-source rev-parse HEAD)" = c93ea4b94d71c23c9609a5b13bfe4bf5478ceacc
           PYTHONPATH=.github/scripts python3 - <<'PY'
           import voice_hosted
           from pathlib import Path
