@@ -1,0 +1,32 @@
+name: Isolated protected short-render candidate proof
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ac877eff6b7e064c3dba02ca7c8819db12387b03
+          persist-credentials: false
+      - name: Verify source closure and protected render contract
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = ac877eff6b7e064c3dba02ca7c8819db12387b03
+          PYTHONPATH=.github/scripts python3 - <<'PY'
+          import voice_hosted
+          from pathlib import Path
+          voice_hosted.source_closure()
+          s=Path('.github/workflows/protected-short-render-candidate.yml').read_text()
+          assert 'workflow_dispatch:' in s and 'workflow_call:' in s
+          assert 'gh release download' not in s and 'path: exact-input/' not in s
+          assert 'render_short_package.py prepare' in s and 'render_short_package.py assemble' in s
+          assert 'render_short_package.py cap-part' in s and 'render_short_package.py verify-part' in s
+          assert 'verify_build_producer.py' in s and s.count('sealed_render_artifact.py seal') >= 2
+          assert 'env -u VOICEFREE_PASS npx' in s and 'env -u VOICEFREE_PASS python3 static_check.py' in s
+          print('Pinned closure and protected transport contract verified')
+          PY
+          cd .github/scripts/hosted-youtube-candidate
+          PYTHONPATH=.. python3 -m unittest -v test_verify_build_producer.py test_native_build_seal_candidate.py
+          echo 'Synthetic source proof only; no real build, render, approval or post.'
