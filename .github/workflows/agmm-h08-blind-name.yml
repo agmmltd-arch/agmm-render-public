@@ -36,7 +36,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           set -euo pipefail
-          [[ "$TAKE" =~ ^[1-5]$ && "$START" =~ ^[0-9]+(\.[0-9]+)?$ && "$END" =~ ^[0-9]+(\.[0-9]+)?$ ]]
+          [[ "$TAKE" =~ ^([1-9]|10)$ && "$START" =~ ^[0-9]+(\.[0-9]+)?$ && "$END" =~ ^[0-9]+(\.[0-9]+)?$ ]]
           [[ "$VOICE_RUN" =~ ^[0-9]+$ && "$VOICE_LABEL" =~ ^[A-Za-z0-9-]+$ && "$PARA" =~ ^P[1-8]$ ]]
           gh run download "$VOICE_RUN" -R "$GITHUB_REPOSITORY" -n "voicefree-chatterbox-$VOICE_LABEL-ENC" -D "$RUNNER_TEMP/vpack"
           mkdir -p voice
