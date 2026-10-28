@@ -31,7 +31,11 @@ for item in plan:
  orig=dict(spec);orig['clips']=old;json.dump(orig,open('old-'+para+'.json','w'))
  run(['python3','mix.py','old-'+para+'.json','../old-'+para+'.wav'])
  run(['ffmpeg','-nostdin','-v','error','-y','-i','../old-'+para+'.wav','-ar','48000','-ac','2','-c:a','pcm_s16le','../old-'+para+'-s16.wav'])
- a=pcm('../old-'+para+'-s16.wav')[int(start*48000)*2:int(end*48000)*2];b=pcm(dst); gain=20*math.log10(rms(a)/rms(b))
+ a=pcm('../old-'+para+'-s16.wav')[int(start*48000)*2:int(end*48000)*2];b=pcm(dst)
+ print('level diagnostic',para,'start',start,'end',end,'old samples',len(a),'new samples',len(b),'old rms',rms(a),'new rms',rms(b),flush=True)
+ if not len(a) or not len(b) or rms(a)<1e-8 or rms(b)<1e-8:
+  report.append({'para':para,'status':'silent level input'});continue
+ gain=20*math.log10(rms(a)/rms(b))
  if not -12<gain<12:report.append({'para':para,'status':'level mismatch','gain_db':gain});continue
  spec['clips']=[c for c in spec['clips'] if c not in old]
  spec['clips'].append({'src':dst,'in':0,'out':target,'at':start,'gain_db':gain,'pan':0,'fade_in':.008,'fade_out':.012,'voice':True})
