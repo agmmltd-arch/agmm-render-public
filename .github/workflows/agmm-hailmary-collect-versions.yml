@@ -1,0 +1,48 @@
+name: AGMM collect video working versions
+run-name: Collect ten Hail Mary video versions
+on:
+  workflow_dispatch:
+    inputs:
+      packages: { description: JSON film to package run ID, required: true }
+permissions:
+  actions: read
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PACKAGES: ${{ inputs.packages }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Collect video files from completed hosted packages
+        run: |
+          set -euo pipefail
+          mkdir -p phone fourk
+          python3 - <<'PY'
+          import json,os,subprocess,shutil,pathlib
+          packages=json.loads(os.environ['PACKAGES'])
+          assert set(packages)=={f'H{x:02d}' for x in range(2,12)}
+          for film,run in sorted(packages.items()):
+              assert str(run).isdigit()
+              p=pathlib.Path('tmp')/film;p.mkdir(parents=True)
+              subprocess.run(['gh','run','download',str(run),'-R',os.environ['GITHUB_REPOSITORY'],'-n',film+'-4k-and-phone-proof','-D',str(p)],check=True)
+              for quality,target in [('1080','phone'),('4K','fourk')]:
+                  src=p/(film+'-'+quality+'-PROOF.mp4')
+                  assert src.is_file() and src.stat().st_size>0
+                  shutil.move(str(src),str(pathlib.Path(target)/(film+'-'+quality+'.mp4')))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: Hail-Mary-ten-1080-versions
+          path: phone/*.mp4
+          compression-level: 0
+          retention-days: 7
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: Hail-Mary-ten-4K-versions
+          path: fourk/*.mp4
+          compression-level: 0
+          retention-days: 7
+          if-no-files-found: error
