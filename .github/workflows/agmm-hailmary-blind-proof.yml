@@ -1,0 +1,50 @@
+name: AGMM proof blind audio check
+run-name: Blind mix check ${{ inputs.film }}
+on:
+  workflow_dispatch:
+    inputs:
+      film: { description: Film ID, required: true }
+      proof_run: { description: Proof run ID, required: true }
+      start: { description: Clip start seconds, required: true }
+      end: { description: Clip end seconds, required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  listen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      FILM: ${{ inputs.film }}
+      PROOF_RUN: ${{ inputs.proof_run }}
+      CLIP_START: ${{ inputs.start }}
+      CLIP_END: ${{ inputs.end }}
+      TAKE: '1'
+      PARA: P6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-h08-blind-name.py
+          sparse-checkout-cone-mode: false
+      - name: Listen blind to the final mix excerpt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          [[ "$FILM" =~ ^H(0[2-9]|1[01])$ && "$PROOF_RUN" =~ ^[0-9]+$ && "$CLIP_START" =~ ^[0-9]+(\.[0-9]+)?$ && "$CLIP_END" =~ ^[0-9]+(\.[0-9]+)?$ ]]
+          gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "voice-proof-$FILM-not-final" -D proof
+          python3 -m pip install --quiet imageio-ffmpeg==0.6.0
+          FFMPEG=$(python3 -c 'import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())')
+          mkdir -p voice
+          "$FFMPEG" -nostdin -v error -y -ss "$CLIP_START" -to "$CLIP_END" -i proof/VOICE-PROOF.mp4 -vn -ar 24000 -ac 1 -c:a pcm_s16le voice/P6.t1.wav
+          export START=0 END=$(python3 -c 'import os;print(float(os.environ["CLIP_END"])-float(os.environ["CLIP_START"]))') VOICE_LABEL="$FILM-mix"
+          python3 .github/scripts/hailmary-h08-blind-name.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: blind-mix-${{ inputs.film }}
+          path: out/blind.json
+          retention-days: 7
+          if-no-files-found: warn
