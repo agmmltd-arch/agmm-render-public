@@ -36,7 +36,9 @@ jobs:
       - name: Listen to the complete final mix
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python3 .github/scripts/hailmary-pronunciation-listen.py
+        run: |
+          python3 -m pip install --quiet imageio-ffmpeg==0.6.0
+          python3 .github/scripts/hailmary-pronunciation-listen.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
