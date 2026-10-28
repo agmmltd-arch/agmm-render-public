@@ -14,6 +14,10 @@ on:
         type: boolean
         default: false
         required: true
+      synthetic_ocr:
+        type: boolean
+        default: false
+        required: true
 permissions:
   contents: read
   actions: read
@@ -93,4 +97,26 @@ jobs:
           sys.path.insert(0,str(root/'kit/tools'))
           import format_engine, extract_story, precheck_all, craft_check
           print('Core imports completed; no production, precheck or review executed')
+          PYCODE
+      - name: Test unqualified OCR on synthetic controls
+        if: inputs.synthetic_ocr == true
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends tesseract-ocr
+          python3 - <<'PYCODE'
+          import json,os,subprocess,sys
+          from pathlib import Path
+          from PIL import Image,ImageDraw,ImageFont
+          root=Path('/Users/samwall/alfred/builds/video-program-2026-09-23/v2')
+          image=Image.new('RGB',(800,360),'white');draw=ImageDraw.Draw(image)
+          font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',56)
+          draw.text((40,30),'METRO BANK',font=font,fill='black')
+          draw.text((40,180),'CHECK THIS',font=font,fill='black')
+          path=Path(os.environ['RUNNER_TEMP'])/'synthetic-ocr.png';image.save(path)
+          p=subprocess.run([sys.executable,str(root/'kit/tools/ocr_tesseract_candidate.py'),str(path)],capture_output=True,text=True,check=True)
+          result=json.loads(p.stdout);words=' '.join(row['text'].upper() for row in result['lines'])
+          assert result['w']==800 and result['h']==360 and 'METRO' in words and 'BANK' in words and 'CHECK' in words
+          assert all(row['w']>0 and row['h']>0 for row in result['lines'])
+          print('Synthetic OCR functional test passed; real-media parity and production qualification remain required')
           PYCODE
