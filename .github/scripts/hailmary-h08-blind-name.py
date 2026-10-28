@@ -12,6 +12,7 @@ txt=''.join(p.get('text','') for p in result['candidates'][0]['content']['parts'
 heard=re.sub(r'[^A-Za-z .,!\-?]',' ',heard).strip()[:50]
 compact=re.sub(r'[^a-z]','',heard.lower())
 names=[name for name in ('agmm','agm','amg','aem','igm','gm','ag') if name in compact]
-terms=[term for term in ('kettle','cattle','receipts','receipt','one','and','dot','uk') if re.search(r'\b'+term+r'\b',heard.lower())]
-out={'voice_label':os.environ['VOICE_LABEL'],'take':int(take),'name_markers':names,'word_markers':terms,'range_seconds':[start,end]}
+terms=('kettle','cattle','receipts','receipt','one','and','dot','co','uk','right','next','to','the','so')
+counts={term:len(re.findall(r'\b'+term+r'\b',heard.lower())) for term in terms}
+out={'voice_label':os.environ['VOICE_LABEL'],'take':int(take),'name_markers':names,'word_markers':[term for term in terms if counts[term]],'word_counts':counts,'range_seconds':[start,end]}
 os.makedirs('out',exist_ok=True); json.dump(out,open('out/blind.json','w'),indent=2); print(json.dumps(out))
