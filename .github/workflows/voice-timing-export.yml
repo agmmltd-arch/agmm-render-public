@@ -1,0 +1,34 @@
+name: AGMM verified voice timing export
+run-name: Voice timing export ${{ github.run_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      pointer_b64:
+        description: Base64 encoded existing sealed-voice pointer
+        required: true
+        type: string
+permissions:
+  actions: read
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      POINTER_B64: ${{ inputs.pointer_b64 }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify original hosted voice and export timing only
+        run: |
+          set -euo pipefail
+          printf '%s' "$POINTER_B64" | base64 -d > "$RUNNER_TEMP/pointer.json"
+          python3 .github/scripts/export_voice_timing.py "$RUNNER_TEMP/pointer.json" "$RUNNER_TEMP/timing-output"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: verified-voice-timing-${{ github.run_id }}
+          path: ${{ runner.temp }}/timing-output/*.json
+          retention-days: 7
+          if-no-files-found: error
