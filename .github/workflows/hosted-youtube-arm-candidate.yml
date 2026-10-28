@@ -1,0 +1,173 @@
+name: Hosted YouTube Studio arm (candidate)
+run-name: YouTube arm ${{ inputs.post_id }} on ${{ inputs.plan_date }}
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id: { required: true, type: string }
+      master_artifact: { required: true, type: string }
+      video_name: { required: true, type: string }
+      master_sha256: { required: true, type: string }
+      thumbnail_release: { required: true, type: string }
+      thumbnail_asset: { required: true, type: string }
+      thumbnail_sha256: { required: true, type: string }
+      private_commit: { required: true, type: string }
+      private_prefix: { required: true, type: string }
+      private_manifest_blob: { required: true, type: string }
+      metadata_sha256: { required: true, type: string }
+      caption_sha256: { required: true, type: string }
+      approval_sha256: { required: true, type: string }
+      candidate_slots: { required: true, type: string }
+      plan_date: { required: true, type: string }
+      post_id: { required: true, type: string }
+permissions:
+  actions: read
+  contents: write
+jobs:
+  arm:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      GH_TOKEN: ${{ github.token }}
+      YOUTUBE_STORAGE_STATE: ${{ secrets.AGMM_YOUTUBE_STORAGE_STATE }}
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      MASTER_ARTIFACT: ${{ inputs.master_artifact }}
+      VIDEO_NAME: ${{ inputs.video_name }}
+      MASTER_SHA256: ${{ inputs.master_sha256 }}
+      THUMBNAIL_RELEASE: ${{ inputs.thumbnail_release }}
+      THUMBNAIL_ASSET: ${{ inputs.thumbnail_asset }}
+      THUMBNAIL_SHA256: ${{ inputs.thumbnail_sha256 }}
+      PRIVATE_COMMIT: ${{ inputs.private_commit }}
+      PRIVATE_PREFIX: ${{ inputs.private_prefix }}
+      PRIVATE_MANIFEST_BLOB: ${{ inputs.private_manifest_blob }}
+      METADATA_SHA256: ${{ inputs.metadata_sha256 }}
+      CAPTION_SHA256: ${{ inputs.caption_sha256 }}
+      APPROVAL_SHA256: ${{ inputs.approval_sha256 }}
+      CANDIDATE_SLOTS: ${{ inputs.candidate_slots }}
+      PLAN_DATE: ${{ inputs.plan_date }}
+      POST_ID: ${{ inputs.post_id }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: { persist-credentials: false }
+      - name: Validate protected input coordinates
+        run: |
+          set -euo pipefail
+          [[ "$PRIVATE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PRIVATE_MANIFEST_BLOB" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PRIVATE_PREFIX" =~ ^youtube-hosted-inputs/[a-f0-9]{32}$ ]]
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-youtube-inputs
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.private_prefix }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          name: ${{ inputs.master_artifact }}
+          path: encrypted-master
+      - name: Decrypt the protected master on the hosted runner
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/hosted-youtube-candidate/decrypt_master.py --archive encrypted-master/master.tar.enc \
+            --out master --video "$VIDEO_NAME"
+      - name: Fetch pinned thumbnail and materialize text inputs
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_RUN_ID" =~ ^[0-9]{6,}$ ]]
+          [[ "$VIDEO_NAME" =~ ^[A-Za-z0-9._-]+\.mp4$ ]]
+          test -f "master/$VIDEO_NAME"
+          test -f master/REMOTE-INTEGRITY.json
+          python3 .github/scripts/youtube_private_inputs.py \
+            --root private-youtube-inputs --commit "$PRIVATE_COMMIT" \
+            --prefix "$PRIVATE_PREFIX" --manifest-blob "$PRIVATE_MANIFEST_BLOB"
+          test "$(sha256sum metadata.json | cut -d ' ' -f1)" = "$METADATA_SHA256"
+          test "$(python3 -c 'import hashlib,json; print(hashlib.sha256(json.load(open("metadata.json"))["snippet"]["description"].encode()).hexdigest())')" = "$CAPTION_SHA256"
+          test "$(sha256sum approval.json | cut -d ' ' -f1)" = "$APPROVAL_SHA256"
+          gh release download "$THUMBNAIL_RELEASE" -R "$GITHUB_REPOSITORY" -p "$THUMBNAIL_ASSET"
+          test "$(sha256sum "$THUMBNAIL_ASSET" | cut -d ' ' -f1)" = "$THUMBNAIL_SHA256"
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib
+          name=os.environ['VIDEO_NAME']; p=pathlib.Path('master')/name
+          h=hashlib.sha256()
+          with p.open('rb') as f:
+              for b in iter(lambda:f.read(8*1024*1024),b''): h.update(b)
+          actual=h.hexdigest(); integ=json.loads(pathlib.Path('master/REMOTE-INTEGRITY.json').read_text())
+          recorded=integ.get('master_4k_sha256') or integ.get('master_sha256') or (integ.get('outputs') or {}).get('master_sha256')
+          if actual != os.environ['MASTER_SHA256'] or recorded != actual: raise SystemExit('exact master/artifact binding failed')
+          a=json.loads(pathlib.Path('approval.json').read_text()); run=os.environ['SOURCE_RUN_ID']
+          if a.get('master_sha256') != actual or str(a.get('source_run_id')) != run or a.get('overall') != 'PASS': raise SystemExit('approval does not bind exact master and source run')
+          if not a.get('reviewer_id') or not a.get('maker_id') or a['reviewer_id'] == a['maker_id']: raise SystemExit('independent reviewer identity invalid')
+          av=a.get('audiovisual_review') or {}
+          if any(av.get(k) != 'PASS' for k in ('continuous_visual','continuous_audio','motion','pilot_craft','thumbnail')): raise SystemExit('full independent AV review is incomplete')
+          rows=json.loads(pathlib.Path('existing-rows.json').read_text())
+          if not isinstance(rows,list): raise SystemExit('existing rows must be a list')
+          pathlib.Path('master.sha256').write_text(actual+'\n')
+          PY
+      - name: Check earliest free future slot and hold until provider proof
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python .github/scripts/hosted-youtube-candidate/hosted_queue_cli.py \
+            --approval approval.json --existing-rows existing-rows.json \
+            --source-run-id "$SOURCE_RUN_ID" --artifact-name "$MASTER_ARTIFACT" \
+            --video-name "$VIDEO_NAME" --master-sha256 "$MASTER_SHA256" \
+            --metadata-sha256 "$METADATA_SHA256" --thumbnail-sha256 "$THUMBNAIL_SHA256" \
+            --caption-sha256 "$CAPTION_SHA256" \
+            --date "$PLAN_DATE" --candidate-slots "$CANDIDATE_SLOTS" --post-id "$POST_ID" \
+            --out receipt/queue-held.json
+      - name: Reserve exact post, slot and master before any provider action
+        run: .venv/bin/python .github/scripts/hosted-youtube-candidate/claim_cli.py reserve --row receipt/queue-held.json --intent-file receipt/claim-intent.txt
+      - name: Install cloud Studio browser
+        run: |
+          set -euo pipefail
+          .venv/bin/python -m pip install --quiet playwright pillow
+          google-chrome --version
+          test -n "$YOUTUBE_STORAGE_STATE"
+          printf '%s' "$YOUTUBE_STORAGE_STATE" > storage-state.json
+          chmod 600 storage-state.json
+      - name: Schedule exact master in YouTube Studio and prove provider state
+        run: |
+          set -euo pipefail
+          SLOT="$(python3 -c 'import json,subprocess,sys; from datetime import datetime; from zoneinfo import ZoneInfo; x=json.load(open("receipt/queue-held.json")); print(datetime.fromisoformat(x["date"]+"T"+x["slot"]+":00").replace(tzinfo=ZoneInfo("Europe/London")).isoformat())')"
+          .venv/bin/python .github/scripts/youtube_studio_cloud_upload.py \
+            --mode publish --storage-state storage-state.json \
+            --video "master/$VIDEO_NAME" --thumbnail "$THUMBNAIL_ASSET" \
+            --metadata metadata.json --approval approval.json \
+            --expected-sha256 "$MASTER_SHA256" --source-run-id "$SOURCE_RUN_ID" \
+            --schedule-at "$SLOT" --out receipt/YOUTUBE-SCHEDULED.json --evidence evidence
+          .venv/bin/python .github/scripts/hosted-youtube-candidate/hosted_queue_cli.py \
+            --approval approval.json --receipt receipt/YOUTUBE-SCHEDULED.json \
+            --existing-rows existing-rows.json --source-run-id "$SOURCE_RUN_ID" \
+            --artifact-name "$MASTER_ARTIFACT" --video-name "$VIDEO_NAME" \
+            --master-sha256 "$MASTER_SHA256" --metadata-sha256 "$METADATA_SHA256" \
+            --caption-sha256 "$CAPTION_SHA256" \
+            --thumbnail-sha256 "$THUMBNAIL_SHA256" --date "$PLAN_DATE" \
+            --candidate-slots "$CANDIDATE_SLOTS" \
+            --selected-slot "$(python3 -c 'import json; print(json.load(open("receipt/queue-held.json"))["slot"])')" --post-id "$POST_ID" \
+            --out receipt/queue-armed.json
+          .venv/bin/python .github/scripts/hosted-youtube-candidate/claim_cli.py record --row receipt/queue-armed.json --intent-file receipt/claim-intent.txt
+      - name: Encrypt any receipt and evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          test -n "$VOICEFREE_PASS"
+          mkdir -p encrypted-output receipt evidence
+          tar -cf "$RUNNER_TEMP/youtube-evidence.tar" receipt evidence
+          openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:VOICEFREE_PASS \
+            -in "$RUNNER_TEMP/youtube-evidence.tar" -out encrypted-output/youtube-evidence.enc
+          rm -f "$RUNNER_TEMP/youtube-evidence.tar"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: YOUTUBE-ARM-${{ github.run_id }}
+          path: encrypted-output/youtube-evidence.enc
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Remove session material
+        if: always()
+        run: python3 -c 'from pathlib import Path; p=Path("storage-state.json"); p.unlink() if p.exists() else None'
