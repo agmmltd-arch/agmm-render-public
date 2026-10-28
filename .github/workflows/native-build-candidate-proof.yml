@@ -8,15 +8,18 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 99fd167579ea5f63a55010ca925e039558c32b14
+          ref: 1d9543df4bd9ef36565fc0bd6df6698271358e9d
           persist-credentials: false
       - name: Verify pinned runtime closure and synthetic native owner checks
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = 99fd167579ea5f63a55010ca925e039558c32b14
+          test "$(git rev-parse HEAD)" = 1d9543df4bd9ef36565fc0bd6df6698271358e9d
           PYTHONPATH=.github/scripts python3 - <<'PY'
           import voice_hosted
           voice_hosted.source_closure()
+          from pathlib import Path
+          source=Path('.github/scripts/build_native_short.py').read_text()
+          assert '"AGMM_SKIP_STORYBOARD", "AGMM_REVIEWER", "VOICEFREE_PASS"):' in source
           print('Original pinned runtime closure and candidate source files verified')
           PY
           cd .github/scripts/hosted-youtube-candidate
