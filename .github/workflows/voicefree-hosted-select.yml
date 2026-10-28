@@ -1,0 +1,75 @@
+name: AGMM hosted voice take selection
+run-name: AGMM hosted voice selection ${{ github.run_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      request:
+        description: Source run IDs, labels and protected-input commit (no script text)
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  select:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REQUEST: ${{ inputs.request }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate source coordinates
+        id: binding
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          r = json.loads(os.environ['REQUEST'])
+          sid = r.get('id', '')
+          assert re.fullmatch(r'S[0-9]+', sid)
+          assert re.fullmatch(r'[0-9a-f]{40}', r.get('private_commit', ''))
+          runs = r.get('runs') or []
+          assert 1 <= len(runs) <= 2
+          for entry in runs:
+              assert re.fullmatch(r'S[0-9]+-r[12]-chatterbox-[0-9]+', entry.get('tag', ''))
+              assert entry['tag'].startswith(sid + '-r') and str(entry.get('run_id', '')).isdigit()
+          Path('selection-request.json').write_text(json.dumps(r))
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+              out.write('commit=' + r['private_commit'] + '\n')
+              out.write('tag1=' + runs[0]['tag'] + '\n')
+              out.write('tag2=' + (runs[1]['tag'] if len(runs) > 1 else runs[0]['tag']) + '\n')
+          PY
+      - name: Read original private source and reference
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ steps.binding.outputs.commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-inputs
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            voice-free/req/${{ steps.binding.outputs.tag1 }}/request.json
+            voice-free/req/${{ steps.binding.outputs.tag2 }}/request.json
+            voice-free/ref/hashlocked/
+      - name: Select source-bound takes on Ubuntu
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          python3 .github/scripts/voicefree/select_hosted.py selection-request.json private-inputs "$RUNNER_TEMP/voice-selection"
+          python3 - <<'PY'
+          import os,sys
+          sys.path.insert(0,'.github/scripts/voicefree')
+          import vf_common
+          vf_common.pack_encrypt(os.environ['RUNNER_TEMP'] + '/voice-selection/selected', os.environ['RUNNER_TEMP'] + '/selected.enc')
+          PY
+      - name: Return encrypted takes for the native voice gate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: voice-selection-${{ github.run_id }}-ENC
+          path: ${{ runner.temp }}/selected.enc
+          retention-days: 7
+          if-no-files-found: error
