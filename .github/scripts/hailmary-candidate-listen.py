@@ -20,7 +20,7 @@ try:
  with urllib.request.urlopen(req,timeout=240) as response: result=json.load(response)
 except urllib.error.HTTPError as error: raise SystemExit('Audio listener HTTP status '+str(error.code))
 txt=''.join(p.get('text','') for p in result['candidates'][0]['content']['parts']); answer=json.loads(txt); safe=[]
-for v in answer.get('takes',[]):
+for v in (answer if isinstance(answer,list) else answer.get('takes',[])):
  if not isinstance(v,dict) or v.get('id') not in range(1,6): continue
  z={'id':v['id'],'verdict':v.get('verdict') if v.get('verdict') in ('correct','incorrect','uncertain') else 'uncertain','natural':v.get('natural') if isinstance(v.get('natural'),bool) else None}
  if kind=='rows': z.update({k:v.get(k) if v.get(k) in ('roh','raw','uncertain') else 'uncertain' for k in ('first','second')})
