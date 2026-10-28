@@ -32,7 +32,18 @@ jobs:
           set -euo pipefail
           [[ "$FILM" =~ ^H(0[2-9]|1[01])$ && "$ORIGINAL_RUN" =~ ^[0-9]+$ && "$PROOF_RUN" =~ ^[0-9]+$ && "$ORIGINAL_LABEL" =~ ^H(0[2-9]|1[01])-v4[cd]$ ]]
           gh run download "$ORIGINAL_RUN" -R "$GITHUB_REPOSITORY" -n "hailmary-$ORIGINAL_LABEL" -D original
-          gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "voice-proof-$FILM-not-final" -D proof
+          if [ "$FILM" = H08 ]; then
+            gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n H08-all-voice-proof-not-final -D proof
+            cp proof/H08-VOICE-PROOF.mp4 proof/VOICE-PROOF.mp4
+            python3 - <<'PY'
+          import json
+          hook=json.load(open('proof/proof-details.json')); parts=json.load(open('proof/all-proof-details.json'))
+          json.dump({'items':[dict(hook,status='proof inserted')]+[dict(x,status='proof inserted') for x in parts]},open('proof/preservation-details.json','w'))
+          PY
+            mv proof/preservation-details.json proof/proof-details.json
+          else
+            gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "voice-proof-$FILM-not-final" -D proof
+          fi
           python3 -m pip install --quiet numpy imageio-ffmpeg==0.6.0
           python3 .github/scripts/hailmary-preservation.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
