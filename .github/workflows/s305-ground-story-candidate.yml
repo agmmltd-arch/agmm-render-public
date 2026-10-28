@@ -1,0 +1,78 @@
+name: S305 hosted story grounding candidate
+run-name: S305 story grounding ${{ inputs.response_sha }}
+on:
+  workflow_dispatch:
+    inputs:
+      response_commit: { required: true, type: string }
+      response_path: { required: true, type: string }
+      response_blob: { required: true, type: string }
+      response_sha: { required: true, type: string }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  ground:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 7eff3e3f4b6f1f4961d18dae5a6242962fbe4225
+          persist-credentials: false
+      - name: Validate protected response coordinates
+        run: |
+          python3 - <<'PYCODE'
+          import json,os,re,subprocess
+          x=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']
+          assert re.fullmatch(r'[a-f0-9]{40}',x['response_commit'])
+          assert re.fullmatch(r'[a-f0-9]{40}',x['response_blob'])
+          assert re.fullmatch(r'[a-f0-9]{64}',x['response_sha'])
+          assert x['response_path']=='story-label-responses/S305-'+x['response_sha']+'/response.enc'
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()=='7eff3e3f4b6f1f4961d18dae5a6242962fbe4225'
+          PYCODE
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 68e06894132eb1c9e849e225ec8d092f7636aef3
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-story
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: story-extraction/S305-bb8c027f300b4c53a0200928578c781a7a6bfdf46524ad065a997dcd073abaab
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.response_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-response
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.response_path }}
+      - name: Restore bound context and run the original grounding checks
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+          AGMM_WRITER_PASS: ${{ secrets.AGMM_WRITER_PASS }}
+          STORY_MANIFEST_SHA: bb8c027f300b4c53a0200928578c781a7a6bfdf46524ad065a997dcd073abaab
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          x=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs'];p=Path('private-response')/x['response_path']
+          assert subprocess.check_output(['git','-C','private-response','rev-parse','HEAD'],text=True).strip()==x['response_commit']
+          assert subprocess.check_output(['git','-C','private-response','rev-parse','HEAD:'+x['response_path']],text=True).strip()==x['response_blob']
+          assert p.is_file() and not p.is_symlink() and p.stat().st_size<10000000 and hashlib.sha256(p.read_bytes()).hexdigest()==x['response_sha']
+          assert subprocess.check_output(['git','-C','private-story','rev-parse','HEAD'],text=True).strip()=='68e06894132eb1c9e849e225ec8d092f7636aef3'
+          assert subprocess.check_output(['git','-C','private-story','rev-parse','HEAD:story-extraction/S305-bb8c027f300b4c53a0200928578c781a7a6bfdf46524ad065a997dcd073abaab/MANIFEST.json'],text=True).strip()=='25eddf6523f8f3d9e64505c5c7ad6e313e62a787'
+          PYCODE
+          python3 .github/scripts/hosted_prepare_story_candidate.py private-story/story-extraction/S305-bb8c027f300b4c53a0200928578c781a7a6bfdf46524ad065a997dcd073abaab "$RUNNER_TEMP/prompt.enc"
+          RESPONSE_PATH="$(python3 -c 'import json,os; print(json.load(open(os.environ["GITHUB_EVENT_PATH"]))["inputs"]["response_path"])')"
+          python3 .github/scripts/hosted_ground_story_candidate.py "$RUNNER_TEMP/prompt.enc" "private-response/$RESPONSE_PATH" "private-story/story-extraction/S305-bb8c027f300b4c53a0200928578c781a7a6bfdf46524ad065a997dcd073abaab/story-data/STORY-DATA.md" "$RUNNER_TEMP/grounded.enc"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: S305-grounded-story-ENC
+          path: ${{ runner.temp }}/grounded.enc
+          retention-days: 7
+          if-no-files-found: error
