@@ -8,12 +8,12 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: e90ce0f3aac947148ae9bb9483f6ce659467f171
+          ref: bf0f2b8aa8d7ff481b4d2434f8d389c509784d48
           persist-credentials: false
       - name: Verify candidate source and synthetic behaviour
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = e90ce0f3aac947148ae9bb9483f6ce659467f171
+          test "$(git rev-parse HEAD)" = bf0f2b8aa8d7ff481b4d2434f8d389c509784d48
           for f in youtube_private_inputs.py youtube_studio_cloud_upload.py; do
             test -f ".github/scripts/$f"
           done
