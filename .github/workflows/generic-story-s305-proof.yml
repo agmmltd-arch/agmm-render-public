@@ -1,0 +1,43 @@
+name: Generic hosted story preparation proof
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 6bde5d92aaa3d37129288ffe6aa4c864787b26f3
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: cea812fc7867882891aa820f8f4ab40575e99891
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-story
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: generic-story-inputs/S305-a529e6278be9a0eefab6b7789569b3c1caff704790d80ce06ed36610fdb3fe84
+      - name: Verify bound source and create encrypted prompt
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+          AGMM_WRITER_PASS: ${{ secrets.AGMM_WRITER_PASS }}
+          STORY_MANIFEST_SHA: a529e6278be9a0eefab6b7789569b3c1caff704790d80ce06ed36610fdb3fe84
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 6bde5d92aaa3d37129288ffe6aa4c864787b26f3
+          test "$(git -C private-story rev-parse HEAD)" = cea812fc7867882891aa820f8f4ab40575e99891
+          test "$(git -C private-story rev-parse HEAD:generic-story-inputs/S305-a529e6278be9a0eefab6b7789569b3c1caff704790d80ce06ed36610fdb3fe84/MANIFEST.json)" = 1378055e04e0eb0944b44c29c62a59335cc99d16
+          python3 .github/scripts/hosted_story_prepare_generic.py private-story/generic-story-inputs/S305-a529e6278be9a0eefab6b7789569b3c1caff704790d80ce06ed36610fdb3fe84 S305 "$RUNNER_TEMP/prompt.enc"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: generic-S305-story-prompt-ENC
+          path: ${{ runner.temp }}/prompt.enc
+          retention-days: 7
+          if-no-files-found: error
