@@ -36,7 +36,10 @@ def stage(private,coordinates,v2,require_host=True):
   data=src.read_bytes()
   if git_blob(data)!=row['git_blob_sha']:raise ValueError('protected format bytes changed')
   if target.is_symlink() or any((target/Path(*Path(rel).parts[:i])).is_symlink() for i in range(1,len(Path(rel).parts))):raise ValueError('linked format input ancestor')
-  if dest.exists() or dest.is_symlink():raise ValueError('format input would overwrite runtime or data')
+  if dest.exists() or dest.is_symlink():
+   if dest.is_symlink() or not dest.is_file() or dest.stat().st_size!=row['bytes'] or git_blob(dest.read_bytes())!=row['git_blob_sha']:
+    raise ValueError('format input would overwrite different runtime or data')
+   continue
   prepared.append((src,dest))
  for src,dest in prepared:
   dest.parent.mkdir(parents=True,exist_ok=True)
