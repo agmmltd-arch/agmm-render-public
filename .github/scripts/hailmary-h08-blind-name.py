@@ -8,8 +8,8 @@ req=urllib.request.Request('https://generativelanguage.googleapis.com/v1beta/mod
 try:
  with urllib.request.urlopen(req,timeout=240) as r: result=json.load(r)
 except urllib.error.HTTPError as e: raise SystemExit('Audio listener HTTP status '+str(e.code))
-txt=''.join(p.get('text','') for p in result['candidates'][0]['content']['parts']); answer=json.loads(txt); heard=str(answer.get('heard',''))[:80]
-heard=re.sub(r'[^A-Za-z .,!\-?]',' ',heard).strip()[:50]
+txt=''.join(p.get('text','') for p in result['candidates'][0]['content']['parts']); answer=json.loads(txt); heard=str(answer.get('heard',''))[:500]
+heard=re.sub(r'[^A-Za-z .,!\-?]',' ',heard).strip()
 compact=re.sub(r'[^a-z]','',heard.lower())
 names=[name for name in ('agmm','agm','amg','aem','igm','gm','ag') if name in compact]
 terms=('kettle','cattle','receipts','receipt','one','and','dot','co','uk','right','next','to','the','so')
