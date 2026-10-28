@@ -1,0 +1,114 @@
+name: Synthetic protected short transport and assembly proof
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      source: ${{ steps.hashes.outputs.source }}
+      parts: ${{ steps.hashes.outputs.parts }}
+      mix: ${{ steps.hashes.outputs.mix }}
+    env:
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: { ref: 6dbaca24419a14743bf24edfb9cfd160821b7bf3, persist-credentials: false }
+      - name: Create synthetic fixture on Ubuntu
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
+          mkdir -p fixture/project/look fixture/inputs
+          printf '<html><body>synthetic test</body></html>\n' > fixture/project/look/index.html
+          printf 'print("synthetic check")\n' > fixture/project/look/static_check.py
+          (cd fixture/project/look && sha256sum index.html static_check.py > SHA256SUMS.txt)
+          tar -C fixture/project -czf fixture/inputs/source.tar.gz look
+          printf '{"parts":[{"look":"look","file":"index.html","out":"part01","off":0,"dur":5}],"frames":150}\n' > fixture/inputs/parts.json
+          ffmpeg -hide_banner -loglevel error -f lavfi -i 'sine=frequency=440:sample_rate=48000:duration=5' \
+            -af 'pan=stereo|c0=c0|c1=c0,loudnorm=I=-14:TP=-1.5:LRA=11' -ac 2 -ar 48000 -c:a pcm_s16le fixture/inputs/mix.wav
+      - name: Seal and verify native input contract
+        id: hashes
+        run: |
+          set -euo pipefail
+          SOURCE="$(sha256sum fixture/inputs/source.tar.gz | cut -d ' ' -f1)"
+          PARTS="$(sha256sum fixture/inputs/parts.json | cut -d ' ' -f1)"
+          MIX="$(sha256sum fixture/inputs/mix.wav | cut -d ' ' -f1)"
+          printf 'source=%s\nparts=%s\nmix=%s\n' "$SOURCE" "$PARTS" "$MIX" >> "$GITHUB_OUTPUT"
+          S=.github/scripts/hosted-youtube-candidate
+          python3 "$S/seal_build_inputs.py" seal --directory fixture/inputs --out fixture-input.enc \
+            --source-sha256 "$SOURCE" --parts-sha256 "$PARTS" --mix-sha256 "$MIX"
+          python3 "$S/seal_build_inputs.py" unseal --archive fixture-input.enc --out opened-input \
+            --source-sha256 "$SOURCE" --parts-sha256 "$PARTS" --mix-sha256 "$MIX"
+          python3 .github/scripts/render_short_package.py prepare --source opened-input/source.tar.gz \
+            --parts opened-input/parts.json --mix opened-input/mix.wav --source-sha256 "$SOURCE" \
+            --parts-sha256 "$PARTS" --mix-sha256 "$MIX" --output checked-input
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with: { name: 'synthetic-input-${{ github.run_id }}', path: fixture-input.enc, retention-days: 1 }
+  part:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: { ref: 6dbaca24419a14743bf24edfb9cfd160821b7bf3, persist-credentials: false }
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with: { name: 'synthetic-input-${{ github.run_id }}', path: encrypted }
+      - name: Open inputs and create synthetic video part
+        env:
+          SOURCE: ${{ needs.prepare.outputs.source }}
+          PARTS: ${{ needs.prepare.outputs.parts }}
+          MIX: ${{ needs.prepare.outputs.mix }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
+          S=.github/scripts/hosted-youtube-candidate
+          python3 "$S/seal_build_inputs.py" unseal --archive encrypted/fixture-input.enc --out input \
+            --source-sha256 "$SOURCE" --parts-sha256 "$PARTS" --mix-sha256 "$MIX"
+          mkdir part
+          ffmpeg -hide_banner -loglevel error -f lavfi -i 'color=c=blue:s=1080x1920:r=30:d=5' \
+            -c:v libx264 -preset ultrafast -pix_fmt yuv420p -an part/raw.mp4
+          python3 .github/scripts/render_short_package.py cap-part --input part/raw.mp4 --output part/part01.mp4 \
+            --resolution 1080 --receipt part/part01.cap.json
+          python3 .github/scripts/render_short_package.py verify-part --video part/part01.mp4 --resolution 1080 \
+            --duration 5 --output part/part01.verify.json
+          rm part/raw.mp4
+          python3 "$S/sealed_render_artifact.py" seal --input part --out part.enc
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with: { name: 'synthetic-part-${{ github.run_id }}', path: part.enc, retention-days: 1 }
+  assemble:
+    needs: [prepare, part]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+      SOURCE: ${{ needs.prepare.outputs.source }}
+      PARTS: ${{ needs.prepare.outputs.parts }}
+      MIX: ${{ needs.prepare.outputs.mix }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: { ref: 6dbaca24419a14743bf24edfb9cfd160821b7bf3, persist-credentials: false }
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with: { name: 'synthetic-input-${{ github.run_id }}', path: encrypted-input }
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with: { name: 'synthetic-part-${{ github.run_id }}', path: encrypted-part }
+      - name: Assemble under native technical checks and encrypt output
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
+          python3 -m pip install --quiet Pillow
+          S=.github/scripts/hosted-youtube-candidate
+          python3 "$S/seal_build_inputs.py" unseal --archive encrypted-input/fixture-input.enc --out input \
+            --source-sha256 "$SOURCE" --parts-sha256 "$PARTS" --mix-sha256 "$MIX"
+          python3 "$S/sealed_render_artifact.py" unseal --input encrypted-part/part.enc --out parts
+          python3 .github/scripts/render_short_package.py assemble --parts input/parts.json --mix input/mix.wav \
+            --parts-sha256 "$PARTS" --mix-sha256 "$MIX" --renders parts --output final
+          python3 - <<'PY'
+          import json
+          x=json.load(open('final/TECHNICAL-EVIDENCE.json'))
+          assert x['technical_status']=='PASS' and x['editorial_status']=='NOT_REVIEWED' and x['publication_status']=='NOT_REQUESTED'
+          PY
+          python3 "$S/sealed_render_artifact.py" seal --input final --out final.enc
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with: { name: 'synthetic-final-${{ github.run_id }}', path: final.enc, retention-days: 1 }
