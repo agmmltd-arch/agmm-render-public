@@ -2,7 +2,7 @@
   "schema": "agmm-native-hosted-voice-source-v1",
   "original_conductor": "4e20918336cb45686b8a129a629109926481aa0c4979fe97b443bf71db471887",
   "files": {
-    ".github/scripts/build_native_short.py": "4d140450ad4bdf95d7c66d9148228efd34c70b893a513f6cb62bac76eba1ec8b",
+    ".github/scripts/build_native_short.py": "772f68d0f3b64af4b123f0da5d87240489bce53ffd0c32cc32bdf048061cfa59",
     ".github/scripts/builder-runtime-donor.json": "486401e56ed31f26e614dafa16991a55734cd7e3fdac16d095d7a0545a0aa24b",
     ".github/scripts/native_build_effects.py": "d0beb8d68b7e76ae7d9fd8ba2669153b8ebb45e7342708305fd39ec87a7a2eee",
     ".github/scripts/resume_voice_checkpoint.py": "49c4ad8aed0f60f23e6a3d7a7cabfb2a4049d89a9617ad73eb5780a93827212c",

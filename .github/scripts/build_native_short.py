@@ -48,31 +48,23 @@ def preflight(request):
          and request["owner"]["writer"] and re.fullmatch(r"[0-9a-f]{64}", request["approved_hash"]),
          "genuine native writer and approved source required")
     current = gh("repos/%s/actions/runs/%s" % (PUBLIC, os.environ["GITHUB_RUN_ID"]))
-    need(current["path"] == ".github/workflows/agmm-short-native-build.yml"
+    candidate_workflow = ".github/workflows/native-build-encrypted-candidate.yml"
+    need(current["path"].split("@", 1)[0] == candidate_workflow
          and current["head_sha"] == os.environ["GITHUB_SHA"]
          and current["display_title"] == "AGMM native build " + request["intent"], "foreign builder producer")
-    page, prior = 1, []
-    while True:
-        runs = gh("repos/%s/actions/workflows/agmm-short-native-build.yml/runs?per_page=100&page=%d" % (PUBLIC, page))["workflow_runs"]
-        prior += [r for r in runs if str(r["id"]) != os.environ["GITHUB_RUN_ID"]
-                  and r.get("display_title", "").startswith("AGMM native build " + base_intent)]
-        if len(runs) < 100:
-            break
-        page += 1
-    need(bool(prior) == bool(retry), "prior build requires explicit qualified no-effect reconciliation")
-    proofs = []
-    from voice_no_effect import prove_no_effect
-    for row in prior:
-        full = gh("repos/%s/actions/runs/%s" % (PUBLIC, row["id"]))
-        tree = gh("repos/%s/git/trees/%s?recursive=1" % (PUBLIC, full["head_sha"]))
-        need(not tree.get("truncated"), "prior builder tree incomplete")
-        blob = next(r["sha"] for r in tree["tree"] if r["path"] == ".github/workflows/agmm-short-native-build.yml")
-        jobs = gh("repos/%s/actions/runs/%s/jobs?per_page=100" % (PUBLIC, row["id"]))
-        proofs.append(prove_no_effect(full, jobs, blob, source_closure()["allowed_build_no_effect_workflow_blobs"],
-             workflow=".github/workflows/agmm-short-native-build.yml", job_name="build",
-             step="Seal exact package through original release owner"))
-    if proofs:
-        need(retry == max(proofs, key=lambda r: r["run_id"]), "retry must bind the latest exact no-release-effect proof")
+    # No retry is admitted until this encrypted workflow has its own qualified
+    # no-effect proof. Check both the old and new producer to prevent overlap.
+    need(not retry, "encrypted build retry requires qualified reconciliation")
+    for workflow in ("agmm-short-native-build.yml", "native-build-encrypted-candidate.yml"):
+        page = 1
+        while True:
+            runs = gh("repos/%s/actions/workflows/%s/runs?per_page=100&page=%d" % (PUBLIC, workflow, page))["workflow_runs"]
+            need(not any(str(r["id"]) != os.environ["GITHUB_RUN_ID"] and
+                         r.get("display_title", "").startswith("AGMM native build " + base_intent) for r in runs),
+                 "prior build requires explicit reconciliation")
+            if len(runs) < 100:
+                break
+            page += 1
     return prefix
 
 
