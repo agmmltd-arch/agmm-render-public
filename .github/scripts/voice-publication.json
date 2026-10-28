@@ -126,7 +126,15 @@
     ".github/scripts/voice-native/kit/platforms/universal.json": "171c56e9b799fa1a5028f2352474c0d7eb26ecf9b0b75c67b46773fa364fe05b",
     ".github/scripts/voice-native/kit/produce.py": "3a2f2205f910905552d27efdaf04b843afddd7af1caec4975e8baaafd33dd343",
     ".github/scripts/voice-native/slate/daily/lib/nums.py": "49de687bc5ee7aeab2f84fed01e68de3b6ab1cffc84249e9905aad80825b7839",
-    ".github/scripts/voice-native/kit/tools/ocr_tesseract_candidate.py": "e8c7d148f5d121ba86ba16ca400f300185706f7dfed294ac7b6d8ed1b3ca02aa"
+    ".github/scripts/voice-native/kit/tools/ocr_tesseract_candidate.py": "e8c7d148f5d121ba86ba16ca400f300185706f7dfed294ac7b6d8ed1b3ca02aa",
+    ".github/scripts/voice-native/kit/tools/beats_brief.py": "f8c162bcf9c8c7f7f66a913112a0dd81c1e35df5004f3268bde90e2eb009629a",
+    ".github/scripts/voice-native/kit/tools/better_than_last.py": "5103439e3418857e2b61bf096c6a80a5cf11ff7e98a35e7396b45f742b6b12f5",
+    ".github/scripts/voice-native/kit/tools/compose.py": "c2ecb60d1b0f9f0d919b31d3a0e2608f84d466f42d45a6e35f7f15453b559118",
+    ".github/scripts/voice-native/kit/tools/fetch_assets.py": "01e0ef1f0b2c65f9f77809ba1df51cb6b060579d8208a518eb41500d5c5e3baa",
+    ".github/scripts/voice-native/kit/tools/lane_short.py": "7ceeae13b40442494cee82a64efaf7988cac819de78f6d1270e8b82f15e32c05",
+    ".github/scripts/voice-native/kit/tools/reviewer_evidence.py": "f2292c202ed8e51bb536f343f3bb29c9e7ddd9786454d6dc0c5386e519923a56",
+    ".github/scripts/voice-native/kit/tools/source_media.py": "b0f575ffae5246a09ae20bbb2eeeebae02465d7bb24a880759e21814a1a1b65b",
+    ".github/scripts/voice-native/kit/tools/text_truth.py": "f738d51b9eea239edc3b75ded40705513490091c05404fd2b58419734f71b3cb"
   },
   "allowed_no_effect_workflow_blobs": [
     "8c397854ddbfa415d4574de0e35a946b58145b32"
