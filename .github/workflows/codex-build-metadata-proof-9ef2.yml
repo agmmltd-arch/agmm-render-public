@@ -1,0 +1,34 @@
+name: Isolated build metadata proof
+run-name: Isolated build metadata 9ef2c0f2
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ff8b0088b9c8a4e0e0c428b91d83dd989a5d22bb
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 9ef2c0f2cd6fdc634a4cb15e4b839b0bca045a54
+          path: workflow-source
+          persist-credentials: false
+      - name: Verify closure and synthetic metadata checks
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = ff8b0088b9c8a4e0e0c428b91d83dd989a5d22bb
+          test "$(git -C workflow-source rev-parse HEAD)" = 9ef2c0f2cd6fdc634a4cb15e4b839b0bca045a54
+          PYTHONPATH=.github/scripts python3 -c 'import voice_hosted; voice_hosted.source_closure()'
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('workflow-source/.github/workflows/hosted-build-metadata-candidate.yml').read_text()
+          assert 'ref: ff8b0088b9c8a4e0e0c428b91d83dd989a5d22bb' in s
+          assert 'sha256(data).hexdigest()' in s and "z.namelist()!=['metadata.enc']" in s
+          assert 'extract_build_metadata_candidate.py' in s and 'VOICEFREE_PASS' in s
+          PY
+          cd .github/scripts/hosted-youtube-candidate
+          PYTHONPATH=.. python3 -m unittest -v test_extract_build_metadata_candidate.py test_verify_build_producer.py
+          echo 'Synthetic source proof only; no actual package, video or post.'
