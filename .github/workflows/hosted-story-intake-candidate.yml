@@ -1,0 +1,67 @@
+name: Protected checked-voice story intake candidate
+run-name: AGMM story intake ${{ inputs.id }} ${{ inputs.manifest_sha }}
+on:
+  workflow_dispatch:
+    inputs:
+      id: { required: true, type: string }
+      private_commit: { required: true, type: string }
+      prefix: { required: true, type: string }
+      manifest_blob: { required: true, type: string }
+      manifest_sha: { required: true, type: string }
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: checked-story-intake-${{ inputs.id }}
+  cancel-in-progress: false
+jobs:
+  intake:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 6bde5d92aaa3d37129288ffe6aa4c864787b26f3
+          persist-credentials: false
+      - name: Validate protected input coordinates
+        run: |
+          python3 - <<'PYCODE'
+          import json,os,re,subprocess
+          i=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']
+          assert re.fullmatch(r'S[0-9]{2,3}',i['id'])
+          assert re.fullmatch(r'[a-f0-9]{40}',i['private_commit']) and re.fullmatch(r'[a-f0-9]{40}',i['manifest_blob'])
+          assert re.fullmatch(r'[a-f0-9]{64}',i['manifest_sha'])
+          assert i['prefix']=='generic-story-inputs/'+i['id']+'-'+i['manifest_sha']
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()=='6bde5d92aaa3d37129288ffe6aa4c864787b26f3'
+          PYCODE
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-story
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.prefix }}
+      - name: Build original source-bound story prompt
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+          AGMM_WRITER_PASS: ${{ secrets.AGMM_WRITER_PASS }}
+          STORY_MANIFEST_SHA: ${{ inputs.manifest_sha }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          import json,os,subprocess,sys
+          i=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs'];root='private-story'
+          assert subprocess.check_output(['git','-C',root,'rev-parse','HEAD'],text=True).strip()==i['private_commit']
+          assert subprocess.check_output(['git','-C',root,'rev-parse','HEAD:'+i['prefix']+'/MANIFEST.json'],text=True).strip()==i['manifest_blob']
+          subprocess.run([sys.executable,'.github/scripts/hosted_story_prepare_generic.py',root+'/'+i['prefix'],i['id'],os.environ['RUNNER_TEMP']+'/prompt.enc'],check=True)
+          PYCODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agmm-story-prompt-${{ inputs.id }}-ENC
+          path: ${{ runner.temp }}/prompt.enc
+          retention-days: 7
+          if-no-files-found: error
