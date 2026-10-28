@@ -123,7 +123,7 @@ jobs:
           python3 - <<'PY'
           import os,re
           assert re.fullmatch(r'[0-9a-f]{40}',os.environ['HIST_COMMIT'])
-          assert re.fullmatch(r'format-hosted-inputs/test-S357-[0-9]+',os.environ['HIST_PREFIX'])
+          assert re.fullmatch(r'format-hosted-inputs/test-(S357|S317)-[0-9]+',os.environ['HIST_PREFIX'])
           assert re.fullmatch(r'[0-9a-f]{40}',os.environ['HIST_MANIFEST'])
           PY
       - name: Read private historical test inputs
@@ -234,16 +234,18 @@ jobs:
           coords={'commit':os.environ['HIST_COMMIT'],'prefix':os.environ['HIST_PREFIX'],'manifest_blob':os.environ['HIST_MANIFEST']}
           stage(Path('private-historical-inputs').resolve(),coords,BASE)
           out=Path(os.environ['RUNNER_TEMP'])/'historical-diagnostics';out.mkdir()
+          pointer=json.loads((Path(os.environ['RUNNER_TEMP'])/'pointer.json').read_text());sid=pointer['id']
+          assert sid in ('S357','S317') and '/test-'+sid+'-' in coords['prefix']
           capture=io.StringIO();result={'status':'FAILED','production_approval':False}
           try:
               with contextlib.redirect_stdout(capture),contextlib.redirect_stderr(capture):
-                  check=subprocess.run([sys.executable,str(BASE/'kit/tools/extract_story.py'),'--verify','S357'],capture_output=True,text=True)
+                  check=subprocess.run([sys.executable,str(BASE/'kit/tools/extract_story.py'),'--verify',sid],capture_output=True,text=True)
                   result['story_verify_rc']=check.returncode
                   result['story_verify_log']=check.stdout+check.stderr
                   if check.returncode!=0:raise ValueError('native story verification failed')
                   sys.path.insert(0,str(BASE/'kit/tools'))
                   import format_engine
-                  built=format_engine.build('S357',write=False,quiet=True)
+                  built=format_engine.build(sid,write=False,quiet=True)
                   result.update(status='HISTORICAL_FORMAT_PLAN_BUILT_NOT_REVIEWED',has_spec=bool(built.get('spec')),has_concept=bool(built.get('concept')))
           except Exception as ex:
               result['error_class']=type(ex).__name__;result['error']=str(ex);result['traceback']=traceback.format_exc()
