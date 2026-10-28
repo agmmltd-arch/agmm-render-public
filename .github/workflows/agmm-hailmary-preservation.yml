@@ -1,0 +1,44 @@
+name: AGMM voice proof preservation check
+run-name: Voice preservation ${{ inputs.film }}
+on:
+  workflow_dispatch:
+    inputs:
+      film: { description: Film ID, required: true }
+      original_run: { description: Original render ID, required: true }
+      original_label: { description: Original render label, required: true }
+      proof_run: { description: Voice proof ID, required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      FILM: ${{ inputs.film }}
+      ORIGINAL_RUN: ${{ inputs.original_run }}
+      ORIGINAL_LABEL: ${{ inputs.original_label }}
+      PROOF_RUN: ${{ inputs.proof_run }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-preservation.py
+          sparse-checkout-cone-mode: false
+      - name: Compare unchanged sections of the mixes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$FILM" =~ ^H(0[2-9]|1[01])$ && "$ORIGINAL_RUN" =~ ^[0-9]+$ && "$PROOF_RUN" =~ ^[0-9]+$ && "$ORIGINAL_LABEL" =~ ^H(0[2-9]|1[01])-v4[cd]$ ]]
+          gh run download "$ORIGINAL_RUN" -R "$GITHUB_REPOSITORY" -n "hailmary-$ORIGINAL_LABEL" -D original
+          gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "voice-proof-$FILM-not-final" -D proof
+          python3 -m pip install --quiet numpy imageio-ffmpeg==0.6.0
+          python3 .github/scripts/hailmary-preservation.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: voice-preservation-${{ inputs.film }}
+          path: out/preservation.json
+          retention-days: 7
+          if-no-files-found: warn
