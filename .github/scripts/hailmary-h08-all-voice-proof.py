@@ -13,7 +13,8 @@ for para,path,first,last in items:
  old=[c for c in spec['clips'] if c.get('voice') and os.path.basename(c['src'])==para+'.wav']
  assert old,para
  start=min(c['at'] for c in old); end=max(c['at']+c['out']-c['in'] for c in old); target=end-start
- cut0=max(0,first-.04); cut1=last+.04; tempo=(cut1-cut0)/target
+ with wave.open(path,'rb') as source: source_duration=source.getnframes()/source.getframerate()
+ cut0=0; cut1=min(source_duration,last+.12); tempo=(cut1-cut0)/target
  assert .82<=tempo<=1.18,(para,tempo)
  dst='proof-'+para+'.wav'
  subprocess.run(['ffmpeg','-nostdin','-v','error','-y','-i',path,'-af',f'atrim=start={cut0}:end={cut1},asetpts=PTS-STARTPTS,atempo={tempo}','-ar','48000','-ac','2','-c:a','pcm_s16le',dst],check=True)
