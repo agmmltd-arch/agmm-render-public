@@ -784,6 +784,13 @@ def plan_states(P):
     for g in groups:
         ob = g["object"]
         if ob is not None and ob["kind"] == "price_tag":
+            # groups[0] is the first BODY group, not frame zero. When its
+            # source-selected hero return is out of sync, the existing
+            # tag_zero repair must remove it too, without altering the opener.
+            if "tag_zero" in P.flags and g is groups[0] and not g0_says:
+                g["object"] = None
+                g["bare"] = True
+                continue
             if (g is not groups[0] and n_tag >= (0 if "tag_zero" in P.flags else (1 if "tag_one" in P.flags else HERO_MIDDLE_MAX))) or cur_kind == "price_tag":
                 g["object"] = dict(last_real, win=g["wins"][0]) if (last_real and cur_kind != "price_tag") else None
             else:
