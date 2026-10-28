@@ -3264,6 +3264,10 @@ def repair_flags(fails, flags):
             new.append(("force_split", f[:80]))
         elif "the hero tag is the object of" in f:
             new.append(("tag_zero" if "tag_one" in flags else "tag_one", f[:80]))
+        elif "the hero tag returns on beat" in f and "figure is not spoken" in f and "tag_zero" not in flags:
+            # Replan with no middle hero returns; the original director and
+            # repeated-object checks still decide whether the result is valid.
+            new.append(("tag_zero", f[:80]))
         elif "is not story text or fixed chrome" in f and "drop_unprintable" not in flags:
             new.append(("drop_unprintable", f[:80]))
         elif "NO-LANE" in f and "no_lane_repair" not in flags:

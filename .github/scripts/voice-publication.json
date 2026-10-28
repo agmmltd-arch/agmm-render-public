@@ -117,7 +117,7 @@
     ".github/scripts/voice-native/kit/tools/voice_install.py": "3854b5b1609b60d520a8c3549748e9ad2d8c18916a476ada54612d6e898f270c",
     ".github/scripts/voice-native/kit/tools/format_engine_rt.js": "d2130107a2b88f2bf7ae2f641ef9f29e33bb0c613fa7cb8a7356824a98171889",
     ".github/scripts/voice-native/kit/tools/craft_check.py": "ed978335b284e3bc3a827c54b5fe3451f83c43f7da13e15658c3ed4f4beab28d",
-    ".github/scripts/voice-native/kit/tools/format_engine.py": "662d3d19588f36989251a6c320d6eafa8446cb00fd19bb13e567b866735f9455",
+    ".github/scripts/voice-native/kit/tools/format_engine.py": "eecc6db785989c7c041b0be65c27083f7b901bd75f792b8fd57424cd76b931f8",
     ".github/scripts/voice-native/kit/tools/extract_story.py": "d4bb3d5ae2205fc7c523f85104d23bb8b38b88f501e3ca812df6631a10881144",
     ".github/scripts/voice-native/kit/tools/fe_formats.py": "5c48e11973dbcc5979db80ea0d91be34f8b8314b542c91754c491ab77cd0eb83",
     ".github/scripts/voice-native/kit/tools/engine_learn.py": "89c6798cf59d85b6d08df012b4d566b170edc1f07f3042ccb293ff16b0f43b42",
@@ -136,7 +136,8 @@
     ".github/scripts/voice-native/kit/tools/source_media.py": "b0f575ffae5246a09ae20bbb2eeeebae02465d7bb24a880759e21814a1a1b65b",
     ".github/scripts/voice-native/kit/tools/text_truth.py": "f738d51b9eea239edc3b75ded40705513490091c05404fd2b58419734f71b3cb",
     ".github/scripts/stage_format_inputs_hosted.py": "65c5509b011a74b85feaf43360f737725c574257d5c7c0ecd12a0e39fbf0037a",
-    ".github/scripts/stage_historical_format_hosted.py": "156f5dd3043c8b3f6989bd75ba83e8c57160733ad078c47ae4553b44492483a7"
+    ".github/scripts/stage_historical_format_hosted.py": "156f5dd3043c8b3f6989bd75ba83e8c57160733ad078c47ae4553b44492483a7",
+    ".github/scripts/voice-native/kit/tools/test_tag_return_repair.py": "c03356f1a2c1aceca23d9ec146b25569584dd58e0f148d7203b794afacad2ff8"
   },
   "allowed_no_effect_workflow_blobs": [
     "8c397854ddbfa415d4574de0e35a946b58145b32"
