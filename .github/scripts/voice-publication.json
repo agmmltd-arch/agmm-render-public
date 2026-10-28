@@ -7,7 +7,7 @@
     ".github/scripts/native_build_effects.py": "d0beb8d68b7e76ae7d9fd8ba2669153b8ebb45e7342708305fd39ec87a7a2eee",
     ".github/scripts/resume_voice_checkpoint.py": "49c4ad8aed0f60f23e6a3d7a7cabfb2a4049d89a9617ad73eb5780a93827212c",
     ".github/scripts/seed_voice_runtime.py": "5110ee1b26c51cc934f8f5c0eb404779fe5c4b473b4c645d42b9f11f754a2d3b",
-    ".github/scripts/stage_hosted_voice.py": "8a6b0b3b6a5528ba1b9684c5c535eb6799c187a23ded5a73ae0e54fb395bdf8a",
+    ".github/scripts/stage_hosted_voice.py": "787f613e64f9f7cdb83338f35ebb9031b3e64a2effad0752e1112e55583ef0e8",
     ".github/scripts/verify_voice_credential_roles.py": "af06dcf76134c638c1dc9615be7f985d876cdfaf2988371fd965716f87c21a41",
     ".github/scripts/voice-native/crew/short_cloud_dispatch.py": "ffc0b056e609edf5a77699f648486d86c93822300afef57d58c9b01c5bc77acf",
     ".github/scripts/voice-native/design-system/tools/key_green.py": "acceb5d279c9041a60c3e3bd21c404890b7f2884e9be23fac7b1e8e202b675d6",

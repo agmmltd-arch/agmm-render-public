@@ -16,6 +16,7 @@ import re
 import shutil
 import stat
 import subprocess
+import sys
 import tarfile
 import zipfile
 from voice_effects import host
@@ -170,6 +171,7 @@ def hydrate(pointer, request, private_root, work, v2):
         store = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(store)
         store.update(str(v2 / "shorts/voice"), triage)
+    sys.path.insert(0, str(v2 / "shorts/voice/tooling"))
     spec = importlib.util.spec_from_file_location("builder_native_prepare", v2 / "shorts/voice/tooling/prepare.py")
     prepare = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(prepare)
