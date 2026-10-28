@@ -1,0 +1,44 @@
+name: AGMM H08 all voice proof review
+run-name: H08 all voice proof review
+on: workflow_dispatch
+permissions:
+  contents: read
+  actions: read
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      FILM: H08
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-pronunciation-listen.py
+          sparse-checkout-cone-mode: false
+      - name: Fetch and hear proof
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          gh run download 40690136531 -R "$GITHUB_REPOSITORY" -n H08-all-voice-proof-not-final -D proof
+          python3 -m pip install --quiet imageio-ffmpeg==0.6.0
+          FFMPEG=$(python3 -c 'import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())')
+          mkdir -p input/gate-input repack
+          "$FFMPEG" -nostdin -v error -y -i proof/H08-VOICE-PROOF.mp4 -vn -ar 48000 -ac 2 -c:a pcm_s16le input/gate-input/mix.wav
+          python3 .github/scripts/hailmary-pronunciation-listen.py
+          cp proof/H08-VOICE-PROOF.mp4 repack/FINAL.mp4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: H08-all-voice-listening
+          path: out/listen.json
+          retention-days: 7
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hailmary-H08-voiceproof
+          path: repack/FINAL.mp4
+          retention-days: 7
+          if-no-files-found: error
