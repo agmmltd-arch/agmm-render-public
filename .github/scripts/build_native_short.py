@@ -208,7 +208,7 @@ def run(request, private_root, voice_private_root, work, output):
     environment = os.environ.copy()
     environment.update(AGMM_BUILD_CHILD="1", AGMM_BUILD_ROOT=str(BASE), FLEET_FREE_ONLY="1",
                        PYTHONPATH=str(HERE / "voice-site") + os.pathsep + str(HERE))
-    for key in ("GH_TOKEN", "GITHUB_TOKEN", "SSH_AUTH_SOCK", "AGMM_VOICE_MISTRAL_KEY", "AGMM_VOICE_GEMINI_FREE_KEY", "AGMM_SKIP_STORYBOARD", "AGMM_REVIEWER"):
+    for key in ("GH_TOKEN", "GITHUB_TOKEN", "SSH_AUTH_SOCK", "AGMM_VOICE_MISTRAL_KEY", "AGMM_VOICE_GEMINI_FREE_KEY", "AGMM_SKIP_STORYBOARD", "AGMM_REVIEWER", "VOICEFREE_PASS"):
         environment.pop(key, None)
     output.mkdir(parents=True, exist_ok=False)
     run = subprocess.run([sys.executable, str(BASE / "kit/build_short.py"), str(BASE / "kit/specs" / sid / "spec.json")],

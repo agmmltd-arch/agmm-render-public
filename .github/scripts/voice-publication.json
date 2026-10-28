@@ -2,7 +2,7 @@
   "schema": "agmm-native-hosted-voice-source-v1",
   "original_conductor": "4e20918336cb45686b8a129a629109926481aa0c4979fe97b443bf71db471887",
   "files": {
-    ".github/scripts/build_native_short.py": "13628d785874d423271b697fcfd207e313b1ff9429541dd4ab5db20193460aee",
+    ".github/scripts/build_native_short.py": "4d140450ad4bdf95d7c66d9148228efd34c70b893a513f6cb62bac76eba1ec8b",
     ".github/scripts/builder-runtime-donor.json": "486401e56ed31f26e614dafa16991a55734cd7e3fdac16d095d7a0545a0aa24b",
     ".github/scripts/native_build_effects.py": "d0beb8d68b7e76ae7d9fd8ba2669153b8ebb45e7342708305fd39ec87a7a2eee",
     ".github/scripts/resume_voice_checkpoint.py": "49c4ad8aed0f60f23e6a3d7a7cabfb2a4049d89a9617ad73eb5780a93827212c",
@@ -92,7 +92,9 @@
     ".github/scripts/voice_no_effect.py": "5b030fcea8a85e2966c80f27cc8673db5f6e9c54d38fbb708db9c104a4b09b4d",
     ".github/workflows/agmm-short-native-build.yml": "f5d6bec29c0ef42a9d6a0d9ef9583ca5848f68860ad09510f963acc0f2ee35ab",
     ".github/workflows/agmm-short-voice-checkpoint.yml": "175d586caa565e9830501cd88425e9816228fb8fb0a0b6bb37812176f36a76b7",
-    ".github/workflows/agmm-short-voice.yml": "53e83ede599e9e38c31183413d2f31bee64f90d64b81cdd263cce9f5469cb100"
+    ".github/workflows/agmm-short-voice.yml": "53e83ede599e9e38c31183413d2f31bee64f90d64b81cdd263cce9f5469cb100",
+    ".github/scripts/hosted-youtube-candidate/seal_build_inputs.py": "f6fc1a211fc06f3114b9f0d505b04c2c486eef1788ece3a67f3f739703f207fc",
+    ".github/scripts/hosted-youtube-candidate/native_build_seal_candidate.py": "3403e91b998815f71aae633a64086e040d9ce0e934c6f9e3be027b0bf360497b"
   },
   "allowed_no_effect_workflow_blobs": [
     "8c397854ddbfa415d4574de0e35a946b58145b32"
