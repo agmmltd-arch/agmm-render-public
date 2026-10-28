@@ -1,0 +1,65 @@
+name: AGMM H04 voice splice proof
+run-name: Hail Mary voice proof ${{ inputs.film }}
+on:
+  workflow_dispatch:
+    inputs:
+      film: { description: Film ID, required: true }
+      render_run: { description: Original render ID, required: true }
+      render_label: { description: Original render label, required: true }
+      plan: { description: JSON replacement plan, required: true }
+      gain1: { description: Original first master gain, required: true }
+      gain2: { description: Original second master gain, required: true }
+      picture_run: { description: Optional corrected H10 picture proof run, required: false, default: '' }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      FILM: ${{ inputs.film }}
+      RENDER_RUN: ${{ inputs.render_run }}
+      RENDER_LABEL: ${{ inputs.render_label }}
+      PLAN: ${{ inputs.plan }}
+      GAIN1: ${{ inputs.gain1 }}
+      GAIN2: ${{ inputs.gain2 }}
+      PICTURE_RUN: ${{ inputs.picture_run }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-h04-splice-proof.py
+          sparse-checkout-cone-mode: false
+      - name: Fetch original and fit replacement voices
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          set -euo pipefail
+          [[ "$FILM" =~ ^H(0[2-9]|1[01])$ && "$RENDER_RUN" =~ ^[0-9]+$ && "$RENDER_LABEL" =~ ^H(0[2-9]|1[01])-v4[cd]$ ]]
+          [[ "$GAIN1" =~ ^-?[0-9]+(\.[0-9]+)?$ && "$GAIN2" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]
+          gh run download "$RENDER_RUN" -R "$GITHUB_REPOSITORY" -n "hailmary-$RENDER_LABEL" -D input
+          gh run download "$RENDER_RUN" -R "$GITHUB_REPOSITORY" -n "film-$RENDER_LABEL" -D film
+          picture=input/SHARE.mp4
+          if [ -n "$PICTURE_RUN" ]; then
+            [[ "$FILM" = H10 && "$PICTURE_RUN" =~ ^[0-9]+$ ]]
+            gh run download "$PICTURE_RUN" -R "$GITHUB_REPOSITORY" -n hailmary-H10-headfix-proof28 -D corrected
+            picture=corrected/SHARE.mp4
+          fi
+          python3 -m pip install --quiet numpy imageio-ffmpeg==0.6.0
+          mkdir -p "$RUNNER_TEMP/bin"
+          ln -s "$(python3 -c 'import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())')" "$RUNNER_TEMP/bin/ffmpeg"
+          export PATH="$RUNNER_TEMP/bin:$PATH"
+          python3 .github/scripts/hailmary-h04-splice-proof.py
+          ffmpeg -nostdin -y -loglevel error -i mix-proof.wav -af "volume=${GAIN1}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled" -c:a pcm_f32le stage.wav
+          ffmpeg -nostdin -y -loglevel error -i "$picture" -i stage.wav -map 0:v -map 1:a -c:v copy -af "volume=${GAIN2}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled,aresample=48000" -c:a aac -b:a 160k -shortest -movflags +faststart VOICE-PROOF.mp4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: voice-proof-${{ inputs.film }}-not-final
+          path: |
+            VOICE-PROOF.mp4
+            proof-details.json
+          retention-days: 7
+          if-no-files-found: warn
