@@ -1,0 +1,32 @@
+name: Synthetic authenticated render-artifact proof
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: { persist-credentials: false }
+      - name: Verify synthetic round-trip and reject tampering
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/fixture/review"
+          printf 'synthetic video bytes\n' > "$RUNNER_TEMP/fixture/part.mp4"
+          printf '{"synthetic":true}\n' > "$RUNNER_TEMP/fixture/review/check.json"
+          SCRIPT=.github/scripts/hosted-youtube-candidate/sealed_render_artifact.py
+          python3 "$SCRIPT" seal --input "$RUNNER_TEMP/fixture" --out "$RUNNER_TEMP/fixture.enc"
+          python3 "$SCRIPT" unseal --input "$RUNNER_TEMP/fixture.enc" --out "$RUNNER_TEMP/opened"
+          cmp "$RUNNER_TEMP/fixture/part.mp4" "$RUNNER_TEMP/opened/part.mp4"
+          cmp "$RUNNER_TEMP/fixture/review/check.json" "$RUNNER_TEMP/opened/review/check.json"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'fixture.enc';data=bytearray(p.read_bytes());data[len(data)//2]^=1
+          (p.parent/'tampered.enc').write_bytes(data)
+          PY
+          if python3 "$SCRIPT" unseal --input "$RUNNER_TEMP/tampered.enc" --out "$RUNNER_TEMP/tampered"; then
+            echo 'Tampered artifact must be refused' >&2; exit 1
+          fi
