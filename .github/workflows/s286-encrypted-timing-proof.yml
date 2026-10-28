@@ -1,0 +1,44 @@
+name: S286 protected timing proof
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 646e6f9ef0143b10ff0b70d310f47a1c0f660cda
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 394479fc139e11964be79bd5b54fd13b03738981
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-pointer
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: timing-proof/S286-e77898d522b81a87ce5e7231ab39ccde23876a149f2af9499aecb1ca27d28d0f/pointer.json
+      - name: Verify protected pointer and export timing on Ubuntu
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 646e6f9ef0143b10ff0b70d310f47a1c0f660cda
+          test "$(git -C private-pointer rev-parse HEAD)" = 394479fc139e11964be79bd5b54fd13b03738981
+          test "$(git -C private-pointer rev-parse HEAD:timing-proof/S286-e77898d522b81a87ce5e7231ab39ccde23876a149f2af9499aecb1ca27d28d0f/pointer.json)" = cf63b9c046ff0f6fc127492835a23fe8d8c1e642
+          echo "e77898d522b81a87ce5e7231ab39ccde23876a149f2af9499aecb1ca27d28d0f  private-pointer/timing-proof/S286-e77898d522b81a87ce5e7231ab39ccde23876a149f2af9499aecb1ca27d28d0f/pointer.json" | sha256sum -c >/dev/null
+          python3 .github/scripts/timing-proof/export_voice_timing_encrypted_candidate.py private-pointer/timing-proof/S286-e77898d522b81a87ce5e7231ab39ccde23876a149f2af9499aecb1ca27d28d0f/pointer.json "$RUNNER_TEMP/timing"
+          tar -C "$RUNNER_TEMP/timing" -cf "$RUNNER_TEMP/timing.tar" .
+          openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/timing.tar" -out "$RUNNER_TEMP/timing.enc"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: S286-timing-proof-ENC
+          path: ${{ runner.temp }}/timing.enc
+          retention-days: 7
+          if-no-files-found: error
