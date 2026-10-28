@@ -1,0 +1,52 @@
+name: AGMM hosted selection binding check
+run-name: AGMM selection binding test ${{ github.run_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      producer_run:
+        type: string
+        required: true
+      producer_commit:
+        type: string
+        required: true
+      encrypted_artifact:
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+      PRODUCER_RUN: ${{ inputs.producer_run }}
+      PRODUCER_COMMIT: ${{ inputs.producer_commit }}
+      ENCRYPTED_ARTIFACT: ${{ inputs.encrypted_artifact }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check hosted selection without exporting audio
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os,re,subprocess,sys
+          from pathlib import Path
+          rid=os.environ['PRODUCER_RUN']; commit=os.environ['PRODUCER_COMMIT']; artifact=os.environ['ENCRYPTED_ARTIFACT']
+          assert rid.isdigit() and artifact.isdigit() and re.fullmatch(r'[0-9a-f]{40}',commit)
+          assert commit == 'df9fe186f6f30cd4546a776c6725f00f8e1ff92e', 'test producer source not pinned'
+          temp=Path(os.environ['RUNNER_TEMP']); meta=temp/'metadata';meta.mkdir()
+          subprocess.run(['gh','run','download',rid,'--repo','agmmltd-arch/agmm-render-public','--name','voice-selection-'+rid+'-METADATA','--dir',str(meta)],check=True)
+          files=list(meta.iterdir());assert len(files)==1 and files[0].name=='selection-metadata.json'
+          m=json.loads(files[0].read_text());sid=m['id']
+          bindings={'shorts/voice/'+sid+'/'+name:details['sha256'] for row in m['rows'] for name,details in row['files'].items()}
+          request={'id':sid,'input_bindings':bindings,'selection_metadata':m,'selection_producer':{'run_id':rid,'commit':commit,'artifact_id':artifact}}
+          dest=temp/'destination';dest.mkdir()
+          sys.path.insert(0,'.github/scripts/voicefree')
+          from validate_selected import materialize
+          names=materialize(request,dest,temp/'selection-verification')
+          print('Source-bound selected file count:',len(names),'native voice and release checks remain required')
+          PY
