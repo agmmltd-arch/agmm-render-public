@@ -33,10 +33,25 @@ jobs:
           original='MODEL="gemini-3.8-flash"'; replacement='MODEL="gemini-3-flash-preview"'
           assert s.count(original)==1
           p.write_text(s.replace(original,replacement))
-          print('Exact original closure verified; only model changed for this isolated test')
+          p=Path('.github/scripts/av_free_qualification/hosted_av_qualification.py'); s=p.read_text()
+          old='valid=isinstance(parts,list) and bool(parts) and all(isinstance(x,dict) and set(x)=={"text"} and isinstance(x["text"],str) for x in parts)'
+          new='valid=isinstance(parts,list) and bool(parts) and all(isinstance(x,dict) and "text" in x and set(x).issubset({"text","thoughtSignature"}) and isinstance(x["text"],str) and ("thoughtSignature" not in x or isinstance(x["thoughtSignature"],str)) for x in parts)'
+          assert s.count(old)==1
+          p.write_text(s.replace(old,new))
+          print('Exact original closure verified; isolated model and documented text metadata parsing applied')
           PY
       - name: Run unchanged qualification negative controls
-        run: cd .github/scripts/av_free_qualification && python3 -B -m unittest -v test_qualification.py
+        run: |
+          cd .github/scripts/av_free_qualification
+          python3 -B -m unittest -v test_qualification.py
+          python3 -B - <<'PY'
+          import hosted_av_qualification as av
+          def response(part): return {'candidates':[{'finishReason':'STOP','content':{'parts':[part]}}]}
+          assert av.validate_provider_response(response({'text':'valid','thoughtSignature':'opaque'})) == ('STOP','valid',False)
+          assert av.validate_provider_response(response({'text':'not final','thought':True}))[1] == ''
+          assert av.validate_provider_response(response({'text':'bad metadata','thoughtSignature':42}))[1] == ''
+          print('Signed final text accepted; thought blocks and malformed metadata still refused')
+          PY
       - name: Install hosted media tools
         run: sudo apt-get update && sudo apt-get install --yes ffmpeg
       - name: Run bounded blind AV panel on free model
