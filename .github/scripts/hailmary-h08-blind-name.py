@@ -14,5 +14,6 @@ compact=re.sub(r'[^a-z]','',heard.lower())
 names=[name for name in ('agmm','agm','amg','aem','igm','gm','ag') if name in compact]
 terms=('kettle','cattle','receipts','receipt','one','and','dot','co','uk','right','next','to','the','so','where','finds','builds','money','you','add','had','an','ai','eye','leaking','licking','business','is','audit','order','it','weighs','fifty','printer','ten','company','consultancy','build','fix','faster')
 counts={term:len(re.findall(r'\b'+term+r'\b',heard.lower())) for term in terms}
-out={'voice_label':os.environ['VOICE_LABEL'],'take':int(take),'name_markers':names,'word_markers':[term for term in terms if counts[term]],'word_counts':counts,'range_seconds':[start,end]}
+ai_marker = 'eye-eye' if re.search(r'\beye\W+eye\b',heard.lower()) else ('ai' if re.search(r'\b(?:a\W+i|ai)\b',heard.lower()) else 'other')
+out={'ai_marker':ai_marker,'voice_label':os.environ['VOICE_LABEL'],'take':int(take),'name_markers':names,'word_markers':[term for term in terms if counts[term]],'word_counts':counts,'range_seconds':[start,end]}
 os.makedirs('out',exist_ok=True); json.dump(out,open('out/blind.json','w'),indent=2); print(json.dumps(out))
