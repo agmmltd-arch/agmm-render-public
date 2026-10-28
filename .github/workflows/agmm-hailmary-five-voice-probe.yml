@@ -1,0 +1,56 @@
+name: Hail Mary five candidate sounds
+run-name: English phoneme check of selected voice takes
+on:
+  workflow_dispatch:
+    inputs:
+      takes: { description: Selected voice pack and take mapping, required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      TAKES: ${{ inputs.takes }}
+    steps:
+      - name: Compare selected voice sounds on hosted runner
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng ffmpeg
+          python3 -m pip install --quiet 'transformers==4.48.3' 'torch==2.5.1' 'soundfile==0.13.1' 'protobuf' 'sentencepiece' --extra-index-url https://download.pytorch.org/whl/cpu
+          espeak-ng -v en-gb -s 150 -w good.wav 'an [[eI aI]] consultancy'
+          espeak-ng -v en-gb -s 150 -w bad.wav 'an [[aI aI]] consultancy'
+          ffmpeg -nostdin -y -v error -i good.wav -ar 16000 -ac 1 good16.wav
+          ffmpeg -nostdin -y -v error -i bad.wav -ar 16000 -ac 1 bad16.wav
+          python3 - <<'PY'
+          import json,os,pathlib,re,subprocess
+          takes=json.loads(os.environ['TAKES']);assert set(takes)=={'H04'}
+          for film,info in takes.items():
+              run,label,take=info['run'],info['label'],info['take']
+              assert re.fullmatch(r'[0-9]+',str(run)) and re.fullmatch(r'[\w-]+',label) and 1<=int(take)<=5
+              folder=pathlib.Path('work')/film;folder.mkdir(parents=True)
+              subprocess.run(['gh','run','download',str(run),'-R',os.environ['GITHUB_REPOSITORY'],'-n',f'voicefree-chatterbox-{label}-ENC','-D',str(folder)],check=True)
+              cmd=f'openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "{folder}/synth-pack.enc" | tar -x -C "{folder}"'
+              subprocess.run(['bash','-o','pipefail','-c',cmd],check=True)
+              source=folder/f'P6.t{take}.wav';assert source.exists()
+              for i in range(1,6):
+                  source=folder/f'P6.t{i}.wav';assert source.exists()
+                  subprocess.run(['ffmpeg','-nostdin','-y','-v','error','-i',str(source),'-t','2.4','-ar','16000','-ac','1',f'{film}-{i}.wav'],check=True)
+          PY
+          python3 - <<'PY'
+          import json,soundfile as sf,torch
+          from transformers import AutoProcessor,AutoModelForCTC
+          name='slplab/wav2vec2-large-robust-L2-english-phoneme-recognition'
+          processor=AutoProcessor.from_pretrained(name);model=AutoModelForCTC.from_pretrained(name).eval()
+          for f in ['good16','bad16']+[f'H04-{x}' for x in range(1,6)]:
+              audio,sr=sf.read(f+'.wav'); x=processor(audio,sampling_rate=sr,return_tensors='pt').input_values
+              with torch.no_grad(): ids=torch.argmax(model(x).logits,dim=-1)
+              phones=processor.batch_decode(ids)[0].split()
+              vowels=[p for p in phones if p in ('ey','ay')]
+              print(json.dumps({'sample':f,'first_ey_ay':vowels[:3], 'opening_phones':phones[:7]},ensure_ascii=False),flush=True)
+          PY
