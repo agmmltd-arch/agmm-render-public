@@ -1,0 +1,46 @@
+name: AGMM AI pronunciation probe
+run-name: AI pronunciation ${{ inputs.film }}
+on:
+  workflow_dispatch:
+    inputs:
+      film: { description: Film ID, required: true }
+      proof_run: { description: Proof run ID, required: true }
+      start: { description: Clip start seconds, required: true }
+      end: { description: Clip end seconds, required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  listen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      FILM: ${{ inputs.film }}
+      PROOF_RUN: ${{ inputs.proof_run }}
+      START: ${{ inputs.start }}
+      END: ${{ inputs.end }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-ai-probe.py
+          sparse-checkout-cone-mode: false
+      - name: Hear the AI phrase in the mix
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          [[ "$FILM" =~ ^H(0[2-9]|1[01])$ && "$PROOF_RUN" =~ ^[0-9]+$ && "$START" =~ ^[0-9]+(\.[0-9]+)?$ && "$END" =~ ^[0-9]+(\.[0-9]+)?$ ]]
+          if [ "$FILM" = H08 ]; then artifact=H08-all-voice-proof-not-final; source=proof/H08-VOICE-PROOF.mp4; else artifact="voice-proof-$FILM-not-final"; source=proof/VOICE-PROOF.mp4; fi
+          gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "$artifact" -D proof
+          python3 -m pip install --quiet imageio-ffmpeg==0.6.0
+          export SOURCE="$source"
+          python3 .github/scripts/hailmary-ai-probe.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ai-pronunciation-${{ inputs.film }}
+          path: out/ai.json
+          retention-days: 7
+          if-no-files-found: warn
