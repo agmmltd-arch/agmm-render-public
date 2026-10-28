@@ -1,0 +1,73 @@
+name: AGMM hosted OCR observation
+run-name: AGMM OCR observation ${{ github.run_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      runtime_commit:
+        type: string
+        required: true
+      private_commit:
+        type: string
+        required: true
+      private_prefix:
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  observe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: agmm-native-runtime-${{ inputs.runtime_commit }}
+          persist-credentials: false
+      - name: Check exact private coordinates
+        id: binding
+        env:
+          RUNTIME: ${{ inputs.runtime_commit }}
+          PRIVATE_COMMIT: ${{ inputs.private_commit }}
+          PRIVATE_PREFIX: ${{ inputs.private_prefix }}
+        run: |
+          python3 - <<'PY'
+          import os,re,subprocess
+          c=os.environ['RUNTIME'];p=os.environ['PRIVATE_COMMIT'];prefix=os.environ['PRIVATE_PREFIX']
+          assert re.fullmatch(r'[0-9a-f]{40}',c) and subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==c
+          assert re.fullmatch(r'[0-9a-f]{40}',p) and re.fullmatch(r'voice-free/ocr-control-inputs-[0-9]+',prefix)
+          PY
+      - name: Fetch only existing private review controls
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-controls
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.private_prefix }}
+      - name: Observe unqualified text reader on old review controls
+        env:
+          PRIVATE_PREFIX: ${{ inputs.private_prefix }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends tesseract-ocr
+          python3 -m pip install pillow==11.3.0
+          python3 - <<'PY'
+          import json,os,re,subprocess,sys
+          from pathlib import Path
+          prefix=Path('private-controls')/os.environ['PRIVATE_PREFIX']
+          controls=sorted(prefix.glob('*.jpg'))
+          assert [p.name for p in controls]==['f_007.260.jpg','f_027.759.jpg']
+          tool=Path('.github/scripts/voice-native/kit/tools/ocr_tesseract_candidate.py')
+          matched=None
+          for p in controls:
+              o=subprocess.run([sys.executable,str(tool),str(p)],check=True,capture_output=True,text=True)
+              result=json.loads(o.stdout)
+              if p.name=='f_027.759.jpg':
+                  words=' '.join(x['text'].upper() for x in result['lines'])
+                  matched=sum(bool(re.search(r'\b'+label+r'\b',words)) for label in ('WORDS','TONE','FACE'))
+          print('Historical automated-annotation labels detected:',matched,'of 3')
+          print('Exploratory only; no Vision parity, creative review or release approval')
+          PY
