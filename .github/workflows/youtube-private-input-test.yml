@@ -1,0 +1,59 @@
+name: Synthetic protected YouTube input proof
+on:
+  workflow_dispatch:
+    inputs:
+      private_commit: { required: true, type: string }
+      private_prefix: { required: true, type: string }
+      private_manifest_blob: { required: true, type: string }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PRIVATE_COMMIT: ${{ inputs.private_commit }}
+      PRIVATE_PREFIX: ${{ inputs.private_prefix }}
+      PRIVATE_MANIFEST_BLOB: ${{ inputs.private_manifest_blob }}
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: { persist-credentials: false }
+      - name: Validate source coordinates
+        run: |
+          set -euo pipefail
+          [[ "$PRIVATE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PRIVATE_MANIFEST_BLOB" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PRIVATE_PREFIX" =~ ^youtube-hosted-inputs/[a-f0-9]{32}$ ]]
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-youtube-inputs
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.private_prefix }}
+      - name: Verify synthetic inputs and encrypt synthetic evidence
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/youtube_private_inputs.py --root private-youtube-inputs \
+            --commit "$PRIVATE_COMMIT" --prefix "$PRIVATE_PREFIX" --manifest-blob "$PRIVATE_MANIFEST_BLOB"
+          python3 - <<'PY'
+          import json
+          assert json.load(open('metadata.json')) == {'synthetic': True}
+          assert json.load(open('approval.json')) == {'synthetic': True}
+          assert json.load(open('existing-rows.json')) == []
+          PY
+          test -n "$VOICEFREE_PASS"
+          mkdir evidence encrypted-output
+          printf 'synthetic test evidence\n' > evidence/TEST.txt
+          tar -cf "$RUNNER_TEMP/synthetic.tar" evidence
+          openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:VOICEFREE_PASS \
+            -in "$RUNNER_TEMP/synthetic.tar" -out encrypted-output/synthetic.enc
+          rm -f "$RUNNER_TEMP/synthetic.tar"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: synthetic-youtube-input-proof-${{ github.run_id }}
+          path: encrypted-output/synthetic.enc
+          retention-days: 1
+          if-no-files-found: error
