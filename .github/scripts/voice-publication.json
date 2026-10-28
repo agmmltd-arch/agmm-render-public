@@ -117,7 +117,7 @@
     ".github/scripts/voice-native/kit/tools/voice_install.py": "3854b5b1609b60d520a8c3549748e9ad2d8c18916a476ada54612d6e898f270c",
     ".github/scripts/voice-native/kit/tools/format_engine_rt.js": "d2130107a2b88f2bf7ae2f641ef9f29e33bb0c613fa7cb8a7356824a98171889",
     ".github/scripts/voice-native/kit/tools/craft_check.py": "ed978335b284e3bc3a827c54b5fe3451f83c43f7da13e15658c3ed4f4beab28d",
-    ".github/scripts/voice-native/kit/tools/format_engine.py": "c0a3ca12f94fd823292e44c9ae9a7ae63e8aed49b8b1c16fd419487421d0eb9a",
+    ".github/scripts/voice-native/kit/tools/format_engine.py": "69b1ad54c2cca83e13dcd034bdb142f797eab9743387daa1227c113833771b42",
     ".github/scripts/voice-native/kit/tools/extract_story.py": "d4bb3d5ae2205fc7c523f85104d23bb8b38b88f501e3ca812df6631a10881144",
     ".github/scripts/voice-native/kit/tools/fe_formats.py": "5c48e11973dbcc5979db80ea0d91be34f8b8314b542c91754c491ab77cd0eb83",
     ".github/scripts/voice-native/kit/tools/engine_learn.py": "89c6798cf59d85b6d08df012b4d566b170edc1f07f3042ccb293ff16b0f43b42",

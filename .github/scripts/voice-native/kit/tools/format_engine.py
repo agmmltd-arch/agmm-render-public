@@ -785,9 +785,10 @@ def plan_states(P):
         ob = g["object"]
         if ob is not None and ob["kind"] == "price_tag":
             # groups[0] is the first BODY group, not frame zero. When its
-            # source-selected hero return is out of sync, the existing
-            # tag_zero repair must remove it too, without altering the opener.
-            if "tag_zero" in P.flags and g is groups[0] and not g0_says:
+            # source-selected hero return may extend beyond the spoken figure
+            # within the group. tag_zero removes the whole return, even if one
+            # window in that group says the figure; frame zero is separate.
+            if "tag_zero" in P.flags and g is groups[0]:
                 g["object"] = None
                 g["bare"] = True
                 continue
