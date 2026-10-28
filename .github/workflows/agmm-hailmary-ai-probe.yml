@@ -7,6 +7,7 @@ on:
       proof_run: { description: Proof run ID, required: true }
       start: { description: Clip start seconds, required: true }
       end: { description: Clip end seconds, required: true }
+      original_label: { description: Optional original render label, required: false, default: '' }
 permissions:
   contents: read
   actions: read
@@ -19,6 +20,7 @@ jobs:
       PROOF_RUN: ${{ inputs.proof_run }}
       START: ${{ inputs.start }}
       END: ${{ inputs.end }}
+      ORIGINAL_LABEL: ${{ inputs.original_label }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -32,7 +34,10 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$FILM" =~ ^H(0[2-9]|1[01])$ && "$PROOF_RUN" =~ ^[0-9]+$ && "$START" =~ ^[0-9]+(\.[0-9]+)?$ && "$END" =~ ^[0-9]+(\.[0-9]+)?$ ]]
-          if [ "$FILM" = H08 ]; then artifact=H08-all-voice-proof-not-final; source=proof/H08-VOICE-PROOF.mp4; else artifact="voice-proof-$FILM-not-final"; source=proof/VOICE-PROOF.mp4; fi
+          if [ -n "$ORIGINAL_LABEL" ]; then
+            [[ "$ORIGINAL_LABEL" =~ ^H(0[2-9]|1[01])-v4[cd]$ ]]
+            artifact="hailmary-$ORIGINAL_LABEL"; source=proof/SHARE.mp4
+          elif [ "$FILM" = H08 ]; then artifact=H08-all-voice-proof-not-final; source=proof/H08-VOICE-PROOF.mp4; else artifact="voice-proof-$FILM-not-final"; source=proof/VOICE-PROOF.mp4; fi
           gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "$artifact" -D proof
           python3 -m pip install --quiet imageio-ffmpeg==0.6.0
           export SOURCE="$source"
