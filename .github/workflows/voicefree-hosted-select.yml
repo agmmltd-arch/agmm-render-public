@@ -31,6 +31,8 @@ jobs:
           sid = r.get('id', '')
           assert re.fullmatch(r'S[0-9]+', sid)
           assert re.fullmatch(r'[0-9a-f]{40}', r.get('private_commit', ''))
+          assert re.fullmatch(r'voice-free/web-exclusion-inputs-20261028-[0-9]+',r.get('web_exclusion_prefix',''))
+          assert re.fullmatch(r'[0-9a-f]{40}',r.get('web_exclusion_manifest_blob',''))
           runs = r.get('runs') or []
           assert 1 <= len(runs) <= 2
           for entry in runs:
@@ -39,6 +41,7 @@ jobs:
           Path('selection-request.json').write_text(json.dumps(r))
           with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
               out.write('commit=' + r['private_commit'] + '\n')
+              out.write('web_prefix=' + r['web_exclusion_prefix'] + '\n')
               out.write('tag1=' + runs[0]['tag'] + '\n')
               out.write('tag2=' + (runs[1]['tag'] if len(runs) > 1 else runs[0]['tag']) + '\n')
           PY
@@ -55,6 +58,7 @@ jobs:
             voice-free/req/${{ steps.binding.outputs.tag1 }}/request.json
             voice-free/req/${{ steps.binding.outputs.tag2 }}/request.json
             voice-free/ref/hashlocked/
+            ${{ steps.binding.outputs.web_prefix }}
       - name: Select source-bound takes on Ubuntu
         env:
           VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}

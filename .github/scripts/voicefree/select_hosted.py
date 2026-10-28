@@ -9,6 +9,25 @@ from pathlib import Path
 import shutil
 
 
+
+WEB_KEYS = ("route", "page_url", "inpage_textbox_sha256", "inpage_file_sha256", "inpage_file_matches_disk")
+
+def validate_receipt(rec, reference_hashes, web_hashes, run_id, producer_sha):
+    """Preserve the existing free-take provenance and pronunciation checks."""
+    if not (rec.get('free_engine') is True and rec.get('engine') == 'chatterbox'
+            and rec.get('reference_sha256') in reference_hashes
+            and not any(k in rec for k in WEB_KEYS)
+            and str((rec.get('run') or {}).get('id')) == str(run_id)
+            and (rec.get('run') or {}).get('sha') == producer_sha
+            and str(rec.get('asr_engine') or '').startswith('faster-whisper')
+            and rec.get('asr_status') == 'checked' and rec.get('asr_match') is True
+            and not rec.get('spot_fail') and rec.get('wav_sha256') not in web_hashes):
+        raise ValueError('free take provenance or pronunciation gate failed')
+    info = rec.get('wav_info') or {}
+    if (info.get('channels'), info.get('rate'), info.get('width')) != (1, 24000, 2):
+        raise ValueError('free take audio format gate failed')
+
+
 def choose(candidates, text, allow_slow=False):
     short = len(text.split()) <= 12
     target = 140.0 if short else 168.0
@@ -22,7 +41,7 @@ def choose(candidates, text, allow_slow=False):
                                     -abs(c['span_wpm'] - target))) if good else None
 
 
-def select(packs, paragraphs, destination):
+def select(packs, paragraphs, destination, qualify=None):
     """Only source-bound takes; first pass then fallback after all rounds."""
     destination = Path(destination)
     if destination.exists():
@@ -33,6 +52,11 @@ def select(packs, paragraphs, destination):
         for pack in packs:
             for receipt_path in sorted(Path(pack).glob(key + '.t*.receipt.json')):
                 rec = json.loads(receipt_path.read_text())
+                if qualify is not None:
+                    try:
+                        qualify(rec)
+                    except ValueError:
+                        continue
                 stem = receipt_path.name[:-len('.receipt.json')]
                 wav = receipt_path.with_name(stem + '.wav')
                 words = receipt_path.with_name(stem + '.words.json')
@@ -92,7 +116,53 @@ def run_hosted(request, private, work):
         return json.loads(subprocess.check_output(['gh','api',path]))
     work = Path(work)
     work.mkdir(parents=True, exist_ok=False)
-    paras, packs = {}, []
+    # The protected input tree contains the complete, individually staged web-demo
+    # exclusion inventory. Hashing occurs only here on the Ubuntu runner.
+    prefix = request.get('web_exclusion_prefix', '')
+    if not re.fullmatch(r'voice-free/web-exclusion-inputs-20261028-[0-9]+', prefix):
+        raise ValueError('exact hosted web-demo exclusion inventory required')
+    web_dir = Path(private) / prefix
+    current_commit = subprocess.check_output(['git','-C',str(private),'rev-parse','HEAD'], text=True).strip()
+    if current_commit != request.get('private_commit'):
+        raise ValueError('private exclusion checkout commit differs')
+    manifest_raw = (web_dir / 'MANIFEST.json').read_bytes()
+    git_blob = hashlib.sha1(b'blob ' + str(len(manifest_raw)).encode() + b'\0' + manifest_raw).hexdigest()
+    if git_blob != request.get('web_exclusion_manifest_blob'):
+        raise ValueError('web-demo exclusion manifest differs')
+    manifest = json.loads(manifest_raw)
+    rows = manifest.get('inputs') or []
+    if manifest.get('schema') != 'agmm-web-demo-exclusion-input-v1' or manifest.get('count') != len(rows) or not rows:
+        raise ValueError('web-demo exclusion inventory incomplete')
+    if {p.name for p in web_dir.iterdir()} != {'MANIFEST.json'} | {r['name'] for r in rows}:
+        raise ValueError('web-demo exclusion inventory has extra or missing files')
+    tree = {}
+    listing = subprocess.check_output(['git','-C',str(private),'ls-tree','-r','-l','HEAD','--',prefix + '/'], text=True)
+    for line in listing.splitlines():
+        info, path = line.split('\t', 1)
+        mode, kind, sha, size = info.split()
+        tree[path] = (mode, kind, sha, int(size))
+    if set(tree) != {prefix + '/MANIFEST.json'} | {prefix + '/' + r['name'] for r in rows}:
+        raise ValueError('private exclusion Git tree differs')
+    if tree[prefix + '/MANIFEST.json'] != ('100644','blob',git_blob,len(manifest_raw)):
+        raise ValueError('private exclusion Git manifest differs')
+    web_hashes = set()
+    for row in rows:
+        if not re.fullmatch(r'[0-9]{4}\.wav', row.get('name', '')):
+            raise ValueError('invalid exclusion filename')
+        p = web_dir / row['name']
+        if tree[prefix + '/' + row['name']] != ('100644','blob',row['git_blob_sha'],row['source_bytes']):
+            raise ValueError('private exclusion Git entry differs')
+        if p.is_symlink() or not p.is_file() or p.stat().st_size != row['source_bytes']:
+            raise ValueError('web-demo exclusion input differs')
+        h = hashlib.sha256()
+        with p.open('rb') as stream:
+            for chunk in iter(lambda: stream.read(1024*1024), b''): h.update(chunk)
+        web_hashes.add(h.hexdigest())
+    refs = json.loads((Path(__file__).parent / 'reference-allowlist.json').read_text())
+    if refs.get('schema') != 'agmm-free-voice-reference-allowlist-v1':
+        raise ValueError('reference allowlist unavailable')
+    allowed_refs = set(refs['sha256'])
+    paras, packs, producer_commits = {}, [], {}
     for idx, source in enumerate(request['runs']):
         tag, run_id = source['tag'], str(source['run_id'])
         if not re.fullmatch(r'S[0-9]+-r[12]-chatterbox-[0-9]+', tag) or not tag.startswith(sid + '-r') or not run_id.isdigit():
@@ -165,9 +235,15 @@ def run_hosted(request, private, work):
                     or (rec.get('run') or {}).get('sha') != run.get('head_sha')):
                 raise ValueError('take producer provenance mismatch')
         packs.append(pack)
+        producer_commits[run_id] = run['head_sha']
     if not paras:
         raise ValueError('no source paragraphs')
-    select(packs,paras,work/'selected')
+    def qualify(rec):
+        rid = str((rec.get('run') or {}).get('id') or '')
+        if rid not in producer_commits:
+            raise ValueError('take absent from source run ledger')
+        validate_receipt(rec, allowed_refs, web_hashes, rid, producer_commits[rid])
+    select(packs,paras,work/'selected',qualify=qualify)
     manifest = json.loads((work/'selected'/'SELECTION.json').read_text())
     manifest.update({'schema': 'agmm-hosted-selected-takes-v1', 'id': sid,
                      'private_commit': request['private_commit'], 'sources': request['runs'],
