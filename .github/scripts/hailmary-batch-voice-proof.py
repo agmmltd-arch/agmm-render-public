@@ -23,6 +23,8 @@ for item in plan:
  if not old: report.append({'para':para,'status':'missing original voice'});continue
  start=min(c['at'] for c in old);end=max(c['at']+c['out']-c['in'] for c in old);target=end-start
  first=float(item['first']);last=float(item['last']);cut0=max(0,first-.04);cut1=last+.04;tempo=(cut1-cut0)/target
+ if tempo<.82 and item.get('pad_short') is True:
+  target=cut1-cut0;end=start+target;tempo=1.0
  if not .82<=tempo<=1.18:report.append({'para':para,'status':'timing mismatch','tempo':tempo,'start':start,'end':end});continue
  path=f'../voice-{para}/{para}.t{int(item["take"])}.wav'; dst='proof-'+para+'.wav'
  run(['ffmpeg','-nostdin','-v','error','-y','-i',path,'-af',f'atrim=start={cut0}:end={cut1},asetpts=PTS-STARTPTS,atempo={tempo}','-ar','48000','-ac','2','-c:a','pcm_s16le',dst])
