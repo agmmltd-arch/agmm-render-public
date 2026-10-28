@@ -1,0 +1,53 @@
+name: AGMM H08 all voice proof
+run-name: H08 voice replacements proof
+on: workflow_dispatch
+permissions:
+  contents: read
+  actions: read
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts/hailmary-h08-hook-proof.py
+            .github/scripts/hailmary-h08-all-voice-proof.py
+          sparse-checkout-cone-mode: false
+      - name: Fetch original and replacement voice packs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          set -euo pipefail
+          gh run download 40640609020 -R "$GITHUB_REPOSITORY" -n hailmary-H08-v4c -D input
+          gh run download 40640609020 -R "$GITHUB_REPOSITORY" -n film-H08-v4c -D film
+          for item in '40680907814:H08-rowsfix28:voice' '40679977245:H08-agmfix28:v-reveal' '40681054536:H08-aifix28:v-ai' '40680139430:H08-ctafix28:v-website'; do
+            IFS=: read -r run label dest <<< "$item"
+            gh run download "$run" -R "$GITHUB_REPOSITORY" -n "voicefree-chatterbox-$label-ENC" -D "$RUNNER_TEMP/$dest"
+            mkdir -p "$dest"
+            openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/$dest/synth-pack.enc" | tar -x -C "$dest"
+          done
+      - name: Make a proof with original picture and sound plan
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet numpy imageio-ffmpeg==0.6.0
+          mkdir -p "$RUNNER_TEMP/bin"
+          ln -s "$(python3 -c 'import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())')" "$RUNNER_TEMP/bin/ffmpeg"
+          export PATH="$RUNNER_TEMP/bin:$PATH"
+          python3 .github/scripts/hailmary-h08-hook-proof.py
+          python3 .github/scripts/hailmary-h08-all-voice-proof.py
+          ffmpeg -nostdin -y -loglevel error -i mix-all-candidate.wav -af 'volume=4.3dB,alimiter=limit=0.78:attack=1:release=60:level=disabled' -c:a pcm_f32le stage.wav
+          ffmpeg -nostdin -y -loglevel error -i input/SHARE.mp4 -i stage.wav -map 0:v -map 1:a -c:v copy -af 'volume=0.1dB,alimiter=limit=0.78:attack=1:release=60:level=disabled,aresample=48000' -c:a aac -b:a 160k -shortest -movflags +faststart H08-VOICE-PROOF.mp4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: H08-all-voice-proof-not-final
+          path: |
+            H08-VOICE-PROOF.mp4
+            all-proof-details.json
+            proof-details.json
+          retention-days: 7
+          if-no-files-found: warn
