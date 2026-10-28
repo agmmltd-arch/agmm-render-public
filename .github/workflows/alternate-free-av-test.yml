@@ -1,0 +1,60 @@
+name: Alternate free audiovisual reviewer qualification
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GITHUB_ACTIONS: 'true'
+      FLEET_FREE_ONLY: '1'
+      AGMM_GEMINI_FREE_PROJECT_ID: gen-lang-client-0105607923
+      AGMM_GEMINI_BILLING_DISABLED: 'true'
+      AGMM_GEMINI_FREE_TIER: 'true'
+      AGMM_GEMINI_FREE_REVIEW_KEY: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY }}
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 03663fbc4fc283b51bce6f513c4136fdf8be6141
+          persist-credentials: false
+      - name: Verify unchanged qualification closure and select alternative free model
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 03663fbc4fc283b51bce6f513c4136fdf8be6141
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          m=json.loads(Path('.github/candidates/free-av-qualification/candidate-manifest.json').read_text())
+          for name,expected in m['candidate_files'].items():
+              assert hashlib.sha256(Path(name).read_bytes()).hexdigest()==expected
+          assert m['model']['id']=='gemini-3.8-flash'
+          p=Path('.github/scripts/av_free_qualification/qualification.py'); s=p.read_text()
+          original='MODEL="gemini-3.8-flash"'; replacement='MODEL="gemini-3-flash-preview"'
+          assert s.count(original)==1
+          p.write_text(s.replace(original,replacement))
+          print('Exact original closure verified; only model changed for this isolated test')
+          PY
+      - name: Run unchanged qualification negative controls
+        run: cd .github/scripts/av_free_qualification && python3 -B -m unittest -v test_qualification.py
+      - name: Install hosted media tools
+        run: sudo apt-get update && sudo apt-get install --yes ffmpeg
+      - name: Run bounded blind AV panel on free model
+        run: python3 -B .github/scripts/av_free_qualification/run_hosted_qualification.py
+      - name: Encrypt any result
+        if: always()
+        run: |
+          set -euo pipefail
+          test -n "$VOICEFREE_PASS"
+          mkdir -p qualification-results encrypted-results
+          tar -cf "$RUNNER_TEMP/av-result.tar" qualification-results
+          openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:VOICEFREE_PASS \
+            -in "$RUNNER_TEMP/av-result.tar" -out encrypted-results/av-result.enc
+          rm -f "$RUNNER_TEMP/av-result.tar"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: alternate-free-av-${{ github.run_id }}
+          path: encrypted-results/av-result.enc
+          retention-days: 1
+          if-no-files-found: warn
