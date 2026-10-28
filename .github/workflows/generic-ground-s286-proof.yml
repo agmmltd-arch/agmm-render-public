@@ -1,0 +1,56 @@
+name: Generic original story grounding proof
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  ground:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 3ecb7d82683bbf9a0123f9205a5a7de8767fec32
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 162abd70c01e44da44f7e6f998a50b97f57e55a1
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-story
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: generic-story-inputs/S286-24e6f7a613ce49083ccab02b0bd61e79a860ec64b25283fbce820d239a868021
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 9179e29ddf493b314b25a5b25bf0af2cd4559ba6
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-response
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: story-label-responses/S286-1e68f8f9877bf5464ddafde832571f3de118a53c8204e7c11834271fa850d6b0/response.enc
+      - name: Rebuild bound prompt and replay original grounding
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+          AGMM_WRITER_PASS: ${{ secrets.AGMM_WRITER_PASS }}
+          STORY_MANIFEST_SHA: 24e6f7a613ce49083ccab02b0bd61e79a860ec64b25283fbce820d239a868021
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 3ecb7d82683bbf9a0123f9205a5a7de8767fec32
+          test "$(git -C private-story rev-parse HEAD)" = 162abd70c01e44da44f7e6f998a50b97f57e55a1
+          test "$(git -C private-story rev-parse HEAD:generic-story-inputs/S286-24e6f7a613ce49083ccab02b0bd61e79a860ec64b25283fbce820d239a868021/MANIFEST.json)" = 83f323a9745482d063f47d8ad2d17c08c64945ee
+          test "$(git -C private-response rev-parse HEAD)" = 9179e29ddf493b314b25a5b25bf0af2cd4559ba6
+          test "$(git -C private-response rev-parse HEAD:story-label-responses/S286-1e68f8f9877bf5464ddafde832571f3de118a53c8204e7c11834271fa850d6b0/response.enc)" = 52d815b3cb67a1d07ee7e3eedee1d5c5c370f8d7
+          echo "1e68f8f9877bf5464ddafde832571f3de118a53c8204e7c11834271fa850d6b0  private-response/story-label-responses/S286-1e68f8f9877bf5464ddafde832571f3de118a53c8204e7c11834271fa850d6b0/response.enc" | sha256sum -c >/dev/null
+          python3 .github/scripts/hosted_story_prepare_generic.py private-story/generic-story-inputs/S286-24e6f7a613ce49083ccab02b0bd61e79a860ec64b25283fbce820d239a868021 S286 "$RUNNER_TEMP/prompt.enc"
+          python3 .github/scripts/hosted_ground_generic.py "$RUNNER_TEMP/prompt.enc" private-response/story-label-responses/S286-1e68f8f9877bf5464ddafde832571f3de118a53c8204e7c11834271fa850d6b0/response.enc private-story/generic-story-inputs/S286-24e6f7a613ce49083ccab02b0bd61e79a860ec64b25283fbce820d239a868021/story-data/STORY-DATA.md "$RUNNER_TEMP/grounded.enc"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: generic-S286-grounding-ENC
+          path: ${{ runner.temp }}/grounded.enc
+          retention-days: 7
+          if-no-files-found: error
