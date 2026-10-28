@@ -3,17 +3,17 @@ import imageio_ffmpeg
 
 kind=os.environ['KIND']; para=os.environ['PARA']
 criteria={
- 'rows':'The hook says the word rows twice. For each occurrence classify its vowel as roh (rhymes with goes), raw (rhymes with paws), or uncertain. Both must be roh.',
+ 'rows':'The hook has one occurrence of a word sounding like rows. Classify its vowel as roh (rhymes with goes), raw (rhymes with paws), or uncertain.',
  'reveal':'At the end the company name should sound like three letter names AY JEE EM in quick succession. Classify the spoken name correct, incorrect, or uncertain.',
  'website':'The website should be spoken as four letter names AY JEE EM EM, then dot CO dot UK. Classify it correct, incorrect, or uncertain.',
  'ai':'The phrase AI consultancy should sound AY EYE consultancy, not EYE EYE consultancy. Classify it correct, incorrect, or uncertain.'}
-parts=[{'text':'Listen independently to all five numbered British-English narration recordings. '+criteria[kind]+' Return JSON only: {"takes": [{"id":1, "verdict":"correct"|"incorrect"|"uncertain", "natural":true|false|null}]}. Use uncertain if a sound cannot be heard; do not infer pronunciation from meaning. For rows also add "first":"roh"|"raw"|"uncertain" and "second":"roh"|"raw"|"uncertain" for each take. Do not quote the script.'}]
+parts=[{'text':'Listen independently to all five numbered British-English narration recordings. '+criteria[kind]+' Return JSON only: {"takes": [{"id":1, "verdict":"correct"|"incorrect"|"uncertain", "natural":true|false|null}]}. Use uncertain if a sound cannot be heard; do not infer pronunciation from meaning. For rows add "first":"roh"|"raw"|"uncertain" for each take. Do not quote the script.'}]
 order=[int(x) for x in os.environ.get('ORDER','12345')]
 assert sorted(order)==[1,2,3,4,5]
 single=os.environ.get('SINGLE','')
 if single:
  order=[int(single)]
- parts=[{'text':'Listen carefully to this single British-English recording. '+criteria[kind]+' Return JSON only: {"takes": [{"id":'+single+', "verdict":"correct" or "incorrect" or "uncertain", "natural":true or false or null, "first":"roh" or "raw" or "uncertain", "second":"roh" or "raw" or "uncertain"}]}. Use uncertain when you cannot hear. Do not quote the script.'}]
+ parts=[{'text':'Listen carefully to this single British-English recording. '+criteria[kind]+' Return JSON only: {"takes": [{"id":'+single+', "verdict":"correct" or "incorrect" or "uncertain", "natural":true or false or null, "first":"roh" or "raw" or "uncertain"}]}. Use uncertain when you cannot hear. Do not quote the script.'}]
 for i in order:
  src=f'voice/{para}.t{i}.wav'; dst=f'/tmp/t{i}.mp3'
  subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(),'-nostdin','-v','error','-y','-i',src,'-ac','1','-ar','24000','-b:a','64k',dst],check=True)
