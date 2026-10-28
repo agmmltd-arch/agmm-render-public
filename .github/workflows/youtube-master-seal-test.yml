@@ -1,0 +1,37 @@
+name: Synthetic hosted encrypted-master proof
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: { persist-credentials: false }
+      - name: Seal and open a synthetic byte fixture
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/fixture"
+          python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'fixture'; raw=b'synthetic bytes; not a video\n'
+          (p/'MASTER.mp4').write_bytes(raw); h=hashlib.sha256(raw).hexdigest()
+          (p/'REMOTE-INTEGRITY.json').write_text(json.dumps({'master_sha256':h}))
+          (p/'hash.txt').write_text(h)
+          PY
+          SHA="$(cat "$RUNNER_TEMP/fixture/hash.txt")"
+          python3 .github/scripts/hosted-youtube-candidate/encrypt_master.py \
+            --video "$RUNNER_TEMP/fixture/MASTER.mp4" --integrity "$RUNNER_TEMP/fixture/REMOTE-INTEGRITY.json" \
+            --expected-sha256 "$SHA" --out "$RUNNER_TEMP/master.tar.enc"
+          python3 .github/scripts/hosted-youtube-candidate/decrypt_master.py \
+            --archive "$RUNNER_TEMP/master.tar.enc" --out "$RUNNER_TEMP/opened" --video MASTER.mp4
+          cmp "$RUNNER_TEMP/fixture/MASTER.mp4" "$RUNNER_TEMP/opened/MASTER.mp4"
+          cmp "$RUNNER_TEMP/fixture/REMOTE-INTEGRITY.json" "$RUNNER_TEMP/opened/REMOTE-INTEGRITY.json"
+          if python3 .github/scripts/hosted-youtube-candidate/encrypt_master.py \
+            --video "$RUNNER_TEMP/fixture/MASTER.mp4" --integrity "$RUNNER_TEMP/fixture/REMOTE-INTEGRITY.json" \
+            --expected-sha256 "$(printf '%064d' 0)" --out "$RUNNER_TEMP/incorrect.enc"; then
+            echo 'Wrong-hash master must be refused' >&2; exit 1
+          fi
