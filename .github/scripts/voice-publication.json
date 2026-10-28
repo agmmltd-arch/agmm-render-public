@@ -136,7 +136,7 @@
     ".github/scripts/voice-native/kit/tools/source_media.py": "b0f575ffae5246a09ae20bbb2eeeebae02465d7bb24a880759e21814a1a1b65b",
     ".github/scripts/voice-native/kit/tools/text_truth.py": "f738d51b9eea239edc3b75ded40705513490091c05404fd2b58419734f71b3cb",
     ".github/scripts/stage_format_inputs_hosted.py": "65c5509b011a74b85feaf43360f737725c574257d5c7c0ecd12a0e39fbf0037a",
-    ".github/scripts/stage_historical_format_hosted.py": "634bc722f4ef7b4eaf05bf37507bff1b2c040b65579e91da66e79fd4f7f29933"
+    ".github/scripts/stage_historical_format_hosted.py": "156f5dd3043c8b3f6989bd75ba83e8c57160733ad078c47ae4553b44492483a7"
   },
   "allowed_no_effect_workflow_blobs": [
     "8c397854ddbfa415d4574de0e35a946b58145b32"
