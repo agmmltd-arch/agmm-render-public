@@ -59,6 +59,14 @@ def select(packs, paragraphs, destination):
         for field, suffix in [('wav', '.wav'), ('words', '.words.json'), ('receipt', '.receipt.json')]:
             target = destination / (key + suffix)
             shutil.copyfile(best[field], target)
+        # Match the existing api_queue.cmd_install free-take receipt exactly.
+        receipt_path = destination / (key + '.receipt.json')
+        receipt = json.loads(receipt_path.read_text())
+        if receipt.get('free_engine') is not True:
+            raise ValueError('selected take is not free-engine')
+        receipt['paragraph'] = key
+        receipt['revoiced_by'] = 'api_queue.py 20 Oct 2026 free ' + str(receipt.get('engine'))
+        receipt_path.write_text(json.dumps(receipt, indent=2) + '\n')
         files = {}
         for suffix in ('.wav', '.words.json', '.receipt.json'):
             path = destination / (key + suffix)
