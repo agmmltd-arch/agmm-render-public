@@ -1,7 +1,7 @@
 import json,math,os,re,subprocess,wave
 import numpy as np
 
-film=os.environ['FILM']; plan=json.loads(os.environ['PLAN']); assert len(plan)<=4
+film=os.environ['FILM']; plan=json.loads(os.environ['PLAN']); assert len(plan)<=8
 def run(args,**kw): return subprocess.run(args,check=True,**kw)
 for item in plan:
  para=item['para']; label=item['label']; rid=str(item['run']); take=int(item['take'])
@@ -21,12 +21,15 @@ report=[]
 for item in plan:
  para=item['para'];old=[c for c in spec['clips'] if c.get('voice') and os.path.basename(c['src'])==para+'.wav']
  if not old: report.append({'para':para,'status':'missing original voice'});continue
- start=min(c['at'] for c in old);end=max(c['at']+c['out']-c['in'] for c in old);target=end-start
+ original_start=min(c['at'] for c in old);end=max(c['at']+c['out']-c['in'] for c in old)
+ start=float(item.get('replace_from',original_start)); assert original_start<=start<end
+ target=end-start
  first=float(item['first']);last=float(item['last']);cut0=max(0,first-.04);cut1=last+.04;tempo=(cut1-cut0)/target
  if tempo<.82 and item.get('pad_short') is True:
   target=cut1-cut0;end=start+target;tempo=1.0
  if not .82<=tempo<=1.18:report.append({'para':para,'status':'timing mismatch','tempo':tempo,'start':start,'end':end});continue
- path=f'../voice-{para}/{para}.t{int(item["take"])}.wav'; dst='proof-'+para+'.wav'
+ source_para=item.get('source_para',para);assert re.fullmatch(r'P[1-8]',source_para)
+ path=f'../voice-{para}/{source_para}.t{int(item["take"])}.wav'; dst='proof-'+para+'.wav'
  run(['ffmpeg','-nostdin','-v','error','-y','-i',path,'-af',f'atrim=start={cut0}:end={cut1},asetpts=PTS-STARTPTS,atempo={tempo}','-ar','48000','-ac','2','-c:a','pcm_s16le',dst])
  orig=dict(spec);orig['clips']=old;json.dump(orig,open('old-'+para+'.json','w'))
  run(['python3','mix.py','old-'+para+'.json','../old-'+para+'.wav'])
@@ -47,7 +50,14 @@ for item in plan:
   report.append({'para':para,'status':'silent level input'});continue
  gain=20*math.log10(rms(a)/rms(b))-gain_offset
  if not -12<gain<12:report.append({'para':para,'status':'level mismatch','gain_db':gain});continue
- spec['clips']=[c for c in spec['clips'] if c not in old]
+ kept=[]
+ if 'replace_from' in item:
+  for c in old:
+   cend=c['at']+c['out']-c['in']
+   if cend<=start: kept.append(c)
+   elif c['at']<start:
+    prefix=dict(c);prefix['out']=prefix['in']+start-prefix['at'];prefix['fade_out']=.015;kept.append(prefix)
+ spec['clips']=[c for c in spec['clips'] if c not in old]+kept
  spec['clips'].append({'src':dst,'in':0,'out':target,'at':start,'gain_db':gain,'pan':0,'fade_in':.008,'fade_out':.012,'voice':True})
  report.append({'para':para,'status':'proof inserted','start':start,'end':end,'tempo':tempo,'gain_db':gain,'clips_replaced':len(old),'take':item['take']})
 json.dump(spec,open('mix-batch-proof.json','w'),indent=1)
