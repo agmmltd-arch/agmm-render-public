@@ -28,7 +28,7 @@ jobs:
         env:
           VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
           AGMM_WRITER_PASS: ${{ secrets.AGMM_WRITER_PASS }}
-          STORY_ba7f2b246a85ce6562f53b764304bd01724c8a1e6934ea377d18b46007eac8b9: ba7f2b246a85ce6562f53b764304bd01724c8a1e6934ea377d18b46007eac8b9
+          STORY_MANIFEST_SHA: ba7f2b246a85ce6562f53b764304bd01724c8a1e6934ea377d18b46007eac8b9
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = d8c0708b6c9a65194d8d4f6c80b5b0bad2bff72c
