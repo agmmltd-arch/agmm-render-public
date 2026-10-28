@@ -1,0 +1,56 @@
+name: AGMM Hail Mary voice proof review
+run-name: Voice proof review ${{ inputs.film }}
+on:
+  workflow_dispatch:
+    inputs:
+      film: { description: Film ID, required: true }
+      proof_run: { description: Voice proof run ID, required: true }
+      proof_artifact: { description: Voice proof artifact name, required: true }
+      out_label: { description: Word check compatible label, required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      FILM: ${{ inputs.film }}
+      PROOF_RUN: ${{ inputs.proof_run }}
+      PROOF_ARTIFACT: ${{ inputs.proof_artifact }}
+      OUT_LABEL: ${{ inputs.out_label }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-pronunciation-listen.py
+          sparse-checkout-cone-mode: false
+      - name: Fetch and hear proof
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          [[ "$FILM" =~ ^H(0[2-9]|1[01])$ && "$PROOF_RUN" =~ ^[0-9]+$ && "$PROOF_ARTIFACT" =~ ^[A-Za-z0-9-]+$ && "$OUT_LABEL" =~ ^[A-Za-z0-9-]+$ ]]
+          gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "$PROOF_ARTIFACT" -D proof
+          python3 -m pip install --quiet imageio-ffmpeg==0.6.0
+          FFMPEG=$(python3 -c 'import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())')
+          mkdir -p input/gate-input repack
+          src=$(find proof -maxdepth 1 -type f -name '*VOICE-PROOF.mp4' | head -1)
+          test -n "$src"
+          "$FFMPEG" -nostdin -v error -y -i "$src" -vn -ar 48000 -ac 2 -c:a pcm_s16le input/gate-input/mix.wav
+          python3 .github/scripts/hailmary-pronunciation-listen.py
+          cp "$src" repack/FINAL.mp4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: voice-listening-${{ inputs.film }}
+          path: out/listen.json
+          retention-days: 7
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hailmary-${{ inputs.out_label }}
+          path: repack/FINAL.mp4
+          retention-days: 7
+          if-no-files-found: error
