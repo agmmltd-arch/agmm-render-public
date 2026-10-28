@@ -8,12 +8,12 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: ac877eff6b7e064c3dba02ca7c8819db12387b03
+          ref: 6dbaca24419a14743bf24edfb9cfd160821b7bf3
           persist-credentials: false
       - name: Verify source closure and protected render contract
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = ac877eff6b7e064c3dba02ca7c8819db12387b03
+          test "$(git rev-parse HEAD)" = 6dbaca24419a14743bf24edfb9cfd160821b7bf3
           PYTHONPATH=.github/scripts python3 - <<'PY'
           import voice_hosted
           from pathlib import Path
@@ -24,6 +24,7 @@ jobs:
           assert 'render_short_package.py prepare' in s and 'render_short_package.py assemble' in s
           assert 'render_short_package.py cap-part' in s and 'render_short_package.py verify-part' in s
           assert 'verify_build_producer.py' in s and s.count('sealed_render_artifact.py seal') >= 2
+          assert s.count('ref: $'+'{{ inputs.runtime_commit }}') == 3 and 'voice_hosted.source_closure()' in s
           assert 'env -u VOICEFREE_PASS npx' in s and 'env -u VOICEFREE_PASS python3 static_check.py' in s
           print('Pinned closure and protected transport contract verified')
           PY
