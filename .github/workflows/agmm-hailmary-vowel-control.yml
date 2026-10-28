@@ -20,10 +20,10 @@ jobs:
           set -euo pipefail
           if ! command -v espeak-ng >/dev/null; then timeout 180 sudo apt-get update -qq; timeout 180 sudo apt-get install -y -qq espeak-ng; fi
           python3 -m pip install --quiet imageio-ffmpeg==0.6.0
-          espeak-ng -v en-gb -s 150 -w day.wav '[[eI aI]]'
-          espeak-ng -v en-gb -s 150 -w my.wav '[[aI aI]]'
-          echo "day control phonemes: $(espeak-ng -v en-gb -q -x '[[eI aI]]')"
-          echo "my control phonemes: $(espeak-ng -v en-gb -q -x '[[aI aI]]')"
+          espeak-ng -v en-gb -s 150 -w day.wav '[[eI]]'
+          espeak-ng -v en-gb -s 150 -w my.wav '[[aI]]'
+          echo "day control phonemes: $(espeak-ng -v en-gb -q -x '[[eI]]')"
+          echo "my control phonemes: $(espeak-ng -v en-gb -q -x '[[aI]]')"
           for model in gemini-3.5-flash-lite gemini-3.1-flash-lite; do
             echo "DAY CONTROL $model"; MODEL="$model" SOURCE=day.wav python3 .github/scripts/hailmary-vowel-probe.py || true
             echo "MY CONTROL $model"; MODEL="$model" SOURCE=my.wav python3 .github/scripts/hailmary-vowel-probe.py || true
