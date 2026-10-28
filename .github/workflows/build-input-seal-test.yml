@@ -1,0 +1,32 @@
+name: Synthetic hosted encrypted build-input proof
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: { persist-credentials: false }
+      - name: Verify encrypted synthetic source, parts and audio bundle
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/synthetic-input"
+          printf 'synthetic source bytes' > "$RUNNER_TEMP/synthetic-input/source.tar.gz"
+          printf '{"synthetic":true}' > "$RUNNER_TEMP/synthetic-input/parts.json"
+          printf 'synthetic audio bytes' > "$RUNNER_TEMP/synthetic-input/mix.wav"
+          SOURCE="$(sha256sum "$RUNNER_TEMP/synthetic-input/source.tar.gz" | cut -d ' ' -f1)"
+          PARTS="$(sha256sum "$RUNNER_TEMP/synthetic-input/parts.json" | cut -d ' ' -f1)"
+          MIX="$(sha256sum "$RUNNER_TEMP/synthetic-input/mix.wav" | cut -d ' ' -f1)"
+          SCRIPT=.github/scripts/hosted-youtube-candidate/seal_build_inputs.py
+          python3 "$SCRIPT" seal --directory "$RUNNER_TEMP/synthetic-input" --out "$RUNNER_TEMP/bundle.enc" \
+            --source-sha256 "$SOURCE" --parts-sha256 "$PARTS" --mix-sha256 "$MIX"
+          python3 "$SCRIPT" unseal --archive "$RUNNER_TEMP/bundle.enc" --out "$RUNNER_TEMP/opened-input" \
+            --source-sha256 "$SOURCE" --parts-sha256 "$PARTS" --mix-sha256 "$MIX"
+          for f in source.tar.gz parts.json mix.wav; do cmp "$RUNNER_TEMP/synthetic-input/$f" "$RUNNER_TEMP/opened-input/$f"; done
+          if python3 "$SCRIPT" unseal --archive "$RUNNER_TEMP/bundle.enc" --out "$RUNNER_TEMP/wrong-input" \
+            --source-sha256 "$(printf '%064d' 0)" --parts-sha256 "$PARTS" --mix-sha256 "$MIX"; then
+            echo 'Wrong source pin must fail' >&2; exit 1
+          fi
