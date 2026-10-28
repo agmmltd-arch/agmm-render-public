@@ -76,7 +76,7 @@ def main():
     data = subprocess.run(['openssl', 'enc', '-d', '-aes-256-cbc', '-pbkdf2', '-pass',
                            'env:VOICEFREE_PASS', '-in', str(args.metadata)], capture_output=True, check=True).stdout
     receipt = receipt_from_tar(data)
-    commit = '44edcc3fc0de6cc08657af9e3d1787087661c427'
+    commit = 'eba9dff89f1c06e232f948d07e45601f019b1fa1'
     result = public_metadata(receipt, run_id=args.run_id, runtime_commit=commit, expected_id=args.id,
                              request_sha256=args.request_sha256, approved_hash=args.approved_hash)
     import verify_build_producer

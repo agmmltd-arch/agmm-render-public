@@ -96,8 +96,8 @@
     ".github/scripts/hosted-youtube-candidate/seal_build_inputs.py": "f6fc1a211fc06f3114b9f0d505b04c2c486eef1788ece3a67f3f739703f207fc",
     ".github/scripts/hosted-youtube-candidate/native_build_seal_candidate.py": "3403e91b998815f71aae633a64086e040d9ce0e934c6f9e3be027b0bf360497b",
     ".github/scripts/hosted-youtube-candidate/sealed_render_artifact.py": "1e1b7bdb22c73e2242120bd0322a437eaefb3d3bfccd56f9fa1ec9f338db1787",
-    ".github/scripts/hosted-youtube-candidate/verify_build_producer.py": "02e4b979fa61ebced28981dd8d562130c5041ec449a9af2cdb1853aafb3bb91b",
-    ".github/scripts/hosted-youtube-candidate/extract_build_metadata_candidate.py": "a67a48d63d11e85e983f8e54386e1b3a5b488fd4ae0ff8206982175468a8abde"
+    ".github/scripts/hosted-youtube-candidate/verify_build_producer.py": "f119d5d8cf39ce70cbd41d10366d8d7035761606018cade9f19e15a56301b261",
+    ".github/scripts/hosted-youtube-candidate/extract_build_metadata_candidate.py": "636a99804a095b7704d68cbd1b16c7f23d8848c8a275010d60970e23d4886b1c"
   },
   "allowed_no_effect_workflow_blobs": [
     "8c397854ddbfa415d4574de0e35a946b58145b32"
