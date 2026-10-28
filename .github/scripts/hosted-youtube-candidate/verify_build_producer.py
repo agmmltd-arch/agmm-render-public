@@ -12,7 +12,7 @@ import urllib.request
 from pathlib import Path
 
 REPO='agmmltd-arch/agmm-render-public'
-ALLOWED_RUNTIME={'4bb43f3376955df547596fff3cd933cbdda93b67'}
+ALLOWED_RUNTIME={'44edcc3fc0de6cc08657af9e3d1787087661c427'}
 
 
 def api(path):
