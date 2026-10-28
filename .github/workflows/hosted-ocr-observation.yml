@@ -69,5 +69,17 @@ jobs:
                   words=' '.join(x['text'].upper() for x in result['lines'])
                   matched=sum(bool(re.search(r'\b'+label+r'\b',words)) for label in ('WORDS','TONE','FACE'))
           print('Historical automated-annotation labels detected:',matched,'of 3')
+          # Real background with synthetic deliberately edge-clipped text. The
+          # expected position is known; this is a control, not a human review.
+          from PIL import Image,ImageDraw,ImageFont
+          image=Image.open(controls[1]).convert('RGB')
+          draw=ImageDraw.Draw(image);font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',56)
+          draw.rectangle((0,0,min(image.width,500),90),fill='white')
+          draw.text((-12,8),'CRITICAL WARNING',font=font,fill='black')
+          target=Path(os.environ['RUNNER_TEMP'])/'edge-control.png';image.save(target)
+          o=subprocess.run([sys.executable,str(tool),str(target)],check=True,capture_output=True,text=True)
+          result=json.loads(o.stdout)
+          found=any(x['x']<=8 and len(re.sub(r'\s','',x['text']))>=3 and x['conf']>=0.3 and x['y']<90 for x in result['lines'])
+          print('Synthetic edge-clipped text detected on real background:',found)
           print('Exploratory only; no Vision parity, creative review or release approval')
           PY
