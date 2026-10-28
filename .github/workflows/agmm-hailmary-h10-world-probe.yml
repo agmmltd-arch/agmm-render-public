@@ -1,0 +1,32 @@
+name: AGMM H10 world head movement check
+run-name: H10 head animation comparison
+on: workflow_dispatch
+permissions:
+  contents: read
+  actions: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-h10-world-probe.js
+          sparse-checkout-cone-mode: false
+      - name: Compare head and neck motion
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download 40640672767 -R "$GITHUB_REPOSITORY" -n film-H10-v4c -D old
+          gh run download 40690944279 -R "$GITHUB_REPOSITORY" -n film-H10-headfix-proof28 -D new
+          python3 - <<'PY'
+          from pathlib import Path
+          probe="window.__worldProbe = () => { const b = man.userData.c.userData.bones; const h=b.Head; return {head:h.getWorldQuaternion(new THREE.Quaternion()).toArray(),local:h.quaternion.toArray(),camera:camera.getWorldQuaternion(new THREE.Quaternion()).toArray()}; };\nwindow.film = {"
+          for n in ('old','new'):
+              p=Path(n)/'room.html'; s=p.read_text(); assert s.count('window.film = {') == 1; p.write_text(s.replace('window.film = {',probe))
+          PY
+          npm install --no-save --no-audit --no-fund playwright-core@1.54.2
+          python3 -m http.server 8765 > "$RUNNER_TEMP/server.log" 2>&1 &
+          node .github/scripts/hailmary-h10-world-probe.js
