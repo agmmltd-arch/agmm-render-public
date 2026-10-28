@@ -498,6 +498,16 @@ def run(ID, T=None, concept_path=None, n=WINDOW_N, do_pitch=True, concept=None):
                 add(ok, "R7 " + name, detail)
         else:
             add(True, "R7 pitch", "derived concept without a pitch block: not checked (backfill); the next submit needs a real one", "WARN")
+    # R10 craft block (19 Oct 2026, CRAFT-BUILD): the four pre-writing answers, locked message, banned list, central visual rule, one move per
+    # beat, named hook type. FAIL when claimed after CRAFT_LIVE_FROM, WARN for shorts already in flight (tools/craft_check.py has the rules).
+    if not derived:
+        try:
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            import craft_check
+            for ok, name, detail, level in craft_check.check(ID, c):
+                add(ok, name, detail, level)
+        except Exception as e:
+            add(True, "R10 craft block", "not run (%s)" % e, "WARN")
     return finish(rep)
 
 
@@ -607,6 +617,8 @@ def render(rep):
         tag = "ok  " if x["ok"] else ("WARN" if x["level"] == "WARN" else "FAIL")
         if x["ok"] and x["level"] == "WARN":
             tag = "WARN"
+        if x["ok"] and x["level"] == "INFO":
+            tag = "INFO"      # strategy v3: a declared override (craft.experiment.overrides) passes with a note
         L.append("  [%s] %s: %s" % (tag, x["name"], x["detail"]))
     if rep["verdict"] == "FAIL":
         L.append("=> refused. Change the concept (a different world, ground, hero, hook or signature), not the file. "

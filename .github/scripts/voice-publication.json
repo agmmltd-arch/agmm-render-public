@@ -53,10 +53,10 @@
     ".github/scripts/voice-native/kit/registry/concept.schema.json": "d7e46cde5188f227916de4d6451769cc5fbe91767320eea0dd9af4fd4d583c12",
     ".github/scripts/voice-native/kit/storyboard_guard.py": "910e657f07d2a5b689a66cb50418ca0b625e73dcb15395cc06aac7e88a67ea2a",
     ".github/scripts/voice-native/kit/tools/concept_card.py": "8a64fcd60bc18b145d5f4d6eed8c10852f57ca3c8481077f13d2c0cdae486fe5",
-    ".github/scripts/voice-native/kit/tools/concept_check.py": "99ad2d1305f0ecb9f5fe34bf8a01933eb6deb1e40acfd4512d35d1f89f863f20",
+    ".github/scripts/voice-native/kit/tools/concept_check.py": "c77797ac3c1fa35a3d71a6e9bda4537ad6aa67cb466acb082aaccd8aca28d6de",
     ".github/scripts/voice-native/kit/tools/concept_reserve.py": "df280b6f300fff95e72f41539c081b7d430e17d8367dd2ce95d41e98bd727d49",
     ".github/scripts/voice-native/kit/tools/prop_reuse.py": "c2da6cd2252c1d550b9200c46031174a697d4f9dec2f63bad9edb6f98aade389",
-    ".github/scripts/voice-native/kit/tools/storyboard.py": "50ace1202175cc5316ad3bad08cea50faaab977c9d7531fa7ca2a0c259e7097b",
+    ".github/scripts/voice-native/kit/tools/storyboard.py": "eca6666e3d3f2a4f6f32826cf416d0841a022896665fb9e98142e27c29dd27f0",
     ".github/scripts/voice-native/kit/voice_script_binding.py": "ac77bbb2a5a7a1e04ff08b15316409bd5d1f9a87bd28ff84e7aa692ffecd8d4d",
     ".github/scripts/voice-native/shorts/voice/tooling/asr_compare.py": "10c7072c44b07f5b60499e56e6c991b8cc100e3fd1044b9e18c29b6a35be94c2",
     ".github/scripts/voice-native/shorts/voice/tooling/asr_triage.py": "3fcdbedc3817d31c9967801b88523cf11ebc53fe4d82fa68bba5ff0c033d6c5d",
@@ -115,7 +115,8 @@
     ".github/scripts/voice-native/kit/tools/sources_from_media.py": "12c32f3462f1111b22685428f65501676d51d008bfa93272e30f170f15e685f8",
     ".github/scripts/voice-native/kit/tools/static_precheck.py": "fa4c90c628b0dd41c67b196c927a9e669c490c649574b194bbb88e030b5a7737",
     ".github/scripts/voice-native/kit/tools/voice_install.py": "3854b5b1609b60d520a8c3549748e9ad2d8c18916a476ada54612d6e898f270c",
-    ".github/scripts/voice-native/kit/tools/format_engine_rt.js": "d2130107a2b88f2bf7ae2f641ef9f29e33bb0c613fa7cb8a7356824a98171889"
+    ".github/scripts/voice-native/kit/tools/format_engine_rt.js": "d2130107a2b88f2bf7ae2f641ef9f29e33bb0c613fa7cb8a7356824a98171889",
+    ".github/scripts/voice-native/kit/tools/craft_check.py": "ed978335b284e3bc3a827c54b5fe3451f83c43f7da13e15658c3ed4f4beab28d"
   },
   "allowed_no_effect_workflow_blobs": [
     "8c397854ddbfa415d4574de0e35a946b58145b32"

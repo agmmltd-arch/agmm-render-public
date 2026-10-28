@@ -110,6 +110,60 @@ def stale_build(ID):
     return None
 
 
+def _newest_change(ID):
+    """Newest mtime of anything a maker actually changes for <ID> (27 Oct 2026, auto-repair p02).
+
+    Why: a submit that lands after an independent reviewer returned the short moves the note into previous_returns and
+    resets state to submitted, so the same unchanged work is judged a second time. S31 was submitted at 14:50 and again
+    at 14:55 while the 14:54 return (headline past the safe edge) sat unread, then re-reviewed on 27 Oct for a different
+    defect: two Opus reviews spent on one unchanged sheet. The scarce resource in this pipeline is the reviewer's Max
+    window, so stale work must not reach it.
+
+    Reads only mtimes: the short's spec code/JSON, its build output, its voice takes and its media. A maker who edits a
+    speck, rebuilds, or re-voices changes one of those. Returns None when nothing exists yet.
+    """
+    roots = [os.path.join(KIT, "specs", ID), os.path.join(KIT, "out", ID),
+             os.path.join(KIT, "media", ID), os.path.join(os.path.dirname(KIT), "shorts", "voice", ID)]
+    newest = 0
+    for d in roots:
+        if not os.path.isdir(d):
+            continue
+        for f in glob.glob(os.path.join(d, "**", "*"), recursive=True):
+            if not os.path.isfile(f):
+                continue
+            rel = os.path.relpath(f, d)
+            if os.path.basename(f) == "concept.json" or ARCHIVE_RX.search(rel):
+                continue
+            try:
+                newest = max(newest, os.path.getmtime(f))
+            except OSError:
+                continue
+    return newest or None
+
+
+def stale_after_return(ID, rec):
+    """A returned short cannot be resubmitted until something changed since that return (27 Oct 2026, auto-repair p02).
+
+    Additive refusal in the maker's own hands, before the cloud snap: the reviewer's return has to be read and acted on
+    first. It never weakens a gate (the sheet, concept, polish and static checks all still run) and it can never block a
+    real fix: any edit to the spec, a rebuild, a re-voice or a new media asset changes an mtime and passes.
+    """
+    if rec.get("state") != "returned" or not rec.get("decided"):
+        return None
+    try:
+        returned = time.mktime(time.strptime(str(rec["decided"])[:19], "%Y-%m-%dT%H:%M:%S"))
+    except ValueError:
+        return None
+    changed = _newest_change(ID)
+    if changed is None or changed > returned:
+        return None
+    return ("REFUSED: nothing in specs/%s, out/%s, media/%s or shorts/voice/%s has changed since the independent "
+            "reviewer returned %s at %s. The last return says:\n  %s\n"
+            "Read it, fix that defect in the source (story.json / scenes.js / spec.json), rebuild, and only then "
+            "resubmit. A resubmit of unchanged work is a guaranteed second return and spends the reviewer's Max window "
+            "for nothing." % (ID, ID, ID, ID, ID, rec.get("decided"), (rec.get("notes") or "(no note recorded)")[:600]))
+
+
 def density_advisory(ID):
     """craft ledger 28 Sep: 'subject fills 60% / lands full on the cut' was the most returned defect (13 shorts).
     Prints storyboard frames under the approved shorts' 5th-percentile fill (coverage 0.17, measured on 859 approved
@@ -280,6 +334,9 @@ def main():
         return
     if cmd == "submit":
         waiver = _waiver_arg(sys.argv)
+        _stale = stale_after_return(ID, rec)             # 27 Oct repair: unchanged work cannot go back to a reviewer
+        if _stale:
+            sys.exit("storyboard.py submit: %s" % _stale)
         extra.update(concept_gate(ID, waiver))          # 6 Oct: sameness + pitch gate, before anything is built or snapped
         why = stale_build(ID)
         if why:
@@ -296,7 +353,7 @@ def main():
         # 7 Oct, gpt-sol: catch source holds before spending a full render.
         # Qualified on unchanged S87 (known 1.6 s FAIL) and S52 (whole-source PASS),
         # using the existing gate's check-3 measure and public Actions only.
-        motion = subprocess.run([sys.executable, os.path.join(KIT, "tools", "static_precheck.py"), ID],
+        motion = subprocess.run([sys.executable, os.path.join(KIT, "tools", "static_precheck.py"), ID, "--reuse-current"],
                                 cwd=KIT, capture_output=True, text=True)
         print(motion.stdout, end="")
         if motion.stderr:
