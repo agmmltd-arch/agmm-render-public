@@ -1,0 +1,32 @@
+name: AGMM H10 opening frame review
+run-name: H10 opening frame review
+on: workflow_dispatch
+permissions:
+  contents: read
+  actions: read
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-h10-frames.py
+          sparse-checkout-cone-mode: false
+      - name: Review hosted frames
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          gh run download 40687694668 -R "$GITHUB_REPOSITORY" -n hailmary-H10-headlook28 -D proof
+          python3 -m pip install --quiet pillow
+          python3 .github/scripts/hailmary-h10-frames.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: H10-frame-review
+          path: out/review.json
+          retention-days: 7
+          if-no-files-found: warn
