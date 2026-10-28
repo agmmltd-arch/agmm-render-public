@@ -470,8 +470,12 @@ def main() -> int:
             page.goto(LONGFORM_TAB, wait_until="domcontentloaded", timeout=60_000)
             time.sleep(10)
             ok, detail = signed_in(page)
+            parsed = urllib.parse.urlsplit(page.url)
+            channel_ok = (parsed.scheme == "https" and parsed.hostname == "studio.youtube.com"
+                          and parsed.path.startswith("/channel/" + CHANNEL_ID + "/"))
+            detail += f" expected_channel_path={channel_ok}"
             page.screenshot(path=str(args.evidence / "00-session-probe.png"))
-            if not ok:
+            if not ok or not channel_ok:
                 raise RuntimeError("AGMM Studio session probe failed: " + detail)
             result = {"schema": "agmm-youtube-cloud-session-v1", "overall": "SESSION_PASS", "detail": detail,
                       "checked_at": datetime.now(timezone.utc).isoformat()}
