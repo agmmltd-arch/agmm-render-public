@@ -18,6 +18,18 @@ on:
         type: boolean
         default: false
         required: true
+      format_commit:
+        type: string
+        default: ''
+        required: false
+      format_prefix:
+        type: string
+        default: ''
+        required: false
+      format_manifest_blob:
+        type: string
+        default: ''
+        required: false
 permissions:
   contents: read
   actions: read
@@ -61,6 +73,30 @@ jobs:
           persist-credentials: false
           sparse-checkout-cone-mode: false
           sparse-checkout: ${{ steps.binding.outputs.prefix }}
+      - name: Check protected format input coordinates
+        if: inputs.format_prefix != ''
+        env:
+          FORMAT_COMMIT: ${{ inputs.format_commit }}
+          FORMAT_PREFIX: ${{ inputs.format_prefix }}
+          FORMAT_MANIFEST: ${{ inputs.format_manifest_blob }}
+        run: |
+          python3 - <<'PY'
+          import os,re
+          assert re.fullmatch(r'[0-9a-f]{40}',os.environ['FORMAT_COMMIT'])
+          assert re.fullmatch(r'format-hosted-inputs/runtime-[0-9]+',os.environ['FORMAT_PREFIX'])
+          assert re.fullmatch(r'[0-9a-f]{40}',os.environ['FORMAT_MANIFEST'])
+          PY
+      - name: Read exact protected format inputs
+        if: inputs.format_prefix != ''
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.format_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-format-inputs
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.format_prefix }}
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12.8'
@@ -86,6 +122,24 @@ jobs:
           assert result['status']=='EXACT_VOICE_HYDRATED_FOR_EXISTING_HOSTED_BUILDER'
           assert result['release_approved'] is False and result['storyboard_approved'] is False
           print('Hosted voice hydration passed; storyboard and release review still required')
+          PY
+      - name: Verify and stage protected format inputs on Ubuntu
+        if: inputs.format_prefix != ''
+        env:
+          FORMAT_COMMIT: ${{ inputs.format_commit }}
+          FORMAT_PREFIX: ${{ inputs.format_prefix }}
+          FORMAT_MANIFEST: ${{ inputs.format_manifest_blob }}
+        run: |
+          python3 - <<'PY'
+          import os,sys
+          from pathlib import Path
+          sys.path.insert(0,'.github/scripts')
+          from voice_hosted import BASE
+          from stage_format_inputs_hosted import stage
+          coords={'commit':os.environ['FORMAT_COMMIT'],'prefix':os.environ['FORMAT_PREFIX'],'manifest_blob':os.environ['FORMAT_MANIFEST']}
+          result=stage(Path('private-format-inputs').resolve(),coords,BASE)
+          assert result['production_approval'] is False
+          print('Protected format input count verified:',result['count'])
           PY
       - name: Smoke-test candidate format imports only
         if: inputs.smoke_imports == true
