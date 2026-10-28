@@ -1,0 +1,43 @@
+name: Protected writer transport synthetic proof
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: Authenticated synthetic encrypted payload
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Authenticate synthetic input and encrypt synthetic response
+        env:
+          PAYLOAD: ${{ inputs.payload }}
+          AGMM_WRITER_PASS: ${{ secrets.AGMM_WRITER_PASS }}
+        run: |
+          set -euo pipefail
+          mkdir -p sealed
+          python3 - <<'PY'
+          import base64,os
+          from pathlib import Path
+          exec(base64.b64decode('IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJBdXRoZW50aWNhdGVkIGVuY3J5cHRpb24gZm9yIHByaXZhdGUgd3JpdGVyIHJlcXVlc3RzIGFuZCByZXNwb25zZXMuCgpDYW5kaWRhdGUgb25seTsgaW5zdGFsbGF0aW9uIGFuZCBsaXZlIHdyaXRlciBjdXRvdmVyIGFyZSBzZXBhcmF0ZSBkZWNpc2lvbnMuCiIiIgppbXBvcnQgaGFzaGxpYgppbXBvcnQgaG1hYwppbXBvcnQgb3MKaW1wb3J0IHN1YnByb2Nlc3MKCk1BR0lDID0gYidBR1cxJwoKCmRlZiBfa2V5KHBhc3N3b3JkLCBzYWx0KToKICAgIHJldHVybiBoYXNobGliLnBia2RmMl9obWFjKCdzaGEyNTYnLCBwYXNzd29yZC5lbmNvZGUoKSwgYidBR01NLXdyaXRlci1hdXRoOicgKyBzYWx0LCAyMDAwMDAsIDMyKQoKCmRlZiBjcnlwdChkYXRhLCBwYXNzd29yZCwgZGVjcnlwdD1GYWxzZSk6CiAgICBpZiBub3QgcGFzc3dvcmQgb3IgJ1xuJyBpbiBwYXNzd29yZDoKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCd3cml0ZXIgZW5jcnlwdGlvbiBwYXNzd29yZCBtaXNzaW5nIG9yIGludmFsaWQnKQogICAgaWYgZGVjcnlwdDoKICAgICAgICBpZiBsZW4oZGF0YSkgPCA0ICsgMTYgKyAxNiArIDMyIG9yIGRhdGFbOjRdICE9IE1BR0lDOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCdpbnZhbGlkIGVuY3J5cHRlZCB3cml0ZXIgcGF5bG9hZCcpCiAgICAgICAgc2FsdCwgYm9keSwgc3VwcGxpZWQgPSBkYXRhWzQ6MjBdLCBkYXRhWzIwOi0zMl0sIGRhdGFbLTMyOl0KICAgICAgICBleHBlY3RlZCA9IGhtYWMubmV3KF9rZXkocGFzc3dvcmQsIHNhbHQpLCBkYXRhWzotMzJdLCBoYXNobGliLnNoYTI1NikuZGlnZXN0KCkKICAgICAgICBpZiBub3QgaG1hYy5jb21wYXJlX2RpZ2VzdChzdXBwbGllZCwgZXhwZWN0ZWQpOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCd3cml0ZXIgcGF5bG9hZCBhdXRoZW50aWNhdGlvbiBmYWlsZWQnKQogICAgZWxzZToKICAgICAgICBzYWx0LCBib2R5ID0gb3MudXJhbmRvbSgxNiksIGRhdGEKICAgIGVudiA9IGRpY3Qob3MuZW52aXJvbiwgQUdNTV9XUklURVJfUEFTUz1wYXNzd29yZCkKICAgIGFyZ3MgPSBbJ29wZW5zc2wnLCAnZW5jJywgJy1hZXMtMjU2LWNiYycsICctcGJrZGYyJywgJy1pdGVyJywgJzIwMDAwMCcsCiAgICAgICAgICAgICctcGFzcycsICdlbnY6QUdNTV9XUklURVJfUEFTUyddCiAgICBpZiBkZWNyeXB0OgogICAgICAgIGFyZ3MuYXBwZW5kKCctZCcpCiAgICBvdXRwdXQgPSBzdWJwcm9jZXNzLnJ1bihhcmdzLCBpbnB1dD1ib2R5LCBzdGRvdXQ9c3VicHJvY2Vzcy5QSVBFLCBzdGRlcnI9c3VicHJvY2Vzcy5QSVBFLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgZW52PWVudiwgY2hlY2s9VHJ1ZSkuc3Rkb3V0CiAgICBpZiBkZWNyeXB0OgogICAgICAgIHJldHVybiBvdXRwdXQKICAgIGVudmVsb3BlID0gTUFHSUMgKyBzYWx0ICsgb3V0cHV0CiAgICByZXR1cm4gZW52ZWxvcGUgKyBobWFjLm5ldyhfa2V5KHBhc3N3b3JkLCBzYWx0KSwgZW52ZWxvcGUsIGhhc2hsaWIuc2hhMjU2KS5kaWdlc3QoKQo='))
+          incoming=base64.b64decode(os.environ['PAYLOAD'],validate=True)
+          assert crypt(incoming,os.environ['AGMM_WRITER_PASS'],True)==b'synthetic writer transport input'
+          try:
+              crypt(incoming[:-1]+bytes([incoming[-1]^1]),os.environ['AGMM_WRITER_PASS'],True)
+          except ValueError:
+              pass
+          else:
+              raise AssertionError('tampered input accepted')
+          Path('sealed/result.enc').write_bytes(crypt(b'synthetic writer transport output',os.environ['AGMM_WRITER_PASS']))
+          print('Authenticated input and tamper refusal passed; output encrypted')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: protected-writer-synthetic-${{ github.run_id }}
+          path: sealed/result.enc
+          retention-days: 1
+          if-no-files-found: error
