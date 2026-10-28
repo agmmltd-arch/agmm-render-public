@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hosted-only extraction of an encrypted two-file approved-master package."""
+"""Hosted-only extraction of an encrypted approved-master package."""
 import argparse
 import os
 import platform
@@ -26,11 +26,12 @@ def extract(archive, output, video):
         subprocess.run(['openssl','enc','-d','-aes-256-cbc','-pbkdf2','-pass','env:VOICEFREE_PASS',
                         '-in',str(archive),'-out',str(plain)],check=True,capture_output=True)
         with tarfile.open(plain,'r:') as t:
-            members=t.getmembers(); expected={video,'REMOTE-INTEGRITY.json'}
-            if len(members)!=2 or {m.name for m in members}!=expected or any(not m.isfile() for m in members):
+            members=t.getmembers(); expected={video,'REMOTE-INTEGRITY.json','thumbnail.jpg'}
+            if len(members)!=3 or {m.name for m in members}!=expected or any(not m.isfile() for m in members):
                 raise ValueError('encrypted master package contents invalid')
             for m in members:
-                if m.size<1 or m.size>(1_000_000 if m.name=='REMOTE-INTEGRITY.json' else 20_000_000_000):
+                limit=1_000_000 if m.name=='REMOTE-INTEGRITY.json' else 20_000_000 if m.name=='thumbnail.jpg' else 20_000_000_000
+                if m.size<1 or m.size>limit:
                     raise ValueError('invalid master package size')
             output.mkdir(mode=0o700)
             for m in members:
