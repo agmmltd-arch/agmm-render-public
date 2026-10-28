@@ -1,0 +1,30 @@
+name: AGMM H10 timeline comparison
+run-name: H10 picture reuse timeline comparison
+on:
+  workflow_dispatch:
+    inputs:
+      new_run: { description: New picture proof run ID, required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NEW_RUN: ${{ inputs.new_run }}
+    steps:
+      - name: Compare original and new timing data
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$NEW_RUN" =~ ^[0-9]+$ ]]
+          gh run download 40640672767 -R "$GITHUB_REPOSITORY" -n film-H10-v4c -D old
+          gh run download "$NEW_RUN" -R "$GITHUB_REPOSITORY" -n film-H10-headfix-proof28 -D new
+          python3 - <<'PY'
+          import json
+          a=json.load(open('old/assets/timeline.json'));b=json.load(open('new/assets/timeline.json'))
+          print(json.dumps({'identical':a==b,'old_total':a['total'],'new_total':b['total'],'old_world_at':a['world_at'],'new_world_at':b['world_at'],'old_year10':a['a']['year10'],'new_year10':b['a']['year10']}))
+          if a!=b: raise SystemExit('TIMELINES DIFFER: DO NOT REUSE SEGMENTS')
+          PY
