@@ -1,140 +1,466 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AGMM short concept (specs/<ID>/concept.json)",
-  "description": "Structured concept for one short. Every look-defining choice is an ENUMERATED field so tools/concept_check.py can measure sameness against the last 10 approved shorts. Written 6 Oct 2026 after Sam: 'be careful not to make the visuals too similar, they're starting to look the same. we're dropping creativity'. The enums below are the single source of truth (concept_check.py reads them from this file). To add a value, add it here and say why in kit/SPRINT-2026-10-05.md. Definitions are in x-definitions.",
-  "type": "object",
-  "required": ["id", "world", "ground", "palette", "hero_device", "camera", "type_voice", "source_presentation", "hook_mechanic", "signature", "bed", "better_than_last"],
-  "properties": {
-    "schema": {"type": "integer", "enum": [1]},
-    "id": {"type": "string", "pattern": "^[A-Z]{1,3}[0-9]{1,3}$"},
-    "title": {"type": "string"},
-    "derived": {"type": "boolean", "description": "true = written by tools/concept_backfill.py from CONCEPTS.md / storyboard sheet / spec.json, not by the maker. Allowed only for shorts already in the storyboard registry before the backfill cutoff; pitch is not checked on a derived concept that has no pitch block."},
-    "derived_fields": {"type": "array", "items": {"type": "string"}},
-    "derived_note": {"type": "string"},
-    "world": {
-      "type": "object",
-      "required": ["name", "world_family"],
-      "properties": {
-        "name": {"type": "string", "minLength": 6},
-        "world_family": {"type": "string", "enum": ["desk-paper", "ui-screen", "map-plan", "instrument-console", "interior-set", "exterior-site", "unit-wall", "abstract-chart", "press-newsroom", "cutaway", "photo-led", "typographic"]},
-        "look": {"type": "string", "description": "the build look in registry/moves.json (explainer, cinematic, dossier, newsroom, desktop, softui, chart, evidence, opsmap); informational"}
-      }
-    },
-    "ground": {
-      "type": "object",
-      "required": ["hex", "luminance", "beats_fraction"],
-      "properties": {
-        "hex": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"},
-        "luminance": {"type": "string", "enum": ["dark", "mid", "light"]},
-        "beats_fraction": {"type": "number", "minimum": 0, "maximum": 1, "description": "share of the short's beats that sit on this ground (the reviewers' '18 of 22 beats'). Verified against the storyboard sheet at submit."}
-      }
-    },
-    "palette": {"type": "array", "minItems": 2, "maxItems": 4, "items": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"}, "description": "2 to 4 hex colours ordered by screen area; [0] is the ground."},
-    "hero_device": {"type": "string", "enum": ["giant-number", "counted-field", "hand-built-machine", "photo-led", "source-artifact", "ui-surface", "type-statement", "figure-character", "map-route", "chart-diagram"]},
-    "camera": {"type": "string", "enum": ["static", "pan", "travel", "zoom-through"]},
-    "type_voice": {
-      "type": "object",
-      "required": ["display", "kicker"],
-      "properties": {
-        "display": {"type": "string", "enum": ["condensed-caps", "serif-display", "grotesk", "slab", "hand", "mono", "rounded"]},
-        "kicker": {"type": "string", "enum": ["mono", "sans", "serif", "hand", "none"]},
-        "fonts": {"type": "array", "items": {"type": "string"}}
-      }
-    },
-    "source_presentation": {"type": "string", "enum": ["cream-card", "pinned-clipping", "on-object", "screen-window", "strip-ticker", "paper-document"]},
-    "hook_mechanic": {"type": "string", "enum": ["number-slam", "contrast-pair", "quote-verbatim", "object-in-motion", "question-prompt", "photo-pushin", "stamp-verdict", "typed-reveal"]},
-    "signature": {
-      "type": "object",
-      "required": ["mechanism", "word"],
-      "properties": {
-        "mechanism": {"type": "string", "enum": ["wave-ignite", "sort-split", "converge-in", "fill-gauge", "pullback-scale", "stamp-verdict", "scan-sweep", "cut-disconnect", "travel-path", "assemble-build", "layer-merge", "peel-flip", "pour-fall"]},
-        "word": {"type": ["string", "null"], "description": "the spoken word (as it appears in the script) the signature lands on; null only on a derived concept"},
-        "at_s": {"type": ["number", "null"]},
-        "description": {"type": "string"}
-      }
-    },
-    "bed": {
-      "type": "object",
-      "required": ["id"],
-      "properties": {
-        "id": {"type": "string", "description": "the music id exactly as in specs/<ID>/spec.json music.bed"},
-        "mood": {"type": "string"}
-      }
-    },
-    "better_than_last": {
-      "type": "object",
-      "required": ["short", "axis", "note"],
-      "properties": {
-        "short": {"type": "string", "pattern": "^[A-Z]{1,3}[0-9]{1,3}$", "description": "a recent approved short (in the window) or S52 / P1"},
-        "axis": {"type": "string", "enum": ["world", "ground", "hero", "hook", "signature", "camera", "source", "type", "bed", "performance"]},
-        "note": {"type": "string", "minLength": 60},
-        "at_s": {"type": ["number", "null"]}
-      }
-    },
-    "pitch": {
-      "type": "object",
-      "required": ["frame0", "objects", "claims"],
-      "properties": {
-        "frame0": {
-          "type": "object",
-          "required": ["subject", "number_on_screen", "number_spoken"],
-          "properties": {
-            "subject": {"type": "string", "description": "the named company or person in frame 0; must occur in the script"},
-            "number_on_screen": {"type": "string"},
-            "number_spoken": {"type": "string", "description": "the exact words of the script that speak that number (e.g. 'five hundred million dollars')"}
-          }
-        },
-        "objects": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["name", "word", "constructed"],
-            "properties": {
-              "name": {"type": "string"},
-              "word": {"type": "string", "description": "a spoken word of the script the object is tied to"},
-              "at_s": {"type": ["number", "null"]},
-              "constructed": {"type": "boolean", "description": "hand-built in code for this story (not a plain text card, a logo or a stock image)"}
-            }
-          }
-        },
-        "claims": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["script_quote", "source"],
-            "properties": {
-              "script_quote": {"type": "string", "description": "words copied from the script that carry the factual claim"},
-              "source": {
-                "type": "object",
-                "required": ["outlet", "date"],
-                "properties": {"outlet": {"type": "string"}, "date": {"type": "string"}, "url": {"type": "string"}, "file": {"type": "string"}, "shown_as": {"type": "string"}}
-              }
-            }
-          }
-        }
-      }
-    }
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "title": "AGMM short concept (specs/<ID>/concept.json)",
+ "description": "Structured concept for one short. Every look-defining choice is an ENUMERATED field so tools/concept_check.py can measure sameness against the last 10 approved shorts. Written 6 Oct 2026 after Sam: 'be careful not to make the visuals too similar, they're starting to look the same. we're dropping creativity'. The enums below are the single source of truth (concept_check.py reads them from this file). To add a value, add it here and say why in kit/SPRINT-2026-10-05.md. Definitions are in x-definitions.",
+ "type": "object",
+ "required": [
+  "id",
+  "world",
+  "ground",
+  "palette",
+  "hero_device",
+  "camera",
+  "type_voice",
+  "source_presentation",
+  "hook_mechanic",
+  "signature",
+  "bed",
+  "better_than_last"
+ ],
+ "properties": {
+  "schema": {
+   "type": "integer",
+   "enum": [
+    1
+   ]
   },
-  "x-definitions": {
-    "world_family": {
-      "desk-paper": "a desk, bench, board or sheet of paper/ledger/printout/cards is the surface the story happens on",
-      "ui-screen": "software, an app, a phone, a spreadsheet or a console screen is the whole world",
-      "map-plan": "a map, floor plan or top-down plan view",
-      "instrument-console": "dials, meters, recorders, control or ops rooms, machines you read",
-      "interior-set": "a hand-built room or interior (airport, kitchen, library, registry, closet)",
-      "exterior-site": "an outdoor or site-scale scene (road, factory floor, hoarding, estate at night, polytunnel)",
-      "unit-wall": "a wall or field of countable identical units (badges, pegs, dots, phones, drawers) is the world",
-      "abstract-chart": "graph paper, drafting paper or a chart field with diagrammatic objects",
-      "press-newsroom": "tabloid or newsroom world",
-      "cutaway": "a cross-section or cutaway (iceberg, building section)",
-      "photo-led": "a real photograph is the ground of the world",
-      "typographic": "type and collage only"
+  "id": {
+   "type": "string",
+   "pattern": "^[A-Z]{1,3}[0-9]{1,3}$"
+  },
+  "title": {
+   "type": "string"
+  },
+  "derived": {
+   "type": "boolean",
+   "description": "true = written by tools/concept_backfill.py from CONCEPTS.md / storyboard sheet / spec.json, not by the maker. Allowed only for shorts already in the storyboard registry before the backfill cutoff; pitch is not checked on a derived concept that has no pitch block."
+  },
+  "derived_fields": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "derived_note": {
+   "type": "string"
+  },
+  "world": {
+   "type": "object",
+   "required": [
+    "name",
+    "world_family"
+   ],
+   "properties": {
+    "name": {
+     "type": "string",
+     "minLength": 6
     },
-    "ground": "ground_bucket = luminance (dark L*<32, mid <68, light) + hue family (coolneutral = neutral, teal, blue; warm = red, orange, amber; green; violet = violet, pink). 'dark-coolneutral' is the navy/charcoal/black-teal bucket every reviewer calls the house look.",
-    "hero_device": "what carries the idea in the hook and most beats",
-    "camera": "static = locked frame, objects move; pan = lateral sweep along a wall; travel = the camera follows a path (aisle, line, route); zoom-through = push-in/pull-back/dolly through the scene so scale changes",
-    "hook_mechanic": "how frame 0 grabs: number-slam (one huge figure + kicker), contrast-pair (two figures set against each other), quote-verbatim, object-in-motion (a built object already working, number secondary), question-prompt, photo-pushin, stamp-verdict, typed-reveal",
-    "source_presentation": "cream-card = a card with masthead/credit chip that floats over the ground; pinned-clipping = attached to a world surface by tape, pin, peg or clip; on-object = the sourced words are set on a prop of the world (slip, ticket, label, page); screen-window = shown inside an in-world screen or browser window; strip-ticker = lower-third/ticker strip; paper-document = the whole real page at frame size",
-    "signature": "the hand-built moment that IS the story beat: wave-ignite (a wave lights or kills many units), sort-split (items sorted/diverted/counted), converge-in (items fly into a target), fill-gauge (a level/needle/trace/counter fills), pullback-scale (camera pulls back to show scale), stamp-verdict (a stamp or verdict lands), scan-sweep (a beam/highlighter/reader sweeps), cut-disconnect (unplug/cut/unbolt/seal), travel-path (a pen/pin/camera travels a line), assemble-build (an object assembles or draws itself), layer-merge (two layers slide together), peel-flip (peel/flip/open to reveal), pour-fall (things pour or drop)"
+    "world_family": {
+     "type": "string",
+     "enum": [
+      "desk-paper",
+      "ui-screen",
+      "map-plan",
+      "instrument-console",
+      "interior-set",
+      "exterior-site",
+      "unit-wall",
+      "abstract-chart",
+      "press-newsroom",
+      "cutaway",
+      "photo-led",
+      "typographic"
+     ]
+    },
+    "look": {
+     "type": "string",
+     "description": "the build look in registry/moves.json (explainer, cinematic, dossier, newsroom, desktop, softui, chart, evidence, opsmap); informational"
+    }
+   }
+  },
+  "ground": {
+   "type": "object",
+   "required": [
+    "hex",
+    "luminance",
+    "beats_fraction"
+   ],
+   "properties": {
+    "hex": {
+     "type": "string",
+     "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "luminance": {
+     "type": "string",
+     "enum": [
+      "dark",
+      "mid",
+      "light"
+     ]
+    },
+    "beats_fraction": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 1,
+     "description": "share of the short's beats that sit on this ground (the reviewers' '18 of 22 beats'). Verified against the storyboard sheet at submit."
+    }
+   }
+  },
+  "palette": {
+   "type": "array",
+   "minItems": 2,
+   "maxItems": 4,
+   "items": {
+    "type": "string",
+    "pattern": "^#[0-9a-fA-F]{6}$"
+   },
+   "description": "2 to 4 hex colours ordered by screen area; [0] is the ground."
+  },
+  "hero_device": {
+   "type": "string",
+   "enum": [
+    "giant-number",
+    "counted-field",
+    "hand-built-machine",
+    "photo-led",
+    "source-artifact",
+    "ui-surface",
+    "type-statement",
+    "figure-character",
+    "map-route",
+    "chart-diagram"
+   ]
+  },
+  "camera": {
+   "type": "string",
+   "enum": [
+    "static",
+    "pan",
+    "travel",
+    "zoom-through"
+   ]
+  },
+  "type_voice": {
+   "type": "object",
+   "required": [
+    "display",
+    "kicker"
+   ],
+   "properties": {
+    "display": {
+     "type": "string",
+     "enum": [
+      "condensed-caps",
+      "serif-display",
+      "grotesk",
+      "slab",
+      "hand",
+      "mono",
+      "rounded"
+     ]
+    },
+    "kicker": {
+     "type": "string",
+     "enum": [
+      "mono",
+      "sans",
+      "serif",
+      "hand",
+      "none"
+     ]
+    },
+    "fonts": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "source_presentation": {
+   "type": "string",
+   "enum": [
+    "cream-card",
+    "pinned-clipping",
+    "on-object",
+    "screen-window",
+    "strip-ticker",
+    "paper-document"
+   ]
+  },
+  "hook_mechanic": {
+   "type": "string",
+   "enum": [
+    "number-slam",
+    "contrast-pair",
+    "quote-verbatim",
+    "object-in-motion",
+    "question-prompt",
+    "photo-pushin",
+    "stamp-verdict",
+    "typed-reveal"
+   ]
+  },
+  "signature": {
+   "type": "object",
+   "required": [
+    "mechanism",
+    "word"
+   ],
+   "properties": {
+    "mechanism": {
+     "type": "string",
+     "enum": [
+      "wave-ignite",
+      "sort-split",
+      "converge-in",
+      "fill-gauge",
+      "pullback-scale",
+      "stamp-verdict",
+      "scan-sweep",
+      "cut-disconnect",
+      "travel-path",
+      "assemble-build",
+      "layer-merge",
+      "peel-flip",
+      "pour-fall"
+     ]
+    },
+    "word": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "description": "the spoken word (as it appears in the script) the signature lands on; null only on a derived concept"
+    },
+    "at_s": {
+     "type": [
+      "number",
+      "null"
+     ]
+    },
+    "description": {
+     "type": "string"
+    }
+   }
+  },
+  "bed": {
+   "type": "object",
+   "required": [
+    "id"
+   ],
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "the music id exactly as in specs/<ID>/spec.json music.bed"
+    },
+    "mood": {
+     "type": "string"
+    }
+   }
+  },
+  "better_than_last": {
+   "type": "object",
+   "required": [
+    "short",
+    "axis",
+    "note"
+   ],
+   "properties": {
+    "short": {
+     "type": "string",
+     "pattern": "^[A-Z]{1,3}[0-9]{1,3}$",
+     "description": "a recent approved short (in the window) or S52 / P1"
+    },
+    "axis": {
+     "type": "string",
+     "enum": [
+      "world",
+      "ground",
+      "hero",
+      "hook",
+      "signature",
+      "camera",
+      "source",
+      "type",
+      "bed",
+      "performance"
+     ]
+    },
+    "note": {
+     "type": "string",
+     "minLength": 60
+    },
+    "at_s": {
+     "type": [
+      "number",
+      "null"
+     ]
+    }
+   }
+  },
+  "pitch": {
+   "type": "object",
+   "required": [
+    "frame0",
+    "objects",
+    "claims"
+   ],
+   "properties": {
+    "frame0": {
+     "type": "object",
+     "required": [
+      "subject",
+      "number_on_screen",
+      "number_spoken"
+     ],
+     "properties": {
+      "subject": {
+       "type": "string",
+       "description": "the named company or person in frame 0; must occur in the script"
+      },
+      "number_on_screen": {
+       "type": "string"
+      },
+      "number_spoken": {
+       "type": "string",
+       "description": "the exact words of the script that speak that number (e.g. 'five hundred million dollars')"
+      }
+     }
+    },
+    "objects": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "name",
+       "word",
+       "constructed"
+      ],
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "word": {
+        "type": "string",
+        "description": "a spoken word of the script the object is tied to"
+       },
+       "at_s": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "constructed": {
+        "type": "boolean",
+        "description": "hand-built in code for this story (not a plain text card, a logo or a stock image)"
+       }
+      }
+     }
+    },
+    "claims": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "script_quote",
+       "source"
+      ],
+      "properties": {
+       "script_quote": {
+        "type": "string",
+        "description": "words copied from the script that carry the factual claim"
+       },
+       "source": {
+        "type": "object",
+        "required": [
+         "outlet",
+         "date"
+        ],
+        "properties": {
+         "outlet": {
+          "type": "string"
+         },
+         "date": {
+          "type": "string"
+         },
+         "url": {
+          "type": "string"
+         },
+         "file": {
+          "type": "string"
+         },
+         "shown_as": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "craft": {
+   "type": "object",
+   "description": "19 Oct 2026 craft block, checked by tools/craft_check.py (R10): answers{expert_move,rawest_source,methods[],outside_judges[]}, locked_message, banned[], central_visual_rule, beat_moves[{beat,verb}], hook{type,t0,t1_5,desired_reaction,why_discouraged?}; strategy v3 adds frame0{}, experiment{} and length_reason (registry/strategy-v3.json, FAIL from 2026-10-19T17:00). Required for shorts claimed from 2026-10-19T16:00, WARN before.",
+   "properties": {
+    "answers": {
+     "type": "object"
+    },
+    "locked_message": {
+     "type": "string"
+    },
+    "banned": {
+     "type": "array"
+    },
+    "central_visual_rule": {
+     "type": "string"
+    },
+    "beat_moves": {
+     "type": "array"
+    },
+    "hook": {
+     "type": "object"
+    },
+    "frame0": {
+     "type": "object",
+     "description": "Strategy v3 rule 1 (tools/craft_check.py V3): {known_name (a name the viewer knows, in the script), known_name_as: logo|text, cause (1-5 words), cost (a figure)}; at t=0 at most 6 words at 60 px+, a named entity visible, the largest text a figure or the turn at 200 px+ (measured from dom_lint raw.json)"
+    },
+    "beat2_artefact": {
+     "type": "object",
+     "description": "Strategy v3 rule 1: the real artefact as the PROOF at about 1.5 s: {artefact: phone-screen|letter|receipt|notice|dashboard|ad, at_s: 0.8-2.5, attribution: what it is rebuilt from (8+ chars)}"
+    },
+    "experiment": {
+     "type": "object",
+     "description": "Strategy v3 experiment arms, all six required: hook_type (= craft.hook.type), beat2_artefact (= craft.beat2_artefact.artefact), you_by_3s yes|no (= what the script says), brand_recognition household|b2b|foreign, length_bucket <35|35-50|>50 (= the script), ending_type verdict-question|question-only|none (= the script); optional overrides: \"rule N\" (or a list) with hypothesis and why_better makes the V3 rule pass with an INFO note"
+    },
+    "length_reason": {
+     "type": "string",
+     "description": "Strategy v3 rule 5: why a script over 50 s needs the length (30+ chars); without it the check WARNs"
+    }
+   }
   }
+ },
+ "x-definitions": {
+  "world_family": {
+   "desk-paper": "a desk, bench, board or sheet of paper/ledger/printout/cards is the surface the story happens on",
+   "ui-screen": "software, an app, a phone, a spreadsheet or a console screen is the whole world",
+   "map-plan": "a map, floor plan or top-down plan view",
+   "instrument-console": "dials, meters, recorders, control or ops rooms, machines you read",
+   "interior-set": "a hand-built room or interior (airport, kitchen, library, registry, closet)",
+   "exterior-site": "an outdoor or site-scale scene (road, factory floor, hoarding, estate at night, polytunnel)",
+   "unit-wall": "a wall or field of countable identical units (badges, pegs, dots, phones, drawers) is the world",
+   "abstract-chart": "graph paper, drafting paper or a chart field with diagrammatic objects",
+   "press-newsroom": "tabloid or newsroom world",
+   "cutaway": "a cross-section or cutaway (iceberg, building section)",
+   "photo-led": "a real photograph is the ground of the world",
+   "typographic": "type and collage only"
+  },
+  "ground": "ground_bucket = luminance (dark L*<32, mid <68, light) + hue family (coolneutral = neutral, teal, blue; warm = red, orange, amber; green; violet = violet, pink). 'dark-coolneutral' is the navy/charcoal/black-teal bucket every reviewer calls the house look.",
+  "hero_device": "what carries the idea in the hook and most beats",
+  "camera": "static = locked frame, objects move; pan = lateral sweep along a wall; travel = the camera follows a path (aisle, line, route); zoom-through = push-in/pull-back/dolly through the scene so scale changes",
+  "hook_mechanic": "how frame 0 grabs: number-slam (one huge figure + kicker), contrast-pair (two figures set against each other), quote-verbatim, object-in-motion (a built object already working, number secondary), question-prompt, photo-pushin, stamp-verdict, typed-reveal",
+  "source_presentation": "cream-card = a card with masthead/credit chip that floats over the ground; pinned-clipping = attached to a world surface by tape, pin, peg or clip; on-object = the sourced words are set on a prop of the world (slip, ticket, label, page); screen-window = shown inside an in-world screen or browser window; strip-ticker = lower-third/ticker strip; paper-document = the whole real page at frame size",
+  "signature": "the hand-built moment that IS the story beat: wave-ignite (a wave lights or kills many units), sort-split (items sorted/diverted/counted), converge-in (items fly into a target), fill-gauge (a level/needle/trace/counter fills), pullback-scale (camera pulls back to show scale), stamp-verdict (a stamp or verdict lands), scan-sweep (a beam/highlighter/reader sweeps), cut-disconnect (unplug/cut/unbolt/seal), travel-path (a pen/pin/camera travels a line), assemble-build (an object assembles or draws itself), layer-merge (two layers slide together), peel-flip (peel/flip/open to reveal), pour-fall (things pour or drop)"
+ }
 }

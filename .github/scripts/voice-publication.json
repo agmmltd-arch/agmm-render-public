@@ -50,7 +50,7 @@
     ".github/scripts/voice-native/kit/platforms/frames.json": "cbefbbed08d8535c0da981d9dc1dfe75a71ed855e9ac03f011de5575619a2cc2",
     ".github/scripts/voice-native/kit/platforms/platforms.py": "413fcc21644943c8042543b323e4cfcd3140380998efd4dc4e2ad36916d86a1d",
     ".github/scripts/voice-native/kit/queue.py": "899fe97f4ab901863b38a73121b6b7d2ed2fd708a13eb9aa4397f6f335a2d819",
-    ".github/scripts/voice-native/kit/registry/concept.schema.json": "d7e46cde5188f227916de4d6451769cc5fbe91767320eea0dd9af4fd4d583c12",
+    ".github/scripts/voice-native/kit/registry/concept.schema.json": "45fe346ec7ecd50062b7876645c574e7322e1f51d2a4e42f626df6f39d2a52e2",
     ".github/scripts/voice-native/kit/storyboard_guard.py": "910e657f07d2a5b689a66cb50418ca0b625e73dcb15395cc06aac7e88a67ea2a",
     ".github/scripts/voice-native/kit/tools/concept_card.py": "8a64fcd60bc18b145d5f4d6eed8c10852f57ca3c8481077f13d2c0cdae486fe5",
     ".github/scripts/voice-native/kit/tools/concept_check.py": "c77797ac3c1fa35a3d71a6e9bda4537ad6aa67cb466acb082aaccd8aca28d6de",
