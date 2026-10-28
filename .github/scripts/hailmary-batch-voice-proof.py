@@ -21,7 +21,9 @@ report=[]
 for item in plan:
  para=item['para'];old=[c for c in spec['clips'] if c.get('voice') and os.path.basename(c['src'])==para+'.wav']
  if not old: report.append({'para':para,'status':'missing original voice'});continue
- original_start=min(c['at'] for c in old);end=max(c['at']+c['out']-c['in'] for c in old)
+ original_start=min(c['at'] for c in old);original_end=max(c['at']+c['out']-c['in'] for c in old)
+ extension=float(item.get('extend',0));assert 0<=extension<=1.0
+ end=min(float(spec['duration'])-.1,original_end+extension)
  start=float(item.get('replace_from',original_start)); assert original_start<=start<end
  target=end-start
  first=float(item['first']);last=float(item['last']);cut0=max(0,first-.04);cut1=last+.04;tempo=(cut1-cut0)/target
@@ -34,7 +36,7 @@ for item in plan:
  orig=dict(spec);orig['clips']=old;json.dump(orig,open('old-'+para+'.json','w'))
  run(['python3','mix.py','old-'+para+'.json','../old-'+para+'.wav'])
  run(['ffmpeg','-nostdin','-v','error','-y','-i','../old-'+para+'.wav','-ar','48000','-ac','2','-c:a','pcm_s16le','../old-'+para+'-s16.wav'])
- a=pcm('../old-'+para+'-s16.wav')[int(start*48000)*2:int(end*48000)*2];b=pcm(dst)
+ a=pcm('../old-'+para+'-s16.wav')[int(start*48000)*2:int(original_end*48000)*2];b=pcm(dst)
  print('level diagnostic',para,'start',start,'end',end,'old samples',len(a),'new samples',len(b),'old rms',rms(a),'new rms',rms(b),flush=True)
  gain_offset=0
  if not len(a) or rms(a)<1e-8:
@@ -43,7 +45,7 @@ for item in plan:
   stem='../input/gate-input/stems/voice.wav'
   if not os.path.exists(stem):report.append({'para':para,'status':'missing level reference'});continue
   run(['ffmpeg','-nostdin','-v','error','-y','-i',stem,'-ar','48000','-ac','2','-c:a','pcm_s16le','../level-stem.wav'])
-  a=pcm('../level-stem.wav')[int(start*48000)*2:int(end*48000)*2]
+  a=pcm('../level-stem.wav')[int(start*48000)*2:int(original_end*48000)*2]
   gain_offset=float(os.environ['GAIN1'])+float(os.environ['GAIN2'])
   print('fallback stem level',para,rms(a),flush=True)
  if not len(a) or not len(b) or rms(a)<1e-8 or rms(b)<1e-8:
@@ -61,7 +63,7 @@ for item in plan:
     prefix=dict(c);prefix['out']=prefix['in']+start-prefix['at'];prefix['fade_out']=.015;kept.append(prefix)
  spec['clips']=[c for c in spec['clips'] if c not in old]+kept
  spec['clips'].append({'src':dst,'in':0,'out':target,'at':start,'gain_db':gain,'pan':0,'fade_in':.008,'fade_out':.012,'voice':True})
- report.append({'para':para,'status':'proof inserted','start':start,'end':end,'tempo':tempo,'gain_db':gain,'clips_replaced':len(old),'take':item['take']})
+ report.append({'para':para,'status':'proof inserted','start':start,'end':end,'original_end':original_end,'tempo':tempo,'gain_db':gain,'clips_replaced':len(old),'take':item['take']})
 json.dump(spec,open('mix-batch-proof.json','w'),indent=1)
 run(['python3','mix.py','mix-batch-proof.json','../mix-proof.wav'])
 json.dump({'film':film,'items':report,'music_and_effect_plan_unchanged':True,'voice_spans_unchanged':True},open('../proof-details.json','w'),indent=2)
