@@ -13,7 +13,7 @@ jobs:
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y -qq espeak-ng ffmpeg
-          python3 -m pip install --quiet 'transformers==4.48.3' 'torch==2.5.1' 'soundfile==0.13.1' --extra-index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install --quiet 'transformers==4.48.3' 'torch==2.5.1' 'soundfile==0.13.1' 'protobuf' 'sentencepiece' --extra-index-url https://download.pytorch.org/whl/cpu
           espeak-ng -v en-gb -s 150 -w day.wav '[[eI]]'
           espeak-ng -v en-gb -s 150 -w my.wav '[[aI]]'
           espeak-ng -v en-gb -s 150 -w good.wav 'an [[eI aI]] consultancy'
