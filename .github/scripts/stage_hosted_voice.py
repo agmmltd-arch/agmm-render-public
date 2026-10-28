@@ -111,7 +111,7 @@ def hydrate(pointer, request, private_root, work, v2):
             seen = set()
             for item in members:
                 name = item.name.removeprefix("./").rstrip("/")
-                if not name and item.isdir(): continue
+                if name in ("", ".") and item.isdir(): continue
                 clean(name)
                 need(name not in seen and (name in ("RECEIPT.json", "CURRENT-TRIAGE.json")
                      or name.startswith(("generated/", "effects/"))
