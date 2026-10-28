@@ -24,7 +24,7 @@ jobs:
           set -euo pipefail
           gh run download 40640609020 -R "$GITHUB_REPOSITORY" -n hailmary-H08-v4c -D input
           gh run download 40640609020 -R "$GITHUB_REPOSITORY" -n film-H08-v4c -D film
-          for item in '40680907814:H08-rowsfix28:voice' '40679977245:H08-agmfix28:v-reveal' '40681054536:H08-aifix28:v-ai' '40680139430:H08-ctafix28:v-website'; do
+          for item in '40680907814:H08-rowsfix28:voice' '40690638974:H08-names2-28:v-reveal' '40681039468:H05-aifix28:v-ai' '40680139430:H08-ctafix28:v-website'; do
             IFS=: read -r run label dest <<< "$item"
             gh run download "$run" -R "$GITHUB_REPOSITORY" -n "voicefree-chatterbox-$label-ENC" -D "$RUNNER_TEMP/$dest"
             mkdir -p "$dest"
