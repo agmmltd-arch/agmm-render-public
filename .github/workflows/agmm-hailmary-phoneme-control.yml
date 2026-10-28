@@ -1,0 +1,33 @@
+name: AGMM phoneme listener control
+run-name: Phoneme listener known examples
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  control:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Calibrate phoneme recognition on known examples
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng ffmpeg
+          python3 -m pip install --quiet 'transformers==4.48.3' 'torch==2.5.1' 'soundfile==0.13.1' --extra-index-url https://download.pytorch.org/whl/cpu
+          espeak-ng -v en-gb -s 150 -w day.wav '[[eI]]'
+          espeak-ng -v en-gb -s 150 -w my.wav '[[aI]]'
+          espeak-ng -v en-gb -s 150 -w good.wav 'an [[eI aI]] consultancy'
+          espeak-ng -v en-gb -s 150 -w bad.wav 'an [[aI aI]] consultancy'
+          for f in day my good bad; do ffmpeg -nostdin -y -v error -i "$f.wav" -ar 16000 -ac 1 "${f}16.wav"; done
+          python3 - <<'PY'
+          import soundfile as sf,torch
+          from transformers import Wav2Vec2Processor,Wav2Vec2ForCTC
+          name='facebook/wav2vec2-lv-60-espeak-cv-ft'
+          processor=Wav2Vec2Processor.from_pretrained(name)
+          model=Wav2Vec2ForCTC.from_pretrained(name).eval()
+          for f in ['day','my','good','bad']:
+              audio,sr=sf.read(f+'16.wav')
+              inputs=processor(audio,sampling_rate=sr,return_tensors='pt').input_values
+              with torch.no_grad(): ids=torch.argmax(model(inputs).logits,dim=-1)
+              print(f,processor.batch_decode(ids)[0],flush=True)
+          PY
