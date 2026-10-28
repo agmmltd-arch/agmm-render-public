@@ -1,0 +1,71 @@
+name: AGMM hosted build metadata candidate
+run-name: AGMM build metadata ${{ inputs.source_run_id }}-${{ inputs.label }}
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id: { required: true, type: string }
+      id: { required: true, type: string }
+      request_sha256: { required: true, type: string }
+      approved_hash: { required: true, type: string }
+      label: { required: true, type: string }
+permissions: { contents: read, actions: read }
+jobs:
+  metadata:
+    if: github.repository == 'agmmltd-arch/agmm-render-public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      SHORT_ID: ${{ inputs.id }}
+      REQUEST_SHA: ${{ inputs.request_sha256 }}
+      APPROVED_HASH: ${{ inputs.approved_hash }}
+      LABEL: ${{ inputs.label }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 742942c520d916a323258415e71db7e3c9cff308
+          persist-credentials: false
+      - name: Verify exact source closure and inputs
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_RUN_ID" =~ ^[0-9]{6,}$ ]]
+          [[ "$SHORT_ID" =~ ^[SC][0-9]{2,3}$ ]]
+          [[ "$REQUEST_SHA" =~ ^[a-f0-9]{64}$ ]]
+          [[ "$APPROVED_HASH" =~ ^[a-f0-9]{64}$ ]]
+          [[ "$LABEL" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
+          test "$(git rev-parse HEAD)" = 742942c520d916a323258415e71db7e3c9cff308
+          PYTHONPATH=.github/scripts python3 -c 'import voice_hosted; voice_hosted.source_closure()'
+      - name: Verify provider metadata artifact and retrieve only encrypted metadata
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, re, subprocess, zipfile
+          from pathlib import Path
+          repo='agmmltd-arch/agmm-render-public'; rid=os.environ['SOURCE_RUN_ID']
+          raw=subprocess.check_output(['gh','api',f'repos/{repo}/actions/runs/{rid}/artifacts?per_page=100'])
+          rows=json.loads(raw)['artifacts']; name='NATIVE-BUILD-METADATA-'+rid
+          found=[a for a in rows if a.get('name')==name and not a.get('expired') and str((a.get('workflow_run') or {}).get('id'))==rid]
+          if len(found)!=1 or not re.fullmatch(r'sha256:[a-f0-9]{64}',found[0].get('digest') or '') or not 0<found[0].get('size_in_bytes',0)<20_000_000: raise ValueError('provider artifact missing or foreign')
+          data=subprocess.check_output(['gh','api',f"repos/{repo}/actions/artifacts/{found[0]['id']}/zip"])
+          if len(data)>20_000_000 or 'sha256:'+hashlib.sha256(data).hexdigest()!=found[0]['digest']: raise ValueError('provider artifact digest differs')
+          import io
+          with zipfile.ZipFile(io.BytesIO(data)) as z:
+              if z.namelist()!=['metadata.enc'] or not 0<z.getinfo('metadata.enc').file_size<20_000_000: raise ValueError('unexpected metadata inventory')
+              Path('metadata.enc').write_bytes(z.read('metadata.enc'))
+          PY
+      - name: Bind original producer and emit metadata only
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          set -euo pipefail
+          S=.github/scripts/hosted-youtube-candidate
+          PYTHONPATH="$S" python3 "$S/extract_build_metadata_candidate.py" --metadata metadata.enc \
+            --run-id "$SOURCE_RUN_ID" --id "$SHORT_ID" --request-sha256 "$REQUEST_SHA" \
+            --approved-hash "$APPROVED_HASH" --output build-metadata.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: BUILD-METADATA-${{ inputs.source_run_id }}-${{ inputs.label }}
+          path: build-metadata.json
+          retention-days: 1
+          if-no-files-found: error
