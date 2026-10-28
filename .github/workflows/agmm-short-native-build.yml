@@ -82,6 +82,8 @@ jobs:
           sudo mkdir -p /Users/samwall/alfred/builds
           sudo chown -R "$(id -u):$(id -g)" /Users/samwall
       - name: Run unchanged native source and sound build with provider access denied
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
         run: |
           python3 .github/scripts/build_native_short.py --request build-request.json \
             --private-root "$GITHUB_WORKSPACE/private-build-inputs" \

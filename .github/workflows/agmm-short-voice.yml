@@ -112,6 +112,7 @@ jobs:
         env:
           AGMM_VOICE_MISTRAL_KEY: ${{ secrets.AGMM_MISTRAL_KEY }}
           AGMM_VOICE_GEMINI_FREE_KEY: ${{ secrets.AGMM_NATIVE_GEMINI_KEY_B }}
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
         run: |
           set -euo pipefail
           python3 .github/scripts/voice_hosted.py --request voice-request.json \
@@ -125,8 +126,40 @@ jobs:
           path: ${{ runner.temp }}/voice-runtime-json/*.json
           retention-days: 7
           if-no-files-found: warn
+      - name: Encrypt generated checkpoint and text metadata on Ubuntu
+        if: always() && inputs.task == 'voice' && fromJSON(inputs.request).selection_producer != null
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          import os,sys
+          from pathlib import Path
+          sys.path.insert(0,'.github/scripts/voicefree')
+          from vf_common import pack_encrypt
+          root=Path(os.environ['RUNNER_TEMP'])
+          for source,output in [('voice-output','voice-generated.enc'),('voice-json','voice-metadata.enc')]:
+              p=root/source
+              if p.is_dir(): pack_encrypt(str(p),str(root/output))
+          PYCODE
+      - name: Retain encrypted generated checkpoint on hosted storage
+        if: always() && inputs.task == 'voice' && fromJSON(inputs.request).selection_producer != null
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ fromJSON(inputs.request).intent }}-GENERATED-ENC
+          path: ${{ runner.temp }}/voice-generated.enc
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Retain encrypted text metadata for the reconciler
+        if: always() && inputs.task == 'voice' && fromJSON(inputs.request).selection_producer != null
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ fromJSON(inputs.request).intent }}-JSON-ENC
+          path: ${{ runner.temp }}/voice-metadata.enc
+          retention-days: 7
+          if-no-files-found: warn
       - name: Retain generated-only checkpoint; never export reference or private inputs
-        if: always() && inputs.task == 'voice'
+        if: always() && inputs.task == 'voice' && fromJSON(inputs.request).selection_producer == null
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ${{ fromJSON(inputs.request).intent }}-GENERATED
@@ -134,7 +167,7 @@ jobs:
           retention-days: 7
           if-no-files-found: warn
       - name: Retain separate JSON only for the Mac metadata reconciler
-        if: always() && inputs.task == 'voice'
+        if: always() && inputs.task == 'voice' && fromJSON(inputs.request).selection_producer == null
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ${{ fromJSON(inputs.request).intent }}-JSON

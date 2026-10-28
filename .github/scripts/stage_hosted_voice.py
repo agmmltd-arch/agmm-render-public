@@ -16,6 +16,7 @@ import re
 import shutil
 import stat
 import subprocess
+import tarfile
 import zipfile
 from voice_effects import host
 from voice_hosted import PUBLIC, WORKFLOW, BASE, clean, digest, file_sha, gh, need, private_inputs, source_closure
@@ -32,7 +33,7 @@ def validate_completed(receipt, request, run, artifact):
          and run.get("run_attempt") == 1 and run.get("status") == "completed"
          and run.get("conclusion") == "success", "wrong/stale/uncompleted voice producer")
     need(artifact.get("workflow_run", {}).get("id") == run["id"] and not artifact.get("expired")
-         and artifact.get("name") == request["intent"] + "-GENERATED"
+         and artifact.get("name") == request["intent"] + ("-GENERATED-ENC" if request.get("selection_producer") else "-GENERATED")
          and re.fullmatch(r"sha256:[0-9a-f]{64}", artifact.get("digest") or ""),
          "foreign/expired/unbound voice artifact")
     required = {sid + ".wav", sid + ".words.json", sid + ".receipt.json", sid + ".voicelead.json", "RESULT.json"}
@@ -90,18 +91,50 @@ def hydrate(pointer, request, private_root, work, v2):
     need("sha256:" + file_sha(archive) == artifact["digest"], "generated artifact digest mismatch")
     unpacked = work / "unpacked"
     unpacked.mkdir()
-    with zipfile.ZipFile(archive) as z:
-        need(sum(x.file_size for x in z.infolist()) < 2_000_000_000, "voice artifact exceeds bounded size")
-        seen = set()
-        for item in z.infolist():
-            name = item.filename.rstrip("/")
-            clean(name)
-            need(name not in seen and not stat.S_ISLNK(item.external_attr >> 16), "linked/duplicate voice artifact file")
-            seen.add(name)
-            need(name in ("RECEIPT.json", "CURRENT-TRIAGE.json") or name.startswith(("generated/", "effects/"))
-                 or item.is_dir() and name in ("generated","effects"),
-                 "unexpected voice artifact path")
-        z.extractall(unpacked)
+    if request.get("selection_producer"):
+        need(bool(os.environ.get("VOICEFREE_PASS")), "hosted voice decryption key unavailable")
+        with zipfile.ZipFile(archive) as z:
+            members = [x for x in z.infolist() if not x.is_dir()]
+            need(len(members) == 1 and members[0].filename == "voice-generated.enc"
+                 and members[0].file_size < 2_000_000_000, "encrypted generated inventory differs")
+            encrypted = work / "voice-generated.enc"
+            with z.open(members[0]) as src, encrypted.open("xb") as dst:
+                shutil.copyfileobj(src, dst)
+        plain = work / "voice-generated.tar"
+        with plain.open("xb") as stream:
+            subprocess.run(["openssl", "enc", "-d", "-aes-256-cbc", "-pbkdf2", "-pass", "env:VOICEFREE_PASS", "-in", str(encrypted)],
+                           check=True, stdout=stream, stderr=subprocess.PIPE)
+        with tarfile.open(plain, "r:") as tar:
+            members = tar.getmembers()
+            need(all(m.isfile() or m.isdir() for m in members) and sum(m.size for m in members) < 2_000_000_000,
+                 "unsafe generated archive")
+            seen = set()
+            for item in members:
+                name = item.name.removeprefix("./").rstrip("/")
+                if not name and item.isdir(): continue
+                clean(name)
+                need(name not in seen and (name in ("RECEIPT.json", "CURRENT-TRIAGE.json")
+                     or name.startswith(("generated/", "effects/"))
+                     or item.isdir() and name in ("generated", "effects")), "unexpected generated archive path")
+                seen.add(name)
+                dest = unpacked / name
+                if item.isdir(): dest.mkdir(parents=True, exist_ok=True)
+                else:
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    with tar.extractfile(item) as src, dest.open("xb") as dst: shutil.copyfileobj(src, dst)
+    else:
+        with zipfile.ZipFile(archive) as z:
+            need(sum(x.file_size for x in z.infolist()) < 2_000_000_000, "voice artifact exceeds bounded size")
+            seen = set()
+            for item in z.infolist():
+                name = item.filename.rstrip("/")
+                clean(name)
+                need(name not in seen and not stat.S_ISLNK(item.external_attr >> 16), "linked/duplicate voice artifact file")
+                seen.add(name)
+                need(name in ("RECEIPT.json", "CURRENT-TRIAGE.json") or name.startswith(("generated/", "effects/"))
+                     or item.is_dir() and name in ("generated","effects"),
+                     "unexpected voice artifact path")
+            z.extractall(unpacked)
     receipt = json.loads((unpacked / "RECEIPT.json").read_text())
     validate_completed(receipt, request, run, artifact)
     need(file_sha(unpacked / "RECEIPT.json") == pointer["receipt_sha256"], "native metadata/hosted receipt differs")

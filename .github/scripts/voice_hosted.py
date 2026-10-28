@@ -192,6 +192,15 @@ def private_inputs(request, private_root, verify_media=True):
     need(manifest["request_identity"] == {k: request[k] for k in
          ("schema", "id", "intent", "mode", "admission")}, "protected/native intent mismatch")
     rows = manifest["files"]
+    selected = manifest.get("hosted_selection")
+    if selected:
+        need(request["mode"] == "from-existing" and selected == {
+            "producer": request.get("selection_producer"), "metadata": request.get("selection_metadata")},
+            "protected selected-take evidence differs from request")
+        need(all(r.get("transport", "private_git") in ("private_git", "hosted_selection") for r in rows),
+             "unknown input transport")
+    else:
+        need(not any(r.get("transport") for r in rows), "unexpected input transport")
     need(len({r["runtime_path"] for r in rows}) == len(rows), "duplicate input paths")
     sid = request["id"]
     required = {"shorts/scripts-v2/" + sid + ".md"} | {
@@ -215,9 +224,15 @@ def private_inputs(request, private_root, verify_media=True):
         info, name = line.split("\t", 1)
         mode, kind, git_blob, size = info.split()
         tree[name] = (mode, kind, git_blob, int(size))
-    need(set(tree) == {request["manifest_path"]} | {prefix + r["runtime_path"] for r in rows},
+    need(set(tree) == {request["manifest_path"]} | {prefix + r["runtime_path"] for r in rows if r.get("transport") != "hosted_selection"},
          "protected input subtree has missing/extra assets")
     for row in rows:
+        if row.get("transport") == "hosted_selection":
+            need(selected and re.fullmatch(r"shorts/voice/" + sid + r"/P[0-9]{2}\.(?:wav|words\.json|receipt\.json)", row["runtime_path"]),
+                 "hosted take outside exact native input inventory")
+            need(re.fullmatch(r"[0-9a-f]{64}", row.get("sha256", "")) and type(row.get("bytes")) is int and row["bytes"] > 0,
+                 "hosted take lacks bound metadata")
+            continue
         need(tree[prefix + row["runtime_path"]] == ("100644", "blob", row["git_blob_sha"], row["bytes"]),
              "protected Git entry differs")
         if not verify_media and row["runtime_path"] not in required:
@@ -261,6 +276,8 @@ def stage(manifest, request, private_root):
     need(not BASE.exists() and not (Path.home() / "alfred").exists(), "runner is not a fresh native sandbox")
     shutil.copytree(NATIVE, BASE)
     for row in manifest["files"]:
+        if row.get("transport") == "hosted_selection":
+            continue
         rel = row["runtime_path"]
         dest = BASE / rel
         need(not dest.exists(), "input would overwrite native source")
@@ -338,6 +355,13 @@ def run(request, private_root, output):
              "existing native credential changed before provider step; no effect")
     manifest = private_inputs(request, private_root)
     prepare, piece = stage(manifest, request, private_root)
+    if manifest.get("hosted_selection"):
+        # Producer commit must already be qualified by the frozen publication.
+        pins = source_closure()
+        need(request["selection_producer"]["commit"] in pins.get("qualified_selection_commits", []),
+             "selected-take producer closure not qualified")
+        from voicefree.validate_selected import materialize
+        materialize(request, piece, output.parent / "selection-validated")
     # A cached FINISHED is reusable only after the unchanged full prerequisite
     # binding AND an original exact-bound hosted receipt; otherwise stop.
     existing_result = piece / "RESULT.json"

@@ -7,7 +7,7 @@
     ".github/scripts/native_build_effects.py": "d0beb8d68b7e76ae7d9fd8ba2669153b8ebb45e7342708305fd39ec87a7a2eee",
     ".github/scripts/resume_voice_checkpoint.py": "49c4ad8aed0f60f23e6a3d7a7cabfb2a4049d89a9617ad73eb5780a93827212c",
     ".github/scripts/seed_voice_runtime.py": "5110ee1b26c51cc934f8f5c0eb404779fe5c4b473b4c645d42b9f11f754a2d3b",
-    ".github/scripts/stage_hosted_voice.py": "9e05248cfc1eb47e11e47747d37539093fa21e0f4b9d301dc66ca0256a19bddd",
+    ".github/scripts/stage_hosted_voice.py": "382f9b32314e5050d268a2b173a1c54aaf3bda0fd14ce990b8b9f1ad2001a4cb",
     ".github/scripts/verify_voice_credential_roles.py": "af06dcf76134c638c1dc9615be7f985d876cdfaf2988371fd965716f87c21a41",
     ".github/scripts/voice-native/crew/short_cloud_dispatch.py": "ffc0b056e609edf5a77699f648486d86c93822300afef57d58c9b01c5bc77acf",
     ".github/scripts/voice-native/design-system/tools/key_green.py": "acceb5d279c9041a60c3e3bd21c404890b7f2884e9be23fac7b1e8e202b675d6",
@@ -88,16 +88,21 @@
     ".github/scripts/voice-site/sitecustomize.py": "22769b0008a63f9cbac3494493069e6ec04618351e1a4d1ceeea021bec2b9ce9",
     ".github/scripts/voice_capacity.py": "9eeb47a6d4d4cbb9b0d3cf78916bcfb7ac888f04a77904b4d6a786396f5f8031",
     ".github/scripts/voice_effects.py": "bf0fcf61974017c40e1a9fc58dacee3c996d3d29150ca0036025732b577b3c86",
-    ".github/scripts/voice_hosted.py": "3f5745cb5fc0db4e33f8125ac121d69370f78cb8f2963874aaf922e4631ea0f5",
+    ".github/scripts/voice_hosted.py": "6df55445362ae5fa5f7feeb77d36e1c6cacb98e39b70eb5b854a8c3bce71d3cd",
     ".github/scripts/voice_no_effect.py": "5b030fcea8a85e2966c80f27cc8673db5f6e9c54d38fbb708db9c104a4b09b4d",
-    ".github/workflows/agmm-short-native-build.yml": "f5d6bec29c0ef42a9d6a0d9ef9583ca5848f68860ad09510f963acc0f2ee35ab",
+    ".github/workflows/agmm-short-native-build.yml": "c534819184fa6cbc7959a5e8c4dbc71724109896a0025c81e24a198d80d16082",
     ".github/workflows/agmm-short-voice-checkpoint.yml": "175d586caa565e9830501cd88425e9816228fb8fb0a0b6bb37812176f36a76b7",
-    ".github/workflows/agmm-short-voice.yml": "53e83ede599e9e38c31183413d2f31bee64f90d64b81cdd263cce9f5469cb100"
+    ".github/workflows/agmm-short-voice.yml": "943a31a255cfd1a7e767b52371dbdb2ca655cfc262bb1b61bfd38e769ef3cfa9",
+    ".github/scripts/voicefree/validate_selected.py": "dd7efa2a11731982d05da28890ac59a6cd54bdcaf28286306628d48623fd2227",
+    ".github/scripts/voicefree/vf_common.py": "8121a1c7d2a297514eee1b6816f78d044e100b77c0a889652d27c4a91ebda461"
   },
   "allowed_no_effect_workflow_blobs": [
     "8c397854ddbfa415d4574de0e35a946b58145b32"
   ],
   "allowed_build_no_effect_workflow_blobs": [
     "b2e7e805350d849b22cc5f032b20a364297455bd"
+  ],
+  "qualified_selection_commits": [
+    "df9fe186f6f30cd4546a776c6725f00f8e1ff92e"
   ]
 }
