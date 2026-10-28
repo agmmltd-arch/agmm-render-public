@@ -8,6 +8,9 @@ on:
       start: { description: Clip start seconds, required: true }
       end: { description: Clip end seconds, required: true }
       original_label: { description: Optional original render label, required: false, default: '' }
+      voice_label: { description: Optional isolated voice label, required: false, default: '' }
+      para: { description: Paragraph key for isolated voice, required: false, default: '' }
+      take: { description: Take number for isolated voice, required: false, default: '' }
 permissions:
   contents: read
   actions: read
@@ -21,6 +24,9 @@ jobs:
       START: ${{ inputs.start }}
       END: ${{ inputs.end }}
       ORIGINAL_LABEL: ${{ inputs.original_label }}
+      VOICE_LABEL: ${{ inputs.voice_label }}
+      PARA: ${{ inputs.para }}
+      TAKE: ${{ inputs.take }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -31,16 +37,24 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
         run: |
           set -euo pipefail
           [[ "$FILM" =~ ^H(0[2-9]|1[01])$ && "$PROOF_RUN" =~ ^[0-9]+$ && "$START" =~ ^[0-9]+(\.[0-9]+)?$ && "$END" =~ ^[0-9]+(\.[0-9]+)?$ ]]
-          if [ -n "$ORIGINAL_LABEL" ]; then
+          if [ -n "$VOICE_LABEL" ]; then
+            [[ "$VOICE_LABEL" =~ ^[A-Za-z0-9-]+$ && "$PARA" =~ ^P[1-8]$ && "$TAKE" =~ ^[1-5]$ ]]
+            gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "voicefree-chatterbox-$VOICE_LABEL-ENC" -D "$RUNNER_TEMP/vpack"
+            mkdir -p voice
+            openssl enc -d -aes-256-cbc -pbkdf2 -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/vpack/synth-pack.enc" | tar -x -C voice
+            export SOURCE="voice/$PARA.t$TAKE.wav"
+          elif [ -n "$ORIGINAL_LABEL" ]; then
             [[ "$ORIGINAL_LABEL" =~ ^H(0[2-9]|1[01])-v4[cd]$ ]]
-            artifact="hailmary-$ORIGINAL_LABEL"; source=proof/SHARE.mp4
-          elif [ "$FILM" = H08 ]; then artifact=H08-all-voice-proof-not-final; source=proof/H08-VOICE-PROOF.mp4; else artifact="voice-proof-$FILM-not-final"; source=proof/VOICE-PROOF.mp4; fi
-          gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "$artifact" -D proof
+            gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "hailmary-$ORIGINAL_LABEL" -D proof; export SOURCE=proof/SHARE.mp4
+          else
+            if [ "$FILM" = H08 ]; then artifact=H08-all-voice-proof-not-final; source=proof/H08-VOICE-PROOF.mp4; else artifact="voice-proof-$FILM-not-final"; source=proof/VOICE-PROOF.mp4; fi
+            gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "$artifact" -D proof; export SOURCE="$source"
+          fi
           python3 -m pip install --quiet imageio-ffmpeg==0.6.0
-          export SOURCE="$source"
           python3 .github/scripts/hailmary-ai-probe.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
