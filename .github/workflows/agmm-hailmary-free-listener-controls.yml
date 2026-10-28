@@ -1,0 +1,37 @@
+name: AGMM free listener model calibration
+run-name: AI syllable listener positive and negative controls
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  control:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      FILM: CONTROL
+      START: '0'
+      END: '4'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-ai-probe-alt.py
+          sparse-checkout-cone-mode: false
+      - name: Generate and compare controlled pronunciation examples
+        env:
+          GEMINI_API_KEY: ${{ secrets.AGMM_GEMINI_FREE_REVIEW_KEY }}
+        run: |
+          set -euo pipefail
+          if ! command -v espeak-ng >/dev/null; then
+            timeout 180 sudo apt-get update -qq
+            timeout 180 sudo apt-get install -y -qq espeak-ng
+          fi
+          python3 -m pip install --quiet imageio-ffmpeg==0.6.0
+          espeak-ng -v en-gb -s 150 -w good.wav 'an [[eI aI]] consultancy'
+          espeak-ng -v en-gb -s 150 -w bad.wav 'an [[aI aI]] consultancy'
+          echo "good phonemes: $(espeak-ng -v en-gb -q -x 'an [[eI aI]] consultancy')"
+          echo "bad phonemes: $(espeak-ng -v en-gb -q -x 'an [[aI aI]] consultancy')"
+          for model in gemini-3.1-pro-preview gemini-3-flash-preview gemini-3.5-flash-lite; do
+            echo "GOOD CONTROL $model"; MODEL=$model SOURCE=good.wav python3 .github/scripts/hailmary-ai-probe-alt.py || true
+            echo "BAD CONTROL $model"; MODEL=$model SOURCE=bad.wav python3 .github/scripts/hailmary-ai-probe-alt.py || true
+          done
