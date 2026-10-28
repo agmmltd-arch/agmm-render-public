@@ -85,7 +85,7 @@ concurrency:
 
 jobs:
   preflight:
-    if: github.repository == 'agmmltd-arch/agmm-render-public' && inputs.runtime_commit == '2b31e17d051c290fe257144bd402c8f2bf487b02'
+    if: github.repository == 'agmmltd-arch/agmm-render-public' && inputs.runtime_commit == '717c4461d02891ffe6b2e9fade808626be3c7263'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     outputs:
