@@ -49,6 +49,8 @@ for item in plan:
  if not len(a) or not len(b) or rms(a)<1e-8 or rms(b)<1e-8:
   report.append({'para':para,'status':'silent level input'});continue
  gain=20*math.log10(rms(a)/rms(b))-gain_offset
+ boost=float(item.get('boost_db',0)); assert -4<=boost<=4
+ gain+=boost
  if not -12<gain<12:report.append({'para':para,'status':'level mismatch','gain_db':gain});continue
  kept=[]
  if 'replace_from' in item:
