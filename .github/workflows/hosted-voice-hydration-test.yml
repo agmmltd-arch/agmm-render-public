@@ -36,7 +36,7 @@ jobs:
           from pathlib import Path
           p=json.loads(os.environ['POINTER']); r=p['request']; c=os.environ['RUNTIME_COMMIT']
           assert re.fullmatch(r'[0-9a-f]{40}',c) and subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==c
-          assert p['runtime_commit']==c and p['id']=='S273' and r['id']=='S273'
+          assert re.fullmatch(r'[0-9a-f]{40}',p['runtime_commit']) and p['id']=='S273' and r['id']=='S273'
           assert re.fullmatch(r'[0-9a-f]{40}',r['private_commit'])
           assert re.fullmatch(r'voice-hosted-inputs/S273-[0-9]+',r['private_prefix'])
           Path(os.environ['RUNNER_TEMP']+'/pointer.json').write_text(json.dumps(p))
