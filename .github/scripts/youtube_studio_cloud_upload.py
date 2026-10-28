@@ -333,7 +333,19 @@ def verify_thumbnail(ctx, page, video_id: str, ours: Path, out: Path) -> float:
     return best
 
 
+def parse_schedule(value: str):
+    if not value:
+        return None
+    when = datetime.fromisoformat(value)
+    if when.tzinfo is None or when.utcoffset() is None:
+        raise ValueError("schedule requires an explicit UTC offset")
+    return when.astimezone(LONDON)
+
+
 def publish(args, ctx, page, evidence: Path) -> dict:
+    schedule_at = parse_schedule(args.schedule_at)
+    if schedule_at and (schedule_at - datetime.now(LONDON)).total_seconds() < 15 * 60:
+        raise RuntimeError("schedule is less than 15 minutes ahead")
     metadata = json.loads(args.metadata.read_text())
     approval = json.loads(args.approval.read_text())
     actual = sha256(args.video)
@@ -368,7 +380,6 @@ def publish(args, ctx, page, evidence: Path) -> dict:
         raise RuntimeError("altered-content readback failed")
     page.screenshot(path=str(evidence / "02-details-sealed.png"))
     walk_visibility(page)
-    schedule_at = datetime.fromisoformat(args.schedule_at).astimezone(LONDON) if args.schedule_at else None
     if schedule_at:
         if (schedule_at - datetime.now(LONDON)).total_seconds() < 15 * 60:
             raise RuntimeError("schedule is less than 15 minutes ahead")
