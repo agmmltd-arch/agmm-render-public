@@ -31,8 +31,32 @@ jobs:
           python3 .github/scripts/hosted-youtube-candidate/decrypt_master.py \
             --archive "$RUNNER_TEMP/master.tar.enc" --out "$RUNNER_TEMP/opened" --video MASTER.mp4
           cmp "$RUNNER_TEMP/fixture/MASTER.mp4" "$RUNNER_TEMP/opened/MASTER.mp4"
-          cmp "$RUNNER_TEMP/fixture/REMOTE-INTEGRITY.json" "$RUNNER_TEMP/opened/REMOTE-INTEGRITY.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])
+          assert json.load(open(p/'fixture/REMOTE-INTEGRITY.json'))==json.load(open(p/'opened/REMOTE-INTEGRITY.json'))
+          PY
           cmp "$RUNNER_TEMP/fixture/thumbnail.jpg" "$RUNNER_TEMP/opened/thumbnail.jpg"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'fixture'; h=(p/'hash.txt').read_text()
+          data={'kind':'agmm_short_remote_technical_evidence','technical_status':'PASS','publication_status':'NOT_REQUESTED',
+                'masters':[{'file':'MASTER.mp4','sha256':h}]}
+          (p/'TECHNICAL-EVIDENCE.json').write_text(json.dumps(data))
+          PY
+          python3 .github/scripts/hosted-youtube-candidate/encrypt_master.py \
+            --video "$RUNNER_TEMP/fixture/MASTER.mp4" --thumbnail "$RUNNER_TEMP/fixture/thumbnail.jpg" --integrity "$RUNNER_TEMP/fixture/TECHNICAL-EVIDENCE.json" \
+            --expected-sha256 "$SHA" --thumbnail-sha256 "$THUMB_SHA" --out "$RUNNER_TEMP/native-master.tar.enc"
+          python3 .github/scripts/hosted-youtube-candidate/decrypt_master.py \
+            --archive "$RUNNER_TEMP/native-master.tar.enc" --out "$RUNNER_TEMP/native-opened" --video MASTER.mp4
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'native-opened'; d=json.load(open(p/'REMOTE-INTEGRITY.json'))
+          assert d['technical_status']=='PASS' and d['release_approval'] is False
+          PY
           if python3 .github/scripts/hosted-youtube-candidate/encrypt_master.py \
             --video "$RUNNER_TEMP/fixture/MASTER.mp4" --thumbnail "$RUNNER_TEMP/fixture/thumbnail.jpg" --integrity "$RUNNER_TEMP/fixture/REMOTE-INTEGRITY.json" \
             --expected-sha256 "$(printf '%064d' 0)" --thumbnail-sha256 "$THUMB_SHA" --out "$RUNNER_TEMP/incorrect.enc"; then

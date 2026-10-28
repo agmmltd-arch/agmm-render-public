@@ -20,12 +20,22 @@ def encrypt(video, thumbnail, integrity, expected_sha256, thumbnail_sha256, outp
     video=Path(video); thumbnail=Path(thumbnail); integrity=Path(integrity); output=Path(output)
     if not re.fullmatch(r'[A-Za-z0-9._-]+\.mp4',video.name) or video.is_symlink() or not video.is_file():
         raise ValueError('invalid master')
-    if integrity.name!='REMOTE-INTEGRITY.json' or integrity.is_symlink() or not integrity.is_file() or integrity.stat().st_size>1_000_000 or output.exists() or output.is_symlink():
+    if integrity.name not in ('REMOTE-INTEGRITY.json','TECHNICAL-EVIDENCE.json') or integrity.is_symlink() or not integrity.is_file() or integrity.stat().st_size>1_000_000 or output.exists() or output.is_symlink():
         raise ValueError('invalid integrity input or existing output')
     if thumbnail.is_symlink() or not thumbnail.is_file() or thumbnail.stat().st_size>20_000_000:
         raise ValueError('invalid thumbnail')
-    data=json.loads(integrity.read_text())
-    pinned=data.get('master_4k_sha256') or data.get('master_sha256') or (data.get('outputs') or {}).get('master_sha256')
+    integrity_raw=integrity.read_bytes();data=json.loads(integrity_raw)
+    if integrity.name=='TECHNICAL-EVIDENCE.json':
+        masters=[m for m in data.get('masters',[]) if m.get('file')==video.name]
+        if (data.get('kind')!='agmm_short_remote_technical_evidence' or data.get('technical_status')!='PASS'
+                or data.get('publication_status')!='NOT_REQUESTED' or len(masters)!=1):
+            raise ValueError('native technical evidence is not a unique passed master')
+        pinned=masters[0].get('sha256')
+        normalized={'master_sha256':pinned,'technical_status':'PASS','release_approval':False,
+                    'native_evidence_sha256':hashlib.sha256(integrity_raw).hexdigest()}
+    else:
+        pinned=data.get('master_4k_sha256') or data.get('master_sha256') or (data.get('outputs') or {}).get('master_sha256')
+        normalized=data
     digest=hashlib.sha256()
     with video.open('rb') as f:
         for block in iter(lambda:f.read(8*1024*1024),b''):digest.update(block)
@@ -33,9 +43,10 @@ def encrypt(video, thumbnail, integrity, expected_sha256, thumbnail_sha256, outp
         raise ValueError('master differs from approved and native integrity pins')
     with tempfile.TemporaryDirectory(prefix='agmm-master-',dir=os.environ['RUNNER_TEMP']) as d:
         plain=Path(d)/'master.tar'
+        normalized_path=Path(d)/'REMOTE-INTEGRITY.json';normalized_path.write_text(json.dumps(normalized,sort_keys=True)+'\n')
         with tarfile.open(plain,'w:') as t:
             t.add(video,arcname=video.name,recursive=False)
-            t.add(integrity,arcname='REMOTE-INTEGRITY.json',recursive=False)
+            t.add(normalized_path,arcname='REMOTE-INTEGRITY.json',recursive=False)
             t.add(thumbnail,arcname='thumbnail.jpg',recursive=False)
         with tarfile.open(plain,'r:') as t:
             members=t.getmembers()
@@ -46,7 +57,7 @@ def encrypt(video, thumbnail, integrity, expected_sha256, thumbnail_sha256, outp
             if archived.hexdigest()!=expected_sha256:raise ValueError('master changed during packaging')
             with t.extractfile('REMOTE-INTEGRITY.json') as f:
                 archived_integrity=json.load(f)
-            if archived_integrity!=data:raise ValueError('integrity changed during packaging')
+            if archived_integrity!=normalized:raise ValueError('integrity changed during packaging')
             with t.extractfile('thumbnail.jpg') as f:
                 if hashlib.sha256(f.read()).hexdigest()!=thumbnail_sha256:raise ValueError('thumbnail changed during packaging')
         subprocess.run(['openssl','enc','-aes-256-cbc','-pbkdf2','-salt','-pass','env:VOICEFREE_PASS',
