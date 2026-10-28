@@ -1,0 +1,61 @@
+name: AGMM Hail Mary mix reconstruction proof
+run-name: Hail Mary mix proof ${{ inputs.film }}
+on:
+  workflow_dispatch:
+    inputs:
+      film: { description: Film ID, required: true }
+      render_run: { description: Source render run ID, required: true }
+      render_label: { description: Source render label, required: true }
+      gain1: { description: Original first master gain, required: true }
+      gain2: { description: Original second master gain, required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      FILM: ${{ inputs.film }}
+      RENDER_RUN: ${{ inputs.render_run }}
+      RENDER_LABEL: ${{ inputs.render_label }}
+      GAIN1: ${{ inputs.gain1 }}
+      GAIN2: ${{ inputs.gain2 }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-mix-proof.py
+          sparse-checkout-cone-mode: false
+      - name: Fetch hosted source and master
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$FILM" =~ ^H(0[2-9]|1[01])$ ]]
+          [[ "$RENDER_RUN" =~ ^[0-9]+$ ]]
+          [[ "$RENDER_LABEL" =~ ^H(0[2-9]|1[01])-v4[cd]$ ]]
+          [[ "$GAIN1" =~ ^-?[0-9]+(\.[0-9]+)?$ && "$GAIN2" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]
+          gh run download "$RENDER_RUN" -R "$GITHUB_REPOSITORY" -n "hailmary-$RENDER_LABEL" -D input
+          gh run download "$RENDER_RUN" -R "$GITHUB_REPOSITORY" -n "film-$RENDER_LABEL" -D film
+      - name: Rebuild unchanged mix and compare
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet numpy imageio-ffmpeg==0.6.0
+          mkdir -p "$RUNNER_TEMP/bin"
+          ln -s "$(python3 -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" "$RUNNER_TEMP/bin/ffmpeg"
+          export PATH="$RUNNER_TEMP/bin:$PATH"
+          cd film
+          python3 mix.py mix.json ../raw.wav
+          cd ..
+          ffmpeg -nostdin -y -loglevel error -i raw.wav -af "volume=${GAIN1}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled" -c:a pcm_f32le stage.wav
+          ffmpeg -nostdin -y -loglevel error -i stage.wav -af "volume=${GAIN2}dB,alimiter=limit=0.78:attack=1:release=60:level=disabled,aresample=48000" -c:a aac -b:a 256k rebuilt.m4a
+          ffmpeg -nostdin -y -loglevel error -i rebuilt.m4a -ar 48000 -c:a pcm_s16le rebuilt.wav
+          python3 .github/scripts/hailmary-mix-proof.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: mix-proof-${{ inputs.film }}
+          path: out/proof.json
+          retention-days: 7
+          if-no-files-found: warn
