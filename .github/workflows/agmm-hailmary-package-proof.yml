@@ -1,0 +1,56 @@
+name: AGMM full resolution voice proof
+run-name: Full resolution proof ${{ inputs.film }}
+on:
+  workflow_dispatch:
+    inputs:
+      film: { description: Film ID, required: true }
+      original_run: { description: Original render run ID, required: true }
+      original_label: { description: Original render label, required: true }
+      proof_run: { description: Reviewed voice proof run ID, required: true }
+      picture_run: { description: Optional H10 corrected picture run, required: false, default: '' }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      FILM: ${{ inputs.film }}
+      ORIGINAL_RUN: ${{ inputs.original_run }}
+      ORIGINAL_LABEL: ${{ inputs.original_label }}
+      PROOF_RUN: ${{ inputs.proof_run }}
+      PICTURE_RUN: ${{ inputs.picture_run }}
+    steps:
+      - name: Assemble full resolution from hosted files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$FILM" =~ ^H(0[2-9]|1[01])$ && "$ORIGINAL_RUN" =~ ^[0-9]+$ && "$PROOF_RUN" =~ ^[0-9]+$ && "$ORIGINAL_LABEL" =~ ^H(0[2-9]|1[01])-v4[cd]$ ]]
+          gh run download "$ORIGINAL_RUN" -R "$GITHUB_REPOSITORY" -n "hailmary-$ORIGINAL_LABEL" -D original
+          if [ "$FILM" = H08 ]; then artifact=H08-all-voice-proof-not-final; voice=proof/H08-VOICE-PROOF.mp4; else artifact="voice-proof-$FILM-not-final"; voice=proof/VOICE-PROOF.mp4; fi
+          gh run download "$PROOF_RUN" -R "$GITHUB_REPOSITORY" -n "$artifact" -D proof
+          picture=original/FINAL.mp4
+          if [ -n "$PICTURE_RUN" ]; then
+            [[ "$FILM" = H10 && "$PICTURE_RUN" =~ ^[0-9]+$ ]]
+            gh run download "$PICTURE_RUN" -R "$GITHUB_REPOSITORY" -n hailmary-H10-headfix-proof28 -D corrected
+            picture=corrected/FINAL.mp4
+          fi
+          python3 -m pip install --quiet imageio-ffmpeg==0.6.0
+          FFMPEG=$(python3 -c 'import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())')
+          mkdir -p deliver
+          "$FFMPEG" -nostdin -v error -y -i "$picture" -i "$voice" -map 0:v:0 -map 1:a:0 -c:v copy -c:a copy -movflags +faststart "deliver/$FILM-4K-PROOF.mp4"
+          cp "$voice" "deliver/$FILM-1080-PROOF.mp4"
+          v1=$("$FFMPEG" -nostdin -v error -i "$picture" -map 0:v:0 -c:v copy -f hash -hash sha256 -)
+          v2=$("$FFMPEG" -nostdin -v error -i "deliver/$FILM-4K-PROOF.mp4" -map 0:v:0 -c:v copy -f hash -hash sha256 -)
+          a1=$("$FFMPEG" -nostdin -v error -i "$voice" -map 0:a:0 -c:a copy -f hash -hash sha256 -)
+          a2=$("$FFMPEG" -nostdin -v error -i "deliver/$FILM-4K-PROOF.mp4" -map 0:a:0 -c:a copy -f hash -hash sha256 -)
+          [[ "$v1" = "$v2" && "$a1" = "$a2" ]]
+          echo "Picture stream and proof audio stream match the hosted sources."
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ inputs.film }}-4k-and-phone-proof
+          path: deliver/*.mp4
+          retention-days: 7
+          if-no-files-found: error
