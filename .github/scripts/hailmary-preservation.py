@@ -8,7 +8,7 @@ a=audio('original/SHARE.mp4');b=audio('proof/VOICE-PROOF.mp4');n=min(len(a),len(
 mask=np.ones(n,dtype=bool);detail=json.load(open('proof/proof-details.json'))
 for item in detail.get('items',[]):
  if item.get('status')=='proof inserted':
-  start=max(0,int((item['start']-.3)*16000));end=min(n,int((item['end']+.3)*16000));mask[start:end]=False
+  start=max(0,int((item['start']-.3)*16000));end=min(n,int((max(item['end'],item.get('original_end',item['end']))+.3)*16000));mask[start:end]=False
 if mask.sum()<16000:raise SystemExit('Too little unaffected audio for comparison')
 # Small encoder delays are possible. Find the best offset using 1/10-rate samples.
 aa=a[::10];bb=b[::10];mm=mask[::10];scores=[]
