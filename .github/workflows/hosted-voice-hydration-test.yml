@@ -1,0 +1,81 @@
+name: AGMM hosted voice hydration proof
+run-name: AGMM voice hydration proof ${{ github.run_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      runtime_commit:
+        type: string
+        required: true
+      pointer:
+        description: Text-free native metadata pointer, never audio or credentials
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+      POINTER: ${{ inputs.pointer }}
+      RUNTIME_COMMIT: ${{ inputs.runtime_commit }}
+    steps:
+      - name: Check exact candidate runtime
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: agmm-native-runtime-${{ inputs.runtime_commit }}
+          persist-credentials: false
+      - name: Validate source coordinates
+        id: binding
+        run: |
+          python3 - <<'PY'
+          import json,os,re,subprocess
+          from pathlib import Path
+          p=json.loads(os.environ['POINTER']); r=p['request']; c=os.environ['RUNTIME_COMMIT']
+          assert re.fullmatch(r'[0-9a-f]{40}',c) and subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==c
+          assert p['runtime_commit']==c and p['id']=='S273' and r['id']=='S273'
+          assert re.fullmatch(r'[0-9a-f]{40}',r['private_commit'])
+          assert re.fullmatch(r'voice-hosted-inputs/S273-[0-9]+',r['private_prefix'])
+          Path(os.environ['RUNNER_TEMP']+'/pointer.json').write_text(json.dumps(p))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('commit='+r['private_commit']+'\nprefix='+r['private_prefix']+'\n')
+          PY
+      - name: Read bound private source text
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ steps.binding.outputs.commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-voice-inputs
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ steps.binding.outputs.prefix }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12.8'
+      - name: Prepare the existing hosted runtime
+        run: |
+          set -euo pipefail
+          python3 -m pip install -r .github/scripts/voice-runtime-requirements.txt
+          sudo mkdir -p /Users/samwall/alfred/builds
+          sudo chown -R "$(id -u):$(id -g)" /Users/samwall
+      - name: Hydrate existing checked voice into native builder layout
+        run: |
+          python3 - <<'PY'
+          import json,os,shutil,sys
+          from pathlib import Path
+          sys.path.insert(0,'.github/scripts')
+          from voice_hosted import BASE,NATIVE
+          from stage_hosted_voice import hydrate
+          assert not BASE.exists() and not (Path.home()/'alfred').exists()
+          shutil.copytree(NATIVE,BASE)
+          (Path.home()/'alfred').symlink_to(BASE.parents[2],target_is_directory=True)
+          p=json.loads(Path(os.environ['RUNNER_TEMP']+'/pointer.json').read_text())
+          result=hydrate(p,p['request'],Path('private-voice-inputs').resolve(),Path(os.environ['RUNNER_TEMP'])/'voice-hydration',BASE)
+          assert result['status']=='EXACT_VOICE_HYDRATED_FOR_EXISTING_HOSTED_BUILDER'
+          assert result['release_approved'] is False and result['storyboard_approved'] is False
+          print('Hosted voice hydration passed; storyboard and release review still required')
+          PY
