@@ -1,0 +1,39 @@
+name: Isolated renderer recovery proof
+run-name: Isolated renderer recovery 9c01ca0b
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 2b31e17d051c290fe257144bd402c8f2bf487b02
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 9c01ca0bfdaaec17ec670b485e3b3472ccc8ea4f
+          path: workflow-source
+          persist-credentials: false
+      - name: Verify immutable closure and producer binding
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 2b31e17d051c290fe257144bd402c8f2bf487b02
+          test "$(git -C workflow-source rev-parse HEAD)" = 9c01ca0bfdaaec17ec670b485e3b3472ccc8ea4f
+          PYTHONPATH=.github/scripts python3 - <<'PY'
+          import voice_hosted
+          from pathlib import Path
+          voice_hosted.source_closure()
+          s=Path('workflow-source/.github/workflows/protected-short-render-candidate.yml').read_text()
+          assert "inputs.runtime_commit == '2b31e17d051c290fe257144bd402c8f2bf487b02'" in s
+          assert 'gh release download' not in s and 'path: exact-input/' not in s
+          for part in ('prepare', 'cap-part', 'verify-part', 'assemble'):
+              assert 'render_short_package.py '+part in s
+          assert s.count('sealed_render_artifact.py seal') >= 2
+          assert s.count('ref: $'+'{{ inputs.runtime_commit }}') == 3
+          assert 'env -u VOICEFREE_PASS npx' in s and 'env -u VOICEFREE_PASS python3 static_check.py' in s
+          PY
+          cd .github/scripts/hosted-youtube-candidate
+          PYTHONPATH=.. python3 -m unittest -v test_verify_build_producer.py test_native_build_seal_candidate.py
+          echo 'Synthetic proof only; no real build, render, approval or post.'
