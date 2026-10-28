@@ -125,7 +125,8 @@
     ".github/scripts/voice-native/kit/platforms/universal.py": "5087ff22c15decc0c2e58694e5d6639a23bbc2afd129119290803f4504e7c8bb",
     ".github/scripts/voice-native/kit/platforms/universal.json": "171c56e9b799fa1a5028f2352474c0d7eb26ecf9b0b75c67b46773fa364fe05b",
     ".github/scripts/voice-native/kit/produce.py": "3a2f2205f910905552d27efdaf04b843afddd7af1caec4975e8baaafd33dd343",
-    ".github/scripts/voice-native/slate/daily/lib/nums.py": "49de687bc5ee7aeab2f84fed01e68de3b6ab1cffc84249e9905aad80825b7839"
+    ".github/scripts/voice-native/slate/daily/lib/nums.py": "49de687bc5ee7aeab2f84fed01e68de3b6ab1cffc84249e9905aad80825b7839",
+    ".github/scripts/voice-native/kit/tools/ocr_tesseract_candidate.py": "e8c7d148f5d121ba86ba16ca400f300185706f7dfed294ac7b6d8ed1b3ca02aa"
   },
   "allowed_no_effect_workflow_blobs": [
     "8c397854ddbfa415d4574de0e35a946b58145b32"
@@ -136,5 +137,6 @@
   "qualified_selection_commits": [
     "9860b635d0d96e5192649bc4153572a49573c775"
   ],
-  "format_engine_status": "PARTIAL_UNQUALIFIED_NO_PRODUCTION"
+  "format_engine_status": "PARTIAL_UNQUALIFIED_NO_PRODUCTION",
+  "ocr_candidate": "UNQUALIFIED_DO_NOT_USE_IN_PRODUCTION"
 }
