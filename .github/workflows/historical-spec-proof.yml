@@ -1,0 +1,66 @@
+name: Historical hosted storyboard hash proof
+on:
+  workflow_dispatch:
+    inputs:
+      private_commit: { required: true, type: string }
+      private_prefix: { required: true, type: string }
+      manifest_blob: { required: true, type: string }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PRIVATE_COMMIT: ${{ inputs.private_commit }}
+      PRIVATE_PREFIX: ${{ inputs.private_prefix }}
+      MANIFEST_BLOB: ${{ inputs.manifest_blob }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: { ref: 6dbaca24419a14743bf24edfb9cfd160821b7bf3, persist-credentials: false }
+      - name: Validate historical source coordinates
+        run: |
+          set -euo pipefail
+          [[ "$PRIVATE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$MANIFEST_BLOB" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PRIVATE_PREFIX" =~ ^historical-spec-proof/S87-[0-9a-f]{32}$ ]]
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.private_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-historical-inputs
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.private_prefix }}
+      - name: Verify exact private source and original storyboard hash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=.github/scripts python3 - <<'PY'
+          import importlib.util,json,os,subprocess
+          from pathlib import Path,PurePosixPath
+          import voice_hosted
+          voice_hosted.source_closure()
+          root=Path('private-historical-inputs').resolve(); prefix=os.environ['PRIVATE_PREFIX']; manifest=root/prefix/'MANIFEST.json'
+          def git(*args):return subprocess.check_output(['git',*args],cwd=root,text=True).strip()
+          assert git('rev-parse','HEAD')==os.environ['PRIVATE_COMMIT']
+          assert git('hash-object',str(manifest))==os.environ['MANIFEST_BLOB']
+          m=json.loads(manifest.read_text()); assert m['schema']=='agmm-historical-spec-proof-v1' and m['id']=='S87'
+          expected={prefix+'/MANIFEST.json':os.environ['MANIFEST_BLOB']}
+          for row in m['files']:
+              rel=PurePosixPath(row['path']); assert not rel.is_absolute() and '..' not in rel.parts
+              assert str(rel).startswith('kit/specs/S87/') or str(rel) in ('kit/registry/queue.json','kit/registry/storyboards/S87.json')
+              p=root/prefix/str(rel); assert p.is_file() and not p.is_symlink() and p.stat().st_size==row['bytes']
+              assert git('hash-object',str(p))==row['blob'];expected[prefix+'/'+str(rel)]=row['blob']
+          actual={}
+          for line in git('ls-tree','-r','HEAD','--',prefix).splitlines():
+              meta,name=line.split('\t',1);mode,kind,sha=meta.split();assert mode=='100644' and kind=='blob';actual[name]=sha
+          assert actual==expected
+          v=root/prefix;queue=json.loads((v/'kit/registry/queue.json').read_text());approval=json.loads((v/'kit/registry/storyboards/S87.json').read_text())
+          assert queue['S87']['state']=='claimed' and approval['state']=='approved'
+          p=Path('.github/scripts/voice-native/crew/short_cloud_dispatch.py')
+          spec=importlib.util.spec_from_file_location('native_short_dispatch',p);mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+          wanted=approval.get('approved_hash') or approval.get('spec_hash')
+          current=mod._spec_hash(v/'kit/specs/S87',skip_archives=True);legacy=mod._spec_hash(v/'kit/specs/S87',skip_archives=False)
+          if wanted not in (current,legacy):raise SystemExit('Historical source does not match its approved storyboard; held')
+          print('Historical private source matches original approved storyboard hash on Ubuntu; no production approval or publication')
+          PY
