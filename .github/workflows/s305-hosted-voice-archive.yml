@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: dc82d4f7ffa92c998b2e5a62441a2d2f82da5be6
+          ref: e40a4311d1e72ae24f67defe3ba3464d17526715
           persist-credentials: false
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -30,7 +30,7 @@ jobs:
           AGMM_VOICE_ARCHIVE_DEPLOY_KEY: ${{ secrets.AGMM_VOICE_ARCHIVE_DEPLOY_KEY }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = dc82d4f7ffa92c998b2e5a62441a2d2f82da5be6
+          test "$(git rev-parse HEAD)" = e40a4311d1e72ae24f67defe3ba3464d17526715
           test "$(git -C private-pointer rev-parse HEAD)" = 4c3997f35128694111bd47be5dcfaa7f20f5f167
           test "$(git -C private-pointer rev-parse HEAD:timing-proof/S305-ee91a95878ca910aa9dce4cec05d265f2f73276c3049c03a95257a452954de98/pointer.json)" = 6dfddf403b679fd71895389f92143ea9469b9572
           echo "ee91a95878ca910aa9dce4cec05d265f2f73276c3049c03a95257a452954de98  private-pointer/timing-proof/S305-ee91a95878ca910aa9dce4cec05d265f2f73276c3049c03a95257a452954de98/pointer.json" | sha256sum -c >/dev/null
