@@ -1,0 +1,37 @@
+name: Isolated private build request proof
+run-name: Isolated private build request eba9dff8
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: eba9dff89f1c06e232f948d07e45601f019b1fa1
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: e804de6d3e6d899ecff605f25431ecdbccaeee64
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-request
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: native-short-build-requests/S999-1252562a903601856ea70c3cb124852db795339c4c303e6e7af03efc9f34c4e0/request.json
+      - name: Verify private source and public-input boundary
+        run: |
+          set -euo pipefail
+          test "$(git -C private-request rev-parse HEAD)" = e804de6d3e6d899ecff605f25431ecdbccaeee64
+          test "$(git -C private-request rev-parse HEAD:native-short-build-requests/S999-1252562a903601856ea70c3cb124852db795339c4c303e6e7af03efc9f34c4e0/request.json)" = 7a3a3a7e37bb8cce5b41a2e7c80012e795fbbe3b
+          python3 - <<'PYCODE'
+          import hashlib,json
+          from pathlib import Path
+          s=Path('.github/workflows/native-build-encrypted-candidate.yml').read_text()
+          assert 'fromJSON(inputs.request)' not in s and 'path: private-build-request' in s
+          r=json.loads(Path('private-request/native-short-build-requests/S999-1252562a903601856ea70c3cb124852db795339c4c303e6e7af03efc9f34c4e0/request.json').read_text())
+          assert r['owner']['entry']['note']=='synthetic private sentinel'
+          assert hashlib.sha256(json.dumps(r,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()=='1252562a903601856ea70c3cb124852db795339c4c303e6e7af03efc9f34c4e0'
+          PYCODE
+          echo 'Synthetic private metadata binding verified; no actual video or approval.'
