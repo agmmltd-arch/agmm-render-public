@@ -10,6 +10,10 @@ on:
         description: Text-free native metadata pointer, never audio or credentials
         type: string
         required: true
+      smoke_imports:
+        type: boolean
+        default: false
+        required: true
 permissions:
   contents: read
   actions: read
@@ -79,3 +83,14 @@ jobs:
           assert result['release_approved'] is False and result['storyboard_approved'] is False
           print('Hosted voice hydration passed; storyboard and release review still required')
           PY
+      - name: Smoke-test candidate format imports only
+        if: inputs.smoke_imports == true
+        run: |
+          python3 - <<'PYCODE'
+          import sys
+          from pathlib import Path
+          root=Path('/Users/samwall/alfred/builds/video-program-2026-09-23/v2')
+          sys.path.insert(0,str(root/'kit/tools'))
+          import format_engine, extract_story, precheck_all, craft_check
+          print('Core imports completed; no production, precheck or review executed')
+          PYCODE
