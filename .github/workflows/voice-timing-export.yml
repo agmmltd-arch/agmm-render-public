@@ -26,9 +26,19 @@ jobs:
           set -euo pipefail
           printf '%s' "$POINTER_B64" | base64 -d > "$RUNNER_TEMP/pointer.json"
           python3 .github/scripts/export_voice_timing.py "$RUNNER_TEMP/pointer.json" "$RUNNER_TEMP/timing-output"
+      - name: Encrypt timing metadata before artifact upload
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          python3 - <<'PY'
+          import os, sys
+          sys.path.insert(0, '.github/scripts/voicefree')
+          import vf_common
+          vf_common.pack_encrypt(os.environ['RUNNER_TEMP'] + '/timing-output', os.environ['RUNNER_TEMP'] + '/timing.enc')
+          PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: verified-voice-timing-${{ github.run_id }}
-          path: ${{ runner.temp }}/timing-output/*.json
+          name: verified-voice-timing-${{ github.run_id }}-ENC
+          path: ${{ runner.temp }}/timing.enc
           retention-days: 7
           if-no-files-found: error
