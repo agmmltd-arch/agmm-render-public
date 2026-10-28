@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: ff8b0088b9c8a4e0e0c428b91d83dd989a5d22bb
+          ref: 742942c520d916a323258415e71db7e3c9cff308
           persist-credentials: false
       - name: Verify exact source closure and inputs
         run: |
@@ -34,7 +34,7 @@ jobs:
           [[ "$REQUEST_SHA" =~ ^[a-f0-9]{64}$ ]]
           [[ "$APPROVED_HASH" =~ ^[a-f0-9]{64}$ ]]
           [[ "$LABEL" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]
-          test "$(git rev-parse HEAD)" = ff8b0088b9c8a4e0e0c428b91d83dd989a5d22bb
+          test "$(git rev-parse HEAD)" = 742942c520d916a323258415e71db7e3c9cff308
           PYTHONPATH=.github/scripts python3 -c 'import voice_hosted; voice_hosted.source_closure()'
       - name: Verify provider metadata artifact and retrieve only encrypted metadata
         run: |
