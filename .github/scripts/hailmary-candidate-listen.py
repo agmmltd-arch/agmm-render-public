@@ -8,7 +8,9 @@ criteria={
  'website':'The website should be spoken as four letter names AY JEE EM EM, then dot CO dot UK. Classify it correct, incorrect, or uncertain.',
  'ai':'The phrase AI consultancy should sound AY EYE consultancy, not EYE EYE consultancy. Classify it correct, incorrect, or uncertain.'}
 parts=[{'text':'Listen independently to all five numbered British-English narration recordings. '+criteria[kind]+' Return JSON only: {"takes": [{"id":1, "verdict":"correct"|"incorrect"|"uncertain", "natural":true|false|null}]}. Use uncertain if a sound cannot be heard; do not infer pronunciation from meaning. For rows also add "first":"roh"|"raw"|"uncertain" and "second":"roh"|"raw"|"uncertain" for each take. Do not quote the script.'}]
-for i in range(1,6):
+order=[int(x) for x in os.environ.get('ORDER','12345')]
+assert sorted(order)==[1,2,3,4,5]
+for i in order:
  src=f'voice/{para}.t{i}.wav'; dst=f'/tmp/t{i}.mp3'
  subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(),'-nostdin','-v','error','-y','-i',src,'-ac','1','-ar','24000','-b:a','64k',dst],check=True)
  parts += [{'text':f'Take {i}:'},{'inline_data':{'mime_type':'audio/mp3','data':base64.b64encode(open(dst,'rb').read()).decode()}}]
