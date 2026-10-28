@@ -389,6 +389,15 @@ def publish(args, ctx, page, evidence: Path) -> dict:
             raise RuntimeError("PUBLIC selection readback failed")
         release_state = {"visibility":"PUBLIC"}
     wait_publish_enabled(page)
+    if schedule_at:
+        # The button may take a long time to enable. Re-read the wizard and
+        # enforce the lead time again immediately before committing the slot.
+        release_state = set_schedule(page, schedule_at)
+        if (schedule_at - datetime.now(LONDON)).total_seconds() < 15 * 60:
+            raise RuntimeError("schedule is less than 15 minutes ahead before commit")
+        button = page.locator("ytcp-button#done-button").first
+        if not button.count() or button.is_disabled():
+            raise RuntimeError("Schedule button no longer enabled before commit")
     page.screenshot(path=str(evidence / ("03-schedule-ready.png" if schedule_at else "03-public-ready.png")))
     page.locator("ytcp-button#done-button").first.click(timeout=10_000, force=True)
     wait_upload_complete(page)
