@@ -1,0 +1,43 @@
+name: S305 protected story preparation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 2d03c05c15a395187d312edafbe6a9c8728d6614
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 68e06894132eb1c9e849e225ec8d092f7636aef3
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-story
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: story-extraction/S305-bb8c027f300b4c53a0200928578c781a7a6bfdf46524ad065a997dcd073abaab
+      - name: Check bound text and prepare protected story prompt
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+          AGMM_WRITER_PASS: ${{ secrets.AGMM_WRITER_PASS }}
+          STORY_MANIFEST_SHA: bb8c027f300b4c53a0200928578c781a7a6bfdf46524ad065a997dcd073abaab
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 2d03c05c15a395187d312edafbe6a9c8728d6614
+          test "$(git -C private-story rev-parse HEAD)" = 68e06894132eb1c9e849e225ec8d092f7636aef3
+          test "$(git -C private-story rev-parse HEAD:story-extraction/S305-bb8c027f300b4c53a0200928578c781a7a6bfdf46524ad065a997dcd073abaab/MANIFEST.json)" = 25eddf6523f8f3d9e64505c5c7ad6e313e62a787
+          python3 .github/scripts/hosted_prepare_story_candidate.py private-story/story-extraction/S305-bb8c027f300b4c53a0200928578c781a7a6bfdf46524ad065a997dcd073abaab "$RUNNER_TEMP/prompt.enc"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: S305-story-prompt-ENC
+          path: ${{ runner.temp }}/prompt.enc
+          retention-days: 7
+          if-no-files-found: error
