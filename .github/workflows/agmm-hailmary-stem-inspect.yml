@@ -1,0 +1,45 @@
+name: AGMM Hail Mary stem inspection
+run-name: Hail Mary stems ${{ inputs.film }}
+on:
+  workflow_dispatch:
+    inputs:
+      film: { description: Film ID, required: true }
+      render_run: { description: Source render run ID, required: true }
+      render_label: { description: Source render label, required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      FILM: ${{ inputs.film }}
+      RENDER_RUN: ${{ inputs.render_run }}
+      RENDER_LABEL: ${{ inputs.render_label }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/hailmary-stem-inspect.py
+          sparse-checkout-cone-mode: false
+      - name: Fetch hosted stems
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$FILM" =~ ^H(0[2-9]|1[01])$ ]]
+          [[ "$RENDER_RUN" =~ ^[0-9]+$ ]]
+          [[ "$RENDER_LABEL" =~ ^H(0[2-9]|1[01])-v4[cd]$ ]]
+          gh run download "$RENDER_RUN" -R "$GITHUB_REPOSITORY" -n "hailmary-$RENDER_LABEL" -D input
+      - name: Compare original mix and stems
+        run: |
+          python3 -m pip install --quiet numpy
+          python3 .github/scripts/hailmary-stem-inspect.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stem-inspection-${{ inputs.film }}
+          path: out/stem-inspection.json
+          retention-days: 7
+          if-no-files-found: warn
