@@ -9,6 +9,9 @@ try:
  with urllib.request.urlopen(req,timeout=240) as r: result=json.load(r)
 except urllib.error.HTTPError as e: raise SystemExit('Audio listener HTTP status '+str(e.code))
 txt=''.join(p.get('text','') for p in result['candidates'][0]['content']['parts']); answer=json.loads(txt); heard=str(answer.get('heard',''))[:80]
-heard=re.sub(r'[^A-Za-z .,!\-?]',' ',heard).strip()[:50] or 'unparseable'
-out={'voice_label':os.environ['VOICE_LABEL'],'take':int(take),'heard':heard,'range_seconds':[start,end]}
+heard=re.sub(r'[^A-Za-z .,!\-?]',' ',heard).strip()[:50]
+compact=re.sub(r'[^a-z]','',heard.lower())
+names=[name for name in ('agm','amg','aem','igm','gm','ag') if name in compact]
+terms=[term for term in ('kettle','cattle','receipts','receipt','one','and') if re.search(r'\b'+term+r'\b',heard.lower())]
+out={'voice_label':os.environ['VOICE_LABEL'],'take':int(take),'name_markers':names,'word_markers':terms,'range_seconds':[start,end]}
 os.makedirs('out',exist_ok=True); json.dump(out,open('out/blind.json','w'),indent=2); print(json.dumps(out))
