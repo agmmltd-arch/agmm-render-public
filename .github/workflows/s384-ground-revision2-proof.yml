@@ -1,0 +1,101 @@
+name: S384 second story correction grounding proof
+run-name: S384 second correction grounding ${{ inputs.response_sha }}
+on:
+  workflow_dispatch:
+    inputs:
+      response_commit: { required: true, type: string }
+      response_path: { required: true, type: string }
+      response_blob: { required: true, type: string }
+      response_sha: { required: true, type: string }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  ground:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: e000e2457ef9480b920d263be7ec2ddd3d43b4d5
+          persist-credentials: false
+      - name: Validate protected correction coordinates
+        run: |
+          python3 - <<'PYCODE'
+          import json,os,re,subprocess
+          x=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']
+          assert re.fullmatch(r'[a-f0-9]{40}',x['response_commit']) and re.fullmatch(r'[a-f0-9]{40}',x['response_blob'])
+          assert re.fullmatch(r'[a-f0-9]{64}',x['response_sha'])
+          assert x['response_path']=='story-label-revisions2/S384-'+x['response_sha']+'/response.enc'
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()=='e000e2457ef9480b920d263be7ec2ddd3d43b4d5'
+          PYCODE
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 45dd4316e44e5502263f16915654ec7ee20a4507
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-story
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: generic-story-inputs/S384-1257231f6322a1c78a3fa8d89898cc3376343fcfa6dafb7f11c5631621cd7d75
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 36617ebfe700a342ad577cb2d8d10206f1090ad3
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-first
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: generic-story-responses/S384-545322759bb7077ce6666919162aeb0b84990203411e6d1ed50d647807a17432/response.enc
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 527ad4be1629c68dcf8fb9f9789f88eae336c1ed
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-rev1
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: story-label-revisions/S384-b08e3db386e08bd8ec3e785286eb21cd1ca541448ef2dd5528617393836e380a/response.enc
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.response_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-revision
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.response_path }}
+      - name: Verify inputs and replay original grounding
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+          AGMM_WRITER_PASS: ${{ secrets.AGMM_WRITER_PASS }}
+          STORY_MANIFEST_SHA: 1257231f6322a1c78a3fa8d89898cc3376343fcfa6dafb7f11c5631621cd7d75
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          i=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs'];p=Path('private-revision')/i['response_path'];f=Path('private-first/generic-story-responses/S384-545322759bb7077ce6666919162aeb0b84990203411e6d1ed50d647807a17432/response.enc')
+          assert subprocess.check_output(['git','-C','private-revision','rev-parse','HEAD'],text=True).strip()==i['response_commit']
+          assert subprocess.check_output(['git','-C','private-revision','rev-parse','HEAD:'+i['response_path']],text=True).strip()==i['response_blob']
+          assert p.is_file() and not p.is_symlink() and p.stat().st_size<10000000 and hashlib.sha256(p.read_bytes()).hexdigest()==i['response_sha']
+          assert subprocess.check_output(['git','-C','private-first','rev-parse','HEAD'],text=True).strip()=='36617ebfe700a342ad577cb2d8d10206f1090ad3'
+          assert subprocess.check_output(['git','-C','private-first','rev-parse','HEAD:generic-story-responses/S384-545322759bb7077ce6666919162aeb0b84990203411e6d1ed50d647807a17432/response.enc'],text=True).strip()=='a84a5d8dd76765a0d044e0414f0af1e175700996'
+          assert f.is_file() and not f.is_symlink() and f.stat().st_size<10000000 and hashlib.sha256(f.read_bytes()).hexdigest()=='545322759bb7077ce6666919162aeb0b84990203411e6d1ed50d647807a17432'
+          assert subprocess.check_output(['git','-C','private-rev1','rev-parse','HEAD'],text=True).strip()=='527ad4be1629c68dcf8fb9f9789f88eae336c1ed'
+          assert subprocess.check_output(['git','-C','private-rev1','rev-parse','HEAD:story-label-revisions/S384-b08e3db386e08bd8ec3e785286eb21cd1ca541448ef2dd5528617393836e380a/response.enc'],text=True).strip()=='344b4564baf3946503e2f3e952ec7d68bfeaa623'
+          r=Path('private-rev1/story-label-revisions/S384-b08e3db386e08bd8ec3e785286eb21cd1ca541448ef2dd5528617393836e380a/response.enc');assert r.is_file() and not r.is_symlink() and hashlib.sha256(r.read_bytes()).hexdigest()=='b08e3db386e08bd8ec3e785286eb21cd1ca541448ef2dd5528617393836e380a'
+          assert subprocess.check_output(['git','-C','private-story','rev-parse','HEAD'],text=True).strip()=='45dd4316e44e5502263f16915654ec7ee20a4507'
+          assert subprocess.check_output(['git','-C','private-story','rev-parse','HEAD:generic-story-inputs/S384-1257231f6322a1c78a3fa8d89898cc3376343fcfa6dafb7f11c5631621cd7d75/MANIFEST.json'],text=True).strip()=='34891509d396ff755fae46cdbe76f67d669f2819'
+          PYCODE
+          python3 .github/scripts/hosted_story_prepare_generic.py private-story/generic-story-inputs/S384-1257231f6322a1c78a3fa8d89898cc3376343fcfa6dafb7f11c5631621cd7d75 S384 "$RUNNER_TEMP/prompt.enc"
+          REVISION_PATH="$(python3 -c 'import json,os; print(json.load(open(os.environ["GITHUB_EVENT_PATH"]))["inputs"]["response_path"])')"
+          python3 .github/scripts/hosted_ground_s384_revision2.py "$RUNNER_TEMP/prompt.enc" "private-first/generic-story-responses/S384-545322759bb7077ce6666919162aeb0b84990203411e6d1ed50d647807a17432/response.enc" "private-rev1/story-label-revisions/S384-b08e3db386e08bd8ec3e785286eb21cd1ca541448ef2dd5528617393836e380a/response.enc" "private-revision/$REVISION_PATH" "private-story/generic-story-inputs/S384-1257231f6322a1c78a3fa8d89898cc3376343fcfa6dafb7f11c5631621cd7d75/story-data/STORY-DATA.md" "$RUNNER_TEMP/grounded.enc"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: S384-revision2-grounded-ENC
+          path: ${{ runner.temp }}/grounded.enc
+          retention-days: 7
+          if-no-files-found: error
