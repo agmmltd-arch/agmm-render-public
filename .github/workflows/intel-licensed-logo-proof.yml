@@ -1,0 +1,47 @@
+name: Protected Intel logo source proof
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  resolve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: e000e2457ef9480b920d263be7ec2ddd3d43b4d5
+          persist-credentials: false
+      - name: Resolve using the original licensed asset gate
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = e000e2457ef9480b920d263be7ec2ddd3d43b4d5
+          test -n "$VOICEFREE_PASS"
+          ROOT=.github/scripts/voice-native
+          python3 "$ROOT/kit/tools/assets.py" resolve Intel > "$RUNNER_TEMP/resolve.json"
+          python3 - <<'PYCODE'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'resolve.json';d=json.loads(p.read_text())
+          assert d.get('name')=='Intel' and d.get('file') and d.get('licence') and d.get('commons')
+          print('Original Intel asset resolver completed; licence and creative review required.')
+          PYCODE
+          python3 - <<'PYCODE'
+          import json,os,tarfile
+          from pathlib import Path
+          root=Path('.github/scripts/voice-native/kit/assets').resolve()
+          record=root/'cache/logos/intel.json';j=json.loads(record.read_text());image=(root/j['file']).resolve()
+          assert image.is_relative_to(root/'cache/logos') and image.is_file() and not image.is_symlink()
+          with tarfile.open(Path(os.environ['RUNNER_TEMP'])/'asset.tar','w') as out:
+              out.add(record,arcname='intel.json',recursive=False);out.add(image,arcname='intel-logo'+image.suffix,recursive=False)
+          PYCODE
+          openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:VOICEFREE_PASS -in "$RUNNER_TEMP/asset.tar" -out "$RUNNER_TEMP/intel-asset.enc"
+          rm -f "$RUNNER_TEMP/asset.tar"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intel-logo-source-ENC
+          path: ${{ runner.temp }}/intel-asset.enc
+          retention-days: 7
+          if-no-files-found: error
