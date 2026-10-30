@@ -1,0 +1,89 @@
+name: S290 original story correction grounding proof
+run-name: S290 correction grounding ${{ inputs.response_sha }}
+on:
+  workflow_dispatch:
+    inputs:
+      response_commit: { required: true, type: string }
+      response_path: { required: true, type: string }
+      response_blob: { required: true, type: string }
+      response_sha: { required: true, type: string }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  ground:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 73e52dd0a963a8b337cef3e68840c0ab84ca65cc
+          persist-credentials: false
+      - name: Validate protected correction coordinates
+        run: |
+          python3 - <<'PYCODE'
+          import json,os,re,subprocess
+          x=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs']
+          assert re.fullmatch(r'[a-f0-9]{40}',x['response_commit']) and re.fullmatch(r'[a-f0-9]{40}',x['response_blob'])
+          assert re.fullmatch(r'[a-f0-9]{64}',x['response_sha'])
+          assert x['response_path']=='story-label-revisions/S290-'+x['response_sha']+'/response.enc'
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()=='73e52dd0a963a8b337cef3e68840c0ab84ca65cc'
+          PYCODE
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 4cd70a32e3c53fbbcb872fa4aaa2cec290abebb6
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-story
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: generic-story-inputs/S290-a01e95fd73cabee1849b382b756737b1775dd094f1b2911af702dfc556a4ace7
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ace3274ea5e94db4df46314501ec417182500479
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-first
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: generic-story-responses/S290-d85a595375630e0a2a62a175ab702ca8140d1cb684b9835f6512f35153777fd9/response.enc
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.response_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-revision
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.response_path }}
+      - name: Verify inputs and replay original grounding
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+          AGMM_WRITER_PASS: ${{ secrets.AGMM_WRITER_PASS }}
+          STORY_MANIFEST_SHA: a01e95fd73cabee1849b382b756737b1775dd094f1b2911af702dfc556a4ace7
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          i=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs'];p=Path('private-revision')/i['response_path'];f=Path('private-first/generic-story-responses/S290-d85a595375630e0a2a62a175ab702ca8140d1cb684b9835f6512f35153777fd9/response.enc')
+          assert subprocess.check_output(['git','-C','private-revision','rev-parse','HEAD'],text=True).strip()==i['response_commit']
+          assert subprocess.check_output(['git','-C','private-revision','rev-parse','HEAD:'+i['response_path']],text=True).strip()==i['response_blob']
+          assert p.is_file() and not p.is_symlink() and p.stat().st_size<10000000 and hashlib.sha256(p.read_bytes()).hexdigest()==i['response_sha']
+          assert subprocess.check_output(['git','-C','private-first','rev-parse','HEAD'],text=True).strip()=='ace3274ea5e94db4df46314501ec417182500479'
+          assert subprocess.check_output(['git','-C','private-first','rev-parse','HEAD:generic-story-responses/S290-d85a595375630e0a2a62a175ab702ca8140d1cb684b9835f6512f35153777fd9/response.enc'],text=True).strip()=='7cbbd7f35882b128f09f44ca338a79efec2b556c'
+          assert f.is_file() and not f.is_symlink() and f.stat().st_size<10000000 and hashlib.sha256(f.read_bytes()).hexdigest()=='d85a595375630e0a2a62a175ab702ca8140d1cb684b9835f6512f35153777fd9'
+          assert subprocess.check_output(['git','-C','private-story','rev-parse','HEAD'],text=True).strip()=='4cd70a32e3c53fbbcb872fa4aaa2cec290abebb6'
+          assert subprocess.check_output(['git','-C','private-story','rev-parse','HEAD:generic-story-inputs/S290-a01e95fd73cabee1849b382b756737b1775dd094f1b2911af702dfc556a4ace7/MANIFEST.json'],text=True).strip()=='9caef17c72604bb07ef9ce8debbddc632cd64808'
+          PYCODE
+          python3 .github/scripts/hosted_story_prepare_generic.py private-story/generic-story-inputs/S290-a01e95fd73cabee1849b382b756737b1775dd094f1b2911af702dfc556a4ace7 S290 "$RUNNER_TEMP/prompt.enc"
+          REVISION_PATH="$(python3 -c 'import json,os; print(json.load(open(os.environ["GITHUB_EVENT_PATH"]))["inputs"]["response_path"])')"
+          python3 .github/scripts/hosted_ground_generic_revision1.py "$RUNNER_TEMP/prompt.enc" "private-first/generic-story-responses/S290-d85a595375630e0a2a62a175ab702ca8140d1cb684b9835f6512f35153777fd9/response.enc" "private-revision/$REVISION_PATH" "private-story/generic-story-inputs/S290-a01e95fd73cabee1849b382b756737b1775dd094f1b2911af702dfc556a4ace7/story-data/STORY-DATA.md" "$RUNNER_TEMP/grounded.enc" 40786421583
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: S290-revision1-grounded-ENC
+          path: ${{ runner.temp }}/grounded.enc
+          retention-days: 7
+          if-no-files-found: error
