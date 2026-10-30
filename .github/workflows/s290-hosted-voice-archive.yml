@@ -1,0 +1,43 @@
+name: Preserve S290 checked voice on Ubuntu
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: e40a4311d1e72ae24f67defe3ba3464d17526715
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 4cd70a32e3c53fbbcb872fa4aaa2cec290abebb6
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-pointer
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: generic-story-inputs/S290-a01e95fd73cabee1849b382b756737b1775dd094f1b2911af702dfc556a4ace7/POINTER.json
+      - name: Verify exact pointer and preserve encrypted hosted voice
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+          AGMM_VOICE_ARCHIVE_DEPLOY_KEY: ${{ secrets.AGMM_VOICE_ARCHIVE_DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = e40a4311d1e72ae24f67defe3ba3464d17526715
+          test "$(git -C private-pointer rev-parse HEAD)" = 4cd70a32e3c53fbbcb872fa4aaa2cec290abebb6
+          test "$(git -C private-pointer rev-parse HEAD:generic-story-inputs/S290-a01e95fd73cabee1849b382b756737b1775dd094f1b2911af702dfc556a4ace7/POINTER.json)" = db606ee10852a1ce5200b55c67a78c03fb6b54e2
+          echo "a1d79259ac4a3d77e5ac852cbdadcbed11a66e28104be9744a75c307ea7b4485  private-pointer/generic-story-inputs/S290-a01e95fd73cabee1849b382b756737b1775dd094f1b2911af702dfc556a4ace7/POINTER.json" | sha256sum -c >/dev/null
+          python3 .github/scripts/hosted_archive_voice.py private-pointer/generic-story-inputs/S290-a01e95fd73cabee1849b382b756737b1775dd094f1b2911af702dfc556a4ace7/POINTER.json "$RUNNER_TEMP/archive-receipt.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: S290-voice-archive-receipt
+          path: ${{ runner.temp }}/archive-receipt.json
+          retention-days: 30
+          if-no-files-found: error
