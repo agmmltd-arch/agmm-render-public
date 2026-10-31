@@ -1,0 +1,40 @@
+name: Parliament primary source text access
+run-name: Parliament primary source text access 20261031
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  access:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check public source text
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+          from pathlib import Path
+          url = 'https://publications.parliament.uk/pa/cm5901/cmselect/cmhaff/1553/report.html'
+          result = {'url': url, 'source': 'public UK Parliament report', 'access': 'not_observed'}
+          try:
+              request = urllib.request.Request(url, headers={'User-Agent':'Mozilla/5.0'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  data = response.read(2_000_000)
+                  result.update(http=response.status, bytes=len(data),
+                                conclusion_present=b'not intentionally mislead' in data,
+                                council_present=b'Birmingham City Council' in data)
+                  if response.status == 200 and len(data) < 2_000_000:
+                      Path(os.environ['RUNNER_TEMP'], 'parliament-report.html').write_bytes(data)
+          except urllib.error.HTTPError as exc:
+              result['http'] = exc.code
+          except Exception as exc:
+              result['error'] = type(exc).__name__
+          Path(os.environ['RUNNER_TEMP'], 'parliament-access.json').write_text(json.dumps(result, indent=2))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: parliament-primary-source-text-only
+          path: |
+            ${{ runner.temp }}/parliament-access.json
+            ${{ runner.temp }}/parliament-report.html
+          if-no-files-found: error
+          retention-days: 7
