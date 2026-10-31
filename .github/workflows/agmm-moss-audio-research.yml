@@ -1,0 +1,39 @@
+name: Synthetic MOSS audio research
+run-name: Synthetic MOSS audio research 20261031
+on: workflow_dispatch
+permissions: { contents: read }
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Prepare pinned CPU inference
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng ffmpeg libsndfile1
+          python3 -m pip install --quiet --index-url https://download.pytorch.org/whl/cpu torch==2.8.0 torchaudio==2.8.0 torchvision==0.23.0
+          python3 -m pip install --quiet 'transformers==4.57.1' 'huggingface_hub>=0.34,<1' 'numpy>=2,<3' soundfile accelerate pillow librosa soxr einops tiktoken scipy
+          git clone -q https://github.com/OpenMOSS/MOSS-Audio.git "$RUNNER_TEMP/moss"
+          git -C "$RUNNER_TEMP/moss" checkout --detach 66326e6e0db34f036c86a76ba005efa4830c69dd
+          python3 - <<'INNER'
+          import os
+          from huggingface_hub import snapshot_download
+          snapshot_download('OpenMOSS-Team/MOSS-Audio-4B-Instruct',revision='3d06de33e750be89cf13630274d90fcee81d128f',local_dir=os.path.join(os.environ['RUNNER_TEMP'],'model'),ignore_patterns=['assets/*'])
+          INNER
+      - name: Evaluate synthetic blind samples
+        env:
+          MOSS_MODEL: ${{ runner.temp }}/model
+          PYTHONPATH: ${{ runner.temp }}/moss
+          OMP_NUM_THREADS: '4'
+        run: python3 .github/scripts/moss-synthetic-audio-panel.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: moss-synthetic-audio-text-only
+          path: ${{ runner.temp }}/moss-results.json
+          if-no-files-found: warn
+          retention-days: 7
