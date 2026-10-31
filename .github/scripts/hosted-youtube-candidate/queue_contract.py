@@ -16,6 +16,11 @@ HEX = re.compile(r"^[0-9a-f]{64}$")
 LONDON = ZoneInfo("Europe/London")
 
 
+def valid_youtube_identity(video_id, url):
+    return (isinstance(video_id, str) and bool(re.fullmatch(r"[A-Za-z0-9_-]{11}", video_id))
+            and url == f"https://www.youtube.com/watch?v={video_id}")
+
+
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -128,7 +133,7 @@ def make_queue_row(*, approval: dict, provider_receipt: dict | None,
                 provider_url=provider_receipt.get("post_url"),
                 provider_scheduled_for=provider_receipt["scheduled_for"],
                 provider_receipt_sha256=sha256_bytes(json.dumps(provider_receipt, sort_keys=True).encode()))
-    _need(base["provider_video_id"] and base["provider_url"], "provider identity missing")
+    _need(valid_youtube_identity(base["provider_video_id"], base["provider_url"]), "provider identity invalid")
     base.update(route="hosted_youtube_studio", kind="hosted_remote", platforms=["youtube"],
                 video_sha256=master_sha256, hosted_source_run_id=str(source_run_id),
                 hosted_thumbnail_sha256=thumbnail_sha256, provider_receipt=provider_receipt,

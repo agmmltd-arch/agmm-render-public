@@ -19,7 +19,7 @@ RECEIPT = {
     "schema": "agmm-youtube-cloud-studio-scheduled-v1", "overall": "SCHEDULED_VERIFIED",
     "master_sha256": MASTER, "source_run_id": "123456789", "thumbnail_sha256": THUMB,
     "scheduled_for": "2026-10-05T15:00:00+01:00", "scheduled_evidence": {"ok": True},
-    "video_id": "vid123", "post_url": "https://www.youtube.com/watch?v=vid123",
+    "video_id": "aBcDeF123_-", "post_url": "https://www.youtube.com/watch?v=aBcDeF123_-",
 }
 
 
@@ -46,6 +46,12 @@ class QueueContractTests(unittest.TestCase):
 
     def test_matching_real_schedule_receipt_arms(self):
         self.assertEqual(row(provider_receipt=copy.deepcopy(RECEIPT))["status"], "ARMED")
+
+    def test_receipt_link_must_match_canonical_video_identity(self):
+        for url in ("https://www.youtube.com/watch?v=other000000", "https://example.com/watch?v=aBcDeF123_-", ""):
+            bad = copy.deepcopy(RECEIPT); bad["post_url"] = url
+            with self.assertRaisesRegex(ValueError, "provider identity invalid"):
+                row(provider_receipt=bad)
 
     def test_wrong_master_receipt_refused(self):
         bad = copy.deepcopy(RECEIPT); bad["master_sha256"] = "d" * 64
