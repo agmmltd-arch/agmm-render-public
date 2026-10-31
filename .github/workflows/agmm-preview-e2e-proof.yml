@@ -1,0 +1,20 @@
+name: Estimated preview synthetic grounding proof
+run-name: AGMM preview e2e aa6f43b713acce7ff2d6da5ca27c120516a3cde4
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: aa6f43b713acce7ff2d6da5ca27c120516a3cde4
+          persist-credentials: false
+      - name: Run original grounding with synthetic inputs and provider
+        run: |
+          test "$(git rev-parse HEAD)" = aa6f43b713acce7ff2d6da5ca27c120516a3cde4
+          cd .github/scripts
+          python3 -m unittest test_preview_end_to_end_synthetic
