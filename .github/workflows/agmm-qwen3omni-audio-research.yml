@@ -1,0 +1,38 @@
+name: Synthetic Qwen3 Omni audio research
+run-name: Synthetic Qwen3 Omni audio research 20261031
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Prepare CPU runtime and synthetic panel
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng ffmpeg cmake libcurl4-openssl-dev
+          git clone -q https://github.com/ggml-org/llama.cpp.git llama-src
+          cd llama-src
+          git checkout --detach 8642541b255bfb5dc39cd351a178be09013a55d6
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=OFF
+          cmake --build build -j 4 --target llama-app llama-quantize
+          curl -fL --retry 2 -o q4.gguf https://huggingface.co/ggml-org/Qwen3-Omni-30B-A3B-Instruct-GGUF/resolve/6e35a28f4a19b18730f8949b0c579c6429649ab8/Qwen3-Omni-30B-A3B-Instruct-Q4_K_M.gguf
+          curl -fL --retry 2 -o mmproj.gguf https://huggingface.co/ggml-org/Qwen3-Omni-30B-A3B-Instruct-GGUF/resolve/6e35a28f4a19b18730f8949b0c579c6429649ab8/mmproj-Qwen3-Omni-30B-A3B-Instruct-Q8_0.gguf
+          echo 'd9e2876556e7873e02c0359f832432ee2d67ab7dd0cee3efe0f77fd7a1f4dd85  q4.gguf' | sha256sum -c -
+          echo '1104376db833f1e89c84834144ac3863340c2cd1ddaeddb39cb0247fb5c20c8d  mmproj.gguf' | sha256sum -c -
+          build/bin/llama-quantize --allow-requantize q4.gguf model.gguf Q2_K 4
+          rm q4.gguf
+          python3 "$GITHUB_WORKSPACE/.github/scripts/qwen3omni-synthetic-audio-panel.py"
+          cp research-results.json "$RUNNER_TEMP/research-results.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: qwen3omni-synthetic-audio-research-text-only
+          path: ${{ runner.temp }}/research-results.json
+          if-no-files-found: warn
+          retention-days: 7
