@@ -1,0 +1,31 @@
+name: F04 protected hosted access check
+run-name: F04 protected hosted access 20261031
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Verify protected master on Ubuntu
+        env:
+          F04_URL: ${{ secrets.AGMM_F04_R6_TEMP_ACCESS_20261031 }}
+        run: |
+          set -euo pipefail
+          test -n "$F04_URL"
+          python3 - <<'PY'
+          import os,urllib.parse
+          p=urllib.parse.urlsplit(os.environ['F04_URL'])
+          assert p.scheme=='https' and p.hostname=='release-assets.githubusercontent.com'
+          PY
+          curl --fail --silent --show-error --location --max-time 420 --output "$RUNNER_TEMP/f04.mp4" "$F04_URL"
+          echo 'c7cc46c2fdb71582473b4d090f07cbcdcf8324fd1ae656fbb09561213668bb17  '"$RUNNER_TEMP/f04.mp4" | sha256sum -c -
+          ffprobe -v error -show_entries format=duration:stream=codec_type,width,height,r_frame_rate -of json "$RUNNER_TEMP/f04.mp4" > "$RUNNER_TEMP/f04-hosted-access.json"
+          rm -f "$RUNNER_TEMP/f04.mp4"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: F04-HOSTED-ACCESS-METADATA
+          path: ${{ runner.temp }}/f04-hosted-access.json
+          if-no-files-found: error
+          retention-days: 3
