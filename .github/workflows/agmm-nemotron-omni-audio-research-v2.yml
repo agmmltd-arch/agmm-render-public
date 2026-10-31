@@ -1,0 +1,28 @@
+name: Synthetic Nemotron Omni audio research
+run-name: Synthetic Nemotron Omni audio research v2 20261031
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Run blinded synthetic audio panel
+        env:
+          NVIDIA_API_KEY: ${{ secrets.AGMM_NVIDIA_SYNTHETIC_AUDIO_V2_ONCE }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng ffmpeg
+          python3 .github/scripts/nemotron-omni-synthetic-audio-panel-v2.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: nemotron-omni-synthetic-audio-text-only
+          path: ${{ runner.temp }}/nemotron-audio-results.json
+          if-no-files-found: warn
+          retention-days: 7
