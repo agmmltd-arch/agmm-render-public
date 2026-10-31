@@ -1,0 +1,45 @@
+name: AGMM shared publishing integration synthetic proof
+run-name: AGMM shared publishing integration proof e20167e19a54
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: e20167e19a54c58cd627725919d8fc14b9632040
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: hosted-shared-integration-proof/runtime/
+      - name: Verify source closure and offline synthetic integration
+        working-directory: hosted-shared-integration-proof/runtime
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = e20167e19a54c58cd627725919d8fc14b9632040
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          m=json.loads(Path('candidate-source-manifest.json').read_text())
+          assert m['candidate_only'] and not m['deployed'] and not m['provider_calls']
+          for rel,e in m['files'].items():
+              p=Path(rel); assert p.suffix=='.py' and p.is_file() and not p.is_symlink()
+              b=p.read_bytes(); assert len(b)==e['bytes'] and hashlib.sha256(b).hexdigest()==e['sha256']
+          print('Verified exact source closure',len(m['files']))
+          PY
+          for group in youtube tiktok; do
+            if [ "$group" = youtube ]; then path=hosted-youtube-arming; tests='test_claim_cli test_shared_claim_candidate test_queue_contract'; else path=tiktok; tests='test_admission test_hosted_owner test_sealed_request test_package_from_render test_native_integration'; fi
+            ( cd "$path" && python3 - "$tests" <<'PY'
+          import socket,sys,unittest
+          def blocked(*args,**kwargs): raise RuntimeError('network forbidden in synthetic integration')
+          socket.socket.connect=blocked;socket.socket.connect_ex=blocked;socket.create_connection=blocked
+          suite=unittest.defaultTestLoader.loadTestsFromNames(sys.argv[1].split())
+          result=unittest.TextTestRunner(verbosity=1).run(suite)
+          if not result.wasSuccessful(): raise SystemExit(1)
+          PY
+            )
+          done
+          echo 'Synthetic tests only; no provider call, real media or release approval'
