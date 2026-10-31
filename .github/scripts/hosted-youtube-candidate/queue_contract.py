@@ -16,6 +16,11 @@ HEX = re.compile(r"^[0-9a-f]{64}$")
 LONDON = ZoneInfo("Europe/London")
 
 
+def valid_youtube_identity(video_id, url):
+    return (isinstance(video_id, str) and bool(re.fullmatch(r"[A-Za-z0-9_-]{11}", video_id))
+            and url == f"https://www.youtube.com/watch?v={video_id}")
+
+
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -36,17 +41,27 @@ def london_slot(day: str, slot: str) -> datetime:
     return valid[0]
 
 
+def occupied_youtube_slot(row: dict, day: str, slot: str) -> bool:
+    """Recognize native plan rows as well as hosted queue rows, without guessing dates."""
+    _need(isinstance(row, dict), "existing row must be an object")
+    if row.get("slot") and not row.get("date"):
+        raise ValueError("existing row slot requires its plan date")
+    platforms = row.get("platforms") or []
+    _need(isinstance(platforms, list), "existing row platforms must be a list")
+    youtube = row.get("platform") == "youtube" or "youtube" in platforms
+    return youtube and row.get("date") == day and row.get("slot") == slot
+
+
 def earliest_slot(day: str, candidates: list[str], existing_rows: list[dict],
                   now: datetime) -> str:
     """Select the earliest future, unoccupied offered slot (Studio requires 15m lead)."""
     _need(bool(candidates), "no candidate slots")
     _need(now.tzinfo is not None and now.utcoffset() is not None, "current time requires timezone")
     now = now.astimezone(timezone.utc)
-    taken = {(r.get("platform"), r.get("date"), r.get("slot")) for r in existing_rows}
     for slot in sorted(set(candidates)):
         _need(bool(re.fullmatch(r"\d{2}:\d{2}", slot)), "invalid candidate slot")
         when = london_slot(day, slot).astimezone(timezone.utc)
-        if when <= now or ("youtube", day, slot) in taken:
+        if when <= now or any(occupied_youtube_slot(r, day, slot) for r in existing_rows):
             continue
         if (when - now).total_seconds() >= 15 * 60:
             return slot
@@ -86,9 +101,10 @@ def make_queue_row(*, approval: dict, provider_receipt: dict | None,
     _need(post_id, "post_id missing")
     for row in existing_rows:
         _need(row.get("post_id") != post_id, "duplicate post_id")
-        _need(not (row.get("platform") == "youtube" and row.get("date") == approval.get("date")
-                   and row.get("slot") == slot), "duplicate YouTube slot")
-        _need(row.get("master_sha256") != master_sha256, "master already queued")
+        _need(not occupied_youtube_slot(row, day, slot), "duplicate YouTube slot")
+        _need(all(row.get(key) != master_sha256 for key in
+                  ("master_sha256", "video_sha256", "derived_from_master_sha256")),
+              "master already queued")
 
     base = {
         "schema": "agmm-hosted-youtube-queue-row-v1",
@@ -128,7 +144,7 @@ def make_queue_row(*, approval: dict, provider_receipt: dict | None,
                 provider_url=provider_receipt.get("post_url"),
                 provider_scheduled_for=provider_receipt["scheduled_for"],
                 provider_receipt_sha256=sha256_bytes(json.dumps(provider_receipt, sort_keys=True).encode()))
-    _need(base["provider_video_id"] and base["provider_url"], "provider identity missing")
+    _need(valid_youtube_identity(base["provider_video_id"], base["provider_url"]), "provider identity invalid")
     base.update(route="hosted_youtube_studio", kind="hosted_remote", platforms=["youtube"],
                 video_sha256=master_sha256, hosted_source_run_id=str(source_run_id),
                 hosted_thumbnail_sha256=thumbnail_sha256, provider_receipt=provider_receipt,

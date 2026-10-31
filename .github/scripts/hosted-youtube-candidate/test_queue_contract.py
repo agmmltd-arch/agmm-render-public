@@ -19,7 +19,7 @@ RECEIPT = {
     "schema": "agmm-youtube-cloud-studio-scheduled-v1", "overall": "SCHEDULED_VERIFIED",
     "master_sha256": MASTER, "source_run_id": "123456789", "thumbnail_sha256": THUMB,
     "scheduled_for": "2026-10-05T15:00:00+01:00", "scheduled_evidence": {"ok": True},
-    "video_id": "vid123", "post_url": "https://www.youtube.com/watch?v=vid123",
+    "video_id": "aBcDeF123_-", "post_url": "https://www.youtube.com/watch?v=aBcDeF123_-",
 }
 
 
@@ -47,6 +47,12 @@ class QueueContractTests(unittest.TestCase):
     def test_matching_real_schedule_receipt_arms(self):
         self.assertEqual(row(provider_receipt=copy.deepcopy(RECEIPT))["status"], "ARMED")
 
+    def test_receipt_link_must_match_canonical_video_identity(self):
+        for url in ("https://www.youtube.com/watch?v=other000000", "https://example.com/watch?v=aBcDeF123_-", ""):
+            bad = copy.deepcopy(RECEIPT); bad["post_url"] = url
+            with self.assertRaisesRegex(ValueError, "provider identity invalid"):
+                row(provider_receipt=bad)
+
     def test_wrong_master_receipt_refused(self):
         bad = copy.deepcopy(RECEIPT); bad["master_sha256"] = "d" * 64
         with self.assertRaisesRegex(ValueError, "receipt master mismatch"):
@@ -68,6 +74,23 @@ class QueueContractTests(unittest.TestCase):
                          [{"post_id": "other", "master_sha256": MASTER}]):
             with self.subTest(existing=existing), self.assertRaises(ValueError):
                 row(existing_rows=existing)
+
+    def test_native_rows_block_occupied_slot_and_reused_master(self):
+        native = {"platforms": ["youtube"], "date": "2026-10-05", "slot": "15:00",
+                  "video_sha256": "f" * 64, "post_id": "other"}
+        with self.assertRaisesRegex(ValueError, "duplicate YouTube slot"):
+            row(existing_rows=[native])
+        self.assertEqual(earliest_slot("2026-10-05", ["15:00", "19:00"], [native],
+                         datetime(2026, 10, 4, 17, 0, tzinfo=ZoneInfo("Europe/London"))), "19:00")
+        native.update(slot="11:00", video_sha256=MASTER)
+        with self.assertRaisesRegex(ValueError, "master already queued"):
+            row(existing_rows=[native])
+        native.update(video_sha256="f" * 64, derived_from_master_sha256=MASTER)
+        with self.assertRaisesRegex(ValueError, "master already queued"):
+            row(existing_rows=[native])
+        native.pop("date")
+        with self.assertRaisesRegex(ValueError, "plan date"):
+            row(existing_rows=[native])
 
     def test_wrong_schedule_time_refused(self):
         bad = copy.deepcopy(RECEIPT); bad["scheduled_for"] = "2026-10-05T16:00:00+01:00"
