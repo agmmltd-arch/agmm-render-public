@@ -1,0 +1,20 @@
+name: Estimated preview synthetic proof
+run-name: AGMM preview synthetic 6342e03bcd4a0e449e06137c6114610f5050d140
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 6342e03bcd4a0e449e06137c6114610f5050d140
+          persist-credentials: false
+      - name: Validate synthetic inputs and grounded refusal
+        run: |
+          test "$(git rev-parse HEAD)" = 6342e03bcd4a0e449e06137c6114610f5050d140
+          cd .github/scripts
+          python3 -m unittest test_hosted_preview_prepare_candidate test_hosted_preview_ground_candidate
