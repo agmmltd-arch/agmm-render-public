@@ -1,0 +1,24 @@
+name: Synthetic YouTube film identity claim proof
+run-name: Synthetic YouTube film identity claim proof 20261031
+on: { workflow_dispatch: {} }
+permissions: { contents: write }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 53294167651383e1a8ea783c6ac73e7ebe50c5c2
+          persist-credentials: false
+      - name: Verify exact runtime and synthetic claim behaviour
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 53294167651383e1a8ea783c6ac73e7ebe50c5c2
+          grep -Fx '          ref: a8e8a9b158d530729349b2bc41de5498b949b578' .github/workflows/hosted-youtube-arm-candidate.yml
+          cd .github/scripts/hosted-youtube-candidate
+          PYTHONPATH=.. python3 -m unittest -q test_claim_cli.py test_youtube_private_inputs.py test_github_claim_store.py test_claim_contract.py test_cli_reconcile.py test_queue_contract.py test_hosted_route.py
+          PYTHONPATH=.. python3 test_hosted_claim_race.py
+          echo 'Synthetic test only; no provider access, real ledger, programme media or approval.'
