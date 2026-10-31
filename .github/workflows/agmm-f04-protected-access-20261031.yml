@@ -14,6 +14,9 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$F04_URL"
+          trap 'rm -f "$RUNNER_TEMP/f04.mp4"' EXIT
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
           python3 - <<'PY'
           import os,urllib.parse
           p=urllib.parse.urlsplit(os.environ['F04_URL'])
