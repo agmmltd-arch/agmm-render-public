@@ -1,0 +1,43 @@
+name: Synthetic Eureka audio research
+run-name: Synthetic Eureka audio research v2 20261031
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Prepare pinned CPU inference
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng ffmpeg libsndfile1
+          python3 -m pip install --quiet --index-url https://download.pytorch.org/whl/cpu torch==2.8.0 torchaudio==2.8.0 torchvision==0.23.0
+          python3 -m pip install --quiet 'transformers==4.57.6' 'huggingface_hub>=0.34,<1' 'numpy<3' loguru soundfile accelerate pillow librosa soxr
+          git clone -q https://github.com/Alittleegg/Eureka-Audio.git "$RUNNER_TEMP/eureka"
+          git -C "$RUNNER_TEMP/eureka" checkout --detach 51dac590e0c6e3c48d8094a5b5431c7f86ff3be4
+          python3 - <<'PY'
+          import os
+          from huggingface_hub import snapshot_download
+          p=snapshot_download('cslys1999/Eureka-Audio-Instruct',revision='219761da53c9c6c5900a84a723d88ccc29db66d3',local_dir=os.path.join(os.environ['RUNNER_TEMP'],'model'),ignore_patterns=['assets/*','.ipynb_checkpoints/*'])
+          from pathlib import Path
+          code=Path(p,'modeling_eureka_audio.py');s=code.read_text();assert s.count('flash_attention_2')>=2
+          code.write_text(s.replace('flash_attention_2','sdpa'))
+          PY
+      - name: Evaluate synthetic blind samples
+        env:
+          EUREKA_MODEL: ${{ runner.temp }}/model
+          PYTHONPATH: ${{ runner.temp }}/eureka
+          OMP_NUM_THREADS: '4'
+        run: python3 .github/scripts/eureka-synthetic-audio-panel-v2.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: eureka-synthetic-audio-text-only
+          path: ${{ runner.temp }}/eureka-results.json
+          if-no-files-found: warn
+          retention-days: 7
