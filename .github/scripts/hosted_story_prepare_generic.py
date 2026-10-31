@@ -21,7 +21,11 @@ def validate_manifest(root,sid,manifest_sha):
  for name,digest in entries.items():
   f=root/name;need(re.fullmatch(r'[a-f0-9]{64}',digest or '') and not f.is_symlink() and f.is_file() and f.stat().st_size<2_000_000 and sha(f.read_bytes())==digest,'input bytes differ')
  pointer=json.loads((root/'POINTER.json').read_text())
- need(pointer.get('id')==sid and pointer.get('voice_checks_complete') is True and pointer.get('runtime_commit')=='94b4d6a419aeedb9ba1a769b184a44aed9dda4b3' and pointer.get('release_approval') is False and (pointer.get('request') or {}).get('selection_producer'),'checked voice identity differs')
+ need(sid=='S273' and pointer.get('id')==sid and pointer.get('voice_checks_complete') is True
+      and pointer.get('runtime_commit')=='c05a2476a0acb6c85360d06dacfb5a94341916d1'
+      and str(pointer.get('run_id'))=='40437343266' and str(pointer.get('artifact_id'))=='12703739336'
+      and pointer.get('artifact_digest')=='sha256:fb61e17956c54a819dca99b8d0f1650f26447728abb1e06c02e9fb5b2c4eda70'
+      and pointer.get('release_approval') is False and (pointer.get('request') or {}).get('mode')=='from-existing','checked voice identity differs')
  script='shorts/scripts-v2/'+sid+'.md';need((pointer.get('native_text_bindings') or {}).get(script)==entries[script],'checked voice script differs')
  return data,pointer
 
