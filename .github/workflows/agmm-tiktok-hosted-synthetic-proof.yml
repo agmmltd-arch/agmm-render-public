@@ -36,7 +36,9 @@ jobs:
           test=Path('hosted-tiktok')/sys.argv[1]
           sys.path.insert(0,str(test.parent.resolve()))
           def blocked(*args,**kwargs): raise RuntimeError('network forbidden in synthetic provider proof')
-          socket.socket=blocked
+          socket.socket.connect=blocked
+          socket.socket.connect_ex=blocked
+          socket.create_connection=blocked
           sys.argv=[str(test)]
           runpy.run_path(str(test),run_name='__main__')
           PYCODE
