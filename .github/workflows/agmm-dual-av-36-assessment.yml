@@ -23,6 +23,8 @@ jobs:
           cd .github/scripts/dual-av-36
           python3 -B -m unittest test_qualification.py
           python3 -B test_dual_input.py
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
           command -v ffmpeg && command -v ffprobe
       - name: One bounded blind assessment only
         env:
