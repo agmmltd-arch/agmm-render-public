@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 6b37eb274cd5faaf21205857f42f98b128f85220
+          ref: 3ef16dafc3f1716b9fd4a7ffe1b2faa16f23a5d8
           persist-credentials: false
       - name: Validate protected input coordinates
         run: |
