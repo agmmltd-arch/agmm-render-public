@@ -1,0 +1,57 @@
+name: AGMM synthetic TLive Omni CPU defect control
+run-name: AGMM tlive omni defect control 20261031a
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install CPU dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg espeak-ng
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0
+          python -m pip install --disable-pip-version-check 'transformers==5.2.0' 'huggingface-hub[hf_xet]' accelerate librosa soundfile av scipy pillow
+      - name: Synthetic CPU feasibility and blinded defect control
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+        run: |
+          python - <<'PY'
+          import os, pathlib, shutil, subprocess, tempfile, time
+          import torch
+          from huggingface_hub import snapshot_download
+          from transformers import AutoModelForCausalLM, AutoProcessor
+          assert os.environ.get('GITHUB_ACTIONS') == 'true' and not torch.cuda.is_available()
+          print('SYNTHETIC ONLY; no programme inputs; no release approval',flush=True)
+          print('Memory:',pathlib.Path('/proc/meminfo').read_text().splitlines()[0],flush=True)
+          print('Free disk bytes:',shutil.disk_usage('/tmp').free,flush=True)
+          if shutil.disk_usage('/tmp').free < 13_000_000_000: raise RuntimeError('Insufficient space for pinned model and test')
+          with tempfile.TemporaryDirectory(prefix='tlive-synthetic-') as td:
+              base=pathlib.Path(td); modeldir=base/'model'
+              snapshot_download('TaoLiveAIGC/TLive-Omni-4B',revision='cfbac3429ed8dba7eba365c807ce4ec0558d8dd7',local_dir=str(modeldir),ignore_patterns=['*.mp4','*.wav','*.jpg','*.png'])
+              print('Loading pinned model on CPU using eager attention',flush=True); start=time.time()
+              processor=AutoProcessor.from_pretrained(str(modeldir),trust_remote_code=True)
+              model=AutoModelForCausalLM.from_pretrained(str(modeldir),trust_remote_code=True,dtype=torch.bfloat16,device_map='cpu',attn_implementation='eager',low_cpu_mem_usage=True).eval()
+              print('Model loaded in seconds:',round(time.time()-start,1),flush=True)
+              audio=base/'voice.wav';broken=base/'broken.wav';clean=base/'clean.mp4';frozen=base/'frozen.mp4'
+              subprocess.run(['espeak-ng','-s','140','-w',str(audio),'The system offered a time for another service. The team checked before confirming.'],check=True)
+              subprocess.run(['ffmpeg','-v','error','-y','-i',str(audio),'-af',"volume=0:enable='between(t,1,3)'",str(broken)],check=True)
+              for out,source,voice in [(clean,'testsrc2=size=160x90:rate=4:duration=4',audio),(frozen,'color=c=blue:size=160x90:rate=4:duration=4',broken)]:
+                  subprocess.run(['ffmpeg','-v','error','-y','-f','lavfi','-i',source,'-i',str(voice),'-t','4','-c:v','libx264','-pix_fmt','yuv420p','-c:a','aac',str(out)],check=True)
+              for label,video in [('A',clean),('B',frozen)]:
+                  print('Running blinded synthetic case',label,flush=True)
+                  messages=[{'role':'user','content':[{'type':'video','path':str(video)},{'type':'text','text':'Listen to the entire speech and inspect the whole visual. Transcribe the words you can hear, and state whether there is a sudden silent interruption in the speech and whether the picture changes over time. If unsure, say unsure.'}]}]
+                  inputs=processor.apply_chat_template(messages,add_generation_prompt=True,tokenize=True,return_dict=True,return_tensors='pt',enable_thinking=False,use_audio_in_video=True,videos_kwargs={'fps':1.0})
+                  length=inputs['input_ids'].shape[-1]; inputs=inputs.to(model.device)
+                  with torch.inference_mode(): output=model.generate(**inputs,do_sample=False,max_new_tokens=100)
+                  answer=processor.batch_decode(output[:,length:],skip_special_tokens=True,clean_up_tokenization_spaces=False)[0]
+                  print('SYNTHETIC CASE',label,'RESPONSE:',answer[:5000],flush=True)
+              print('FIXTURE ANSWER KEY: A changing test pattern with intact synthetic speech; B static blue picture and muted audio from 1 to 3 seconds.',flush=True)
+              print('SMOKE ONLY: not calibrated, not full AV review and not release approval',flush=True)
+          PY
