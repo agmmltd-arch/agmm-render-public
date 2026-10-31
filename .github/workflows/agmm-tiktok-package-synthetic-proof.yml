@@ -1,0 +1,46 @@
+name: AGMM hosted TikTok package synthetic proof
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: 583ac75980ecd705a88a3118427dbd0976fbee01
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: hosted-tiktok-proof/runtime/
+      - name: Verify exact private source closure and fake-provider tests
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 583ac75980ecd705a88a3118427dbd0976fbee01
+          cd hosted-tiktok-proof/runtime/
+          python3 - <<'PYCODE'
+          import hashlib,json
+          from pathlib import Path
+          m=json.loads(Path('source-manifest.json').read_text())
+          assert m['production_installed'] is False
+          for rel,e in m['source_files'].items():
+              p=Path(rel); assert p.suffix=='.py' and p.is_file() and not p.is_symlink()
+              b=p.read_bytes(); assert len(b)==e['bytes'] and hashlib.sha256(b).hexdigest()==e['sha256']
+          print('Exact private source closure verified; no programme media')
+          PYCODE
+          for test in test_admission.py test_claim_contract.py test_tiktok_claim_store.py test_hosted_owner.py test_native_integration.py test_sealed_request.py test_package_from_render.py; do
+            python3 - "$test" <<'PYCODE'
+          import runpy,socket,sys
+          from pathlib import Path
+          test=Path('hosted-tiktok')/sys.argv[1]
+          sys.path.insert(0,str(test.parent.resolve()))
+          def blocked(*args,**kwargs): raise RuntimeError('network forbidden in synthetic provider proof')
+          socket.socket.connect=blocked
+          socket.socket.connect_ex=blocked
+          socket.create_connection=blocked
+          sys.argv=[str(test)]
+          runpy.run_path(str(test),run_name='__main__')
+          PYCODE
+          done
+          echo 'Synthetic proof only: no provider call, programme media, approval or publication'
