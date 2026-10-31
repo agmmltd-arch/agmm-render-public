@@ -775,7 +775,7 @@ WORLDS = ["map", "desk", "inbox", "statement", "counter", "phone", "tribunal", "
 COST_UNITS = ("GBP", "USD", "EUR", "people", "jobs", "customers", "records", "files", "hours", "days", "percent", "times")          # root 27 Oct, G15 as the approved set implies: money, people, jobs, customers, records, files, hours, days, percent, multiples ("times")
 HARM_VERBS = ("cost", "costs", "costing", "wiped", "cut", "cuts", "cutting", "blocked", "fined", "fine", "flagged", "lost", "loss", "losses", "leaked", "leak", "refused", "refuse", "delayed", "spent", "paid", "pay",
               "stole", "stolen", "took", "fraud", "fraudsters", "banned", "denied", "rejected", "fired", "sacked", "laid", "laying", "damaged", "hacked", "breach", "breached", "overcharged", "scammed", "failed", "slashed",
-              "dropped", "fell", "fall", "wasted", "harmed", "hurt", "injured", "killed", "arrested", "charged", "penalty", "sued", "bill", "billed", "owed", "wrongly", "mistakenly", "exposed", "shut", "closed", "removed")          # the fixed list a bare count must carry
+              "dropped", "fell", "fall", "wasted", "harmed", "hurt", "injured", "killed", "arrested", "charged", "penalty", "sued", "bill", "billed", "owed", "exposed", "shut", "closed", "removed")          # the fixed list a bare count must carry
 HARM_RX = re.compile(r"\b(" + "|".join(HARM_VERBS) + r")\b", re.I)
 
 
