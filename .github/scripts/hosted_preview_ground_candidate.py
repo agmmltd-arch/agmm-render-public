@@ -49,8 +49,12 @@ def ground(root, prompt_path, response_path, output, manifest_sha, password):
         if rel.startswith('shorts/'):
             target = prep.ROOT / rel
             target.parent.mkdir(parents=True, exist_ok=True)
-            need(not target.exists() and not target.is_symlink(), 'preview runtime input exists')
-            target.write_bytes((root / rel).read_bytes())
+            need(not target.is_symlink(), 'preview runtime input is a symlink')
+            raw_input = (root / rel).read_bytes()
+            if target.exists():
+                need(target.is_file() and target.read_bytes() == raw_input, 'preview runtime input differs')
+            else:
+                target.write_bytes(raw_input)
     old_timing = prep.ROOT / 'shorts/voice' / sid / (sid + '.words.json')
     need(not old_timing.exists() and not old_timing.is_symlink(), 'old voice timing present')
     original.story.STORY_DATA_MD = str(root / 'story-data/STORY-DATA.md')
