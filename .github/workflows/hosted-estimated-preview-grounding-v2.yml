@@ -1,0 +1,85 @@
+name: Protected estimated story preview grounding v2 candidate
+run-name: AGMM preview v2 grounding ${{ inputs.id }} ${{ inputs.response_sha }}
+on:
+  workflow_dispatch:
+    inputs:
+      id: { required: true, type: string }
+      source_commit: { required: true, type: string }
+      source_prefix: { required: true, type: string }
+      source_blob: { required: true, type: string }
+      source_sha: { required: true, type: string }
+      response_commit: { required: true, type: string }
+      response_path: { required: true, type: string }
+      response_blob: { required: true, type: string }
+      response_sha: { required: true, type: string }
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: grounded-preview-${{ inputs.id }}
+  cancel-in-progress: false
+jobs:
+  ground:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 7e7554ef7eba81ab5dcdf4136709f3b08d84bdf2
+          persist-credentials: false
+      - name: Validate protected coordinates
+        run: |
+          python3 - <<'PYCODE'
+          import json,os,re,subprocess
+          i=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs'];assert re.fullmatch(r'S[0-9]{2,3}',i['id'])
+          for k in ('source_commit','source_blob','response_commit','response_blob'):assert re.fullmatch(r'[a-f0-9]{40}',i[k])
+          for k in ('source_sha','response_sha'):assert re.fullmatch(r'[a-f0-9]{64}',i[k])
+          assert i['source_prefix']=='story-preview-inputs/'+i['id']+'-'+i['source_sha']
+          assert i['response_path']=='story-preview-responses/'+i['id']+'-'+i['response_sha']+'/response.enc'
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()=='7e7554ef7eba81ab5dcdf4136709f3b08d84bdf2'
+          PYCODE
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.source_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-story
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.source_prefix }}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: agmmltd-arch/agmm-video-render
+          ref: ${{ inputs.response_commit }}
+          ssh-key: ${{ secrets.AGMM_SFX_READ_DEPLOY_KEY }}
+          path: private-response
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ inputs.response_path }}
+      - name: Verify inputs and run original grounding
+        env:
+          VOICEFREE_PASS: ${{ secrets.VOICEFREE_PASS }}
+          AGMM_WRITER_PASS: ${{ secrets.AGMM_WRITER_PASS }}
+          STORY_PREVIEW_MANIFEST_SHA: ${{ inputs.source_sha }}
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib,json,os,subprocess,sys
+          from pathlib import Path
+          i=json.load(open(os.environ['GITHUB_EVENT_PATH']))['inputs'];p=Path('private-response')/i['response_path']
+          assert subprocess.check_output(['git','-C','private-response','rev-parse','HEAD'],text=True).strip()==i['response_commit']
+          assert subprocess.check_output(['git','-C','private-response','rev-parse','HEAD:'+i['response_path']],text=True).strip()==i['response_blob']
+          assert p.is_file() and not p.is_symlink() and p.stat().st_size<10000000 and hashlib.sha256(p.read_bytes()).hexdigest()==i['response_sha']
+          assert subprocess.check_output(['git','-C','private-story','rev-parse','HEAD'],text=True).strip()==i['source_commit']
+          assert subprocess.check_output(['git','-C','private-story','rev-parse','HEAD:'+i['source_prefix']+'/MANIFEST.json'],text=True).strip()==i['source_blob']
+          root='private-story/'+i['source_prefix'];tmp=os.environ['RUNNER_TEMP']
+          subprocess.run([sys.executable,'.github/scripts/hosted_preview_prepare_candidate.py',root,i['id'],tmp+'/prompt.enc'],check=True)
+          subprocess.run([sys.executable,'.github/scripts/hosted_preview_ground_candidate.py',root,tmp+'/prompt.enc',str(p),tmp+'/grounded.enc'],check=True)
+          PYCODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agmm-grounded-preview-${{ inputs.id }}-ENC
+          path: ${{ runner.temp }}/grounded.enc
+          retention-days: 7
+          if-no-files-found: error
