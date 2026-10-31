@@ -23,7 +23,7 @@ def main():
         with os.fdopen(fd,'w') as f:
             f.write(intent+'\n'); f.flush(); os.fsync(f.fileno())
         reserve_atomic(store,post_id=row['post_id'],day=row['date'],slot=row['slot'],
-                       master_sha256=row['master_sha256'],intent=intent)
+                       master_sha256=row['master_sha256'],film_id=row['film_id'],intent=intent)
         print('Reservation committed; provider operation may proceed')
     else:
         intent=a.intent_file.read_text().strip()

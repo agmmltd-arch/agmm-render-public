@@ -25,7 +25,7 @@ def main():
     branch = 'candidate-claims-test-' + uuid.uuid4().hex[:12]
     parent = request('GET',base+'/git/ref/heads/main')['object']['sha']
     tree = request('GET',base+'/git/commits/'+parent)['tree']['sha']
-    initial = json.dumps({'schema':'agmm-publish-claims-v1','claims':[]})
+    initial = json.dumps({'schema':'agmm-publish-claims-v2','claims':[]})
     blob = request('POST',base+'/git/blobs',{'content':initial,'encoding':'utf-8'})['sha']
     tree = request('POST',base+'/git/trees',{'base_tree':tree,'tree':[
         {'path':GitHubClaimStore.PATH,'mode':'100644','type':'blob','sha':blob}]})['sha']
@@ -35,8 +35,8 @@ def main():
     def attempt(n):
         store = GitHubClaimStore(request); store.BRANCH = branch
         try:
-            reserve_atomic(store, post_id='synthetic-test',day='2026-11-03',slot='15:00',
-                           master_sha256='a'*64,intent=('%032x' % n))
+            reserve_atomic(store, post_id='synthetic-test-%d' % n,day='2026-11-03',slot=('%02d:00' % (14+n)),
+                           master_sha256=('%064x' % n),film_id='S999',intent=('%032x' % n))
             return 'reserved'
         except ValueError:
             return 'duplicate-refused'

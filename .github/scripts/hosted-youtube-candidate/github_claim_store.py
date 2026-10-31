@@ -45,7 +45,7 @@ class GitHubClaimStore:
         if item.get('encoding') != 'base64' or item.get('type') != 'file':
             raise ValueError('ledger file unavailable')
         ledger = json.loads(base64.b64decode(item['content'], validate=False))
-        if ledger.get('schema') != 'agmm-publish-claims-v1' or not isinstance(ledger.get('claims'), list):
+        if ledger.get('schema') != 'agmm-publish-claims-v2' or not isinstance(ledger.get('claims'), list):
             raise ValueError('invalid ledger')
         return version, ledger
 

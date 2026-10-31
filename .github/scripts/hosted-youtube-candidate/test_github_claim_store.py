@@ -9,7 +9,7 @@ from github_claim_store import GitHubClaimStore
 class FakeGit:
     def __init__(self):
         self.head = 'old'
-        self.ledger = {'schema':'agmm-publish-claims-v1','claims':[]}
+        self.ledger = {'schema':'agmm-publish-claims-v2','claims':[]}
         self.staged = None
     def __call__(self, method, path, body=None):
         if method == 'GET' and '/git/ref/heads/' in path: return {'object':{'sha':self.head}}
@@ -32,7 +32,7 @@ class GitStoreTests(unittest.TestCase):
     def test_reservation_survives_a_fresh_store_read_and_prevents_duplicate(self):
         remote = FakeGit(); store = GitHubClaimStore(remote)
         args = dict(post_id='post', day='2026-10-29', slot='15:00',
-                    master_sha256='a'*64, intent='1'*32)
+                    master_sha256='a'*64, film_id='F04', intent='1'*32)
         reserve_atomic(store, **args)
         with self.assertRaisesRegex(ValueError, 'already claimed'):
             reserve_atomic(GitHubClaimStore(remote), **dict(args, intent='2'*32))
