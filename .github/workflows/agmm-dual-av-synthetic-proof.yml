@@ -1,0 +1,20 @@
+name: AGMM dual AV synthetic proof
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: db2ad0b4283fdfb6b7c387be93e55470aa76f4d4
+          persist-credentials: false
+      - name: Verify pinned source and synthetic guards only
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = db2ad0b4283fdfb6b7c387be93e55470aa76f4d4
+          cd .github/scripts/av-dual-proof
+          python3 -B -m unittest test_qualification.py
+          python3 -B test_dual_input.py
+          echo "Synthetic checks only; no model request, media or review approval"
