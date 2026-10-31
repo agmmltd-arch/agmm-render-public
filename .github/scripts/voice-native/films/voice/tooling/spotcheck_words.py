@@ -10,9 +10,13 @@ from pathlib import Path
 def rms_db(wav, start, dur):
     if dur <= 0:
         return None
-    r = subprocess.run(['ffmpeg', '-nostats', '-i', str(wav), '-ss', f'{max(0,start):.3f}', '-t', f'{dur:.3f}',
-                         '-af', 'astats=metadata=1:reset=1', '-f', 'null', '-'],
-                        capture_output=True, text=True)
+    # Trim before astats: output-side -ss/-t can leave the filter measuring
+    # other samples, and reset=1 reports only its last input frame.
+    filt = f'atrim=start={max(0,start):.3f}:duration={dur:.3f},asetpts=PTS-STARTPTS,astats=metadata=1:reset=0'
+    r = subprocess.run(['ffmpeg', '-nostats', '-i', str(wav), '-af', filt,
+                        '-f', 'null', '-'], capture_output=True, text=True)
+    if r.returncode != 0:
+        return None
     for line in r.stderr.splitlines():
         if 'RMS level dB' in line:
             try:
