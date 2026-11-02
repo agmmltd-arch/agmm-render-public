@@ -311,6 +311,7 @@ def main():
                 w['start'] = round(w['start'] + shift, 3)
                 w['end'] = round(w['end'] + shift, 3)
         cta_info = {'join_shift_s': round(shift, 4), 'loudnorm_measured_pre': cta_pre, 'loudnorm_measured_post': cta_post,
+                    'story_final_duration_s': wav_duration(story_final),
                     'final_duration_s_with_cta': round(wav_duration(final_wav), 3)}
 
     words_json_path = piece_dir / f'{out_name}.words.json'

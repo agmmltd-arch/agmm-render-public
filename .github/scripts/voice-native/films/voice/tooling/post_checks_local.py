@@ -33,12 +33,24 @@ def main():
     # 1 + 2 whole-file ASR and timing
     from faster_whisper import WhisperModel
     m = WhisperModel('small.en', compute_type='int8')
-    segs, _ = m.transcribe(str(wav), word_timestamps=True, language='en', beam_size=5, condition_on_previous_text=False)
+    # runtime delta 8 (2 Nov 2026): a short with an appended audit CTA (assemble.py appended_cta) is transcribed as TWO pieces, the story audio and the CTA
+    # audio. Whisper's log-mel features are clamped to the WHOLE input's maximum, so transcribing story + CTA together changed how the identical story audio
+    # was heard (S267 proof runs 41474714191 / 41476304379: 15 story words skipped that the same story audio alone transcribes fully). Same model and
+    # settings; one transcript per piece, joined; the ratio below is still over the whole script.
+    ac = rcpt.get('appended_cta') or {}
+    pieces = [(str(wav), 0.0)]
+    if ac.get('story_final_duration_s'):
+        from faster_whisper import decode_audio
+        audio = decode_audio(str(wav), sampling_rate=16000)
+        cut = int(round(float(ac['story_final_duration_s']) * 16000))
+        pieces = [(audio[:cut], 0.0), (audio[cut:], cut / 16000.0)]
     ww = []; seg_texts = []
-    for s in segs:
-        seg_texts.append(s.text.strip())
-        for w in (s.words or []):
-            ww.append({'word': w.word.strip(), 'start': w.start, 'end': w.end})
+    for src, t0 in pieces:
+        segs, _ = m.transcribe(src, word_timestamps=True, language='en', beam_size=5, condition_on_previous_text=False)
+        for s in segs:
+            seg_texts.append(s.text.strip())
+            for w in (s.words or []):
+                ww.append({'word': w.word.strip(), 'start': w.start + t0, 'end': w.end + t0})
     heard = ' '.join(seg_texts)   # segment text, not re-joined words: '$440,000' must not split into '440' '000'
     (piece / f'{name}.whole_asr.json').write_text(json.dumps({'text': heard, 'words': ww}, indent=1))
     a0 = [str(t) for t in _canon(fold(script))]; b0 = [str(t) for t in _canon(fold(heard))]
