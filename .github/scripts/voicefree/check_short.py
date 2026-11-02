@@ -93,6 +93,9 @@ def main():
                 row["critic_n_scored"] = sum(1 for f in fl if f.get("sev") in ("warn", "fail"))
         for f in ("hosted-native.log",):
             pass
+        for suf in (".words.json", ".receipt.json", ".whole_asr.json"):      # delta 8 proof: word timings + pace basis, text only (encrypted pack)
+            if (piece / (sid + suf)).is_file():
+                shutil.copyfile(piece / (sid + suf), out / (name + suf))
         for src in (piece / "run.log",):
             if src.is_file():
                 shutil.copyfile(src, out / (name + ".run.log"))

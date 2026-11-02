@@ -132,6 +132,27 @@ def make_blackframe_mp4(wav_path, mp4_path, max_bytes=17_000_000):
         Path(str(mp4_path) + '.small.mp4').replace(mp4_path)
     return mp4_path.stat().st_size
 
+# runtime delta 8 (2 Nov 2026, root): the approved spoken audit CTA appended as its own LAST paragraph after a short was voiced (v2/crew/append_cta.py).
+# The URL is one "word" to text.split(), so counting it would lower the story's pace and raise the whole-file atempo, re-timing every earlier word
+# (S267: 1.017 -> ~1.08). The pace basis (tempo factor and the reported speaking wpm) is the story WITHOUT that paragraph; the CTA is appended after the
+# story's last gap and gets the same tempo factor. Earlier word timings are then identical to the assembly without the CTA.
+APPENDED_CTA = "For an AI constraint audit, visit agmm.co.uk/ai-constraint-audit."
+
+
+def appended_cta_index(texts):
+    """Index of the appended CTA paragraph (the LAST paragraph, exactly the approved sentence, after at least one other paragraph), else None."""
+    if len(texts) >= 2 and ' '.join(texts[-1].split()) == APPENDED_CTA:
+        return len(texts) - 1
+    return None
+
+
+def pace_basis(texts, durs):
+    """(words, speaking seconds) the tempo is computed on: every paragraph except an appended CTA."""
+    cta = appended_cta_index(texts)
+    keep = [i for i in range(len(texts)) if i != cta]
+    return sum(len(texts[i].split()) for i in keep), sum(durs[i] for i in keep), cta
+
+
 def main():
     piece_dir = Path(sys.argv[1]).resolve()
     out_name = sys.argv[2]
@@ -216,19 +237,31 @@ def main():
             })
         cursor += dur
 
+    # delta 8: an appended audit CTA (exact approved sentence, last paragraph) is assembled AFTER the story: the story's concat, tempo and loudness
+    # are computed exactly as without it (earlier audio and word timings identical), then [gap + CTA] gets the same tempo, its own loudness pass, and
+    # is joined on. A whole-file loudness pass over the CTA would change every earlier sample (S267 proof run 41474714191: the whole-file transcriber
+    # then skipped 15 story words that it hears in the identical story audio).
+    cta_idx = appended_cta_index(para_texts)
+    cta_stem = 'P%02d' % (cta_idx + 1) if cta_idx is not None else None
+
     # repair zero/negative-duration word timestamps (a rare Mistral ASR rounding artifact,
     # not a real audio gap -- confirmed by RMS spot-checks): borrow up to 80ms from the gap
     # to the next word, without ever overlapping it.
     for idx in range(len(words_all)):
         w = words_all[idx]
         if w['end'] <= w['start']:
-            nxt_start = words_all[idx + 1]['start'] if idx + 1 < len(words_all) else w['start'] + 0.08
+            nxt = words_all[idx + 1] if idx + 1 < len(words_all) else None
+            if nxt is not None and cta_stem and nxt['paragraph'] == cta_stem and w['paragraph'] != cta_stem:
+                nxt = None          # delta 8: a story word never borrows from the appended CTA (same value as without it)
+            nxt_start = nxt['start'] if nxt is not None else w['start'] + 0.08
             w['end'] = round(min(w['start'] + 0.08, max(w['start'] + 0.01, nxt_start)), 3)
 
     final_wav_raw = work / f'{out_name}.concat.wav'
-    concat_wavs(seq_paths, final_wav_raw)
+    story_seq = seq_paths[:-2] if cta_idx is not None else seq_paths      # the CTA's gap and take are the last two entries
+    concat_wavs(story_seq, final_wav_raw)
     raw_dur = wav_duration(final_wav_raw)
-    speaking_dur = sum(para_durs)
+    all_words, all_speaking = total_words, sum(para_durs)
+    total_words, speaking_dur, _ = pace_basis(para_texts, para_durs)      # delta 8: an appended CTA is not part of the pace basis
     wpm_speaking = total_words / (speaking_dur / 60.0)
     wpm_delivered = total_words / (raw_dur / 60.0)
 
@@ -256,7 +289,30 @@ def main():
     wpm_final_delivered = total_words / (final_dur / 60.0)
 
     final_wav = piece_dir / f'{out_name}.wav'
-    meas_pre, meas_post = loudnorm_two_pass(src_for_loudnorm, final_wav)
+    cta_info = None
+    if cta_idx is None:
+        meas_pre, meas_post = loudnorm_two_pass(src_for_loudnorm, final_wav)
+    else:
+        story_final = work / f'{out_name}.story.wav'
+        meas_pre, meas_post = loudnorm_two_pass(src_for_loudnorm, story_final)
+        tail_raw = work / f'{out_name}.cta.concat.wav'
+        concat_wavs(seq_paths[-2:], tail_raw)
+        tail_src = tail_raw
+        if abs(tempo_factor - 1.0) > 0.005:
+            tail_src = work / f'{out_name}.cta.tempo.wav'
+            apply_tempo(tail_raw, tail_src, tempo_factor)
+        tail_final = work / f'{out_name}.cta.final.wav'
+        cta_pre, cta_post = loudnorm_two_pass(tail_src, tail_final)
+        concat_wavs([story_final, tail_final], final_wav)
+        # the CTA words were placed at (story raw length + gap + offset) / tempo; put them on the real join (sub-millisecond sample rounding)
+        shift = wav_duration(story_final) - raw_dur / (tempo_factor if abs(tempo_factor - 1.0) > 0.005 else 1.0)
+        for w in words_all:
+            if w['paragraph'] == cta_stem:
+                w['start'] = round(w['start'] + shift, 3)
+                w['end'] = round(w['end'] + shift, 3)
+        cta_info = {'join_shift_s': round(shift, 4), 'loudnorm_measured_pre': cta_pre, 'loudnorm_measured_post': cta_post,
+                    'story_final_duration_s': wav_duration(story_final),
+                    'final_duration_s_with_cta': round(wav_duration(final_wav), 3)}
 
     words_json_path = piece_dir / f'{out_name}.words.json'
     json.dump({'words': words_all, 'tempo_factor': tempo_factor}, open(words_json_path, 'w'), indent=2)
@@ -290,6 +346,11 @@ def main():
         'reference_sha256_only': '3df9d7568c0b0569887e6c9f39bd35835cda305a09d288ea535c63d9cdc15443',
         'paragraph_receipts': [str(r.name) for r in receipts],
     }
+    if cta_idx is not None:      # delta 8: the pace, duration and loudness fields above are the story's (identical to the assembly without the CTA)
+        receipt['appended_cta'] = dict({'paragraph': cta_stem, 'text': APPENDED_CTA, 'words': len(para_texts[cta_idx].split()),
+                                        'speaking_duration_s_pre_tempo': round(para_durs[cta_idx], 3), 'excluded_from_pace_basis': True,
+                                        'assembled_after_story': True, 'all_paragraph_words': all_words,
+                                        'all_paragraph_speaking_s_pre_tempo': round(all_speaking, 3)}, **cta_info)
     (piece_dir / f'{out_name}.receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps({k: v for k, v in receipt.items() if k not in ('full_script_text', 'gap_log')}, indent=2))
 
