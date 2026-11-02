@@ -325,6 +325,21 @@ def auto_alias(a, b, names, a_orig=None, b_orig=None):
     return out, applied
 
 
+# 6 audit address (runtime delta 8, 2 Nov 2026): the CTA "visit agmm.co.uk/ai-constraint-audit" is SPOKEN "AGM dot co dot U K slash AI constraint audit"
+#   (AGMM is said "AGM", brand rule 27 Oct). local_asr.fold writes the script as "agmm dot co dot uk/ai-constraint-audit"; small.en writes the audio as
+#   "agm .co .uk slash ai constraint audit" (medium.en with a prompt: "agmm .co .uk ..."). Both sides fold to ONE token, so the address is compared as an
+#   address: the right domain AND the right path or no fold. "agm .co .duke .com" or "agmm .co .uk. and i'll see you" stay diffs.
+AUDIT_URL_TOKEN = "agmmauditurl"
+AUDIT_URL_RX = re.compile(r"\bagm{1,2}\s*(?:\.|\s+dot\s+)?\s*co\s*(?:\.|\s+dot\s+)?\s*u\.?\s?k\b\.?\s*,?\s*(?:/|-?\s*\bslash\b\s*-?)?\s*-?\s*ai[\s-]+-?\s*constraint[\s-]+-?\s*audit\b")
+
+
+def url_fold(text, side, applied):
+    def one(m):
+        applied.append("audit_url(%s): %s -> %s" % (side, " ".join(m.group(0).split()), AUDIT_URL_TOKEN))
+        return " " + AUDIT_URL_TOKEN + " "
+    return AUDIT_URL_RX.sub(one, text)
+
+
 def fold_pair(script_text, heard_text, names_text="", canon=None):
     """-> (script tokens, heard tokens, applied list). `canon` is asr_compare._canon (injected so this module has no import cycle in tests)."""
     if canon is None:
@@ -333,6 +348,7 @@ def fold_pair(script_text, heard_text, names_text="", canon=None):
     applied = []
     def prep(text, side):
         t = text.replace("\u2019", "'").lower()
+        t = url_fold(t, side, applied)
         t = year_fold(t, side, applied)
         return money_fold(t)
     a_txt, b_txt = prep(script_text, "script"), prep(heard_text, "heard")
@@ -516,6 +532,19 @@ def selftest():
     same("S256 P02 as heard (16th, 59, \u00a3300, 24)", p02, h1)
     same("S256 P02 as heard with 'offense'", p02, h2)
     differ("S256 P02 with one wrong number (69) still differs", p02, h1.replace("59", "69"))
+    # ---- audit address (delta 8): the spoken URL folds only as the whole address; wrong domain / path / a hallucinated tail stays a diff
+    cta = "For an AI constraint audit, visit agmm dot co dot uk/ai-constraint-audit."      # the script after local_asr.fold
+    same("audit url: small.en 'agm .co .uk slash ai constraint audit'", cta, "For an AI constraint audit, visit agm .co .uk slash AI constraint audit.")
+    same("audit url: medium.en 'agmm .co .uk. slash ...'", cta, "For an AI constraint audit, visit agmm .co .uk. slash AI constraint audit.")
+    same("audit url: written form", cta, "For an AI constraint audit, visit AGM.co.uk/AI-constraint-audit.")
+    same("audit url: raw script form", "visit agmm.co.uk/ai-constraint-audit.", "visit agm .co .uk slash ai constraint audit")
+    differ("audit url: wrong domain 'agm .co .duke .com'", cta, "For an AI Constraint Audit, visit agm .co .duke .com")
+    differ("audit url: path missing, hallucinated tail", cta, "For an AI constraint audit, visit agmm .co .uk. and I'll see you in the next video.")
+    differ("audit url: wrong path 'ai readiness audit'", cta, "For an AI constraint audit, visit agm .co .uk slash AI readiness audit.")
+    differ("audit url: wrong site 'abm .co .uk'", cta, "For an AI constraint audit, visit abm .co .uk slash AI constraint audit.")
+    differ("audit url: dropped 'visit'", cta, "For an AI constraint audit, agm .co .uk slash AI constraint audit.")
+    same("agm alone outside the address is NOT folded to agmm (no brand fold elsewhere)", "the agm was held", "the agm was held")
+    differ("agm alone vs agmm stays a diff outside the address", "agmm said", "agm said")
     print("SELFTEST", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 

@@ -208,9 +208,18 @@ def check(vdir, sid):
             out["fails"].append("robotic cadence: %s" % fin.get("robotic_votes"))
 
     words = json.load(open(os.path.join(d, sid + ".words.json")))["words"]
-    span = words[-1]["end"] - words[0]["start"]
-    wpm = round(len(words) / span * 60, 1)
+    # runtime delta 8 (2 Nov 2026): an appended audit CTA (assemble.py appended_cta, the exact approved sentence as the last paragraph) is not
+    # part of the story's pace: span pace is measured on the story's words, exactly as before the CTA was added. The CTA keeps its own bar below.
+    try:
+        _ac = (json.load(open(os.path.join(d, sid + ".receipt.json"))).get("appended_cta") or {}).get("paragraph")
+    except (OSError, ValueError):
+        _ac = None
+    story = [w for w in words if not _ac or w.get("paragraph") != _ac] or words
+    span = story[-1]["end"] - story[0]["start"]
+    wpm = round(len(story) / span * 60, 1)
     out["pace_wpm_span"] = wpm
+    if _ac:
+        out["pace_basis"] = "story words only; appended CTA %s excluded (runtime delta 8)" % _ac
     out["duration_s"] = round(words[-1]["end"], 2)
     rc = json.load(open(os.path.join(d, sid + ".receipt.json")))
     speak = rc.get("wpm_speaking_final")
