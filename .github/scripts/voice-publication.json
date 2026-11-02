@@ -60,7 +60,7 @@
     ".github/scripts/voice-native/kit/voice_script_binding.py": "ac77bbb2a5a7a1e04ff08b15316409bd5d1f9a87bd28ff84e7aa692ffecd8d4d",
     ".github/scripts/voice-native/shorts/voice/tooling/asr_compare.py": "10c7072c44b07f5b60499e56e6c991b8cc100e3fd1044b9e18c29b6a35be94c2",
     ".github/scripts/voice-native/shorts/voice/tooling/asr_triage.py": "3fcdbedc3817d31c9967801b88523cf11ebc53fe4d82fa68bba5ff0c033d6c5d",
-    ".github/scripts/voice-native/shorts/voice/tooling/assemble.py": "ffeabb75af7397f14a070ebb8469e629209268cc4f13f54be66668d5e41d1495",
+    ".github/scripts/voice-native/shorts/voice/tooling/assemble.py": "6f3e56dacd694b2bd643d5c59ffb95e40bd632893e3d470d319c54dfcd525e3a",
     ".github/scripts/voice-native/shorts/voice/tooling/critique_prompt.txt": "02d37475ca6876d51d526abdce41839f1474fd590ca7dec3f6153acdaeae3f5d",
     ".github/scripts/voice-native/shorts/voice/tooling/gen_paragraphs.py": "1d8d11aa6b00753555d7f8ca851f718f68acc9d76a07a70cdc205189cb2f036e",
     ".github/scripts/voice-native/shorts/voice/tooling/multi_critique.py": "dfbd12261b5aed3d6ca2e1655e3ee6ac247fce29d05a2b48b7657035eb6afebe",
