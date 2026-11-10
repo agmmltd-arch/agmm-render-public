@@ -58,7 +58,7 @@ jobs:
           case "${{ matrix.engine }}" in
             kokoro) python -m pip install kokoro-onnx ;;
             piper) python -m pip install piper-tts ;;
-            chatterbox|chatterbox-ukref) python -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cpu; python -m pip install chatterbox-tts==0.1.7 kokoro-onnx ;;
+            chatterbox|chatterbox-ukref) python -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cpu; python -m pip install chatterbox-tts==0.1.7 piper-tts ;;
             f5) python -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cpu; python -m pip install f5-tts kokoro-onnx ;;
             kyutai) python -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cpu; python -m pip install moshi sphn huggingface_hub ;;
           esac

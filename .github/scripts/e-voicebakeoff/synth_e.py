@@ -35,10 +35,13 @@ def kokoro_model():
     return Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 
 def make_ref():
-    k = kokoro_model()
+    from piper import PiperVoice
+    base = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/alan/medium/en_GB-alan-medium"
+    dl(base + ".onnx", "ref-alan.onnx"); dl(base + ".onnx.json", "ref-alan.onnx.json")
+    pv = PiperVoice.load("ref-alan.onnx")
     txt = "Right, so the numbers look fine to me, but I would check the second one again before we send anything out."
-    a, sr = k.create(txt, voice="bm_lewis", speed=1.0, lang="en-gb")
-    sf.write("ref.wav", a, sr); return "ref.wav", txt
+    with wave.open("ref.wav", "wb") as wf: pv.synthesize_wav(txt, wf)
+    return "ref.wav", txt
 
 if engine == "kokoro":
     k = kokoro_model(); k.create("warm up", voice="bm_lewis", lang="en-gb")
