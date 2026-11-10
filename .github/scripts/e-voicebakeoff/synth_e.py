@@ -37,12 +37,12 @@ def kokoro_model():
 def make_ref():
     k = kokoro_model()
     txt = "Right, so the numbers look fine to me, but I would check the second one again before we send anything out."
-    a, sr = k.create(txt, voice="bm_george", speed=1.0, lang="en-gb")
+    a, sr = k.create(txt, voice="bm_lewis", speed=1.0, lang="en-gb")
     sf.write("ref.wav", a, sr); return "ref.wav", txt
 
 if engine == "kokoro":
-    k = kokoro_model(); k.create("warm up", voice="bm_george", lang="en-gb")
-    for v in ["bm_george", "bm_lewis", "bm_fable", "bm_daniel", "bf_emma", "bf_isabella", "bf_alice", "bf_lily"]:
+    k = kokoro_model(); k.create("warm up", voice="bm_lewis", lang="en-gb")
+    for v in ["bm_lewis", "bm_fable", "bm_daniel", "bf_emma", "bf_isabella", "bf_alice", "bf_lily"]:
         run_voice("kokoro-" + v.replace("_", "-"), lambda t, v=v: k.create(t, voice=v, speed=1.0, lang="en-gb"))
 elif engine == "piper":
     from piper import PiperVoice
